@@ -12,6 +12,9 @@ class Team
     /** @var string */
     private $name;
 
+    /** @var string[] */
+    private $previousNames;
+
     /** @var DateTimeImmutable */
     private $createdAt;
 
@@ -19,6 +22,7 @@ class Team
     {
         $this->id = $uuidGenerator->generateUuid();
         $this->name = $name;
+        $this->previousNames = [];
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -33,6 +37,13 @@ class Team
     public function getName() : string
     {
         return $this->name;
+    }
+
+    public function rename(string $newName) : Team
+    {
+        $this->previousNames[] = $this->name;
+        $this->name = $newName;
+        return $this;
     }
 
     public function equals(Team $otherTeam) : bool
