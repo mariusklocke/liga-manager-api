@@ -24,7 +24,7 @@ class Pitch
      * @param UuidGeneratorInterface $uuidGenerator
      * @return Pitch
      */
-    public function createCopy(UuidGeneratorInterface $uuidGenerator)
+    public function copy(UuidGeneratorInterface $uuidGenerator)
     {
         $clone = clone $this;
         $clone->id = $uuidGenerator->generateUuid();
