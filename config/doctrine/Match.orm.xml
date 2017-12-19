@@ -1,0 +1,24 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                    http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="HexagonalDream\Domain\Match" table="matches">
+        <id name="id" type="string" />
+        <field name="kickoff" type="datetime_immutable" nullable="true" />
+        <field name="cancelledAt" type="datetime_immutable" nullable="true"/>
+        <embedded name="matchResult" class="HexagonalDream\Domain\MatchResult" />
+        <many-to-one field="homeTeam" target-entity="HexagonalDream\Domain\Team">
+            <join-column name="home_team_id" referenced-column-name="id" nullable="false" />
+        </many-to-one>
+        <many-to-one field="guestTeam" target-entity="HexagonalDream\Domain\Team">
+            <join-column name="guest_team_id" referenced-column-name="id" nullable="false" />
+        </many-to-one>
+        <many-to-one field="pitch" target-entity="HexagonalDream\Domain\Pitch">
+            <join-column name="pitch_id" referenced-column-name="id" />
+        </many-to-one>
+        <!-- <many-to-one field="matchDay" target-entity="HexagonalDream\Domain\MatchDay">
+            <join-column name="match_day_id" referenced-column-name="id" />
+        </many-to-one> -->
+    </entity>
+</doctrine-mapping>

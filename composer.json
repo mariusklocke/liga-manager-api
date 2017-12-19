@@ -1,0 +1,19 @@
+{
+    "name": "mklocke/hexagonal-dream",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Marius Klocke",
+            "email": "marius.klocke@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "HexagonalDream\\": "src/"}
+    },
+    "require": {
+        "php" : "^7.1",
+        "doctrine/orm": "^2.5",
+        "pimple/pimple": "^3.2",
+        "ramsey/uuid": "^3.7"
+    }
+}

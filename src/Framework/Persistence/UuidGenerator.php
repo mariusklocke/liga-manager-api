@@ -1,0 +1,17 @@
+<?php
+
+namespace HexagonalDream\Framework\Persistence;
+
+use HexagonalDream\Application\UuidGeneratorInterface;
+use Ramsey\Uuid\Uuid;
+
+class UuidGenerator implements UuidGeneratorInterface
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function generateUuid() : string
+    {
+        return Uuid::uuid4()->toString();
+    }
+}
