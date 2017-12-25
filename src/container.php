@@ -4,13 +4,15 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalDream\Application\FixtureLoader;
+use HexagonalDream\Framework\Persistence\DoctrineObjectPersistence;
 use HexagonalDream\Framework\Persistence\PdoReadDbAdapter;
 use HexagonalDream\Framework\Persistence\UuidGenerator;
 
 $container = new \Pimple\Container();
 
 $container['application.fixtureLoader'] = function() use ($container) {
-    return new \HexagonalDream\Application\FixtureLoader(
+    return new FixtureLoader(
         $container['framework.persistence.doctrineObjectPersistence'],
         $container['framework.persistence.uuidGenerator']
     );
@@ -35,7 +37,7 @@ $container['framework.persistence.uuidGenerator'] = function() {
     return new UuidGenerator();
 };
 $container['framework.persistence.doctrineObjectPersistence'] = function() use ($container) {
-    return new \HexagonalDream\Framework\Persistence\DoctrineObjectPersistence($container['doctrine.entityManager']);
+    return new DoctrineObjectPersistence($container['doctrine.entityManager']);
 };
 $container['pdo'] = function() {
     return new PDO('sqlite:' . __DIR__ . '/../data/db.sqlite');
