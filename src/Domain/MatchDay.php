@@ -17,6 +17,7 @@ class MatchDay
     {
         $this->season = $season;
         $this->number = $number;
+        $this->matches = [];
     }
 
     /**

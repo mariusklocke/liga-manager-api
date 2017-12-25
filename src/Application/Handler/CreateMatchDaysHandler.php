@@ -6,7 +6,7 @@ use HexagonalDream\Application\Exception\MatchMakingException;
 use HexagonalDream\Application\Command\CreateMatchDaysCommand;
 use HexagonalDream\Domain\Match;
 use HexagonalDream\Domain\MatchDay;
-use HexagonalDream\Domain\Team;
+use HexagonalDream\Domain\Season;
 use HexagonalDream\Domain\UuidGeneratorInterface;
 
 class CreateMatchDaysHandler
@@ -26,71 +26,61 @@ class CreateMatchDaysHandler
      */
     public function handle(CreateMatchDaysCommand $command)
     {
-        $opponents = $this->generateOpponentMatrix($command->getTeams());
-        $allTeams = [];
-        foreach ($command->getTeams() as $team) {
-            $allTeams[$team->getId()] = $team;
+
+    }
+
+    /**
+     * Implements a match day generation algorithm
+     *
+     * Based on: https://de.wikipedia.org/wiki/Spielplan_(Sport)
+     *
+     * @param Season $season
+     * @return MatchDay[]
+     * @throws MatchMakingException
+     */
+    public function createMatchDays(Season $season)
+    {
+        $shuffledTeams = array_values($season->getTeams());
+        shuffle($shuffledTeams);
+        if (count($shuffledTeams) % 2 != 0) {
+            $shuffledTeams[] = null;
         }
 
-        $shuffledTeamIds = array_keys($allTeams);
-        shuffle($shuffledTeamIds);
-
+        $matchDayCount = count($shuffledTeams) - 1;
         $matchDayList = [];
-        $matchDayCount = count($allTeams) - 1;
-        for ($i = 0; $i < $matchDayCount; $i++) {
-            $matchDay   = new MatchDay($command->getSeason(), $i + 1);
-            $matchCount = (int) floor(count($allTeams) / 2);
-            $remainingTeamIds = array_keys($allTeams);
-            shuffle($remainingTeamIds);
-            for ($j = 0; $j < $matchCount; $j++) {
-                $homeTeamId = array_pop($remainingTeamIds);
-                if (null === $homeTeamId) {
-                    throw new MatchMakingException();
+        for ($n = 1; $n <= $matchDayCount; $n++) {
+            $matchDay = new MatchDay($season, $n);
+            $teams = $shuffledTeams; // copy array
+            for ($k = 1; $k < count($shuffledTeams); $k++) {
+                for ($l = 1; $l < $k; $l++) {
+                    if (($k + $l) % $matchDayCount == ($n % $matchDayCount)) {
+                        $sumIsEven = (($k + $l) % 2 == 0);
+                        $homeTeam = $sumIsEven ? $teams[$k-1] : $teams[$l-1];
+                        $guestTeam = $sumIsEven ? $teams[$l-1] : $teams[$k-1];
+                        if (null !== $homeTeam && null !== $guestTeam) {
+                            $matchDay->addMatch(new Match($this->uuidGenerator, $matchDay, $homeTeam, $guestTeam));
+                        }
+                        unset($teams[$k-1]);
+                        unset($teams[$l-1]);
+                    }
                 }
-                $possibleOpponents = array_intersect(array_keys($opponents[$homeTeamId]), $remainingTeamIds);
-                if (empty($possibleOpponents)) {
-                    var_dump($opponents[$homeTeamId]);
-                    var_dump($remainingTeamIds);
-                    var_dump([$i, $j]);
-                    throw new MatchMakingException();
-                }
-                shuffle($possibleOpponents);
-                $guestTeamId = array_pop($possibleOpponents);
-
-                if (($key = array_search($guestTeamId, $remainingTeamIds)) !== false) {
-                    unset($remainingTeamIds[$key]);
-                }
-                unset($opponents[$homeTeamId][$guestTeamId]);
-                unset($opponents[$guestTeamId][$homeTeamId]);
-
-                $matchDay->addMatch(
-                    new Match($this->uuidGenerator, $matchDay, $allTeams[$homeTeamId], $allTeams[$guestTeamId])
-                );
             }
+
+            if (count($teams) != 2) {
+                throw new MatchMakingException('Matchday algorithm error');
+            }
+
+            $k = max(array_keys($teams));
+            $l = min(array_keys($teams));
+            $homeTeam = $l+1 > $matchDayCount/2 ? $teams[$k] : $teams[$l];
+            $guestTeam = $l+1 > $matchDayCount/2 ? $teams[$l] : $teams[$k];
+            if (null !== $homeTeam && null !== $guestTeam) {
+                $matchDay->addMatch(new Match($this->uuidGenerator, $matchDay, $homeTeam, $guestTeam));
+            }
+
             $matchDayList[] = $matchDay;
         }
 
         return $matchDayList;
-    }
-
-    /**
-     * @param Team[] $teams
-     * @return array
-     */
-    private function generateOpponentMatrix(array $teams)
-    {
-        $opponents = [];
-        $teams = array_values($teams);
-        $count = count($teams);
-        for ($i = 0; $i < $count; $i++) {
-            $opponents[$teams[$i]->getId()] = [];
-            for ($j = 0; $j < $count; $j++) {
-                if ($i != $j) {
-                    $opponents[$teams[$i]->getId()][$teams[$j]->getId()] = true;
-                }
-            }
-        }
-
-        return $opponents;
     }
 }

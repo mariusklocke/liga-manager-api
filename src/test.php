@@ -2,19 +2,18 @@
 $container = require __DIR__ . '/bootstrap.php';
 
 /** @var \Doctrine\ORM\EntityManager $entityManager */
-$entityManager = $container['doctrine.entityManager'];
+//$entityManager = $container['doctrine.entityManager'];
 $uuidGenerator = $container['framework.persistence.uuidGenerator'];
-$readDbAdapter = $container['framework.persistence.pdoReadDbAdapter'];
-$seasonRepo = new \HexagonalDream\Application\Repository\SeasonRepository($readDbAdapter);
+//$readDbAdapter = $container['framework.persistence.pdoReadDbAdapter'];
+/*$seasonRepo = new \HexagonalDream\Application\Repository\SeasonRepository($readDbAdapter);
 $teamRepo = new \HexagonalDream\Application\Repository\TeamRepository($readDbAdapter);
 $seasons = $seasonRepo->getAllSeasons();
 $teams = $teamRepo->getAllTeams();
 var_dump($seasons);
 var_dump($teams);
-exit;
+exit;*/
 
-$season = new \HexagonalDream\Domain\Season();
-
+$season = new \HexagonalDream\Domain\Season($uuidGenerator, 'Test');
 if (($handle = fopen(__DIR__ . "/../data/teams.csv", "r")) !== false) {
     while (($data = fgetcsv($handle, 1000, ",")) !== false) {
         list($teamName) = $data;
@@ -23,9 +22,14 @@ if (($handle = fopen(__DIR__ . "/../data/teams.csv", "r")) !== false) {
     fclose($handle);
 }
 
-$command = new \HexagonalDream\Application\Command\CreateMatchDaysCommand($season, $season->getTeams());
+//$command = new \HexagonalDream\Application\Command\CreateMatchDaysCommand($season, $season->getTeams());
 $handler = new \HexagonalDream\Application\Handler\CreateMatchDaysHandler($uuidGenerator);
-$matchDays = $handler->handle($command);
-foreach ($matchDays as $matchDay) {
-    echo $matchDay->toString() . PHP_EOL;
-}
+$matchDays = $handler->createMatchDays($season);
+
+$ranking = new \HexagonalDream\Domain\Ranking($season);
+$match = $matchDays[0]->getMatches()[0]->submitResult(new \HexagonalDream\Domain\MatchResult(4,1));
+$ranking->addResult($match);
+$match = $matchDays[0]->getMatches()[1]->submitResult(new \HexagonalDream\Domain\MatchResult(4,5));
+$ranking->addResult($match);
+$match = $matchDays[0]->getMatches()[2]->submitResult(new \HexagonalDream\Domain\MatchResult(5,5));
+$ranking->addResult($match);
