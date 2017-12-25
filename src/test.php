@@ -3,8 +3,8 @@ $container = require __DIR__ . '/bootstrap.php';
 
 /** @var \Doctrine\ORM\EntityManager $entityManager */
 //$entityManager = $container['doctrine.entityManager'];
-$uuidGenerator = $container['framework.persistence.uuidGenerator'];
-//$readDbAdapter = $container['framework.persistence.pdoReadDbAdapter'];
+$uuidGenerator = $container['infrastructure.persistence.uuidGenerator'];
+//$readDbAdapter = $container['infrastructure.persistence.pdoReadDbAdapter'];
 /*$seasonRepo = new \HexagonalDream\Application\Repository\SeasonRepository($readDbAdapter);
 $teamRepo = new \HexagonalDream\Application\Repository\TeamRepository($readDbAdapter);
 $seasons = $seasonRepo->getAllSeasons();

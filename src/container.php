@@ -5,16 +5,16 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use HexagonalDream\Application\FixtureLoader;
-use HexagonalDream\Framework\Persistence\DoctrineObjectPersistence;
-use HexagonalDream\Framework\Persistence\PdoReadDbAdapter;
-use HexagonalDream\Framework\Persistence\UuidGenerator;
+use HexagonalDream\Infrastructure\Persistence\DoctrineObjectPersistence;
+use HexagonalDream\Infrastructure\Persistence\PdoReadDbAdapter;
+use HexagonalDream\Infrastructure\Persistence\UuidGenerator;
 
 $container = new \Pimple\Container();
 
 $container['application.fixtureLoader'] = function() use ($container) {
     return new FixtureLoader(
-        $container['framework.persistence.doctrineObjectPersistence'],
-        $container['framework.persistence.uuidGenerator']
+        $container['infrastructure.persistence.doctrineObjectPersistence'],
+        $container['infrastructure.persistence.uuidGenerator']
     );
 };
 $container['doctrine.entityManager'] = function() use ($container) {
@@ -30,13 +30,13 @@ $container['doctrine.config'] = function() {
     $config->setMetadataDriverImpl($driver);
     return $config;
 };
-$container['framework.persistence.pdoReadDbAdapter'] = function() use ($container) {
+$container['infrastructure.persistence.pdoReadDbAdapter'] = function() use ($container) {
     return new PdoReadDbAdapter($container['pdo']);
 };
-$container['framework.persistence.uuidGenerator'] = function() {
+$container['infrastructure.persistence.uuidGenerator'] = function() {
     return new UuidGenerator();
 };
-$container['framework.persistence.doctrineObjectPersistence'] = function() use ($container) {
+$container['infrastructure.persistence.doctrineObjectPersistence'] = function() use ($container) {
     return new DoctrineObjectPersistence($container['doctrine.entityManager']);
 };
 $container['pdo'] = function() {

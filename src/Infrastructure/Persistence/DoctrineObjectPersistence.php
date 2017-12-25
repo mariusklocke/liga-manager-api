@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Framework\Persistence;
+namespace HexagonalDream\Infrastructure\Persistence;
 
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManager;

@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Framework\Persistence;
+namespace HexagonalDream\Infrastructure\Persistence;
 
 use HexagonalDream\Application\UuidGeneratorInterface;
 use Ramsey\Uuid\Uuid;
