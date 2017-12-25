@@ -18,7 +18,7 @@ class Ranking
         $this->season = $season;
         $this->positions = [];
         foreach ($season->getTeams() as $team) {
-            $this->positions[] = new RankingPosition($team);
+            $this->positions[$team->getId()] = new RankingPosition();
         }
     }
 
@@ -30,54 +30,68 @@ class Ranking
     public function addResult(Match $match)
     {
         foreach ([$match->getHomeTeam(), $match->getGuestTeam()] as $team) {
-            $this
-                ->getPositionByTeam($team)
-                ->addResult($match->getScoredGoalsBy($team), $match->getConcededGoalsBy($team));
+            if (!isset($this->positions[$team->getId()])) {
+                throw new UnrankedTeamException();
+            }
+            $this->positions[$team->getId()]->addResult($match->getScoredGoalsBy($team), $match->getConcededGoalsBy($team));
         }
-        $this->updatePositions();
+        $this->sortPositions();
+        $this->generatePositionNumbers();
     }
 
     /**
-     * @param Team $team
-     * @return RankingPosition
+     * Generate ascending ranking numbers
+     */
+    private function generatePositionNumbers()
+    {
+        $rankNumber = 1;
+        /** @var RankingPosition $previous */
+        $previous = null;
+        foreach ($this->positions as $position) {
+            if (null !== $previous && $position->compare($previous) === RankingPosition::COMPARISON_EQUAL) {
+                $position->setNumber($previous->getNumber());
+            } else {
+                $position->setNumber($rankNumber);
+            }
+            $rankNumber++;
+            $previous = $position;
+        }
+    }
+
+    /**
+     * Sort the RankingPositions from good/top to bad/bottom (descending in points)
+     */
+    private function sortPositions()
+    {
+        uasort($this->positions, function(RankingPosition $p1, RankingPosition $p2) {
+            return $p2->compare($p1);
+        });
+    }
+
+    /**
+     * @param string $teamId
+     * @return string
      * @throws UnrankedTeamException
      */
-    private function getPositionByTeam(Team $team)
+    private function getTeamNameById(string $teamId)
     {
-        foreach ($this->positions as $position) {
-            if ($position->getTeam()->equals($team)) {
-                return $position;
+        foreach ($this->season->getTeams() as $team) {
+            if ($team->getId() === $teamId) {
+                return $team->getName();
             }
         }
-
         throw new UnrankedTeamException();
     }
 
-    private function updatePositions()
-    {
-        // Sort the RankingPositions from good/top to bad/bottom (descending in points)
-        usort($this->positions, function(RankingPosition $p1, RankingPosition $p2) {
-            return $p2->compare($p1);
-        });
-
-        // Generate ascending rank numbers
-        $n = count($this->positions);
-        $this->positions[0]->setNumber(1);
-        $previous = $this->positions[0];
-        for ($i = 1; $i < $n; $i++) {
-            if ($this->positions[$i]->compare($previous) === RankingPosition::COMPARISON_EQUAL) {
-                $this->positions[$i]->setNumber($previous->getNumber());
-            } else {
-                $this->positions[$i]->setNumber($i + 1);
-            }
-            $previous = $this->positions[$i];
-        }
-    }
-
+    /**
+     * @return string
+     */
     public function toString()
     {
-        return implode(PHP_EOL, array_map(function(RankingPosition $position) {
-            return $position->toString();
-        }, $this->positions));
+        $parts = [];
+        foreach ($this->positions as $teamId => $position) {
+            $parts[] = $position->toString($this->getTeamNameById($teamId));
+        }
+        return implode(PHP_EOL, $parts);
     }
 }

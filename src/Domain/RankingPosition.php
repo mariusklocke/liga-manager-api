@@ -2,14 +2,11 @@
 
 namespace HexagonalDream\Domain;
 
-class RankingPosition
+class RankingPosition implements \Serializable
 {
     const COMPARISON_INFERIOR = -1;
     const COMPARISON_EQUAL = 0;
     const COMPARISON_SUPERIOR = 1;
-
-    /** @var Team */
-    private $team;
 
     /** @var int */
     private $number;
@@ -35,9 +32,8 @@ class RankingPosition
     /** @var int */
     private $points;
 
-    public function __construct(Team $team)
+    public function __construct()
     {
-        $this->team = $team;
         $this->number = 0;
         $this->matches = 0;
         $this->wins = 0;
@@ -92,14 +88,6 @@ class RankingPosition
     }
 
     /**
-     * @return Team
-     */
-    public function getTeam() : Team
-    {
-        return $this->team;
-    }
-
-    /**
      * @param int $number
      * @return RankingPosition
      */
@@ -117,9 +105,9 @@ class RankingPosition
         return $this->number;
     }
 
-    public function toString() : string
+    public function toString(string $teamName) : string
     {
-        return sprintf('%d. %s %d %d', $this->number, $this->getTeam()->getName(), $this->getGoalDifference(), $this->points);
+        return sprintf('%d. %s %d %d', $this->number, $teamName, $this->getGoalDifference(), $this->points);
     }
 
     /**
@@ -128,5 +116,46 @@ class RankingPosition
     private function getGoalDifference() : int
     {
         return $this->scoredGoals - $this->concededGoals;
+    }
+
+    /**
+     * String representation of object
+     * @link  http://php.net/manual/en/serializable.serialize.php
+     * @return string the string representation of the object or null
+     * @since 5.1.0
+     */
+    public function serialize()
+    {
+        return serialize([
+            'number' => $this->number,
+            'matches' => $this->matches,
+            'wins' => $this->wins,
+            'draws' => $this->draws,
+            'losses' => $this->losses,
+            'scoredGoals' => $this->scoredGoals,
+            'concededGoals' => $this->concededGoals,
+            'points' => $this->points
+        ]);
+    }
+
+    /**
+     * Constructs the object
+     * @link  http://php.net/manual/en/serializable.unserialize.php
+     * @param string $serialized <p>
+     *                           The string representation of the object.
+     *                           </p>
+     * @return void
+     */
+    public function unserialize($serialized)
+    {
+        $array = unserialize($serialized);
+        $this->number = $array['number'];
+        $this->matches = $array['matches'];
+        $this->wins = $array['wins'];
+        $this->draws = $array['draws'];
+        $this->losses = $array['losses'];
+        $this->scoredGoals = $array['scoredGoals'];
+        $this->concededGoals = $array['concededGoals'];
+        $this->points = $array['points'];
     }
 }
