@@ -25,11 +25,14 @@ class FixtureLoader
         $this->persistence->transactional(function() {
             $pitch = new Pitch($this->uuidGenerator, 'Sportgarten', new GeographicLocation('12.34', '23.45'));
             $this->persistence->persist($pitch);
+            $season = new Season($this->uuidGenerator, 'Winterliga 17/18');
             for ($i = 1; $i <= 18; $i++) {
                 $teamName = sprintf('Team No. %02d', $i);
-                $this->persistence->persist(new Team($this->uuidGenerator, $teamName));
+                $team = new Team($this->uuidGenerator, $teamName);
+                $this->persistence->persist($team);
+                $season->addTeam($team);
             }
-            $this->persistence->persist(new Season($this->uuidGenerator, 'Winterliga 17/18'));
+            $this->persistence->persist($season);
         });
     }
 }
