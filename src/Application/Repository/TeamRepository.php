@@ -7,7 +7,7 @@ class TeamRepository extends AbstractRepository
     /**
      * @return array
      */
-    public function getAllTeams()
+    public function findAllTeams()
     {
         return $this->getDb()->fetchAll('SELECT * FROM `teams`');
     }
@@ -16,9 +16,21 @@ class TeamRepository extends AbstractRepository
      * @param string $id
      * @return array|null
      */
-    public function getTeamById(string $id)
+    public function findTeamById(string $id)
     {
-        $result = $this->getDb()->fetchAll('SELECT * FROM `teams` WHERE `id` = :id', ['id' => $id]);
-        return !empty($result) ? $result[0] : null;
+        return $this->getDb()->fetchFirstRow('SELECT * FROM `teams` WHERE `id` = :id', ['id' => $id]);
+    }
+
+    /**
+     * @param string $seasonId
+     * @return array
+     */
+    public function findTeamBySeasonId(string $seasonId)
+    {
+        $query = <<<'SQL'
+  SELECT t.* FROM `teams` t JOIN seasons_teams_link st ON t.id = st.team_id WHERE st.season_id = :seasonId
+SQL;
+
+        return $this->getDb()->fetchAll($query, ['seasonId' => $seasonId]);
     }
 }

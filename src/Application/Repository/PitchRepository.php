@@ -7,7 +7,7 @@ class PitchRepository extends AbstractRepository
     /**
      * @return array
      */
-    public function getAllPitches()
+    public function findAllPitches()
     {
         return $this->getDb()->fetchAll('SELECT * FROM `pitches`');
     }
@@ -16,9 +16,8 @@ class PitchRepository extends AbstractRepository
      * @param string $id
      * @return array|null
      */
-    public function getPitchById(string $id)
+    public function findPitchById(string $id)
     {
-        $result = $this->getDb()->fetchAll('SELECT * FROM `pitches` WHERE `id` = :id', ['id' => $id]);
-        return !empty($result) ? $result[0] : null;
+        return $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = :id', ['id' => $id]);
     }
 }
