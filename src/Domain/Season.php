@@ -21,6 +21,9 @@ class Season
     /** @var Team[] */
     private $teams;
 
+    /** @var Match[] */
+    private $matches;
+
     public function __construct(UuidGeneratorInterface $uuidGenerator, string $name)
     {
         $this->id = $uuidGenerator->generateUuid();
@@ -43,6 +46,6 @@ class Season
      */
     public function getTeams() : array
     {
-        return $this->teams;
+        return $this->teams->toArray();
     }
 }
