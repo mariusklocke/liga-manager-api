@@ -11,6 +11,12 @@ class Match
     /** @var string */
     private $id;
 
+    /** @var Season */
+    private $season;
+
+    /** @var int */
+    private $matchDay;
+
     /** @var Team */
     private $homeTeam;
 
@@ -26,9 +32,6 @@ class Match
     /** @var Pitch */
     private $pitch;
 
-    /** @var MatchDay */
-    private $matchDay;
-
     /** @var DateTimeImmutable */
     private $cancelledAt;
 
@@ -36,13 +39,15 @@ class Match
      * Create a new match
      *
      * @param UuidGeneratorInterface $uuidGenerator
-     * @param MatchDay $matchDay
-     * @param Team $homeTeam
-     * @param Team $guestTeam
+     * @param Season                 $season
+     * @param int                    $matchDay
+     * @param Team                   $homeTeam
+     * @param Team                   $guestTeam
      */
-    public function __construct(UuidGeneratorInterface $uuidGenerator, MatchDay $matchDay, Team $homeTeam, Team $guestTeam)
+    public function __construct(UuidGeneratorInterface $uuidGenerator, Season $season, int $matchDay, Team $homeTeam, Team $guestTeam)
     {
         $this->id = $uuidGenerator->generateUuid();
+        $this->season = $season;
         $this->matchDay = $matchDay;
         $this->homeTeam = $homeTeam;
         $this->guestTeam = $guestTeam;
@@ -115,14 +120,6 @@ class Match
     }
 
     /**
-     * @return MatchResult
-     */
-    public function getMatchResult(): MatchResult
-    {
-        return $this->matchResult;
-    }
-
-    /**
      * @return string
      */
     public function getId(): string
@@ -164,8 +161,28 @@ class Match
         throw new TeamDidNotParticipateException();
     }
 
-    public function toString()
+    public function toString() : string
     {
         return sprintf('%s - %s', $this->homeTeam->getName(), $this->guestTeam->getName());
+    }
+
+    private function __clone()
+    {
+        $this->id = null;
+        $this->matchDay = null;
+        $this->matchResult = null;
+        $this->kickoff = null;
+        $this->pitch = null;
+        $this->cancelledAt = null;
+    }
+
+    public function rematch(UuidGeneratorInterface $uuidGenerator, int $matchDay) : Match
+    {
+        $clone = clone $this;
+        $clone->id = $uuidGenerator->generateUuid();
+        $clone->matchDay = $matchDay;
+        $clone->homeTeam = $this->guestTeam;
+        $clone->guestTeam = $this->homeTeam;
+        return $clone;
     }
 }
