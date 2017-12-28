@@ -28,7 +28,7 @@ class TeamRepository extends AbstractRepository
     public function findTeamBySeasonId(string $seasonId)
     {
         $query = <<<'SQL'
-  SELECT t.* FROM `teams` t JOIN seasons_teams_link st ON t.id = st.team_id WHERE st.season_id = :seasonId
+  SELECT t.* FROM seasons_teams_link st JOIN `teams` t ON t.id = st.team_id WHERE st.season_id = :seasonId
 SQL;
 
         return $this->getDb()->fetchAll($query, ['seasonId' => $seasonId]);
