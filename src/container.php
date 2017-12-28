@@ -4,6 +4,7 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalDream\Application\FixtureGenerator;
 use HexagonalDream\Application\FixtureLoader;
 use HexagonalDream\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalDream\Infrastructure\Persistence\PdoReadDbAdapter;
@@ -14,8 +15,11 @@ $container = new \Pimple\Container();
 $container['application.fixtureLoader'] = function() use ($container) {
     return new FixtureLoader(
         $container['infrastructure.persistence.doctrineObjectPersistence'],
-        $container['infrastructure.persistence.uuidGenerator']
+        $container['application.fixtureGenerator']
     );
+};
+$container['application.fixtureGenerator'] = function() use ($container) {
+    return new FixtureGenerator($container['infrastructure.persistence.uuidGenerator']);
 };
 $container['doctrine.entityManager'] = function() use ($container) {
     return EntityManager::create($container['doctrine.connection'], $container['doctrine.config']);
