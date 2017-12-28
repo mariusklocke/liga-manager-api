@@ -24,6 +24,9 @@ class Season
     /** @var Match[] */
     private $matches;
 
+    /** @var Ranking */
+    private $ranking;
+
     public function __construct(UuidGeneratorInterface $uuidGenerator, string $name)
     {
         $this->id = $uuidGenerator->generateUuid();

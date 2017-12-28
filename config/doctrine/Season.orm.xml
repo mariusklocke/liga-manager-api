@@ -6,6 +6,11 @@
     <entity name="HexagonalDream\Domain\Season" table="seasons">
         <id name="id" type="string" />
         <field name="name" type="string" />
+        <one-to-one field="ranking" target-entity="HexagonalDream\Domain\Ranking" mapped-by="season">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </one-to-one>
         <one-to-many field="matches" target-entity="HexagonalDream\Domain\Match" mapped-by="season">
             <order-by>
                 <order-by-field name="matchDay" direction="ASC" />

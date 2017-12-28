@@ -2,6 +2,7 @@
 
 namespace HexagonalDream\Domain;
 
+use DateTimeImmutable;
 use HexagonalDream\Domain\Exception\UnrankedTeamException;
 use HexagonalDream\Domain\Exception\TeamDidNotParticipateException;
 
@@ -10,15 +11,18 @@ class Ranking
     /** @var Season */
     private $season;
 
-    /** @var RankingPosition[] */
+    /** @var DateTimeImmutable */
+    private $updatedAt;
+
+    /** @var CollectionInterface */
     private $positions;
 
-    public function __construct(Season $season)
+    public function __construct(Season $season, callable $collectionFactory)
     {
         $this->season = $season;
-        $this->positions = [];
+        $this->positions = $collectionFactory();
         foreach ($season->getTeams() as $team) {
-            $this->positions[$team->getId()] = new RankingPosition();
+            $this->positions[$team->getId()] = new RankingPosition($this, $team);
         }
     }
 
@@ -35,52 +39,34 @@ class Ranking
             }
             $this->positions[$team->getId()]->addResult($match->getScoredGoalsBy($team), $match->getConcededGoalsBy($team));
         }
-        $this->sortPositions();
-        $this->generatePositionNumbers();
+
+        $this->reorder();
     }
 
     /**
-     * Generate ascending ranking numbers
+     * Reorders the ranking positions
      */
-    private function generatePositionNumbers()
+    private function reorder()
     {
-        $rankNumber = 1;
+        /** @var RankingPosition[] $sortedArray */
+        $sortedArray = $this->positions->toArray();
+        uasort($sortedArray, function(RankingPosition $p1, RankingPosition $p2) {
+            return $p2->compare($p1);
+        });
+        $index = 1;
         /** @var RankingPosition $previous */
         $previous = null;
-        foreach ($this->positions as $position) {
+        foreach ($sortedArray as $position) {
             if (null !== $previous && $position->compare($previous) === RankingPosition::COMPARISON_EQUAL) {
                 $position->setNumber($previous->getNumber());
             } else {
-                $position->setNumber($rankNumber);
+                $position->setNumber($index);
             }
-            $rankNumber++;
+            $position->setSortIndex($index);
+            $index++;
             $previous = $position;
         }
-    }
-
-    /**
-     * Sort the RankingPositions from good/top to bad/bottom (descending in points)
-     */
-    private function sortPositions()
-    {
-        uasort($this->positions, function(RankingPosition $p1, RankingPosition $p2) {
-            return $p2->compare($p1);
-        });
-    }
-
-    /**
-     * @param string $teamId
-     * @return string
-     * @throws UnrankedTeamException
-     */
-    private function getTeamNameById(string $teamId)
-    {
-        foreach ($this->season->getTeams() as $team) {
-            if ($team->getId() === $teamId) {
-                return $team->getName();
-            }
-        }
-        throw new UnrankedTeamException();
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     /**
@@ -90,7 +76,8 @@ class Ranking
     {
         $parts = [];
         foreach ($this->positions as $teamId => $position) {
-            $parts[] = $position->toString($this->getTeamNameById($teamId));
+            /** @var $position RankingPosition */
+            $parts[] = $position->toString();
         }
         return implode(PHP_EOL, $parts);
     }

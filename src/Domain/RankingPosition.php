@@ -2,11 +2,20 @@
 
 namespace HexagonalDream\Domain;
 
-class RankingPosition implements \Serializable
+class RankingPosition
 {
     const COMPARISON_INFERIOR = -1;
     const COMPARISON_EQUAL = 0;
     const COMPARISON_SUPERIOR = 1;
+
+    /** @var Ranking */
+    private $ranking;
+
+    /** @var Team */
+    private $team;
+
+    /** @var int */
+    private $sortIndex;
 
     /** @var int */
     private $number;
@@ -32,8 +41,11 @@ class RankingPosition implements \Serializable
     /** @var int */
     private $points;
 
-    public function __construct()
+    public function __construct(Ranking $ranking, Team $team)
     {
+        $this->ranking = $ranking;
+        $this->team = $team;
+        $this->sortIndex = 0;
         $this->number = 0;
         $this->matches = 0;
         $this->wins = 0;
@@ -98,6 +110,16 @@ class RankingPosition implements \Serializable
     }
 
     /**
+     * @param int $sortIndex
+     * @return RankingPosition
+     */
+    public function setSortIndex(int $sortIndex) : RankingPosition
+    {
+        $this->sortIndex = $sortIndex;
+        return $this;
+    }
+
+    /**
      * @return int
      */
     public function getNumber() : int
@@ -105,9 +127,9 @@ class RankingPosition implements \Serializable
         return $this->number;
     }
 
-    public function toString(string $teamName) : string
+    public function toString() : string
     {
-        return sprintf('%d. %s %d %d', $this->number, $teamName, $this->getGoalDifference(), $this->points);
+        return sprintf("%d.\t%s\t%d\t%d", $this->number, $this->team->getName(), $this->getGoalDifference(), $this->points);
     }
 
     /**
@@ -116,46 +138,5 @@ class RankingPosition implements \Serializable
     private function getGoalDifference() : int
     {
         return $this->scoredGoals - $this->concededGoals;
-    }
-
-    /**
-     * String representation of object
-     * @link  http://php.net/manual/en/serializable.serialize.php
-     * @return string the string representation of the object or null
-     * @since 5.1.0
-     */
-    public function serialize()
-    {
-        return serialize([
-            'number' => $this->number,
-            'matches' => $this->matches,
-            'wins' => $this->wins,
-            'draws' => $this->draws,
-            'losses' => $this->losses,
-            'scoredGoals' => $this->scoredGoals,
-            'concededGoals' => $this->concededGoals,
-            'points' => $this->points
-        ]);
-    }
-
-    /**
-     * Constructs the object
-     * @link  http://php.net/manual/en/serializable.unserialize.php
-     * @param string $serialized <p>
-     *                           The string representation of the object.
-     *                           </p>
-     * @return void
-     */
-    public function unserialize($serialized)
-    {
-        $array = unserialize($serialized);
-        $this->number = $array['number'];
-        $this->matches = $array['matches'];
-        $this->wins = $array['wins'];
-        $this->draws = $array['draws'];
-        $this->losses = $array['losses'];
-        $this->scoredGoals = $array['scoredGoals'];
-        $this->concededGoals = $array['concededGoals'];
-        $this->points = $array['points'];
     }
 }
