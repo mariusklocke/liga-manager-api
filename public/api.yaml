@@ -9,34 +9,34 @@ info:
 #servers:
 #  - url: http://localhost/api
 tags:
-- name: "team"
-  description: "Manage your teams"
-- name: "season"
-  description: "Access to season related things"
-- name: "match"
-  description: "Retrieve and perform operations on matches"
-- name: "pitch"
-  description: "Manage your pitches"
+- name: "find"
+  description: "Routes which find resources"
+- name: "delete"
+  description: "Routes which delete resources"
+- name: "create"
+  description: "Routes which create resources"
+- name: "others"
+  description: "Routes which perform other state-changing actions"
 paths:
   /team/:
     get:
       tags:
-        - "team"
+        - "find"
       summary: Finds all teams
       responses:
         '200':
           description: list of teams
     post:
       tags:
-        - "team"
+        - "create"
       summary: Creates a new team
       responses:
         '204':
-          description: Creation successful
+          description: Operation successful
   /team/{id}:
     get:
       tags:
-        - "team"
+        - "find"
       summary: Finds a single team by id
       parameters:
         - name: id
@@ -51,7 +51,7 @@ paths:
           description: Single team
     delete:
       tags:
-        - "team"
+        - "delete"
       summary: deletes a single team by id
       parameters:
         - name: id
@@ -67,7 +67,7 @@ paths:
   /team/{id}/rename:
     post:
       tags:
-        - "team"
+        - "others"
       summary: Renames a single team
       parameters:
         - name: id
@@ -85,23 +85,22 @@ paths:
   /season/:
     get:
       tags:
-        - "season"
+        - "find"
       summary: Find all seasons
       responses:
         '200':
           description: List of seasons
     post:
       tags:
-        - "season"
+        - "create"
       summary: Create a new season
       responses:
         '204':
-          description: Creation successful
+          description: Operation successful
   /season/{id}/team/:
     get:
       tags:
-        - "season"
-        - "team"
+        - "find"
       summary: Find all teams related to a single season
       parameters:
         - name: id
@@ -117,7 +116,7 @@ paths:
   /season/{id}/ranking/:
     get:
       tags:
-        - "season"
+        - "find"
       summary: Returns the current season ranking
       parameters:
         - name: id
@@ -133,8 +132,7 @@ paths:
   /season/{id}/matches/{matchDayNo}:
     get:
       tags:
-        - "season"
-        - "match"
+        - "find"
       summary: Returns matches for a matchday
       parameters:
         - name: id
@@ -156,7 +154,7 @@ paths:
   /season/{id}:
     delete:
       tags:
-        - "season"
+        - "delete"
       summary: Delete a single season
       parameters:
         - name: id
@@ -172,7 +170,7 @@ paths:
   /match/{id}:
     get:
       tags:
-        - "match"
+        - "find"
       summary: Find a single match by id
       parameters:
         - name: id
@@ -190,7 +188,7 @@ paths:
   /match/{id}/result/:
     post:
       tags:
-        - "match"
+        - "others"
       summary: Submit a matches result
       parameters:
         - name: id
@@ -206,7 +204,7 @@ paths:
   /match/{id}/cancel/:
     post:
       tags:
-        - "match"
+        - "others"
       summary: Cancel a match
       parameters:
         - name: id
@@ -222,7 +220,7 @@ paths:
   /match/{id}/schedule/:
     post:
       tags:
-        - "match"
+        - "others"
       summary: Schedule a match
       parameters:
         - name: id
@@ -238,7 +236,7 @@ paths:
   /match/{id}/locate/:
     post:
       tags:
-        - "match"
+        - "others"
       summary: Locate a match on a pitch
       parameters:
         - name: id
@@ -254,14 +252,14 @@ paths:
   /pitch/:
     get:
       tags:
-        - "pitch"
+        - "find"
       summary: Find all pitches
       responses:
         '200':
           description: Array of pitches
     post:
       tags:
-        - "pitch"
+        - "create"
       summary: Creates a new pitch
       responses:
         '204':
@@ -269,7 +267,7 @@ paths:
   /pitch/{id}:
     get:
       tags:
-        - "pitch"
+        - "find"
       summary: Find a single pitch by id
       parameters:
         - name: id
@@ -286,7 +284,7 @@ paths:
           description: Pitch could not be found
     delete:
       tags:
-        - "pitch"
+        - "delete"
       summary: Delete a single pitch
       parameters:
         - name: id
