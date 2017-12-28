@@ -27,7 +27,7 @@ class TeamQueryController
      * @param Response $response
      * @return Response
      */
-    public function findAllTeams(Request $request, Response $response)
+    public function findAllTeams(Request $request, Response $response) : Response
     {
         return $response->withJson($this->repository->findAllTeams());
     }
@@ -37,7 +37,7 @@ class TeamQueryController
      * @param Response $response
      * @return Response
      */
-    public function findTeamById(Request $request, Response $response)
+    public function findTeamById(Request $request, Response $response) : Response
     {
         $teamId = $request->getQueryParam('id');
         if (!is_string($teamId) || strlen($teamId) === 0) {
@@ -55,7 +55,7 @@ class TeamQueryController
      * @param Response $response
      * @return Response
      */
-    public function findTeamsBySeasonId(Request $request, Response $response)
+    public function findTeamsBySeasonId(Request $request, Response $response) : Response
     {
         $seasonId = $request->getQueryParam('seasonId');
         if (!is_string($seasonId) || strlen($seasonId) === 0) {
