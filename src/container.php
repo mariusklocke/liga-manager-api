@@ -6,12 +6,16 @@ use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use HexagonalDream\Application\FixtureGenerator;
 use HexagonalDream\Application\FixtureLoader;
+use HexagonalDream\Application\Handler\CreateTeamHandler;
+use HexagonalDream\Application\Handler\DeleteTeamHandler;
+use HexagonalDream\Application\Repository\TeamRepository;
+use HexagonalDream\Infrastructure\API\Controller\TeamActionController;
+use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
 use HexagonalDream\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalDream\Infrastructure\Persistence\PdoReadDbAdapter;
 use HexagonalDream\Infrastructure\Persistence\UuidGenerator;
 
-$container = new \Pimple\Container();
-
+$container = new \Slim\Container([]);
 $container['application.fixtureLoader'] = function() use ($container) {
     return new FixtureLoader(
         $container['infrastructure.persistence.doctrineObjectPersistence'],
@@ -20,6 +24,18 @@ $container['application.fixtureLoader'] = function() use ($container) {
 };
 $container['application.fixtureGenerator'] = function() use ($container) {
     return new FixtureGenerator($container['infrastructure.persistence.uuidGenerator']);
+};
+$container['application.handler.CreateTeamHandler'] = function () use ($container) {
+    return new CreateTeamHandler(
+        $container['infrastructure.persistence.doctrineObjectPersistence'],
+        $container['infrastructure.persistence.uuidGenerator']
+    );
+};
+$container['application.handler.DeleteTeamHandler'] = function() use ($container) {
+    return new DeleteTeamHandler($container['infrastructure.persistence.doctrineObjectPersistence']);
+};
+$container['application.repository.team'] = function() use ($container) {
+    return new TeamRepository($container['infrastructure.persistence.pdoReadDbAdapter']);
 };
 $container['doctrine.entityManager'] = function() use ($container) {
     return EntityManager::create($container['doctrine.connection'], $container['doctrine.config']);
@@ -42,6 +58,15 @@ $container['infrastructure.persistence.uuidGenerator'] = function() {
 };
 $container['infrastructure.persistence.doctrineObjectPersistence'] = function() use ($container) {
     return new DoctrineObjectPersistence($container['doctrine.entityManager']);
+};
+$container['infrastructure.api.controller.TeamQueryController'] = function() use ($container) {
+    return new TeamQueryController($container['application.repository.team']);
+};
+$container['infrastructure.api.controller.TeamActionController'] = function () use ($container) {
+    return new TeamActionController(
+        $container['application.handler.CreateTeamHandler'],
+        $container['application.handler.DeleteTeamHandler']
+    );
 };
 $container['pdo'] = function() {
     return new PDO('sqlite:' . __DIR__ . '/../data/db.sqlite');
