@@ -30,7 +30,7 @@ class RankingRepository extends AbstractRepository
     {
         return $this->getDb()->fetchAll(
             'SELECT * FROM ranking_positions WHERE season_id = :seasonId ORDER BY sort_index ASC',
-            ['seasionId' => $seasonId]
+            ['seasonId' => $seasonId]
         );
     }
 }
