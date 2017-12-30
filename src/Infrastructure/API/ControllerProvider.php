@@ -8,6 +8,7 @@
 
 namespace HexagonalDream\Infrastructure\API;
 
+use HexagonalDream\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalDream\Infrastructure\API\Controller\TeamActionController;
 use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
 use Slim\App;
@@ -41,6 +42,21 @@ class ControllerProvider
             /** @var TeamActionController $controller */
             $controller = $container['infrastructure.api.controller.TeamActionController'];
             return $controller->delete($args['id']);
+        });
+        $app->get('/season/', function () use ($container) {
+            /** @var SeasonQueryController $controller */
+            $controller = $container['infrastructure.api.controller.SeasonQueryController'];
+            return $controller->findAllSeasons();
+        });
+        $app->get('/season/{id}', function ($request, $response, $args) use ($container) {
+            /** @var SeasonQueryController $controller */
+            $controller = $container['infrastructure.api.controller.SeasonQueryController'];
+            return $controller->findSeasonById($args['id']);
+        });
+        $app->get('/season/{id}/ranking/', function ($request, $response, $args) use ($container) {
+            /** @var SeasonQueryController $controller */
+            $controller = $container['infrastructure.api.controller.SeasonQueryController'];
+            return $controller->findRanking($args['id']);
         });
     }
 }
