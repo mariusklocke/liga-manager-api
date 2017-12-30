@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Application\Exception;
+namespace HexagonalDream\Domain\Exception;
 
 class MatchMakingException extends \Exception
 {
