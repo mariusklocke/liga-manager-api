@@ -1,0 +1,468 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "0.1",
+    "title": "Hexagonal Dream API",
+    "description": "A simple API for managing soccer leagues and illustrating hexagonal architecture",
+    "contact": {
+      "name": "Marius Klocke",
+      "email": "marius.klocke@gmail.com"
+    }
+  },
+  "tags": [
+    {
+      "name": "find",
+      "description": "Routes which find resources"
+    },
+    {
+      "name": "delete",
+      "description": "Routes which delete resources"
+    },
+    {
+      "name": "create",
+      "description": "Routes which create resources"
+    },
+    {
+      "name": "others",
+      "description": "Routes which perform other state-changing actions"
+    }
+  ],
+  "paths": {
+    "/team/": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Finds all teams",
+        "responses": {
+          "200": {
+            "description": "list of teams"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "create"
+        ],
+        "summary": "Creates a new team",
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
+    "/team/{id}": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Finds a single team by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of team",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Single team"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "delete"
+        ],
+        "summary": "deletes a single team by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of team",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deletion successful"
+          }
+        }
+      }
+    },
+    "/team/{id}/rename": {
+      "post": {
+        "tags": [
+          "others"
+        ],
+        "summary": "Renames a single team",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of team",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Team has been successfully renamed"
+          },
+          "404": {
+            "description": "Team could not be found"
+          }
+        }
+      }
+    },
+    "/season/": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Find all seasons",
+        "responses": {
+          "200": {
+            "description": "List of seasons"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "create"
+        ],
+        "summary": "Create a new season",
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
+    "/season/{id}/team/": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Find all teams related to a single season",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of season",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of teams related to the season"
+          }
+        }
+      }
+    },
+    "/season/{id}/ranking/": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Returns the current season ranking",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of season",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of rankings for the specified season"
+          }
+        }
+      }
+    },
+    "/season/{id}/matches/{matchDayNo}": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Returns matches for a matchday",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of season",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "matchDayNo",
+            "in": "path",
+            "description": "Number identifying the matchday",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of rankings for the specified season"
+          }
+        }
+      }
+    },
+    "/season/{id}": {
+      "delete": {
+        "tags": [
+          "delete"
+        ],
+        "summary": "Delete a single season",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of season",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deletion successful"
+          }
+        }
+      }
+    },
+    "/match/{id}": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Find a single match by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "match id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contains a single match object"
+          },
+          "404": {
+            "description": "Match could not be found"
+          }
+        }
+      }
+    },
+    "/match/{id}/result/": {
+      "post": {
+        "tags": [
+          "others"
+        ],
+        "summary": "Submit a matches result",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "match id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
+    "/match/{id}/cancel/": {
+      "post": {
+        "tags": [
+          "others"
+        ],
+        "summary": "Cancel a match",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "match id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
+    "/match/{id}/schedule/": {
+      "post": {
+        "tags": [
+          "others"
+        ],
+        "summary": "Schedule a match",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "match id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
+    "/match/{id}/locate/": {
+      "post": {
+        "tags": [
+          "others"
+        ],
+        "summary": "Locate a match on a pitch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "match id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
+    "/pitch/": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Find all pitches",
+        "responses": {
+          "200": {
+            "description": "Array of pitches"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "create"
+        ],
+        "summary": "Creates a new pitch",
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
+    "/pitch/{id}": {
+      "get": {
+        "tags": [
+          "find"
+        ],
+        "summary": "Find a single pitch by id",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "pitch id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contains a single pitch object"
+          },
+          "404": {
+            "description": "Pitch could not be found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "delete"
+        ],
+        "summary": "Delete a single pitch",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "pitch id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deletion successful"
+          }
+        }
+      }
+    }
+  }
+}
