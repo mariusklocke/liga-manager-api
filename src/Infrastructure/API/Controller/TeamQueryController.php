@@ -9,7 +9,6 @@
 namespace HexagonalDream\Infrastructure\API\Controller;
 
 use HexagonalDream\Application\Repository\TeamRepository;
-use Slim\Http\Request;
 use Slim\Http\Response;
 
 class TeamQueryController
@@ -23,44 +22,33 @@ class TeamQueryController
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
      * @return Response
      */
-    public function findAllTeams(Request $request, Response $response) : Response
+    public function findAllTeams() : Response
     {
-        return $response->withJson($this->repository->findAllTeams());
+        return (new Response(200))->withJson($this->repository->findAllTeams());
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
+     * @param string $teamId
      * @return Response
      */
-    public function findTeamById(Request $request, Response $response) : Response
+    public function findTeamById(string $teamId) : Response
     {
-        $teamId = $request->getQueryParam('id');
-        if (!is_string($teamId) || strlen($teamId) === 0) {
-            return $response->withStatus(404);
-        }
         $team = $this->repository->findTeamById($teamId);
         if (null === $team) {
-            return $response->withStatus(404);
+            return new Response(404);
         }
-        return $response->withJson($team);
+        return (new Response(200))->withJson($team);
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
+     * @param string $seasonId
      * @return Response
      */
-    public function findTeamsBySeasonId(Request $request, Response $response) : Response
+    public function findTeamsBySeasonId(string $seasonId) : Response
     {
-        $seasonId = $request->getQueryParam('seasonId');
-        if (!is_string($seasonId) || strlen($seasonId) === 0) {
-            return $response->withJson([]);
-        }
-        return $response->withJson($this->repository->findTeamBySeasonId($seasonId));
+        $teams = $this->repository->findTeamBySeasonId($seasonId);
+        return (new Response(200))->withJson($teams);
     }
 }
