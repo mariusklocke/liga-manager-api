@@ -1,6 +1,6 @@
 <?php
 /**
- * ControllerProvider.php
+ * RouteProvider.php
  *
  * @author    Marius Klocke <marius.klocke@eventim.de>
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
@@ -8,12 +8,13 @@
 
 namespace HexagonalDream\Infrastructure\API;
 
+use HexagonalDream\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalDream\Infrastructure\API\Controller\TeamActionController;
 use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
 use Slim\App;
 
-class ControllerProvider
+class RouteProvider
 {
     public function registerRoutes(App $app)
     {
@@ -57,6 +58,16 @@ class ControllerProvider
             /** @var SeasonQueryController $controller */
             $controller = $container['infrastructure.api.controller.SeasonQueryController'];
             return $controller->findRanking($args['id']);
+        });
+        $app->get('/season/{seasonId}/matches/{matchDay}', function ($request, $response, $args) use ($container) {
+            /** @var MatchQueryController $controller */
+            $controller = $container['infrastructure.api.controller.MatchQueryController'];
+            return $controller->findMatches($args['seasonId'], (int)$args['matchDay']);
+        });
+        $app->get('/match/{id}', function ($request, $response, $args) use ($container) {
+            /** @var MatchQueryController $controller */
+            $controller = $container['infrastructure.api.controller.MatchQueryController'];
+            return $controller->findMatchById($args['id']);
         });
     }
 }
