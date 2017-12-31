@@ -9,10 +9,12 @@ use HexagonalDream\Application\FixtureLoader;
 use HexagonalDream\Application\Handler\CreateTeamHandler;
 use HexagonalDream\Application\Handler\DeleteTeamHandler;
 use HexagonalDream\Application\Repository\MatchRepository;
+use HexagonalDream\Application\Repository\PitchRepository;
 use HexagonalDream\Application\Repository\RankingRepository;
 use HexagonalDream\Application\Repository\SeasonRepository;
 use HexagonalDream\Application\Repository\TeamRepository;
 use HexagonalDream\Infrastructure\API\Controller\MatchQueryController;
+use HexagonalDream\Infrastructure\API\Controller\PitchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalDream\Infrastructure\API\Controller\TeamActionController;
 use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
@@ -48,6 +50,9 @@ $container['application.repository.season'] = function() use ($container) {
 $container['application.repository.ranking'] = function() use ($container) {
     return new RankingRepository($container['readDbAdapter']);
 };
+$container['application.repository.pitch'] = function() use ($container) {
+    return new PitchRepository($container['readDbAdapter']);
+};
 $container['application.repository.match'] = function() use ($container) {
     return new MatchRepository($container['readDbAdapter']);
 };
@@ -72,6 +77,9 @@ $container['infrastructure.persistence.doctrineObjectPersistence'] = function() 
 };
 $container['infrastructure.api.controller.MatchQueryController'] = function() use ($container) {
     return new MatchQueryController($container['application.repository.match']);
+};
+$container['infrastructure.api.controller.PitchQueryController'] = function() use ($container) {
+    return new PitchQueryController($container['application.repository.pitch']);
 };
 $container['infrastructure.api.controller.SeasonQueryController'] = function() use ($container) {
     return new SeasonQueryController(

@@ -9,6 +9,7 @@
 namespace HexagonalDream\Infrastructure\API;
 
 use HexagonalDream\Infrastructure\API\Controller\MatchQueryController;
+use HexagonalDream\Infrastructure\API\Controller\PitchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalDream\Infrastructure\API\Controller\TeamActionController;
 use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
@@ -68,6 +69,16 @@ class RouteProvider
             /** @var MatchQueryController $controller */
             $controller = $container['infrastructure.api.controller.MatchQueryController'];
             return $controller->findMatchById($args['id']);
+        });
+        $app->get('/pitch/', function () use ($container) {
+            /** @var PitchQueryController $controller */
+            $controller = $container['infrastructure.api.controller.PitchQueryController'];
+            return $controller->findAllPitches();
+        });
+        $app->get('/pitch/{id}', function ($request, $response, $args) use ($container) {
+            /** @var PitchQueryController $controller */
+            $controller = $container['infrastructure.api.controller.PitchQueryController'];
+            return $controller->findPitchById($args['id']);
         });
     }
 }
