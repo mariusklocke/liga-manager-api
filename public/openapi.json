@@ -259,6 +259,30 @@
             "description": "Deletion successful"
           }
         }
+      },
+      "get": {
+        "tags": ["find"],
+        "summary": "Finds a single season",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of season",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Contains a single season object"
+          },
+          "404": {
+            "description": "Season could not be found"
+          }
+        }
       }
     },
     "/match/{id}": {
