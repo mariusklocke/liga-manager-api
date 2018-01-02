@@ -5,7 +5,6 @@ namespace HexagonalDream\Application\Handler;
 use HexagonalDream\Application\Command\CreateMatchDaysCommand;
 use HexagonalDream\Application\Exception\NotFoundException;
 use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\Exception\MatchMakingException;
 use HexagonalDream\Domain\Match;
 use HexagonalDream\Domain\MatchFactory;
 use HexagonalDream\Domain\Season;
@@ -26,7 +25,6 @@ class CreateMatchDaysHandler
     /**
      * @param CreateMatchDaysCommand $command
      * @return Match[]
-     * @throws MatchMakingException
      */
     public function handle(CreateMatchDaysCommand $command)
     {
