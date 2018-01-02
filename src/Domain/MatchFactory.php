@@ -57,8 +57,8 @@ class MatchFactory extends EntityFactory
     }
 
     /**
-     * @param array $matches
-     * @param int   $matchDay
+     * @param Match[] $matches
+     * @param int     $matchDay
      * @return Match[]
      */
     private function generateRematches(array $matches, int $matchDay) : array
