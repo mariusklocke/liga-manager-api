@@ -3,8 +3,6 @@
 namespace HexagonalDream\Domain;
 
 use DateTimeImmutable;
-use HexagonalDream\Domain\Exception\MatchSchedulingException;
-use HexagonalDream\Domain\Exception\TeamDidNotParticipateException;
 
 class Match
 {
@@ -66,13 +64,13 @@ class Match
     /**
      * @param DateTimeImmutable $kickoff
      * @return Match
-     * @throws MatchSchedulingException
+     * @throws DomainException If the given kickoff date lies in the past
      */
     public function schedule(DateTimeImmutable $kickoff) : Match
     {
         $now = new DateTimeImmutable();
         if ($kickoff < $now) {
-            throw new MatchSchedulingException('Cannot schedule matches in the past');
+            throw new DomainException('Cannot schedule matches in the past');
         }
         $this->kickoff = $kickoff;
         return $this;
@@ -130,7 +128,7 @@ class Match
     /**
      * @param Team $team
      * @return int
-     * @throws TeamDidNotParticipateException
+     * @throws DomainException If given team did not participate in match
      */
     public function getScoredGoalsBy(Team $team) : int
     {
@@ -141,13 +139,13 @@ class Match
             return $this->matchResult->getGuestScore();
         }
 
-        throw new TeamDidNotParticipateException();
+        throw $this->teamDidNotParticipateException($team->getId());
     }
 
     /**
      * @param Team $team
      * @return int
-     * @throws TeamDidNotParticipateException
+     * @throws DomainException If given team did not participate in match
      */
     public function getConcededGoalsBy(Team $team) : int
     {
@@ -158,9 +156,12 @@ class Match
             return $this->matchResult->getHomeScore();
         }
 
-        throw new TeamDidNotParticipateException();
+        throw $this->teamDidNotParticipateException($team->getId());
     }
 
+    /**
+     * @return string
+     */
     public function toString() : string
     {
         return sprintf('%s - %s', $this->homeTeam->getName(), $this->guestTeam->getName());
@@ -184,5 +185,14 @@ class Match
         $clone->homeTeam = $this->guestTeam;
         $clone->guestTeam = $this->homeTeam;
         return $clone;
+    }
+
+    /**
+     * @param string $teamId
+     * @return DomainException
+     */
+    private function teamDidNotParticipateException(string $teamId)
+    {
+        return new DomainException(sprintf('Team %s did not participate in match %s', $teamId, $this->id));
     }
 }

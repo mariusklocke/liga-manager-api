@@ -3,8 +3,6 @@
 namespace HexagonalDream\Domain;
 
 use DateTimeImmutable;
-use HexagonalDream\Domain\Exception\UnrankedTeamException;
-use HexagonalDream\Domain\Exception\TeamDidNotParticipateException;
 
 class Ranking
 {
@@ -28,14 +26,13 @@ class Ranking
 
     /**
      * @param Match $match
-     * @throws TeamDidNotParticipateException
-     * @throws UnrankedTeamException
+     * @throws DomainException If team is not ranked or has not participated in given match
      */
     public function addResult(Match $match)
     {
         foreach ([$match->getHomeTeam(), $match->getGuestTeam()] as $team) {
             if (!isset($this->positions[$team->getId()])) {
-                throw new UnrankedTeamException();
+                throw new DomainException(sprintf('Team "%s" is not ranked', $team->getId()));
             }
             $this->positions[$team->getId()]->addResult($match->getScoredGoalsBy($team), $match->getConcededGoalsBy($team));
         }
