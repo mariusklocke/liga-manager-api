@@ -126,40 +126,6 @@ class Match
     }
 
     /**
-     * @param Team $team
-     * @return int
-     * @throws DomainException If given team did not participate in match
-     */
-    public function getScoredGoalsBy(Team $team) : int
-    {
-        if ($team->equals($this->homeTeam)) {
-            return $this->matchResult->getHomeScore();
-        }
-        if ($team->equals($this->guestTeam)) {
-            return $this->matchResult->getGuestScore();
-        }
-
-        throw $this->teamDidNotParticipateException($team->getId());
-    }
-
-    /**
-     * @param Team $team
-     * @return int
-     * @throws DomainException If given team did not participate in match
-     */
-    public function getConcededGoalsBy(Team $team) : int
-    {
-        if ($team->equals($this->homeTeam)) {
-            return $this->matchResult->getGuestScore();
-        }
-        if ($team->equals($this->guestTeam)) {
-            return $this->matchResult->getHomeScore();
-        }
-
-        throw $this->teamDidNotParticipateException($team->getId());
-    }
-
-    /**
      * @return string
      */
     public function toString() : string
@@ -185,14 +151,5 @@ class Match
         $clone->homeTeam = $this->guestTeam;
         $clone->guestTeam = $this->homeTeam;
         return $clone;
-    }
-
-    /**
-     * @param string $teamId
-     * @return DomainException
-     */
-    private function teamDidNotParticipateException(string $teamId)
-    {
-        return new DomainException(sprintf('Team %s did not participate in match %s', $teamId, $this->id));
     }
 }

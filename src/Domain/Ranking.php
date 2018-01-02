@@ -12,7 +12,7 @@ class Ranking
     /** @var DateTimeImmutable */
     private $updatedAt;
 
-    /** @var CollectionInterface */
+    /** @var CollectionInterface|RankingPosition[] */
     private $positions;
 
     public function __construct(Season $season, callable $collectionFactory)
@@ -25,18 +25,21 @@ class Ranking
     }
 
     /**
-     * @param Match $match
-     * @throws DomainException If team is not ranked or has not participated in given match
+     * @param string $homeTeamId
+     * @param string $guestTeamId
+     * @param MatchResult $matchResult
+     * @throws DomainException If a given team id does not have a ranking
      */
-    public function addResult(Match $match)
+    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult)
     {
-        foreach ([$match->getHomeTeam(), $match->getGuestTeam()] as $team) {
-            if (!isset($this->positions[$team->getId()])) {
-                throw new DomainException(sprintf('Team "%s" is not ranked', $team->getId()));
-            }
-            $this->positions[$team->getId()]->addResult($match->getScoredGoalsBy($team), $match->getConcededGoalsBy($team));
+        if (!isset($this->positions[$homeTeamId])) {
+            throw new DomainException(sprintf('Home Team "%s" is not ranked', $homeTeamId));
         }
-
+        if (!isset($this->positions[$guestTeamId])) {
+            throw new DomainException(sprintf('Guest Team "%s" is not ranked', $guestTeamId));
+        }
+        $this->positions[$homeTeamId]->addResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
+        $this->positions[$guestTeamId]->addResult($matchResult->getGuestScore(), $matchResult->getHomeScore());
         $this->reorder();
     }
 
