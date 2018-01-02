@@ -41,6 +41,14 @@ $container['application.handler.CreateTeamHandler'] = function () use ($containe
 $container['application.handler.DeleteTeamHandler'] = function() use ($container) {
     return new DeleteTeamHandler($container['infrastructure.persistence.doctrineObjectPersistence']);
 };
+$container['application.handler.StartSeasonHandler'] = function() use ($container) {
+    return new \HexagonalDream\Application\Handler\StartSeasonHandler(
+        $container['infrastructure.persistence.doctrineObjectPersistence'],
+        function() {
+            return new \Doctrine\Common\Collections\ArrayCollection();
+        }
+    );
+};
 $container['application.repository.team'] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
 };

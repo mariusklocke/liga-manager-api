@@ -51,4 +51,27 @@ class Season
     {
         return $this->teams->toArray();
     }
+
+    public function hasStarted() : bool
+    {
+        return ($this->ranking !== null);
+    }
+
+    public function hasMatches() : bool
+    {
+        return count($this->matches) > 0;
+    }
+
+    public function start(callable $collectionFactory)
+    {
+        if ($this->hasStarted()) {
+            return false;
+        }
+        if (!$this->hasMatches()) {
+            return false;
+        }
+
+        $this->ranking = new Ranking($this, $collectionFactory);
+        return true;
+    }
 }
