@@ -4,10 +4,14 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalDream\Application\Command\CreateTeamCommand;
+use HexagonalDream\Application\Command\DeleteTeamCommand;
+use HexagonalDream\Application\Command\StartSeasonCommand;
 use HexagonalDream\Application\FixtureGenerator;
 use HexagonalDream\Application\FixtureLoader;
 use HexagonalDream\Application\Handler\CreateTeamHandler;
 use HexagonalDream\Application\Handler\DeleteTeamHandler;
+use HexagonalDream\Application\Handler\StartSeasonHandler;
 use HexagonalDream\Application\Repository\MatchRepository;
 use HexagonalDream\Application\Repository\PitchRepository;
 use HexagonalDream\Application\Repository\RankingRepository;
@@ -23,45 +27,43 @@ use HexagonalDream\Infrastructure\Persistence\SqliteReadDbAdapter;
 use HexagonalDream\Infrastructure\Persistence\UuidGenerator;
 
 $container = new \Slim\Container([]);
-$container['application.fixtureLoader'] = function() use ($container) {
+
+$container[FixtureLoader::class] = function() use ($container) {
     return new FixtureLoader(
-        $container['infrastructure.persistence.doctrineObjectPersistence'],
-        $container['application.fixtureGenerator']
+        $container['objectPersistence'],
+        new FixtureGenerator($container['uuidGenerator'])
     );
 };
-$container['application.fixtureGenerator'] = function() use ($container) {
-    return new FixtureGenerator($container['infrastructure.persistence.uuidGenerator']);
-};
-$container['application.handler.CreateTeamHandler'] = function () use ($container) {
+$container[CreateTeamCommand::class] = function () use ($container) {
     return new CreateTeamHandler(
-        $container['infrastructure.persistence.doctrineObjectPersistence'],
-        $container['infrastructure.persistence.uuidGenerator']
+        $container['objectPersistence'],
+        $container['uuidGenerator']
     );
 };
-$container['application.handler.DeleteTeamHandler'] = function() use ($container) {
-    return new DeleteTeamHandler($container['infrastructure.persistence.doctrineObjectPersistence']);
+$container[DeleteTeamCommand::class] = function() use ($container) {
+    return new DeleteTeamHandler($container['objectPersistence']);
 };
-$container['application.handler.StartSeasonHandler'] = function() use ($container) {
-    return new \HexagonalDream\Application\Handler\StartSeasonHandler(
-        $container['infrastructure.persistence.doctrineObjectPersistence'],
+$container[StartSeasonCommand::class] = function() use ($container) {
+    return new StartSeasonHandler(
+        $container['objectPersistence'],
         function() {
             return new \Doctrine\Common\Collections\ArrayCollection();
         }
     );
 };
-$container['application.repository.team'] = function() use ($container) {
+$container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
 };
-$container['application.repository.season'] = function() use ($container) {
+$container[SeasonRepository::class] = function() use ($container) {
     return new SeasonRepository($container['readDbAdapter']);
 };
-$container['application.repository.ranking'] = function() use ($container) {
+$container[RankingRepository::class] = function() use ($container) {
     return new RankingRepository($container['readDbAdapter']);
 };
-$container['application.repository.pitch'] = function() use ($container) {
+$container[PitchRepository::class] = function() use ($container) {
     return new PitchRepository($container['readDbAdapter']);
 };
-$container['application.repository.match'] = function() use ($container) {
+$container[MatchRepository::class] = function() use ($container) {
     return new MatchRepository($container['readDbAdapter']);
 };
 $container['doctrine.entityManager'] = function() use ($container) {
@@ -77,32 +79,32 @@ $container['doctrine.config'] = function() {
     $config->setMetadataDriverImpl($driver);
     return $config;
 };
-$container['infrastructure.persistence.uuidGenerator'] = function() {
+$container['uuidGenerator'] = function() {
     return new UuidGenerator();
 };
-$container['infrastructure.persistence.doctrineObjectPersistence'] = function() use ($container) {
+$container['objectPersistence'] = function() use ($container) {
     return new DoctrineObjectPersistence($container['doctrine.entityManager']);
 };
-$container['infrastructure.api.controller.MatchQueryController'] = function() use ($container) {
-    return new MatchQueryController($container['application.repository.match']);
+$container[MatchQueryController::class] = function() use ($container) {
+    return new MatchQueryController($container[MatchRepository::class]);
 };
-$container['infrastructure.api.controller.PitchQueryController'] = function() use ($container) {
-    return new PitchQueryController($container['application.repository.pitch']);
+$container[PitchQueryController::class] = function() use ($container) {
+    return new PitchQueryController($container[PitchRepository::class]);
 };
-$container['infrastructure.api.controller.SeasonQueryController'] = function() use ($container) {
+$container[SeasonQueryController::class] = function() use ($container) {
     return new SeasonQueryController(
-        $container['application.repository.season'],
-        $container['application.repository.ranking'],
-        $container['application.repository.match']
+        $container[SeasonRepository::class],
+        $container[RankingRepository::class],
+        $container[MatchRepository::class]
     );
 };
-$container['infrastructure.api.controller.TeamQueryController'] = function() use ($container) {
-    return new TeamQueryController($container['application.repository.team']);
+$container[TeamQueryController::class] = function() use ($container) {
+    return new TeamQueryController($container[TeamRepository::class]);
 };
-$container['infrastructure.api.controller.TeamActionController'] = function () use ($container) {
+$container[TeamActionController::class] = function () use ($container) {
     return new TeamActionController(
-        $container['application.handler.CreateTeamHandler'],
-        $container['application.handler.DeleteTeamHandler']
+        $container[CreateTeamCommand::class],
+        $container[DeleteTeamCommand::class]
     );
 };
 $container['pdo'] = function() {

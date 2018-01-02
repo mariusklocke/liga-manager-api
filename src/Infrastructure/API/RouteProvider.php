@@ -22,62 +22,62 @@ class RouteProvider
         $container = $app->getContainer();
         $app->get('/team/', function () use ($container) {
             /** @var TeamQueryController $controller */
-            $controller = $container['infrastructure.api.controller.TeamQueryController'];
+            $controller = $container[TeamQueryController::class];
             return $controller->findAllTeams();
         });
         $app->get('/team/{id}', function ($request, $response, $args) use ($container) {
             /** @var TeamQueryController $controller */
-            $controller = $container['infrastructure.api.controller.TeamQueryController'];
+            $controller = $container[TeamQueryController::class];
             return $controller->findTeamById($args['id']);
         });
         $app->get('/season/{id}/team/', function ($request, $response, $args) use ($container) {
             /** @var TeamQueryController $controller */
-            $controller = $container['infrastructure.api.controller.TeamQueryController'];
+            $controller = $container[TeamQueryController::class];
             return $controller->findTeamsBySeasonId($args['id']);
         });
         $app->post('/team/', function ($request) use ($container) {
             /** @var TeamActionController $controller */
-            $controller = $container['infrastructure.api.controller.TeamActionController'];
+            $controller = $container[TeamActionController::class];
             return $controller->create($request);
         });
         $app->delete('/team/{id}', function ($request, $response, $args) use ($container) {
             /** @var TeamActionController $controller */
-            $controller = $container['infrastructure.api.controller.TeamActionController'];
+            $controller = $container[TeamActionController::class];
             return $controller->delete($args['id']);
         });
         $app->get('/season/', function () use ($container) {
             /** @var SeasonQueryController $controller */
-            $controller = $container['infrastructure.api.controller.SeasonQueryController'];
+            $controller = $container[SeasonQueryController::class];
             return $controller->findAllSeasons();
         });
         $app->get('/season/{id}', function ($request, $response, $args) use ($container) {
             /** @var SeasonQueryController $controller */
-            $controller = $container['infrastructure.api.controller.SeasonQueryController'];
+            $controller = $container[SeasonQueryController::class];
             return $controller->findSeasonById($args['id']);
         });
         $app->get('/season/{id}/ranking/', function ($request, $response, $args) use ($container) {
             /** @var SeasonQueryController $controller */
-            $controller = $container['infrastructure.api.controller.SeasonQueryController'];
+            $controller = $container[SeasonQueryController::class];
             return $controller->findRanking($args['id']);
         });
         $app->get('/season/{seasonId}/matches/{matchDay}', function ($request, $response, $args) use ($container) {
             /** @var MatchQueryController $controller */
-            $controller = $container['infrastructure.api.controller.MatchQueryController'];
+            $controller = $container[MatchQueryController::class];
             return $controller->findMatches($args['seasonId'], (int)$args['matchDay']);
         });
         $app->get('/match/{id}', function ($request, $response, $args) use ($container) {
             /** @var MatchQueryController $controller */
-            $controller = $container['infrastructure.api.controller.MatchQueryController'];
+            $controller = $container[MatchQueryController::class];
             return $controller->findMatchById($args['id']);
         });
         $app->get('/pitch/', function () use ($container) {
             /** @var PitchQueryController $controller */
-            $controller = $container['infrastructure.api.controller.PitchQueryController'];
+            $controller = $container[PitchQueryController::class];
             return $controller->findAllPitches();
         });
         $app->get('/pitch/{id}', function ($request, $response, $args) use ($container) {
             /** @var PitchQueryController $controller */
-            $controller = $container['infrastructure.api.controller.PitchQueryController'];
+            $controller = $container[PitchQueryController::class];
             return $controller->findPitchById($args['id']);
         });
     }
