@@ -20,7 +20,7 @@ class RouteProvider
     public function registerRoutes(App $app)
     {
         $container = $app->getContainer();
-        $app->get('/team/', function () use ($container) {
+        $app->get('/team', function () use ($container) {
             /** @var TeamQueryController $controller */
             $controller = $container[TeamQueryController::class];
             return $controller->findAllTeams();
@@ -30,12 +30,12 @@ class RouteProvider
             $controller = $container[TeamQueryController::class];
             return $controller->findTeamById($args['id']);
         });
-        $app->get('/season/{id}/team/', function ($request, $response, $args) use ($container) {
+        $app->get('/season/{id}/team', function ($request, $response, $args) use ($container) {
             /** @var TeamQueryController $controller */
             $controller = $container[TeamQueryController::class];
             return $controller->findTeamsBySeasonId($args['id']);
         });
-        $app->post('/team/', function ($request) use ($container) {
+        $app->post('/team', function ($request) use ($container) {
             /** @var TeamActionController $controller */
             $controller = $container[TeamActionController::class];
             return $controller->create($request);
@@ -45,7 +45,7 @@ class RouteProvider
             $controller = $container[TeamActionController::class];
             return $controller->delete($args['id']);
         });
-        $app->get('/season/', function () use ($container) {
+        $app->get('/season', function () use ($container) {
             /** @var SeasonQueryController $controller */
             $controller = $container[SeasonQueryController::class];
             return $controller->findAllSeasons();
@@ -55,7 +55,7 @@ class RouteProvider
             $controller = $container[SeasonQueryController::class];
             return $controller->findSeasonById($args['id']);
         });
-        $app->get('/season/{id}/ranking/', function ($request, $response, $args) use ($container) {
+        $app->get('/season/{id}/ranking', function ($request, $response, $args) use ($container) {
             /** @var SeasonQueryController $controller */
             $controller = $container[SeasonQueryController::class];
             return $controller->findRanking($args['id']);
@@ -70,7 +70,7 @@ class RouteProvider
             $controller = $container[MatchQueryController::class];
             return $controller->findMatchById($args['id']);
         });
-        $app->get('/pitch/', function () use ($container) {
+        $app->get('/pitch', function () use ($container) {
             /** @var PitchQueryController $controller */
             $controller = $container[PitchQueryController::class];
             return $controller->findAllPitches();

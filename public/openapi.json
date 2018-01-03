@@ -28,7 +28,7 @@
     }
   ],
   "paths": {
-    "/team/": {
+    "/team": {
       "get": {
         "tags": [
           "find"
@@ -65,8 +65,7 @@
             "description": "ID of team",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -88,8 +87,7 @@
             "description": "ID of team",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -113,8 +111,7 @@
             "description": "ID of team",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -128,7 +125,7 @@
         }
       }
     },
-    "/season/": {
+    "/season": {
       "get": {
         "tags": [
           "find"
@@ -152,7 +149,7 @@
         }
       }
     },
-    "/season/{id}/team/": {
+    "/season/{id}/team": {
       "get": {
         "tags": [
           "find"
@@ -165,8 +162,7 @@
             "description": "ID of season",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -177,7 +173,7 @@
         }
       }
     },
-    "/season/{id}/ranking/": {
+    "/season/{id}/ranking": {
       "get": {
         "tags": [
           "find"
@@ -190,8 +186,7 @@
             "description": "ID of season",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -215,8 +210,7 @@
             "description": "ID of season",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           },
           {
@@ -249,8 +243,7 @@
             "description": "ID of season",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -270,8 +263,7 @@
             "description": "ID of season",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -298,8 +290,7 @@
             "description": "match id",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -313,7 +304,7 @@
         }
       }
     },
-    "/match/{id}/result/": {
+    "/match/{id}/result": {
       "post": {
         "tags": [
           "others"
@@ -326,8 +317,7 @@
             "description": "match id",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -338,7 +328,7 @@
         }
       }
     },
-    "/match/{id}/cancel/": {
+    "/match/{id}/cancellation": {
       "post": {
         "tags": [
           "others"
@@ -351,8 +341,7 @@
             "description": "match id",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -363,7 +352,7 @@
         }
       }
     },
-    "/match/{id}/schedule/": {
+    "/match/{id}/kickoff": {
       "post": {
         "tags": [
           "others"
@@ -376,8 +365,7 @@
             "description": "match id",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -388,7 +376,7 @@
         }
       }
     },
-    "/match/{id}/locate/": {
+    "/match/{id}/location": {
       "post": {
         "tags": [
           "others"
@@ -401,8 +389,7 @@
             "description": "match id",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -413,7 +400,7 @@
         }
       }
     },
-    "/pitch/": {
+    "/pitch": {
       "get": {
         "tags": [
           "find"
@@ -450,8 +437,7 @@
             "description": "pitch id",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
@@ -476,8 +462,7 @@
             "description": "pitch id",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "string"
             }
           }
         ],
