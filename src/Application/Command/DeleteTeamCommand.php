@@ -9,7 +9,7 @@
 namespace HexagonalDream\Application\Command;
 
 
-class DeleteTeamCommand
+class DeleteTeamCommand implements CommandInterface
 {
     /** @var string */
     private $teamId;

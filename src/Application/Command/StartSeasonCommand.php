@@ -8,7 +8,7 @@
 
 namespace HexagonalDream\Application\Command;
 
-class StartSeasonCommand
+class StartSeasonCommand implements CommandInterface
 {
     /** @var string */
     private $seasonId;

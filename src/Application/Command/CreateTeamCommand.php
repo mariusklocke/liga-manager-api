@@ -2,7 +2,7 @@
 
 namespace HexagonalDream\Application\Command;
 
-class CreateTeamCommand
+class CreateTeamCommand implements CommandInterface
 {
     /** @var string */
     private $teamName;

@@ -4,7 +4,7 @@ namespace HexagonalDream\Application\Command;
 
 use DateTimeImmutable;
 
-class ScheduleMatchCommand
+class ScheduleMatchCommand implements CommandInterface
 {
     /** @var string */
     private $matchId;

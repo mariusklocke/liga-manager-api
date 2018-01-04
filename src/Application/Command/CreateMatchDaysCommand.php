@@ -2,7 +2,7 @@
 
 namespace HexagonalDream\Application\Command;
 
-class CreateMatchDaysCommand
+class CreateMatchDaysCommand implements CommandInterface
 {
     /** @var string */
     private $seasonId;

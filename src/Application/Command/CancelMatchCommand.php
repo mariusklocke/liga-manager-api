@@ -2,7 +2,7 @@
 
 namespace HexagonalDream\Application\Command;
 
-class CancelMatchCommand
+class CancelMatchCommand implements CommandInterface
 {
     /** @var string */
     private $matchId;
