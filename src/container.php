@@ -7,6 +7,7 @@ use Doctrine\ORM\Tools\Setup;
 use HexagonalDream\Application\Command\CreateTeamCommand;
 use HexagonalDream\Application\Command\DeleteTeamCommand;
 use HexagonalDream\Application\Command\StartSeasonCommand;
+use HexagonalDream\Application\CommandBus;
 use HexagonalDream\Application\FixtureGenerator;
 use HexagonalDream\Application\FixtureLoader;
 use HexagonalDream\Application\Handler\CreateTeamHandler;
@@ -22,6 +23,9 @@ use HexagonalDream\Infrastructure\API\Controller\PitchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalDream\Infrastructure\API\Controller\TeamActionController;
 use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
+use HexagonalDream\Infrastructure\API\InternalErrorHandler;
+use HexagonalDream\Infrastructure\API\MethodNotAllowedHandler;
+use HexagonalDream\Infrastructure\API\NotFoundErrorHandler;
 use HexagonalDream\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalDream\Infrastructure\Persistence\SqliteReadDbAdapter;
 use HexagonalDream\Infrastructure\Persistence\UuidGenerator;
@@ -102,10 +106,7 @@ $container[TeamQueryController::class] = function() use ($container) {
     return new TeamQueryController($container[TeamRepository::class]);
 };
 $container[TeamActionController::class] = function () use ($container) {
-    return new TeamActionController(
-        $container[CreateTeamCommand::class],
-        $container[DeleteTeamCommand::class]
-    );
+    return new TeamActionController($container['commandBus']);
 };
 $container['pdo'] = function() {
     return new PDO('sqlite:' . __DIR__ . '/../data/db.sqlite');
@@ -115,6 +116,18 @@ $container['sqlite'] = function () {
 };
 $container['readDbAdapter'] = function() use ($container) {
     return new SqliteReadDbAdapter($container['sqlite']);
+};
+$container['commandBus'] = function() use ($container) {
+    return new CommandBus($container);
+};
+$container['notAllowedHandler'] = function() use ($container) {
+    return new MethodNotAllowedHandler();
+};
+$container['notFoundHandler'] = function() use ($container) {
+    return new NotFoundErrorHandler();
+};
+$container['errorHandler'] = $container['phpErrorHandler'] = function() use ($container) {
+    return new InternalErrorHandler(true);
 };
 
 return $container;

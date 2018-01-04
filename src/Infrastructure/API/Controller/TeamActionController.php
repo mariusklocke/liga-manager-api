@@ -10,28 +10,22 @@ namespace HexagonalDream\Infrastructure\API\Controller;
 
 use HexagonalDream\Application\Command\CreateTeamCommand;
 use HexagonalDream\Application\Command\DeleteTeamCommand;
+use HexagonalDream\Application\CommandBus;
 use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Application\Handler\CreateTeamHandler;
-use HexagonalDream\Application\Handler\DeleteTeamHandler;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class TeamActionController
 {
-    /** @var CreateTeamHandler */
-    private $createTeamHandler;
-
-    /** @var DeleteTeamHandler */
-    private $deleteTeamHandler;
+    /** @var CommandBus */
+    private $commandBus;
 
     /**
-     * @param CreateTeamHandler $createTeamHandler
-     * @param DeleteTeamHandler $deleteTeamHandler
+     * @param CommandBus $commandBus
      */
-    public function __construct(CreateTeamHandler $createTeamHandler, DeleteTeamHandler $deleteTeamHandler)
+    public function __construct(CommandBus $commandBus)
     {
-        $this->createTeamHandler = $createTeamHandler;
-        $this->deleteTeamHandler = $deleteTeamHandler;
+        $this->commandBus = $commandBus;
     }
 
     /**
@@ -41,7 +35,7 @@ class TeamActionController
     public function delete(string $teamId)
     {
         try {
-            $this->deleteTeamHandler->handle(new DeleteTeamCommand($teamId));
+            $this->commandBus->execute(new DeleteTeamCommand($teamId));
         } catch (NotFoundException $e) {
             return new Response(404);
         };
@@ -59,7 +53,7 @@ class TeamActionController
         if (!is_string($teamName) || strlen($teamName) === 0 || strlen($teamName) > 255) {
             return new Response(400);
         }
-        $this->createTeamHandler->handle(new CreateTeamCommand($teamName));
+        $this->commandBus->execute(new CreateTeamCommand($teamName));
         return new Response(204);
     }
 
