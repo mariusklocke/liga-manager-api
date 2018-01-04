@@ -2,9 +2,13 @@
 
 namespace HexagonalDream\Infrastructure\Persistence;
 
-use Doctrine\DBAL\LockMode;
+use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\ORMException;
+use Exception;
+use HexagonalDream\Application\Exception\NotFoundException;
 use HexagonalDream\Application\ObjectPersistenceInterface;
+use Throwable;
 
 class DoctrineObjectPersistence implements ObjectPersistenceInterface
 {
@@ -18,16 +22,27 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
 
     /**
      * @param string $class
-     * @param mixed  $id
+     * @param mixed $id
      * @param bool $lock
-     * @return null|object
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @return object
+     * @throws DoctrineException
+     * @throws NotFoundException
      */
     public function find(string $class, $id, $lock = false)
     {
-        $lockMode = $lock ? LockMode::PESSIMISTIC_WRITE : LockMode::NONE;
-        return $this->entityManager->find($class, $id, $lockMode);
+        try {
+            $object = $this->entityManager->find($class, $id);
+        } catch (ORMException $e) {
+            throw $this->wrapDoctrineException($e);
+        } catch (DBALException $e) {
+            throw $this->wrapDoctrineException($e);
+        }
+
+        if (!is_object($object)) {
+            throw new NotFoundException(sprintf('Cannot find entity "%s" with ID "%s"', $class, $id));
+        }
+
+        return $object;
     }
 
     /**
@@ -35,10 +50,17 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
      *
      * @param object $entity
      * @return void
+     * @throws DoctrineException
      */
     public function persist($entity)
     {
-        $this->entityManager->persist($entity);
+        try {
+            $this->entityManager->persist($entity);
+        } catch (ORMException $e) {
+            throw $this->wrapDoctrineException($e);
+        } catch (DBALException $e) {
+            throw $this->wrapDoctrineException($e);
+        }
     }
 
     /**
@@ -46,10 +68,17 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
      *
      * @param object $entity
      * @return void
+     * @throws DoctrineException
      */
     public function remove($entity)
     {
-        $this->entityManager->remove($entity);
+        try {
+            $this->entityManager->remove($entity);
+        } catch (ORMException $e) {
+            throw $this->wrapDoctrineException($e);
+        } catch (DBALException $e) {
+            throw $this->wrapDoctrineException($e);
+        }
     }
 
     /**
@@ -59,10 +88,26 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
      *
      * @param callable $callable
      * @return mixed
-     * @throws \Exception
+     * @throws Throwable
+     * @throws DoctrineException
      */
     public function transactional(callable $callable)
     {
-        return $this->entityManager->transactional($callable);
+        try {
+            return $this->entityManager->transactional($callable);
+        } catch (ORMException $e) {
+            throw $this->wrapDoctrineException($e);
+        } catch (DBALException $e) {
+            throw $this->wrapDoctrineException($e);
+        }
+    }
+
+    /**
+     * @param Exception $e
+     * @return DoctrineException
+     */
+    private function wrapDoctrineException(Exception $e)
+    {
+        return new DoctrineException("EntityManager threw unexpected Exception. See previous exception", 0, $e);
     }
 }

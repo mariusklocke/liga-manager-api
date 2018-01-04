@@ -4,6 +4,7 @@ namespace HexagonalDream\Application\Handler;
 
 use HexagonalDream\Application\Command\ScheduleMatchCommand;
 use HexagonalDream\Application\Exception\NotFoundException;
+use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
 use HexagonalDream\Application\ObjectPersistenceInterface;
 use HexagonalDream\Domain\Match;
 
@@ -20,16 +21,13 @@ class ScheduleMatchHandler
     /**
      * @param ScheduleMatchCommand $command
      * @throws NotFoundException
+     * @throws PersistenceExceptionInterface
      */
     public function handle(ScheduleMatchCommand $command)
     {
-        $match = $this->persistence->find(Match::class, $command->getMatchId());
-        if (!$match instanceof Match) {
-            throw new NotFoundException('Could not find match with ID "' . $command->getMatchId() .  '"');
-        }
-        $kickoff = $command->getKickoff();
-        $this->persistence->transactional(function() use ($match, $kickoff) {
-            $match->schedule($kickoff);
+        $this->persistence->transactional(function() use ($command) {
+            $match = $this->persistence->find(Match::class, $command->getMatchId());
+            $match->schedule($command->getKickoff());
         });
     }
 }

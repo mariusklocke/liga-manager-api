@@ -4,6 +4,7 @@ namespace HexagonalDream\Application\Handler;
 
 use HexagonalDream\Application\Command\CancelMatchCommand;
 use HexagonalDream\Application\Exception\NotFoundException;
+use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
 use HexagonalDream\Application\ObjectPersistenceInterface;
 use HexagonalDream\Domain\Match;
 
@@ -20,14 +21,12 @@ class CancelMatchHandler
     /**
      * @param CancelMatchCommand $command
      * @throws NotFoundException
+     * @throws PersistenceExceptionInterface
      */
     public function handle(CancelMatchCommand $command)
     {
-        $match = $this->persistence->find(Match::class, $command->getMatchId());
-        if (!$match instanceof Match) {
-            throw new NotFoundException('Could not find match with ID "' . $command->getMatchId() .  '"');
-        }
-        $this->persistence->transactional(function() use ($match) {
+        $this->persistence->transactional(function() use ($command) {
+            $match = $this->persistence->find(Match::class, $command->getMatchId());
             $match->cancel();
         });
     }

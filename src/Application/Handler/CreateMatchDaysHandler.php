@@ -4,6 +4,7 @@ namespace HexagonalDream\Application\Handler;
 
 use HexagonalDream\Application\Command\CreateMatchDaysCommand;
 use HexagonalDream\Application\Exception\NotFoundException;
+use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
 use HexagonalDream\Application\ObjectPersistenceInterface;
 use HexagonalDream\Domain\Match;
 use HexagonalDream\Domain\MatchFactory;
@@ -25,15 +26,14 @@ class CreateMatchDaysHandler
     /**
      * @param CreateMatchDaysCommand $command
      * @return Match[]
+     * @throws PersistenceExceptionInterface
+     * @throws NotFoundException
      */
     public function handle(CreateMatchDaysCommand $command)
     {
         return $this->persistence->transactional(function() use ($command) {
+            /** @var Season $season */
             $season = $this->persistence->find(Season::class, $command->getSeasonId());
-            if (!($season instanceof Season)) {
-                throw new NotFoundException();
-            }
-
             $matches = $this->matchFactory->createMatchesForSeason($season);
             foreach ($matches as $match) {
                 $this->persistence->persist($match);

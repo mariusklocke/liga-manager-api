@@ -9,7 +9,6 @@
 namespace HexagonalDream\Application\Handler;
 
 use HexagonalDream\Application\Command\StartSeasonCommand;
-use HexagonalDream\Application\Exception\NotFoundException;
 use HexagonalDream\Application\ObjectPersistenceInterface;
 use HexagonalDream\Domain\Season;
 
@@ -31,10 +30,6 @@ class StartSeasonHandler
     {
         $this->persistence->transactional(function() use ($command) {
             $season = $this->persistence->find(Season::class, $command->getSeasonId());
-            if (!$season instanceof Season) {
-                throw new NotFoundException();
-            }
-
             $season->start($this->collectionFactory);
             $this->persistence->persist($season);
         });
