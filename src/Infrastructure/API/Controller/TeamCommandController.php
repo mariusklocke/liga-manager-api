@@ -1,6 +1,6 @@
 <?php
 /**
- * TeamActionController.php
+ * TeamCommandController.php
  *
  * @author    Marius Klocke <marius.klocke@eventim.de>
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
@@ -10,29 +10,17 @@ namespace HexagonalDream\Infrastructure\API\Controller;
 
 use HexagonalDream\Application\Command\CreateTeamCommand;
 use HexagonalDream\Application\Command\DeleteTeamCommand;
-use HexagonalDream\Application\CommandBus;
 use HexagonalDream\Application\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-class TeamActionController
+class TeamCommandController extends CommandController
 {
-    /** @var CommandBus */
-    private $commandBus;
-
-    /**
-     * @param CommandBus $commandBus
-     */
-    public function __construct(CommandBus $commandBus)
-    {
-        $this->commandBus = $commandBus;
-    }
-
     /**
      * @param string $teamId
      * @return Response
      */
-    public function delete(string $teamId)
+    public function delete(string $teamId) : Response
     {
         try {
             $this->commandBus->execute(new DeleteTeamCommand($teamId));
@@ -47,7 +35,7 @@ class TeamActionController
      * @param Request $request
      * @return Response
      */
-    public function create(Request $request)
+    public function create(Request $request) : Response
     {
         $teamName = $request->getParsedBodyParam('name');
         if (!is_string($teamName) || strlen($teamName) === 0 || strlen($teamName) > 255) {
@@ -60,7 +48,7 @@ class TeamActionController
     /**
      * @return Response
      */
-    public function rename()
+    public function rename() : Response
     {
         return new Response(404);
     }

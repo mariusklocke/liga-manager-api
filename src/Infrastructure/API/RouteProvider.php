@@ -10,8 +10,9 @@ namespace HexagonalDream\Infrastructure\API;
 
 use HexagonalDream\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\PitchQueryController;
+use HexagonalDream\Infrastructure\API\Controller\SeasonCommandController;
 use HexagonalDream\Infrastructure\API\Controller\SeasonQueryController;
-use HexagonalDream\Infrastructure\API\Controller\TeamActionController;
+use HexagonalDream\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
 use Slim\App;
 
@@ -36,13 +37,13 @@ class RouteProvider
             return $controller->findTeamsBySeasonId($args['id']);
         });
         $app->post('/team', function ($request) use ($container) {
-            /** @var TeamActionController $controller */
-            $controller = $container[TeamActionController::class];
+            /** @var TeamCommandController $controller */
+            $controller = $container[TeamCommandController::class];
             return $controller->create($request);
         });
         $app->delete('/team/{id}', function ($request, $response, $args) use ($container) {
-            /** @var TeamActionController $controller */
-            $controller = $container[TeamActionController::class];
+            /** @var TeamCommandController $controller */
+            $controller = $container[TeamCommandController::class];
             return $controller->delete($args['id']);
         });
         $app->get('/season', function () use ($container) {
@@ -79,6 +80,11 @@ class RouteProvider
             /** @var PitchQueryController $controller */
             $controller = $container[PitchQueryController::class];
             return $controller->findPitchById($args['id']);
+        });
+        $app->post('/season/{id}/start', function ($request, $response, $args) use ($container) {
+            /** @var SeasonCommandController $controller */
+            $controller = $container[SeasonCommandController::class];
+            return $controller->start($args['id']);
         });
     }
 }

@@ -4,12 +4,14 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalDream\Application\Command\CreateMatchDaysCommand;
 use HexagonalDream\Application\Command\CreateTeamCommand;
 use HexagonalDream\Application\Command\DeleteTeamCommand;
 use HexagonalDream\Application\Command\StartSeasonCommand;
 use HexagonalDream\Application\CommandBus;
 use HexagonalDream\Application\FixtureGenerator;
 use HexagonalDream\Application\FixtureLoader;
+use HexagonalDream\Application\Handler\CreateMatchDaysHandler;
 use HexagonalDream\Application\Handler\CreateTeamHandler;
 use HexagonalDream\Application\Handler\DeleteTeamHandler;
 use HexagonalDream\Application\Handler\StartSeasonHandler;
@@ -18,10 +20,12 @@ use HexagonalDream\Application\Repository\PitchRepository;
 use HexagonalDream\Application\Repository\RankingRepository;
 use HexagonalDream\Application\Repository\SeasonRepository;
 use HexagonalDream\Application\Repository\TeamRepository;
+use HexagonalDream\Domain\MatchFactory;
 use HexagonalDream\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\PitchQueryController;
+use HexagonalDream\Infrastructure\API\Controller\SeasonCommandController;
 use HexagonalDream\Infrastructure\API\Controller\SeasonQueryController;
-use HexagonalDream\Infrastructure\API\Controller\TeamActionController;
+use HexagonalDream\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
 use HexagonalDream\Infrastructure\API\InternalErrorHandler;
 use HexagonalDream\Infrastructure\API\MethodNotAllowedHandler;
@@ -33,16 +37,10 @@ use HexagonalDream\Infrastructure\Persistence\UuidGenerator;
 $container = new \Slim\Container([]);
 
 $container[FixtureLoader::class] = function() use ($container) {
-    return new FixtureLoader(
-        $container['objectPersistence'],
-        new FixtureGenerator($container['uuidGenerator'])
-    );
+    return new FixtureLoader($container['objectPersistence'], new FixtureGenerator($container['uuidGenerator']));
 };
 $container[CreateTeamCommand::class] = function () use ($container) {
-    return new CreateTeamHandler(
-        $container['objectPersistence'],
-        $container['uuidGenerator']
-    );
+    return new CreateTeamHandler($container['objectPersistence'], $container['uuidGenerator']);
 };
 $container[DeleteTeamCommand::class] = function() use ($container) {
     return new DeleteTeamHandler($container['objectPersistence']);
@@ -53,6 +51,12 @@ $container[StartSeasonCommand::class] = function() use ($container) {
         function() {
             return new \Doctrine\Common\Collections\ArrayCollection();
         }
+    );
+};
+$container[CreateMatchDaysCommand::class] = function() use ($container) {
+    return new CreateMatchDaysHandler(
+        $container['objectPersistence'],
+        new MatchFactory($container['uuidGenerator'])
     );
 };
 $container[TeamRepository::class] = function() use ($container) {
@@ -102,11 +106,14 @@ $container[SeasonQueryController::class] = function() use ($container) {
         $container[MatchRepository::class]
     );
 };
+$container[SeasonCommandController::class] = function() use ($container) {
+    return new SeasonCommandController($container['commandBus']);
+};
 $container[TeamQueryController::class] = function() use ($container) {
     return new TeamQueryController($container[TeamRepository::class]);
 };
-$container[TeamActionController::class] = function () use ($container) {
-    return new TeamActionController($container['commandBus']);
+$container[TeamCommandController::class] = function () use ($container) {
+    return new TeamCommandController($container['commandBus']);
 };
 $container['pdo'] = function() {
     return new PDO('sqlite:' . __DIR__ . '/../data/db.sqlite');

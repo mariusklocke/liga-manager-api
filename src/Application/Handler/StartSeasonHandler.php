@@ -29,6 +29,7 @@ class StartSeasonHandler
     public function handle(StartSeasonCommand $command)
     {
         $this->persistence->transactional(function() use ($command) {
+            /** @var Season $season */
             $season = $this->persistence->find(Season::class, $command->getSeasonId());
             $season->start($this->collectionFactory);
             $this->persistence->persist($season);

@@ -52,26 +52,37 @@ class Season
         return $this->teams->toArray();
     }
 
+    /**
+     * @return bool
+     */
     public function hasStarted() : bool
     {
         return ($this->ranking !== null);
     }
 
+    /**
+     * @return bool
+     */
     public function hasMatches() : bool
     {
         return count($this->matches) > 0;
     }
 
+    /**
+     * Initializes the season ranking
+     *
+     * @param callable $collectionFactory
+     * @throws DomainException
+     */
     public function start(callable $collectionFactory)
     {
         if ($this->hasStarted()) {
-            return false;
+            throw new DomainException('Cannot start a season which has already started');
         }
         if (!$this->hasMatches()) {
-            return false;
+            throw new DomainException('Cannot start a season which has no matches');
         }
 
         $this->ranking = new Ranking($this, $collectionFactory);
-        return true;
     }
 }
