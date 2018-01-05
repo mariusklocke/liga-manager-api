@@ -8,7 +8,6 @@ use Doctrine\ORM\ORMException;
 use Exception;
 use HexagonalDream\Application\Exception\NotFoundException;
 use HexagonalDream\Application\ObjectPersistenceInterface;
-use Throwable;
 
 class DoctrineObjectPersistence implements ObjectPersistenceInterface
 {
@@ -88,8 +87,6 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
      *
      * @param callable $callable
      * @return mixed
-     * @throws Throwable
-     * @throws DoctrineException
      */
     public function transactional(callable $callable)
     {

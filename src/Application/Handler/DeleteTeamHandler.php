@@ -19,6 +19,9 @@ class DeleteTeamHandler
     /** @var ObjectPersistenceInterface */
     private $persistence;
 
+    /**
+     * @param ObjectPersistenceInterface $persistence
+     */
     public function __construct(ObjectPersistenceInterface $persistence)
     {
         $this->persistence = $persistence;
@@ -31,9 +34,8 @@ class DeleteTeamHandler
      */
     public function handle(DeleteTeamCommand $command)
     {
-        $this->persistence->transactional(function() use ($command) {
-            $team = $this->persistence->find(Team::class, $command->getTeamId());
-            $this->persistence->remove($team);
-        });
+        /** @var Team $team */
+        $team = $this->persistence->find(Team::class, $command->getTeamId());
+        $this->persistence->remove($team);
     }
 }

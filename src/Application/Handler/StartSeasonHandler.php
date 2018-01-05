@@ -9,7 +9,10 @@
 namespace HexagonalDream\Application\Handler;
 
 use HexagonalDream\Application\Command\StartSeasonCommand;
+use HexagonalDream\Application\Exception\NotFoundException;
+use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
 use HexagonalDream\Application\ObjectPersistenceInterface;
+use HexagonalDream\Domain\DomainException;
 use HexagonalDream\Domain\Season;
 
 class StartSeasonHandler
@@ -20,19 +23,27 @@ class StartSeasonHandler
     /** @var callable */
     private $collectionFactory;
 
+    /**
+     * @param ObjectPersistenceInterface $persistence
+     * @param callable $collectionFactory
+     */
     public function __construct(ObjectPersistenceInterface $persistence, callable $collectionFactory)
     {
         $this->persistence = $persistence;
         $this->collectionFactory = $collectionFactory;
     }
 
+    /**
+     * @param StartSeasonCommand $command
+     * @throws NotFoundException
+     * @throws PersistenceExceptionInterface
+     * @throws DomainException
+     */
     public function handle(StartSeasonCommand $command)
     {
-        $this->persistence->transactional(function() use ($command) {
-            /** @var Season $season */
-            $season = $this->persistence->find(Season::class, $command->getSeasonId());
-            $season->start($this->collectionFactory);
-            $this->persistence->persist($season);
-        });
+        /** @var Season $season */
+        $season = $this->persistence->find(Season::class, $command->getSeasonId());
+        $season->start($this->collectionFactory);
+        $this->persistence->persist($season);
     }
 }

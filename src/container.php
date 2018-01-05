@@ -125,7 +125,7 @@ $container['readDbAdapter'] = function() use ($container) {
     return new SqliteReadDbAdapter($container['sqlite']);
 };
 $container['commandBus'] = function() use ($container) {
-    return new CommandBus($container);
+    return new CommandBus($container, $container['objectPersistence']);
 };
 $container['notAllowedHandler'] = function() use ($container) {
     return new MethodNotAllowedHandler();

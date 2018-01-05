@@ -13,6 +13,9 @@ class CancelMatchHandler
     /** @var ObjectPersistenceInterface */
     private $persistence;
 
+    /**
+     * @param ObjectPersistenceInterface $persistence
+     */
     public function __construct(ObjectPersistenceInterface $persistence)
     {
         $this->persistence = $persistence;
@@ -25,9 +28,7 @@ class CancelMatchHandler
      */
     public function handle(CancelMatchCommand $command)
     {
-        $this->persistence->transactional(function() use ($command) {
-            $match = $this->persistence->find(Match::class, $command->getMatchId());
-            $match->cancel();
-        });
+        $match = $this->persistence->find(Match::class, $command->getMatchId());
+        $match->cancel();
     }
 }
