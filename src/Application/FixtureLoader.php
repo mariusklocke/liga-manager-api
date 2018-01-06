@@ -21,11 +21,14 @@ class FixtureLoader
             foreach ($this->generator->generatePitches() as $pitch) {
                 $this->persistence->persist($pitch);
             }
-            $teams = $this->generator->generateTeams();
+            $teams = [];
+            foreach ($this->generator->generateTeams() as $team) {
+                $teams[] = $team;
+                $this->persistence->persist($team);
+            }
             foreach ($this->generator->generateSeasons() as $season) {
                 foreach ($teams as $team) {
                     $season->addTeam($team);
-                    $this->persistence->persist($team);
                 }
                 $this->persistence->persist($season);
             }
