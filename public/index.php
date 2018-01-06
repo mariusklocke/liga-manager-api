@@ -1,4 +1,5 @@
 <?php
+ini_set('display_errors', 'Off');
 // For PHP's internal webserver
 $filename = __DIR__.preg_replace('#(\?.*)$#', '', $_SERVER['REQUEST_URI']);
 if (php_sapi_name() === 'cli-server' && is_file($filename)) {
