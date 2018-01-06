@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "version": "0.1",
-    "title": "Hexagonal Dream API",
-    "description": "A simple API for managing soccer leagues and illustrating hexagonal architecture",
+    "title": "Hexagonal Playground API",
+    "description": "RESTful API for managing soccer leagues and illustrating hexagonal architecture",
     "contact": {
       "name": "Marius Klocke",
       "email": "marius.klocke@gmail.com"
@@ -45,9 +45,29 @@
           "create"
         ],
         "summary": "Creates a new team",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "204": {
             "description": "Operation successful"
+          },
+          "400": {
+            "description": "Invalid team name"
           }
         }
       }
@@ -197,7 +217,31 @@
         }
       }
     },
-    "/season/{id}/matches/{matchDayNo}": {
+    "/season/{id}/matches": {
+      "post": {
+        "tags": [
+          "create"
+        ],
+        "summary": "Creates matches for a given season",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of season",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
+    "/season/{id}/matches/{match_day}": {
       "get": {
         "tags": [
           "find"
@@ -214,7 +258,7 @@
             }
           },
           {
-            "name": "matchDayNo",
+            "name": "match_day",
             "in": "path",
             "description": "Number identifying the matchday",
             "required": true,
