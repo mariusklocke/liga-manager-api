@@ -2,16 +2,15 @@
 
 namespace HexagonalDream\Application\Handler;
 
-use HexagonalDream\Application\Command\CreateMatchDaysCommand;
+use HexagonalDream\Application\Command\CreateMatchesForSeasonCommand;
+use HexagonalDream\Application\Exception\InvalidStateException;
 use HexagonalDream\Application\Exception\NotFoundException;
 use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
 use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\DomainException;
-use HexagonalDream\Domain\Match;
 use HexagonalDream\Domain\MatchFactory;
 use HexagonalDream\Domain\Season;
 
-class CreateMatchDaysHandler
+class CreateMatchesForSeasonHandler
 {
     /** @var ObjectPersistenceInterface */
     private $persistence;
@@ -29,20 +28,22 @@ class CreateMatchDaysHandler
     }
 
     /**
-     * @param CreateMatchDaysCommand $command
-     * @return Match[]
+     * @param CreateMatchesForSeasonCommand $command
      * @throws PersistenceExceptionInterface
      * @throws NotFoundException
-     * @throws DomainException
      */
-    public function handle(CreateMatchDaysCommand $command)
+    public function handle(CreateMatchesForSeasonCommand $command)
     {
         /** @var Season $season */
         $season = $this->persistence->find(Season::class, $command->getSeasonId());
+        if ($season->hasStarted()) {
+            throw new InvalidStateException('Cannot add matches to season which has already started');
+        }
+        $season->clearMatches();
         $matches = $this->matchFactory->createMatchesForSeason($season);
         foreach ($matches as $match) {
+            $season->addMatch($match);
             $this->persistence->persist($match);
         }
-        return $matches;
     }
 }

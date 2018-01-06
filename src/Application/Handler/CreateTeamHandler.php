@@ -27,11 +27,13 @@ class CreateTeamHandler
 
     /**
      * @param CreateTeamCommand $command
+     * @return string Created team's ID
      * @throws PersistenceExceptionInterface
      */
     public function handle(CreateTeamCommand $command)
     {
         $team = new Team($this->uuidGenerator, $command->getTeamName());
         $this->persistence->persist($team);
+        return $team->getId();
     }
 }

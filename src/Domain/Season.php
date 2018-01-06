@@ -6,6 +6,10 @@ use DateTimeImmutable;
 
 class Season
 {
+    const STATE_PREPARATION = 'preparation';
+    const STATE_PROGRESS = 'progress';
+    const STATE_ENDED = 'ended';
+
     /** @var string */
     private $id;
 
@@ -24,22 +28,30 @@ class Season
     /** @var Match[] */
     private $matches;
 
-    /** @var Ranking */
+    /** @var Ranking|null */
     private $ranking;
+
+    /** @var string */
+    private $state;
 
     public function __construct(UuidGeneratorInterface $uuidGenerator, string $name)
     {
         $this->id = $uuidGenerator->generateUuid();
         $this->name = $name;
         $this->teams = [];
+        $this->state = self::STATE_PREPARATION;
     }
 
     /**
      * @param Team $team
      * @return Season
+     * @throws DomainException
      */
     public function addTeam(Team $team) : Season
     {
+        if ($this->hasStarted()) {
+            throw new DomainException('Cannot add teams to season which has already started');
+        }
         $this->teams[] = $team;
         return $this;
     }
@@ -50,6 +62,38 @@ class Season
     public function getTeams() : array
     {
         return $this->teams->toArray();
+    }
+
+    /**
+     * @return Season
+     */
+    public function clearTeams() : Season
+    {
+        $this->teams->clear();
+        return $this;
+    }
+
+    /**
+     * @param Match $match
+     * @return Season
+     * @throws DomainException
+     */
+    public function addMatch(Match $match) : Season
+    {
+        if ($this->hasStarted()) {
+            throw new DomainException('Cannot add matches to season which has already started');
+        }
+        $this->matches[] = $match;
+        return $this;
+    }
+
+    /**
+     * @return Season
+     */
+    public function clearMatches() : Season
+    {
+        $this->matches->clear();
+        return $this;
     }
 
     /**
@@ -72,6 +116,7 @@ class Season
      * Initializes the season ranking
      *
      * @param callable $collectionFactory
+     * @return Season
      * @throws DomainException
      */
     public function start(callable $collectionFactory)
@@ -84,5 +129,16 @@ class Season
         }
 
         $this->ranking = new Ranking($this, $collectionFactory);
+        $this->state = self::STATE_PROGRESS;
+        return $this;
+    }
+
+    /**
+     * @return Season
+     */
+    public function end() : Season
+    {
+        $this->state = self::STATE_ENDED;
+        return $this;
     }
 }

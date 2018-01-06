@@ -2,7 +2,7 @@
 
 namespace HexagonalDream\Application\Command;
 
-class CreateMatchDaysCommand implements CommandInterface
+class DeleteSeasonCommand implements CommandInterface
 {
     /** @var string */
     private $seasonId;
@@ -12,10 +12,7 @@ class CreateMatchDaysCommand implements CommandInterface
         $this->seasonId = $seasonId;
     }
 
-    /**
-     * @return string
-     */
-    public function getSeasonId(): string
+    public function getSeasonId() : string
     {
         return $this->seasonId;
     }

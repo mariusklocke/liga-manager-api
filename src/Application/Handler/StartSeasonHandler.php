@@ -9,6 +9,7 @@
 namespace HexagonalDream\Application\Handler;
 
 use HexagonalDream\Application\Command\StartSeasonCommand;
+use HexagonalDream\Application\Exception\InvalidStateException;
 use HexagonalDream\Application\Exception\NotFoundException;
 use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
 use HexagonalDream\Application\ObjectPersistenceInterface;
@@ -37,13 +38,17 @@ class StartSeasonHandler
      * @param StartSeasonCommand $command
      * @throws NotFoundException
      * @throws PersistenceExceptionInterface
-     * @throws DomainException
      */
     public function handle(StartSeasonCommand $command)
     {
         /** @var Season $season */
         $season = $this->persistence->find(Season::class, $command->getSeasonId());
-        $season->start($this->collectionFactory);
+        try {
+            $season->start($this->collectionFactory);
+        } catch (DomainException $e) {
+            throw new InvalidStateException($e->getMessage());
+        }
+
         $this->persistence->persist($season);
     }
 }

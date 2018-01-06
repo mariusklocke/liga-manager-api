@@ -86,5 +86,15 @@ class RouteProvider
             $controller = $container[SeasonCommandController::class];
             return $controller->start($args['id']);
         });
+        $app->delete('/season/{id}', function ($request, $response, $args) use ($container) {
+            /** @var SeasonCommandController $controller */
+            $controller = $container[SeasonCommandController::class];
+            return $controller->delete($args['id']);
+        });
+        $app->post('/season/{id}/matches', function ($request, $response, $args) use ($container) {
+            /** @var SeasonCommandController $controller */
+            $controller = $container[SeasonCommandController::class];
+            return $controller->createMatches($args['id']);
+        });
     }
 }

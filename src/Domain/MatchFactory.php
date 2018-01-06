@@ -7,6 +7,7 @@
  */
 
 namespace HexagonalDream\Domain;
+use UnexpectedValueException;
 
 /**
  * A factory which constructs Match domain objects and implements a match day generation algorithm
@@ -32,7 +33,6 @@ class MatchFactory extends EntityFactory
      *
      * @param Season $season
      * @return Match[]
-     * @throws DomainException If some unforeseen algorithm error occurs
      */
     public function createMatchesForSeason(Season $season) : array
     {
@@ -79,7 +79,6 @@ class MatchFactory extends EntityFactory
      * @param array  $teams    0-based array of teams
      * @param Season $season
      * @return Match[]
-     * @throws DomainException If some unforeseen algorithm error occurs
      */
     private function generateMatchDay(int $matchDay, array $teams, Season $season) : array
     {
@@ -102,7 +101,7 @@ class MatchFactory extends EntityFactory
         }
 
         if (count($teams) != 2) {
-            throw new DomainException(sprintf(
+            throw new UnexpectedValueException(sprintf(
                 'Matchday algorithm failed: Expected 2 teams left. Actual: %d teams',
                 count($teams)
             ));

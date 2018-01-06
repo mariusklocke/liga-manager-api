@@ -78,10 +78,13 @@ class Match
 
     /**
      * @return Match
+     * @throws DomainException
      */
     public function cancel() : Match
     {
-        $this->matchResult = null;
+        if ($this->matchResult !== null) {
+            throw new DomainException('Cannot cancel a match with a submitted result');
+        }
         $this->cancelledAt = new DateTimeImmutable();
         return $this;
     }

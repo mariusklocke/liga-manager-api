@@ -4,15 +4,17 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
-use HexagonalDream\Application\Command\CreateMatchDaysCommand;
+use HexagonalDream\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalDream\Application\Command\CreateTeamCommand;
+use HexagonalDream\Application\Command\DeleteSeasonCommand;
 use HexagonalDream\Application\Command\DeleteTeamCommand;
 use HexagonalDream\Application\Command\StartSeasonCommand;
 use HexagonalDream\Application\CommandBus;
 use HexagonalDream\Application\FixtureGenerator;
 use HexagonalDream\Application\FixtureLoader;
-use HexagonalDream\Application\Handler\CreateMatchDaysHandler;
+use HexagonalDream\Application\Handler\CreateMatchesForSeasonHandler;
 use HexagonalDream\Application\Handler\CreateTeamHandler;
+use HexagonalDream\Application\Handler\DeleteSeasonHandler;
 use HexagonalDream\Application\Handler\DeleteTeamHandler;
 use HexagonalDream\Application\Handler\StartSeasonHandler;
 use HexagonalDream\Application\Repository\MatchRepository;
@@ -53,11 +55,14 @@ $container[StartSeasonCommand::class] = function() use ($container) {
         }
     );
 };
-$container[CreateMatchDaysCommand::class] = function() use ($container) {
-    return new CreateMatchDaysHandler(
+$container[CreateMatchesForSeasonCommand::class] = function() use ($container) {
+    return new CreateMatchesForSeasonHandler(
         $container['objectPersistence'],
         new MatchFactory($container['uuidGenerator'])
     );
+};
+$container[DeleteSeasonCommand::class] = function() use ($container) {
+    return new DeleteSeasonHandler($container['objectPersistence']);
 };
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);

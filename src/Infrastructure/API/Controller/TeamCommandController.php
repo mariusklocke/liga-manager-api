@@ -41,8 +41,8 @@ class TeamCommandController extends CommandController
         if (!is_string($teamName) || strlen($teamName) === 0 || strlen($teamName) > 255) {
             return new Response(400);
         }
-        $this->commandBus->execute(new CreateTeamCommand($teamName));
-        return new Response(204);
+        $teamId = $this->commandBus->execute(new CreateTeamCommand($teamName));
+        return (new Response(204))->withHeader('X-Object-Id', $teamId);
     }
 
     /**

@@ -20,4 +20,9 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
      * @return array
      */
     public function toArray();
+
+    /**
+     * Clears the collection, removing all elements.
+     */
+    public function clear();
 }
