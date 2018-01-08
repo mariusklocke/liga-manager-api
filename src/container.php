@@ -4,15 +4,18 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalDream\Application\Bus\BatchCommandBus;
 use HexagonalDream\Application\Command\CreateMatchesForSeasonCommand;
+use HexagonalDream\Application\Command\CreateSingleMatchCommand;
 use HexagonalDream\Application\Command\CreateTeamCommand;
 use HexagonalDream\Application\Command\DeleteSeasonCommand;
 use HexagonalDream\Application\Command\DeleteTeamCommand;
 use HexagonalDream\Application\Command\StartSeasonCommand;
-use HexagonalDream\Application\CommandBus;
+use HexagonalDream\Application\Bus\SingleCommandBus;
 use HexagonalDream\Application\FixtureGenerator;
 use HexagonalDream\Application\FixtureLoader;
 use HexagonalDream\Application\Handler\CreateMatchesForSeasonHandler;
+use HexagonalDream\Application\Handler\CreateSingleMatchHandler;
 use HexagonalDream\Application\Handler\CreateTeamHandler;
 use HexagonalDream\Application\Handler\DeleteSeasonHandler;
 use HexagonalDream\Application\Handler\DeleteTeamHandler;
@@ -22,7 +25,7 @@ use HexagonalDream\Application\Repository\PitchRepository;
 use HexagonalDream\Application\Repository\RankingRepository;
 use HexagonalDream\Application\Repository\SeasonRepository;
 use HexagonalDream\Application\Repository\TeamRepository;
-use HexagonalDream\Domain\MatchFactory;
+use HexagonalDream\Application\Factory\MatchFactory;
 use HexagonalDream\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\PitchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\SeasonCommandController;
@@ -60,6 +63,9 @@ $container[CreateMatchesForSeasonCommand::class] = function() use ($container) {
         $container['objectPersistence'],
         new MatchFactory($container['uuidGenerator'])
     );
+};
+$container[CreateSingleMatchCommand::class] = function() use ($container) {
+    return new CreateSingleMatchHandler($container['objectPersistence'], $container['uuidGenerator']);
 };
 $container[DeleteSeasonCommand::class] = function() use ($container) {
     return new DeleteSeasonHandler($container['objectPersistence']);
@@ -130,7 +136,10 @@ $container['readDbAdapter'] = function() use ($container) {
     return new SqliteReadDbAdapter($container['sqlite']);
 };
 $container['commandBus'] = function() use ($container) {
-    return new CommandBus($container, $container['objectPersistence']);
+    return new SingleCommandBus($container, $container['objectPersistence']);
+};
+$container['batchCommandBus'] = function () use ($container) {
+    return new BatchCommandBus($container, $container['objectPersistence']);
 };
 $container['notAllowedHandler'] = function() use ($container) {
     return new MethodNotAllowedHandler();

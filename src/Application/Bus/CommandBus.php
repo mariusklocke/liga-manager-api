@@ -1,19 +1,19 @@
 <?php
 
-namespace HexagonalDream\Application;
+namespace HexagonalDream\Application\Bus;
 
 use HexagonalDream\Application\Command\CommandInterface;
 use HexagonalDream\Application\Exception\CommandBusException;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
+use HexagonalDream\Application\ObjectPersistenceInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
-class CommandBus
+abstract class CommandBus
 {
     /** @var ContainerInterface */
-    private $container;
+    protected $container;
     /** @var ObjectPersistenceInterface */
-    private $persistence;
+    protected $persistence;
 
     /**
      * @param ContainerInterface $container
@@ -27,11 +27,10 @@ class CommandBus
 
     /**
      * @param CommandInterface $command
-     * @return mixed
+     * @return object
      * @throws CommandBusException If the container does not contain a valid handler for given Command class
-     * @throws PersistenceExceptionInterface
      */
-    public function execute(CommandInterface $command)
+    protected function getHandler(CommandInterface $command)
     {
         try {
             $handler = $this->container->get(get_class($command));
@@ -43,8 +42,6 @@ class CommandBus
             throw new CommandBusException('Command Handler for ' . get_class($command) . ' does not implement handle()');
         }
 
-        return $this->persistence->transactional(function() use ($handler, $command) {
-            return $handler->handle($command);
-        });
+        return $handler;
     }
 }

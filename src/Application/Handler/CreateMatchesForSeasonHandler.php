@@ -7,7 +7,7 @@ use HexagonalDream\Application\Exception\InvalidStateException;
 use HexagonalDream\Application\Exception\NotFoundException;
 use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
 use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\MatchFactory;
+use HexagonalDream\Application\Factory\MatchFactory;
 use HexagonalDream\Domain\Season;
 
 class CreateMatchesForSeasonHandler

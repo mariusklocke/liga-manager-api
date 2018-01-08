@@ -6,7 +6,9 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Domain;
+namespace HexagonalDream\Application\Factory;
+
+use HexagonalDream\Domain\UuidGeneratorInterface;
 
 abstract class EntityFactory
 {
