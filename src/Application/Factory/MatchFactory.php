@@ -7,6 +7,7 @@
  */
 
 namespace HexagonalDream\Application\Factory;
+
 use HexagonalDream\Domain\Match;
 use HexagonalDream\Domain\Season;
 use HexagonalDream\Domain\Team;

@@ -26,6 +26,7 @@ use HexagonalDream\Application\Repository\RankingRepository;
 use HexagonalDream\Application\Repository\SeasonRepository;
 use HexagonalDream\Application\Repository\TeamRepository;
 use HexagonalDream\Application\Factory\MatchFactory;
+use HexagonalDream\Application\UuidGenerator;
 use HexagonalDream\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\PitchQueryController;
 use HexagonalDream\Infrastructure\API\Controller\SeasonCommandController;
@@ -37,7 +38,7 @@ use HexagonalDream\Infrastructure\API\MethodNotAllowedHandler;
 use HexagonalDream\Infrastructure\API\NotFoundErrorHandler;
 use HexagonalDream\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalDream\Infrastructure\Persistence\SqliteReadDbAdapter;
-use HexagonalDream\Infrastructure\Persistence\UuidGenerator;
+use Ramsey\Uuid\UuidFactory;
 
 $container = new \Slim\Container([]);
 
@@ -99,7 +100,7 @@ $container['doctrine.config'] = function() {
     return $config;
 };
 $container['uuidGenerator'] = function() {
-    return new UuidGenerator();
+    return new UuidGenerator(new UuidFactory());
 };
 $container['objectPersistence'] = function() use ($container) {
     return new DoctrineObjectPersistence($container['doctrine.entityManager']);
