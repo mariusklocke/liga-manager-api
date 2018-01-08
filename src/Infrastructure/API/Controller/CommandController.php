@@ -1,8 +1,8 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\API\Controller;
+namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalDream\Application\Bus\SingleCommandBus;
+use HexagonalPlayground\Application\Bus\SingleCommandBus;
 
 abstract class CommandController
 {

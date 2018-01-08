@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Domain;
+namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 

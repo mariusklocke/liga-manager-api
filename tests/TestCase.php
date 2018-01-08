@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Tests;
+namespace HexagonalPlayground\Tests;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {

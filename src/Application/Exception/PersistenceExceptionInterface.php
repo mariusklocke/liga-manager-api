@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Application\Exception;
+namespace HexagonalPlayground\Application\Exception;
 
 interface PersistenceExceptionInterface
 {

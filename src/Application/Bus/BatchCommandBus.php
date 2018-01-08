@@ -1,10 +1,10 @@
 <?php
 
-namespace HexagonalDream\Application\Bus;
+namespace HexagonalPlayground\Application\Bus;
 
-use HexagonalDream\Application\Command\CommandInterface;
-use HexagonalDream\Application\Exception\CommandBusException;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
+use HexagonalPlayground\Application\Command\CommandInterface;
+use HexagonalPlayground\Application\Exception\CommandBusException;
+use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 
 class BatchCommandBus extends CommandBus
 {

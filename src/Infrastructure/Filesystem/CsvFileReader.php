@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\Filesystem;
+namespace HexagonalPlayground\Infrastructure\Filesystem;
 
 use InvalidArgumentException;
 use Iterator;

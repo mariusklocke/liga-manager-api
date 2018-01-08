@@ -1,8 +1,8 @@
 <?php
 
-namespace HexagonalDream\Application;
+namespace HexagonalPlayground\Application;
 
-use HexagonalDream\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Domain\UuidGeneratorInterface;
 use Ramsey\Uuid\UuidFactoryInterface;
 
 class UuidGenerator implements UuidGeneratorInterface

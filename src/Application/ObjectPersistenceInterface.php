@@ -1,9 +1,9 @@
 <?php
 
-namespace HexagonalDream\Application;
+namespace HexagonalPlayground\Application;
 
-use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
+use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 
 interface ObjectPersistenceInterface
 {

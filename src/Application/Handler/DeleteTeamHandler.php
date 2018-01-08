@@ -6,13 +6,13 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Application\Handler;
+namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalDream\Application\Command\DeleteTeamCommand;
-use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
-use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\Team;
+use HexagonalPlayground\Application\Command\DeleteTeamCommand;
+use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Domain\Team;
 
 class DeleteTeamHandler
 {

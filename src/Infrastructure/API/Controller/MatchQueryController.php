@@ -6,9 +6,9 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Infrastructure\API\Controller;
+namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalDream\Application\Repository\MatchRepository;
+use HexagonalPlayground\Application\Repository\MatchRepository;
 use Slim\Http\Response;
 
 class MatchQueryController

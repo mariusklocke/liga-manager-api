@@ -1,14 +1,14 @@
 <?php
 
-namespace HexagonalDream\Application\Handler;
+namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalDream\Application\Command\CreateMatchesForSeasonCommand;
-use HexagonalDream\Application\Exception\InvalidStateException;
-use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
-use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Application\Factory\MatchFactory;
-use HexagonalDream\Domain\Season;
+use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
+use HexagonalPlayground\Application\Exception\InvalidStateException;
+use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\Factory\MatchFactory;
+use HexagonalPlayground\Domain\Season;
 
 class CreateMatchesForSeasonHandler
 {

@@ -6,15 +6,15 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Application\Handler;
+namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalDream\Application\Command\StartSeasonCommand;
-use HexagonalDream\Application\Exception\InvalidStateException;
-use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
-use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\DomainException;
-use HexagonalDream\Domain\Season;
+use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Application\Exception\InvalidStateException;
+use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Domain\DomainException;
+use HexagonalPlayground\Domain\Season;
 
 class StartSeasonHandler
 {

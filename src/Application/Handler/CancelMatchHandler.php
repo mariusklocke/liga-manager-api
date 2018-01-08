@@ -1,14 +1,14 @@
 <?php
 
-namespace HexagonalDream\Application\Handler;
+namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalDream\Application\Command\CancelMatchCommand;
-use HexagonalDream\Application\Exception\InvalidStateException;
-use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
-use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\DomainException;
-use HexagonalDream\Domain\Match;
+use HexagonalPlayground\Application\Command\CancelMatchCommand;
+use HexagonalPlayground\Application\Exception\InvalidStateException;
+use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Domain\DomainException;
+use HexagonalPlayground\Domain\Match;
 
 class CancelMatchHandler
 {

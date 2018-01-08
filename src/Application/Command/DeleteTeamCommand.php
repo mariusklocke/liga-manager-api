@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Application\Command;
+namespace HexagonalPlayground\Application\Command;
 
 
 class DeleteTeamCommand implements CommandInterface

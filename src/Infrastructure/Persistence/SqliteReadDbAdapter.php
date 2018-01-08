@@ -6,9 +6,9 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Infrastructure\Persistence;
+namespace HexagonalPlayground\Infrastructure\Persistence;
 
-use HexagonalDream\Application\ReadDbAdapterInterface;
+use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use SQLite3;
 use SQLite3Result;
 use SQLite3Stmt;

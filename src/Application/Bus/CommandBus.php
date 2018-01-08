@@ -1,10 +1,10 @@
 <?php
 
-namespace HexagonalDream\Application\Bus;
+namespace HexagonalPlayground\Application\Bus;
 
-use HexagonalDream\Application\Command\CommandInterface;
-use HexagonalDream\Application\Exception\CommandBusException;
-use HexagonalDream\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\Command\CommandInterface;
+use HexagonalPlayground\Application\Exception\CommandBusException;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 

@@ -1,11 +1,11 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\API\Controller;
+namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalDream\Application\Command\CreateMatchesForSeasonCommand;
-use HexagonalDream\Application\Command\DeleteSeasonCommand;
-use HexagonalDream\Application\Command\StartSeasonCommand;
-use HexagonalDream\Application\Exception\InvalidStateException;
+use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
+use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
+use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Application\Exception\InvalidStateException;
 use Slim\Http\Response;
 
 class SeasonCommandController extends CommandController

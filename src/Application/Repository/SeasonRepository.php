@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Application\Repository;
+namespace HexagonalPlayground\Application\Repository;
 
 class SeasonRepository extends AbstractRepository
 {

@@ -1,11 +1,11 @@
 <?php
 
-namespace HexagonalDream\Application\Handler;
+namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalDream\Application\Command\DeleteSeasonCommand;
-use HexagonalDream\Application\Exception\InvalidStateException;
-use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\Season;
+use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
+use HexagonalPlayground\Application\Exception\InvalidStateException;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Domain\Season;
 
 class DeleteSeasonHandler
 {

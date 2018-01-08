@@ -6,11 +6,11 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Infrastructure\API\Controller;
+namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalDream\Application\Command\CreateTeamCommand;
-use HexagonalDream\Application\Command\DeleteTeamCommand;
-use HexagonalDream\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Command\CreateTeamCommand;
+use HexagonalPlayground\Application\Command\DeleteTeamCommand;
+use HexagonalPlayground\Application\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 

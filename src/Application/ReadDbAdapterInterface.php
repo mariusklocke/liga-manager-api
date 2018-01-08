@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Application;
+namespace HexagonalPlayground\Application;
 
 interface ReadDbAdapterInterface
 {

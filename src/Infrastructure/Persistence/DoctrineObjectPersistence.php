@@ -1,13 +1,13 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\Persistence;
+namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use Doctrine\DBAL\DBALException;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMException;
 use Exception;
-use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
 
 class DoctrineObjectPersistence implements ObjectPersistenceInterface
 {

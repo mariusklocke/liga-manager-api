@@ -1,9 +1,9 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\Persistence;
+namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use Exception;
-use HexagonalDream\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use SplObjectStorage;
 
 class InMemoryObjectPersistence implements ObjectPersistenceInterface

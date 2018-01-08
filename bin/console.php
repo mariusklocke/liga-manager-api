@@ -10,6 +10,6 @@ $app->setCatchExceptions(true);
 // Add Doctrine commands
 \Doctrine\ORM\Tools\Console\ConsoleRunner::addCommands($app);
 // Add own command
-$app->add(new \HexagonalDream\Infrastructure\CLI\ImportMatchesCommand($container['batchCommandBus']));
+$app->add(new \HexagonalPlayground\Infrastructure\CLI\ImportMatchesCommand($container['batchCommandBus']));
 
 $app->run();

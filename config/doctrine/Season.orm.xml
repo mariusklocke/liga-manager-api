@@ -3,21 +3,21 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
-    <entity name="HexagonalDream\Domain\Season" table="seasons">
+    <entity name="HexagonalPlayground\Domain\Season" table="seasons">
         <id name="id" type="string" />
         <field name="name" type="string" />
         <field name="state" type="string" />
-        <one-to-one field="ranking" target-entity="HexagonalDream\Domain\Ranking" mapped-by="season" orphan-removal="true">
+        <one-to-one field="ranking" target-entity="HexagonalPlayground\Domain\Ranking" mapped-by="season" orphan-removal="true">
             <cascade>
                 <cascade-all/>
             </cascade>
         </one-to-one>
-        <one-to-many field="matches" target-entity="HexagonalDream\Domain\Match" mapped-by="season" orphan-removal="true">
+        <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="season" orphan-removal="true">
             <order-by>
                 <order-by-field name="matchDay" direction="ASC" />
             </order-by>
         </one-to-many>
-        <many-to-many target-entity="HexagonalDream\Domain\Team" field="teams">
+        <many-to-many target-entity="HexagonalPlayground\Domain\Team" field="teams">
             <join-table name="seasons_teams_link">
                 <join-columns>
                     <join-column name="season_id" referenced-column-name="id" />

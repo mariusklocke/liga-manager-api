@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Application\Command;
+namespace HexagonalPlayground\Application\Command;
 
 class CreateSingleMatchCommand implements CommandInterface
 {

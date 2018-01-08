@@ -6,14 +6,14 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Infrastructure\API;
+namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalDream\Infrastructure\API\Controller\MatchQueryController;
-use HexagonalDream\Infrastructure\API\Controller\PitchQueryController;
-use HexagonalDream\Infrastructure\API\Controller\SeasonCommandController;
-use HexagonalDream\Infrastructure\API\Controller\SeasonQueryController;
-use HexagonalDream\Infrastructure\API\Controller\TeamCommandController;
-use HexagonalDream\Infrastructure\API\Controller\TeamQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\PitchQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\SeasonCommandController;
+use HexagonalPlayground\Infrastructure\API\Controller\SeasonQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
+use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
 use Slim\App;
 
 class RouteProvider

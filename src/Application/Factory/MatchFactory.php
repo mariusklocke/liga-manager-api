@@ -6,11 +6,11 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Application\Factory;
+namespace HexagonalPlayground\Application\Factory;
 
-use HexagonalDream\Domain\Match;
-use HexagonalDream\Domain\Season;
-use HexagonalDream\Domain\Team;
+use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Domain\Team;
 use UnexpectedValueException;
 
 /**

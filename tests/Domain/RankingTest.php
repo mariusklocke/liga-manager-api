@@ -1,8 +1,8 @@
 <?php
 
-namespace HexagonalDream\Tests\Domain;
+namespace HexagonalPlayground\Tests\Domain;
 
-use HexagonalDream\Tests\TestCase;
+use HexagonalPlayground\Tests\TestCase;
 
 class RankingTest extends TestCase
 {

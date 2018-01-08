@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\CLI;
+namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Domain;
+namespace HexagonalPlayground\Domain;
 
 use ArrayAccess;
 use Countable;

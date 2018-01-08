@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Application\Repository;
+namespace HexagonalPlayground\Application\Repository;
 
 class RankingRepository extends AbstractRepository
 {

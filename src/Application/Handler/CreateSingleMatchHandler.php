@@ -1,17 +1,17 @@
 <?php
 
-namespace HexagonalDream\Application\Handler;
+namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalDream\Application\Command\CreateSingleMatchCommand;
-use HexagonalDream\Application\Exception\InvalidStateException;
-use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
-use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\DomainException;
-use HexagonalDream\Domain\Match;
-use HexagonalDream\Domain\Season;
-use HexagonalDream\Domain\Team;
-use HexagonalDream\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
+use HexagonalPlayground\Application\Exception\InvalidStateException;
+use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Domain\DomainException;
+use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Domain\UuidGeneratorInterface;
 
 class CreateSingleMatchHandler
 {

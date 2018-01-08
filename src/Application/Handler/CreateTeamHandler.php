@@ -1,12 +1,12 @@
 <?php
 
-namespace HexagonalDream\Application\Handler;
+namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalDream\Application\Command\CreateTeamCommand;
-use HexagonalDream\Application\Exception\PersistenceExceptionInterface;
-use HexagonalDream\Application\ObjectPersistenceInterface;
-use HexagonalDream\Domain\Team;
-use HexagonalDream\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Application\Command\CreateTeamCommand;
+use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
+use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Domain\UuidGeneratorInterface;
 
 class CreateTeamHandler
 {

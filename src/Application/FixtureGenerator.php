@@ -6,14 +6,14 @@
  * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
  */
 
-namespace HexagonalDream\Application;
+namespace HexagonalPlayground\Application;
 
 use Generator;
-use HexagonalDream\Domain\GeographicLocation;
-use HexagonalDream\Domain\Pitch;
-use HexagonalDream\Domain\Season;
-use HexagonalDream\Domain\Team;
-use HexagonalDream\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Domain\GeographicLocation;
+use HexagonalPlayground\Domain\Pitch;
+use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Domain\UuidGeneratorInterface;
 
 class FixtureGenerator
 {

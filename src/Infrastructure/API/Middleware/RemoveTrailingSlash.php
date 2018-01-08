@@ -1,6 +1,6 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\API\Middleware;
+namespace HexagonalPlayground\Infrastructure\API\Middleware;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

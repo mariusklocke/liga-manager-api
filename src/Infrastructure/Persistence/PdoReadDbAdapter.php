@@ -1,8 +1,8 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\Persistence;
+namespace HexagonalPlayground\Infrastructure\Persistence;
 
-use HexagonalDream\Application\ReadDbAdapterInterface;
+use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use PDO;
 use PDOStatement;
 

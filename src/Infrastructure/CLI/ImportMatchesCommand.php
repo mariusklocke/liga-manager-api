@@ -1,11 +1,11 @@
 <?php
 
-namespace HexagonalDream\Infrastructure\CLI;
+namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalDream\Application\Bus\BatchCommandBus;
-use HexagonalDream\Application\Command\CreateSingleMatchCommand;
-use HexagonalDream\Application\Exception\NotFoundException;
-use HexagonalDream\Infrastructure\Filesystem\CsvFileReader;
+use HexagonalPlayground\Application\Bus\BatchCommandBus;
+use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
+use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Infrastructure\Filesystem\CsvFileReader;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

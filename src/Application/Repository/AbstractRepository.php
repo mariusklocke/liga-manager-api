@@ -1,8 +1,8 @@
 <?php
 
-namespace HexagonalDream\Application\Repository;
+namespace HexagonalPlayground\Application\Repository;
 
-use HexagonalDream\Application\ReadDbAdapterInterface;
+use HexagonalPlayground\Application\ReadDbAdapterInterface;
 
 class AbstractRepository
 {
