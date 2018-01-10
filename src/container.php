@@ -37,7 +37,10 @@ use HexagonalPlayground\Infrastructure\API\InternalErrorHandler;
 use HexagonalPlayground\Infrastructure\API\MethodNotAllowedHandler;
 use HexagonalPlayground\Infrastructure\API\NotFoundErrorHandler;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineObjectPersistence;
+use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
 use HexagonalPlayground\Infrastructure\Persistence\SqliteReadDbAdapter;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 use Ramsey\Uuid\UuidFactory;
 
 $container = new \Slim\Container([]);
@@ -92,11 +95,12 @@ $container['doctrine.entityManager'] = function() use ($container) {
 $container['doctrine.connection'] = function() use ($container) {
     return DriverManager::getConnection(['pdo' => $container['pdo']], $container['doctrine.config']);
 };
-$container['doctrine.config'] = function() {
+$container['doctrine.config'] = function() use ($container) {
     $config = Setup::createConfiguration(true);
     $driver = new SimplifiedXmlDriver([__DIR__ . "/../config/doctrine" => "HexagonalPlayground\\Domain"]);
     $driver->setGlobalBasename('global');
     $config->setMetadataDriverImpl($driver);
+    $config->setSQLLogger(new DoctrineQueryLogger($container['logger']));
     return $config;
 };
 $container['uuidGenerator'] = function() {
@@ -150,6 +154,9 @@ $container['notFoundHandler'] = function() use ($container) {
 };
 $container['errorHandler'] = $container['phpErrorHandler'] = function() use ($container) {
     return new InternalErrorHandler(true);
+};
+$container['logger'] = function() {
+    return new Logger('logger', [new StreamHandler('php://stdout')]);
 };
 
 return $container;
