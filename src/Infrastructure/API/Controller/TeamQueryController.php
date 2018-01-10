@@ -48,7 +48,7 @@ class TeamQueryController
      */
     public function findTeamsBySeasonId(string $seasonId) : Response
     {
-        $teams = $this->repository->findTeamBySeasonId($seasonId);
+        $teams = $this->repository->findTeamsBySeasonId($seasonId);
         return (new Response(200))->withJson($teams);
     }
 }
