@@ -40,8 +40,7 @@ class InternalErrorHandler
                 'message' => $throwable->getMessage(),
                 'file' => $throwable->getFile(),
                 'line' => $throwable->getLine(),
-                'stacktrace' => $throwable->getTrace(),
-                'previous' => $throwable->getPrevious()->getMessage()
+                'stacktrace' => $throwable->getTrace()
             ]);
         }
 
