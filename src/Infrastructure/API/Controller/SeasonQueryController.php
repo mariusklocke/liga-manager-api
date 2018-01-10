@@ -49,6 +49,7 @@ class SeasonQueryController
         }
 
         $season['match_days'] = $this->matchRepository->countMatchDaysInSeason($seasonId);
+        $season['team_count'] = $this->seasonRepository->countTeamsInSeason($seasonId);
         return (new Response(200))->withJson($season);
     }
 
