@@ -9,7 +9,7 @@
         <one-to-one field="season" target-entity="HexagonalPlayground\Domain\Season" inversed-by="ranking">
             <join-column name="season_id" referenced-column-name="id" />
         </one-to-one>
-        <one-to-many target-entity="HexagonalPlayground\Domain\RankingPosition" mapped-by="ranking" field="positions" orphan-removal="true">
+        <one-to-many target-entity="HexagonalPlayground\Domain\RankingPosition" mapped-by="ranking" field="positions" index-by="team_id" orphan-removal="true">
             <cascade>
                 <cascade-all/>
             </cascade>
