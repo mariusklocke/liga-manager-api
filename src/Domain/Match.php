@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use InvalidArgumentException;
 
 class Match
 {
@@ -64,13 +65,13 @@ class Match
     /**
      * @param DateTimeImmutable $kickoff
      * @return Match
-     * @throws DomainException If the given kickoff date lies in the past
+     * @throws InvalidArgumentException If the given kickoff date lies in the past
      */
     public function schedule(DateTimeImmutable $kickoff) : Match
     {
         $now = new DateTimeImmutable();
         if ($kickoff < $now) {
-            throw new DomainException('Cannot schedule matches in the past');
+            throw new InvalidArgumentException('Cannot schedule matches in the past');
         }
         $this->kickoff = $kickoff;
         return $this;
@@ -97,11 +98,6 @@ class Match
     {
         $this->pitch = $pitch;
         return $this;
-    }
-
-    public function isRemovable() : bool
-    {
-        return ($this->cancelledAt === null && $this->matchResult === null);
     }
 
     /**
@@ -154,5 +150,21 @@ class Match
         $clone->homeTeam = $this->guestTeam;
         $clone->guestTeam = $this->homeTeam;
         return $clone;
+    }
+
+    /**
+     * @return Season
+     */
+    public function getSeason() : Season
+    {
+        return $this->season;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasResult() : bool
+    {
+        return ($this->matchResult !== null);
     }
 }

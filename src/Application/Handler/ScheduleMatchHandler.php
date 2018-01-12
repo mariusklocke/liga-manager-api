@@ -6,8 +6,8 @@ use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
-use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Match;
+use InvalidArgumentException;
 
 class ScheduleMatchHandler
 {
@@ -26,7 +26,7 @@ class ScheduleMatchHandler
      * @param ScheduleMatchCommand $command
      * @throws NotFoundException
      * @throws PersistenceExceptionInterface
-     * @throws DomainException
+     * @throws InvalidArgumentException
      */
     public function handle(ScheduleMatchCommand $command)
     {

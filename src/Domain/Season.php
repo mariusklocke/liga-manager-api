@@ -141,4 +141,12 @@ class Season
         $this->state = self::STATE_ENDED;
         return $this;
     }
+
+    /**
+     * @return Ranking|null
+     */
+    public function getRanking() : ?Ranking
+    {
+        return $this->ranking;
+    }
 }

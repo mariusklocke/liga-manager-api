@@ -2,23 +2,33 @@
 
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
+use HexagonalPlayground\Application\Handler\LocateMatchHandler;
+use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
 use HexagonalPlayground\Application\Bus\BatchCommandBus;
+use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
 use HexagonalPlayground\Application\Command\DeleteTeamCommand;
+use HexagonalPlayground\Application\Command\LocateMatchCommand;
+use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
 use HexagonalPlayground\Application\Bus\SingleCommandBus;
+use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\FixtureGenerator;
 use HexagonalPlayground\Application\FixtureLoader;
+use HexagonalPlayground\Application\Handler\CancelMatchHandler;
 use HexagonalPlayground\Application\Handler\CreateMatchesForSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreateSingleMatchHandler;
 use HexagonalPlayground\Application\Handler\CreateTeamHandler;
 use HexagonalPlayground\Application\Handler\DeleteSeasonHandler;
 use HexagonalPlayground\Application\Handler\DeleteTeamHandler;
+use HexagonalPlayground\Application\Handler\ScheduleMatchHandler;
 use HexagonalPlayground\Application\Handler\StartSeasonHandler;
 use HexagonalPlayground\Application\Repository\MatchRepository;
 use HexagonalPlayground\Application\Repository\PitchRepository;
@@ -27,6 +37,7 @@ use HexagonalPlayground\Application\Repository\SeasonRepository;
 use HexagonalPlayground\Application\Repository\TeamRepository;
 use HexagonalPlayground\Application\Factory\MatchFactory;
 use HexagonalPlayground\Application\UuidGenerator;
+use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\SeasonCommandController;
@@ -74,6 +85,18 @@ $container[CreateSingleMatchCommand::class] = function() use ($container) {
 $container[DeleteSeasonCommand::class] = function() use ($container) {
     return new DeleteSeasonHandler($container['objectPersistence']);
 };
+$container[ScheduleMatchCommand::class] = function() use ($container) {
+    return new ScheduleMatchHandler($container['objectPersistence']);
+};
+$container[SubmitMatchResultCommand::class] = function () use ($container) {
+    return new SubmitMatchResultHandler($container['objectPersistence']);
+};
+$container[LocateMatchCommand::class] = function () use ($container) {
+    return new LocateMatchHandler($container['objectPersistence']);
+};
+$container[CancelMatchCommand::class] = function () use ($container) {
+    return new CancelMatchHandler($container['objectPersistence']);
+};
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
 };
@@ -90,7 +113,12 @@ $container[MatchRepository::class] = function() use ($container) {
     return new MatchRepository($container['readDbAdapter']);
 };
 $container['doctrine.entityManager'] = function() use ($container) {
-    return EntityManager::create($container['doctrine.connection'], $container['doctrine.config']);
+    $em = EntityManager::create($container['doctrine.connection'], $container['doctrine.config']);
+    $em->getEventManager()->addEventListener(
+        [Events::postLoad],
+        new DoctrineEmbeddableListener($em, $container['logger'])
+    );
+    return $em;
 };
 $container['doctrine.connection'] = function() use ($container) {
     return DriverManager::getConnection(['pdo' => $container['pdo']], $container['doctrine.config']);
@@ -108,6 +136,9 @@ $container['uuidGenerator'] = function() {
 };
 $container['objectPersistence'] = function() use ($container) {
     return new DoctrineObjectPersistence($container['doctrine.entityManager']);
+};
+$container[MatchCommandController::class] = function() use ($container) {
+    return new MatchCommandController($container['commandBus']);
 };
 $container[MatchQueryController::class] = function() use ($container) {
     return new MatchQueryController($container[MatchRepository::class]);

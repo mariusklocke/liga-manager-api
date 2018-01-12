@@ -8,6 +8,7 @@
 
 namespace HexagonalPlayground\Infrastructure\API;
 
+use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\SeasonCommandController;
@@ -95,6 +96,26 @@ class RouteProvider
             /** @var SeasonCommandController $controller */
             $controller = $container[SeasonCommandController::class];
             return $controller->createMatches($args['id']);
+        });
+        $app->post('/match/{id}/kickoff', function ($request, $response, $args) use ($container) {
+            /** @var MatchCommandController $controller */
+            $controller = $container[MatchCommandController::class];
+            return $controller->schedule($args['id'], $request);
+        });
+        $app->post('/match/{id}/location', function ($request, $response, $args) use ($container) {
+            /** @var MatchCommandController $controller */
+            $controller = $container[MatchCommandController::class];
+            return $controller->locate($args['id'], $request);
+        });
+        $app->post('/match/{id}/result', function ($request, $response, $args) use ($container) {
+            /** @var MatchCommandController $controller */
+            $controller = $container[MatchCommandController::class];
+            return $controller->submitResult($args['id'], $request);
+        });
+        $app->post('/match/{id}/cancellation', function ($request, $response, $args) use ($container) {
+            /** @var MatchCommandController $controller */
+            $controller = $container[MatchCommandController::class];
+            return $controller->cancel($args['id']);
         });
     }
 }
