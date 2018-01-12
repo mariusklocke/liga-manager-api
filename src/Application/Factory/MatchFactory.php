@@ -8,6 +8,7 @@
 
 namespace HexagonalPlayground\Application\Factory;
 
+use Generator;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
@@ -31,8 +32,9 @@ class MatchFactory extends EntityFactory
     }
 
     /**
-     * Implements a match day generation algorithm
+     * Create all matches for a given season (including rematches)
      *
+     * Implements an algorithm found on Wikipedia
      * @link https://de.wikipedia.org/wiki/Spielplan_(Sport)
      *
      * @param Season $season
@@ -40,53 +42,37 @@ class MatchFactory extends EntityFactory
      */
     public function createMatchesForSeason(Season $season) : array
     {
-        $shuffledTeams = array_values($season->getTeams());
-        shuffle($shuffledTeams);
-        if (count($shuffledTeams) % 2 != 0) {
-            $shuffledTeams[] = null;
+        $teams = array_values($season->getTeams());
+        if (count($teams) % 2 != 0) {
+            $teams[] = null;
         }
-        $teamCount = count($shuffledTeams);
-        $matchDaysPerHalf = $teamCount - 1;
+        shuffle($teams);
+        $matchDaysPerHalf = count($teams) - 1;
 
-        $matchDays = [];
-        $allMatches = [];
-        for ($n = 1; $n <= $matchDaysPerHalf; $n++) {
-            $matchDays[$n] = $this->generateMatchDay($n, $shuffledTeams, $season);
-            $rematchDay = $n+$matchDaysPerHalf;
-            $matchDays[$rematchDay] = $this->generateRematches($matchDays[$n], $rematchDay);
-            $allMatches = array_merge($allMatches, $matchDays[$n], $matchDays[$rematchDay]);
+        $firstHalf = [];
+        $secondHalf = [];
+        for ($matchDay = 1; $matchDay <= $matchDaysPerHalf; $matchDay++) {
+            $rematchDay = $matchDay + $matchDaysPerHalf;
+            foreach ($this->generateMatchDay($matchDay, $teams, $season) as $match) {
+                /** @var Match $match */
+                $firstHalf[] = $match;
+                $secondHalf[] = $match->rematch($this->getIdGenerator(), $rematchDay);
+            }
         }
 
-        return $allMatches;
+        return array_merge($firstHalf, $secondHalf);
     }
 
     /**
-     * @param Match[] $matches
-     * @param int     $matchDay
-     * @return Match[]
-     */
-    private function generateRematches(array $matches, int $matchDay) : array
-    {
-        $rematches = [];
-        foreach ($matches as $match) {
-            $rematches[] = $match->rematch($this->getIdGenerator(), $matchDay);
-        }
-        return $rematches;
-    }
-
-    /**
-     * Implements a match day generation algorithm
-     *
-     * @link https://de.wikipedia.org/wiki/Spielplan_(Sport)
+     * Generates a set of Match objects for a given matchDay
      *
      * @param int    $matchDay
      * @param array  $teams    0-based array of teams
      * @param Season $season
-     * @return Match[]
+     * @return Generator
      */
-    private function generateMatchDay(int $matchDay, array $teams, Season $season) : array
+    private function generateMatchDay(int $matchDay, array $teams, Season $season) : Generator
     {
-        $matchList = [];
         $matchDayCount = count($teams) - 1;
         $teamCount = count($teams);
         for ($k = 1; $k < $teamCount; $k++) {
@@ -96,7 +82,7 @@ class MatchFactory extends EntityFactory
                     $homeTeam = $sumIsEven ? $teams[$k-1] : $teams[$l-1];
                     $guestTeam = $sumIsEven ? $teams[$l-1] : $teams[$k-1];
                     if (null !== $homeTeam && null !== $guestTeam) {
-                        $matchList[] = $this->createMatch($season, $matchDay, $homeTeam, $guestTeam);
+                        yield $this->createMatch($season, $matchDay, $homeTeam, $guestTeam);
                     }
                     unset($teams[$k-1]);
                     unset($teams[$l-1]);
@@ -106,7 +92,7 @@ class MatchFactory extends EntityFactory
 
         if (count($teams) != 2) {
             throw new UnexpectedValueException(sprintf(
-                'Matchday algorithm failed: Expected 2 teams left. Actual: %d teams',
+                'MatchDay generation algorithm failed: Expected 2 teams left. Actual: %d teams',
                 count($teams)
             ));
         }
@@ -116,9 +102,7 @@ class MatchFactory extends EntityFactory
         $homeTeam = $l+1 > $matchDayCount/2 ? $teams[$k] : $teams[$l];
         $guestTeam = $l+1 > $matchDayCount/2 ? $teams[$l] : $teams[$k];
         if (null !== $homeTeam && null !== $guestTeam) {
-            $matchList[] = $this->createMatch($season, $matchDay, $homeTeam, $guestTeam);
+            yield $this->createMatch($season, $matchDay, $homeTeam, $guestTeam);
         }
-
-        return $matchList;
     }
 }
