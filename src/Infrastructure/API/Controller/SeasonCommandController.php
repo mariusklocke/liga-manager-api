@@ -19,7 +19,7 @@ class SeasonCommandController extends CommandController
         try {
             $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId));
         } catch (InvalidStateException $e) {
-            return (new Response(400))->withJson($e->getMessage());
+            return $this->createBadRequestResponse($e->getMessage());
         }
         return new Response(204);
     }
@@ -33,7 +33,7 @@ class SeasonCommandController extends CommandController
         try {
             $this->commandBus->execute(new StartSeasonCommand($seasonId));
         } catch (InvalidStateException $e) {
-            return (new Response(400))->withJson($e->getMessage());
+            return $this->createBadRequestResponse($e->getMessage());
         }
         return new Response(204);
     }
@@ -47,7 +47,7 @@ class SeasonCommandController extends CommandController
         try {
             $this->commandBus->execute(new DeleteSeasonCommand($seasonId));
         } catch (InvalidStateException $e) {
-            return (new Response(400))->withJson($e->getMessage());
+            return $this->createBadRequestResponse($e->getMessage());
         }
         return new Response(204);
     }
