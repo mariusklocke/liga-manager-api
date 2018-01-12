@@ -17,8 +17,8 @@ class MatchRepository extends AbstractRepository
      */
     public function findMatches(string $seasonId, int $matchDay) : array
     {
-        $query = 'SELECT * FROM `matches` WHERE season_id = ? AND match_day = ?';
-        return $this->getDb()->fetchAll($query, [$seasonId, $matchDay]);
+        $query = 'SELECT * FROM `matches` WHERE season_id = :seasonId AND match_day = :matchDay';
+        return $this->getDb()->fetchAll($query, ['seasonId' => $seasonId, 'matchDay' => $matchDay]);
     }
 
     /**
@@ -27,7 +27,7 @@ class MatchRepository extends AbstractRepository
      */
     public function findMatchById(string $matchId)
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM `matches` WHERE `id` = ?', [$matchId]);
+        return $this->getDb()->fetchFirstRow('SELECT * FROM `matches` WHERE `id` = :id', ['id' => $matchId]);
     }
 
     /**
@@ -36,8 +36,8 @@ class MatchRepository extends AbstractRepository
      */
     public function countMatchesInSeason(string $seasonId) : int
     {
-        $query = 'SELECT COUNT(id) FROM `matches` WHERE `season_id` = ?';
-        $count = $this->getDb()->fetchSingleColumn($query, [$seasonId]);
+        $query = 'SELECT COUNT(id) FROM `matches` WHERE `season_id` = :seasonId';
+        $count = $this->getDb()->fetchSingleColumn($query, ['seasonId' => $seasonId]);
         return (int) $count;
     }
 
@@ -47,8 +47,8 @@ class MatchRepository extends AbstractRepository
      */
     public function countMatchDaysInSeason(string $seasonId) : int
     {
-        $query = 'SELECT COUNT(DISTINCT `match_day`) FROM `matches` WHERE `season_id` = ?';
-        $count = $this->getDb()->fetchSingleColumn($query, [$seasonId]);
+        $query = 'SELECT COUNT(DISTINCT `match_day`) FROM `matches` WHERE `season_id` = :seasonId';
+        $count = $this->getDb()->fetchSingleColumn($query, ['seasonId' => $seasonId]);
         return (int) $count;
     }
 }
