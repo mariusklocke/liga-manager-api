@@ -138,7 +138,9 @@ $container['sqlite'] = function () {
     return new SQLite3(__DIR__ . '/../data/db.sqlite');
 };
 $container['readDbAdapter'] = function() use ($container) {
-    return new SqliteReadDbAdapter($container['sqlite']);
+    $db = new SqliteReadDbAdapter($container['sqlite']);
+    $db->setLogger($container['logger']);
+    return $db;
 };
 $container['commandBus'] = function() use ($container) {
     return new SingleCommandBus($container, $container['objectPersistence']);

@@ -5,11 +5,15 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use PDO;
 use PDOStatement;
+use Psr\Log\LoggerInterface;
 
 class PdoReadDbAdapter implements ReadDbAdapterInterface
 {
     /** @var PDO */
     private $pdo;
+
+    /** @var LoggerInterface */
+    private $logger;
 
     public function __construct(PDO $pdo)
     {
@@ -18,11 +22,7 @@ class PdoReadDbAdapter implements ReadDbAdapterInterface
 
     public function fetchAll(string $query, array $params = [])
     {
-        $statement = $this->pdo->prepare($query);
-        if (!empty($params)) {
-            $this->bindParameters($statement, $params);
-        }
-        $statement->execute();
+        $statement = $this->executeQuery($query, $params);
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -33,11 +33,7 @@ class PdoReadDbAdapter implements ReadDbAdapterInterface
      */
     public function fetchFirstRow(string $query, array $params = [])
     {
-        $statement = $this->pdo->prepare($query);
-        if (!empty($params)) {
-            $this->bindParameters($statement, $params);
-        }
-        $statement->execute();
+        $statement = $this->executeQuery($query, $params);
         $firstRow = $statement->fetch(PDO::FETCH_ASSOC);
         return is_array($firstRow) ? $firstRow : null;
     }
@@ -49,11 +45,7 @@ class PdoReadDbAdapter implements ReadDbAdapterInterface
      */
     public function fetchSingleColumn(string $query, array $params = [])
     {
-        $statement = $this->pdo->prepare($query);
-        if (!empty($params)) {
-            $this->bindParameters($statement, $params);
-        }
-        $statement->execute();
+        $statement = $this->executeQuery($query, $params);
         $value = $statement->fetchColumn();
         return ($value !== false) ? $value : null;
     }
@@ -85,5 +77,36 @@ class PdoReadDbAdapter implements ReadDbAdapterInterface
             'null' => PDO::PARAM_NULL
         ];
         return isset($paramTypeMap[$valueType]) ? $paramTypeMap[$valueType] : PDO::PARAM_STR;
+    }
+
+    /**
+     * @param string $query
+     * @param array $params
+     * @return PDOStatement
+     */
+    private function executeQuery(string $query, array $params)
+    {
+        $statement = $this->pdo->prepare($query);
+        if (!empty($params)) {
+            $this->bindParameters($statement, $params);
+        }
+        if ($this->logger !== null) {
+            $this->logger->info('Executing query ' . $query);
+            if (count($params) > 0) {
+                $this->logger->info('With Parameters ' . print_r($params, true));
+            }
+        }
+        $statement->execute();
+        return $statement;
+    }
+
+    /**
+     * Registers a Logger to use for logging all queries
+     *
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }

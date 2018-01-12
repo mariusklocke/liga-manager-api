@@ -9,6 +9,7 @@
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use HexagonalPlayground\Application\ReadDbAdapterInterface;
+use Psr\Log\LoggerInterface;
 use SQLite3;
 use SQLite3Result;
 use SQLite3Stmt;
@@ -17,6 +18,9 @@ class SqliteReadDbAdapter implements ReadDbAdapterInterface
 {
     /** @var SQLite3 */
     private $sqlite;
+
+    /** @var LoggerInterface */
+    private $logger;
 
     public function __construct(SQLite3 $sqlite)
     {
@@ -73,6 +77,12 @@ class SqliteReadDbAdapter implements ReadDbAdapterInterface
         if (!empty($params)) {
             $this->bindParameters($statement, $params);
         }
+        if ($this->logger !== null) {
+            $this->logger->info('Executing query ' . $query);
+            if (count($params) > 0) {
+                $this->logger->info('With Parameters ' . print_r($params, true));
+            }
+        }
         $result = $statement->execute();
         return $result;
     }
@@ -104,5 +114,15 @@ class SqliteReadDbAdapter implements ReadDbAdapterInterface
             'null' => SQLITE3_NULL
         ];
         return isset($paramTypeMap[$valueType]) ? $paramTypeMap[$valueType] : SQLITE3_TEXT;
+    }
+
+    /**
+     * Registers a Logger to use for logging all queries
+     *
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 }
