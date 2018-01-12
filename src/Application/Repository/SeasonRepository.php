@@ -18,7 +18,7 @@ class SeasonRepository extends AbstractRepository
      */
     public function findSeasonById(string $id)
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM `seasons` WHERE `id` = :id', ['id' => $id]);
+        return $this->getDb()->fetchFirstRow('SELECT * FROM `seasons` WHERE `id` = ?', [$id]);
     }
 
     /**
@@ -27,7 +27,7 @@ class SeasonRepository extends AbstractRepository
      */
     public function countTeamsInSeason(string $seasonId) : int
     {
-        $query = 'SELECT COUNT(team_id) FROM seasons_teams_link WHERE season_id = :seasonId';
-        return (int) $this->getDb()->fetchSingleColumn($query, ['seasonId' => $seasonId]);
+        $query = 'SELECT COUNT(team_id) FROM seasons_teams_link WHERE season_id = ?';
+        return (int) $this->getDb()->fetchSingleColumn($query, [$seasonId]);
     }
 }

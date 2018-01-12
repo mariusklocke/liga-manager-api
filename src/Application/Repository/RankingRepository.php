@@ -17,8 +17,8 @@ class RankingRepository extends AbstractRepository
     public function findRanking(string $seasonId)
     {
         return $this->getDb()->fetchFirstRow(
-            'SELECT * FROM rankings WHERE season_id = :seasonId',
-            ['seasonId' => $seasonId]
+            'SELECT * FROM rankings WHERE season_id = ?',
+            [$seasonId]
         );
     }
 
@@ -29,8 +29,8 @@ class RankingRepository extends AbstractRepository
     public function findRankingPositions(string $seasonId) : array
     {
         return $this->getDb()->fetchAll(
-            'SELECT * FROM ranking_positions WHERE season_id = :seasonId ORDER BY sort_index ASC',
-            ['seasonId' => $seasonId]
+            'SELECT * FROM ranking_positions WHERE season_id = ? ORDER BY sort_index ASC',
+            [$seasonId]
         );
     }
 }
