@@ -11,27 +11,26 @@
   },
   "tags": [
     {
-      "name": "find",
-      "description": "Routes which find resources"
+      "name": "team"
     },
     {
-      "name": "delete",
-      "description": "Routes which delete resources"
+      "name": "season"
     },
     {
-      "name": "create",
-      "description": "Routes which create resources"
+      "name": "ranking"
     },
     {
-      "name": "others",
-      "description": "Routes which perform other state-changing actions"
+      "name": "match"
+    },
+    {
+      "name": "pitch"
     }
   ],
   "paths": {
     "/team": {
       "get": {
         "tags": [
-          "find"
+          "team"
         ],
         "summary": "Finds all teams",
         "responses": {
@@ -42,7 +41,7 @@
       },
       "post": {
         "tags": [
-          "create"
+          "team"
         ],
         "summary": "Creates a new team",
         "requestBody": {
@@ -75,7 +74,7 @@
     "/team/{id}": {
       "get": {
         "tags": [
-          "find"
+          "team"
         ],
         "summary": "Finds a single team by id",
         "parameters": [
@@ -97,9 +96,9 @@
       },
       "delete": {
         "tags": [
-          "delete"
+          "team"
         ],
-        "summary": "deletes a single team by id",
+        "summary": "Delete a single team by id",
         "parameters": [
           {
             "name": "id",
@@ -121,7 +120,7 @@
     "/team/{id}/rename": {
       "post": {
         "tags": [
-          "others"
+          "team"
         ],
         "summary": "Renames a single team",
         "parameters": [
@@ -148,7 +147,7 @@
     "/season": {
       "get": {
         "tags": [
-          "find"
+          "season"
         ],
         "summary": "Find all seasons",
         "responses": {
@@ -159,7 +158,7 @@
       },
       "post": {
         "tags": [
-          "create"
+          "season"
         ],
         "summary": "Create a new season",
         "responses": {
@@ -172,7 +171,7 @@
     "/season/{id}/team": {
       "get": {
         "tags": [
-          "find"
+          "team"
         ],
         "summary": "Find all teams related to a single season",
         "parameters": [
@@ -196,7 +195,7 @@
     "/season/{id}/ranking": {
       "get": {
         "tags": [
-          "find"
+          "ranking"
         ],
         "summary": "Returns the current season ranking",
         "parameters": [
@@ -220,7 +219,7 @@
     "/season/{id}/matches": {
       "post": {
         "tags": [
-          "create"
+          "match"
         ],
         "summary": "Creates matches for a given season",
         "parameters": [
@@ -244,7 +243,7 @@
     "/season/{id}/matches/{match_day}": {
       "get": {
         "tags": [
-          "find"
+          "match"
         ],
         "summary": "Returns matches for a matchday",
         "parameters": [
@@ -277,7 +276,7 @@
     "/season/{id}": {
       "delete": {
         "tags": [
-          "delete"
+          "season"
         ],
         "summary": "Delete a single season",
         "parameters": [
@@ -298,7 +297,7 @@
         }
       },
       "get": {
-        "tags": ["find"],
+        "tags": ["season"],
         "summary": "Finds a single season",
         "parameters": [
           {
@@ -324,7 +323,7 @@
     "/match/{id}": {
       "get": {
         "tags": [
-          "find"
+          "match"
         ],
         "summary": "Find a single match by id",
         "parameters": [
@@ -351,7 +350,7 @@
     "/match/{id}/result": {
       "post": {
         "tags": [
-          "others"
+          "match"
         ],
         "summary": "Submit a matches result",
         "parameters": [
@@ -375,7 +374,7 @@
     "/match/{id}/cancellation": {
       "post": {
         "tags": [
-          "others"
+          "match"
         ],
         "summary": "Cancel a match",
         "parameters": [
@@ -399,7 +398,7 @@
     "/match/{id}/kickoff": {
       "post": {
         "tags": [
-          "others"
+          "match"
         ],
         "summary": "Schedule a match",
         "parameters": [
@@ -423,7 +422,7 @@
     "/match/{id}/location": {
       "post": {
         "tags": [
-          "others"
+          "match"
         ],
         "summary": "Locate a match on a pitch",
         "parameters": [
@@ -447,7 +446,7 @@
     "/pitch": {
       "get": {
         "tags": [
-          "find"
+          "pitch"
         ],
         "summary": "Find all pitches",
         "responses": {
@@ -458,7 +457,7 @@
       },
       "post": {
         "tags": [
-          "create"
+          "pitch"
         ],
         "summary": "Creates a new pitch",
         "responses": {
@@ -471,7 +470,7 @@
     "/pitch/{id}": {
       "get": {
         "tags": [
-          "find"
+          "pitch"
         ],
         "summary": "Find a single pitch by id",
         "parameters": [
@@ -496,7 +495,7 @@
       },
       "delete": {
         "tags": [
-          "delete"
+          "pitch"
         ],
         "summary": "Delete a single pitch",
         "parameters": [
