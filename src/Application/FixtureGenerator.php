@@ -9,9 +9,9 @@
 namespace HexagonalPlayground\Application;
 
 use Generator;
+use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Domain\GeographicLocation;
 use HexagonalPlayground\Domain\Pitch;
-use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\UuidGeneratorInterface;
 
@@ -20,9 +20,13 @@ class FixtureGenerator
     /** @var UuidGeneratorInterface */
     private $uuidGenerator;
 
-    public function __construct(UuidGeneratorInterface $uuidGenerator)
+    /** @var SeasonFactory */
+    private $seasonFactory;
+
+    public function __construct(UuidGeneratorInterface $uuidGenerator, SeasonFactory $seasonFactory)
     {
         $this->uuidGenerator = $uuidGenerator;
+        $this->seasonFactory = $seasonFactory;
     }
 
     /**
@@ -32,7 +36,7 @@ class FixtureGenerator
     {
         $years = ['17/18', '18/19', '19/20'];
         foreach ($years as $year) {
-            yield new Season($this->uuidGenerator, 'Season ' . $year);
+            yield $this->seasonFactory->createSeason('Season ' . $year);
         }
     }
 

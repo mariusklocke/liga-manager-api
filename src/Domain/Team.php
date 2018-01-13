@@ -34,11 +34,18 @@ class Team
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function getName() : string
     {
         return $this->name;
     }
 
+    /**
+     * @param string $newName
+     * @return Team
+     */
     public function rename(string $newName) : Team
     {
         $this->previousNames[] = $this->name;
@@ -46,6 +53,10 @@ class Team
         return $this;
     }
 
+    /**
+     * @param Team $otherTeam
+     * @return bool
+     */
     public function equals(Team $otherTeam) : bool
     {
         return $this->getId() === $otherTeam->getId();

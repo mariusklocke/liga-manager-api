@@ -22,10 +22,10 @@ class Season
     /** @var DateTimeImmutable */
     private $endDate;
 
-    /** @var Team[] */
+    /** @var CollectionInterface|Team[] */
     private $teams;
 
-    /** @var Match[] */
+    /** @var CollectionInterface|Match[] */
     private $matches;
 
     /** @var Ranking|null */
@@ -34,11 +34,12 @@ class Season
     /** @var string */
     private $state;
 
-    public function __construct(UuidGeneratorInterface $uuidGenerator, string $name)
+    public function __construct(UuidGeneratorInterface $uuidGenerator, string $name, callable $collectionFactory)
     {
         $this->id = $uuidGenerator->generateUuid();
         $this->name = $name;
-        $this->teams = [];
+        $this->teams = $collectionFactory();
+        $this->matches = $collectionFactory();
         $this->state = self::STATE_PREPARATION;
     }
 

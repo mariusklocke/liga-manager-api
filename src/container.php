@@ -5,6 +5,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
@@ -52,12 +53,20 @@ use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
 use HexagonalPlayground\Infrastructure\Persistence\SqliteReadDbAdapter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Ramsey\Uuid\UuidFactory;
+use Ramsey\Uuid\UuidFactory as RamseyUuidFactory;
 
 $container = new \Slim\Container([]);
 
 $container[FixtureLoader::class] = function() use ($container) {
-    return new FixtureLoader($container['objectPersistence'], new FixtureGenerator($container['uuidGenerator']));
+    return new FixtureLoader(
+        $container['objectPersistence'],
+        new FixtureGenerator(
+            $container['uuidGenerator'],
+            new SeasonFactory($container['uuidGenerator'], function() {
+                return new \Doctrine\Common\Collections\ArrayCollection();
+            })
+        )
+    );
 };
 $container[CreateTeamCommand::class] = function () use ($container) {
     return new CreateTeamHandler($container['objectPersistence'], $container['uuidGenerator']);
@@ -132,7 +141,7 @@ $container['doctrine.config'] = function() use ($container) {
     return $config;
 };
 $container['uuidGenerator'] = function() {
-    return new UuidGenerator(new UuidFactory());
+    return new UuidGenerator(new RamseyUuidFactory());
 };
 $container['objectPersistence'] = function() use ($container) {
     return new DoctrineObjectPersistence($container['doctrine.entityManager']);
