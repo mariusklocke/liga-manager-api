@@ -320,6 +320,34 @@
         }
       }
     },
+    "/season/{id}/start": {
+      "post": {
+        "tags": ["season"],
+        "summary": "Starts a season",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of season",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Season has been successfully started"
+          },
+          "400": {
+            "description": "Season cannot be started due to an invalid state"
+          },
+          "404": {
+            "description": "Season could not be found"
+          }
+        }
+      }
+    },
     "/match/{id}": {
       "get": {
         "tags": [
