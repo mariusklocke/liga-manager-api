@@ -2,4 +2,4 @@
 vendor
 data/*.sqlite
 *.phar
-*.phar.pubkey
+phpda*
