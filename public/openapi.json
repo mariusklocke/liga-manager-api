@@ -420,10 +420,10 @@
                 ],
                 "properties": {
                   "home_score": {
-                    "type": "int"
+                    "type": "integer"
                   },
                   "guest_score": {
-                    "type": "int"
+                    "type": "integer"
                   }
                 }
               }
