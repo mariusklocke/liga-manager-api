@@ -22,12 +22,11 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
     /**
      * @param string $class
      * @param mixed $id
-     * @param bool $lock
      * @return object
      * @throws DoctrineException
      * @throws NotFoundException
      */
-    public function find(string $class, $id, $lock = false)
+    public function find(string $class, $id)
     {
         try {
             $object = $this->entityManager->find($class, $id);

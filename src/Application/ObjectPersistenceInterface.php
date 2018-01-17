@@ -12,12 +12,11 @@ interface ObjectPersistenceInterface
      *
      * @param string $class
      * @param mixed  $id
-     * @param bool   $lock
      * @return object
      * @throws PersistenceExceptionInterface
      * @throws NotFoundException
      */
-    public function find(string $class, $id, $lock = false);
+    public function find(string $class, $id);
 
     /**
      * Schedule creation/update for an entity to persistence
