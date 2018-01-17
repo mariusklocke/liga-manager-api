@@ -1,10 +1,4 @@
 <?php
-/**
- * installPharTools.php
- *
- * @author    Marius Klocke <marius.klocke@eventim.de>
- * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
- */
 
 $tools = [
     "https://getcomposer.org/download/1.5.6/composer.phar" => __DIR__ . '/../composer.phar',

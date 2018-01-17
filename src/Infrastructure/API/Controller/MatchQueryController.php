@@ -1,10 +1,4 @@
 <?php
-/**
- * MatchQueryController.php
- *
- * @author    Marius Klocke <marius.klocke@eventim.de>
- * @copyright Copyright (c) 2017, CTS EVENTIM Solutions GmbH
- */
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
