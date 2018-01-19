@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace HexagonalPlayground\Application;
 
@@ -55,7 +56,7 @@ class FixtureGenerator
             yield new Pitch(
                 $this->uuidGenerator,
                 'Pitch ' . $color,
-                new GeographicLocation('12.34', '23.45')
+                new GeographicLocation(12.34, 23.45)
             );
         }
     }
