@@ -82,4 +82,16 @@ class Ranking
         }
         return implode(PHP_EOL, $parts);
     }
+
+    /**
+     * @return bool
+     */
+    public function isFinal(): bool
+    {
+        $matches = 0;
+        foreach ($this->positions as $position) {
+            $matches += $position->getMatchCount();
+        }
+        return $this->season->getMatchCount() === $matches;
+    }
 }

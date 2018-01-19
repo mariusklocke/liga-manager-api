@@ -140,4 +140,9 @@ class RankingPosition
     {
         return $this->scoredGoals - $this->concededGoals;
     }
+
+    public function getMatchCount(): int
+    {
+        return $this->matches;
+    }
 }

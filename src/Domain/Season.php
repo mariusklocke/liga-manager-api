@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
-use DateTimeImmutable;
-
 class Season
 {
     const STATE_PREPARATION = 'preparation';
@@ -16,12 +14,6 @@ class Season
 
     /** @var string */
     private $name;
-
-    /** @var DateTimeImmutable */
-    private $startDate;
-
-    /** @var DateTimeImmutable */
-    private $endDate;
 
     /** @var CollectionInterface|Team[] */
     private $teams;
@@ -68,9 +60,13 @@ class Season
 
     /**
      * @return Season
+     * @throws DomainException
      */
     public function clearTeams() : Season
     {
+        if ($this->hasStarted()) {
+            throw new DomainException("Cannot remove teams from a season which has already started");
+        }
         $this->teams->clear();
         return $this;
     }
@@ -109,6 +105,22 @@ class Season
     /**
      * @return bool
      */
+    public function hasEnded() : bool
+    {
+        return $this->state === self::STATE_ENDED;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInProgress(): bool
+    {
+        return $this->state === self::STATE_PROGRESS;
+    }
+
+    /**
+     * @return bool
+     */
     public function hasMatches() : bool
     {
         return count($this->matches) > 0;
@@ -124,7 +136,7 @@ class Season
     public function start(callable $collectionFactory)
     {
         if ($this->hasStarted()) {
-            throw new DomainException('Cannot start a season which has already started');
+            throw new DomainException('Cannot start a season which has already been started');
         }
         if (!$this->hasMatches()) {
             throw new DomainException('Cannot start a season which has no matches');
@@ -137,18 +149,39 @@ class Season
 
     /**
      * @return Season
+     * @throws DomainException
      */
     public function end() : Season
     {
+        if (!$this->hasStarted()) {
+            throw new DomainException("Cannot end a season which hasn't even started");
+        }
         $this->state = self::STATE_ENDED;
         return $this;
     }
 
     /**
-     * @return Ranking|null
+     * @param string $homeTeamId
+     * @param string $guestTeamId
+     * @param MatchResult $result
+     * @throws DomainException
      */
-    public function getRanking() : ?Ranking
+    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $result)
     {
-        return $this->ranking;
+        if (!$this->isInProgress()) {
+            throw new DomainException('Cannot add a result to a season which is not in progress');
+        }
+        $this->ranking->addResult($homeTeamId, $guestTeamId, $result);
+        if ($this->ranking->isFinal()) {
+            $this->end();
+        }
+    }
+
+    /**
+     * @return int
+     */
+    public function getMatchCount(): int
+    {
+        return count($this->matches);
     }
 }

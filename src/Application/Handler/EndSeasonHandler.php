@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\EndSeasonCommand;
+use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Season;
 
 class EndSeasonHandler
@@ -21,6 +23,10 @@ class EndSeasonHandler
     {
         /** @var Season $season */
         $season = $this->persistence->find(Season::class, $command->getSeasonId());
-        $season->end();
+        try {
+            $season->end();
+        } catch (DomainException $e) {
+            throw new InvalidStateException($e->getMessage());
+        }
     }
 }
