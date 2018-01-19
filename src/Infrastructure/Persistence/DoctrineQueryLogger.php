@@ -31,7 +31,8 @@ class DoctrineQueryLogger implements SQLLogger
         $this->startTime = microtime(true);
         $this->logger->info('Executing query ' . $sql);
         if (count($params) > 0) {
-            $this->logger->info('With Parameters ' . print_r($params, true));
+            $this->logger->info('With parameter values ' . var_export($params, true));
+            $this->logger->info('With parameter types ' . var_export($types, true));
         }
     }
 
