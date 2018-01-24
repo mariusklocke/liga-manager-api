@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
+use DateTimeInterface;
 use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use Psr\Log\LoggerInterface;
 use SQLite3;
@@ -73,12 +74,17 @@ class SqliteReadDbAdapter implements ReadDbAdapterInterface
             $this->bindParameters($statement, $params);
         }
         if ($this->logger !== null) {
+            $start = microtime(true);
             $this->logger->info('Executing query ' . $query);
             if (count($params) > 0) {
                 $this->logger->info('With Parameters ' . print_r($params, true));
             }
         }
         $result = $statement->execute();
+        if ($this->logger !== null) {
+            $elapsed = microtime(true) - $start;
+            $this->logger->info(sprintf('Finished query after %.3f seconds', $elapsed));
+        }
         return $result;
     }
 
@@ -92,12 +98,17 @@ class SqliteReadDbAdapter implements ReadDbAdapterInterface
             if (is_string($key)) {
                 $key = ':' . $key;
             }
+            if (is_object($value) && $value instanceof DateTimeInterface) {
+                $value = $value->format('Y-m-d H:i:s');
+            }
             $statement->bindValue($key, $value, $this->getParamType($value));
         }
     }
 
     /**
-     * @param $value
+     * Returns one of the SQLITE3_* parameter type constants
+     *
+     * @param mixed $value
      * @return int
      */
     private function getParamType($value)
@@ -106,6 +117,8 @@ class SqliteReadDbAdapter implements ReadDbAdapterInterface
         $paramTypeMap = [
             'integer' => SQLITE3_INTEGER,
             'string' => SQLITE3_TEXT,
+            'double' => SQLITE3_FLOAT,
+            'float' => SQLITE3_FLOAT,
             'null' => SQLITE3_NULL
         ];
         return isset($paramTypeMap[$valueType]) ? $paramTypeMap[$valueType] : SQLITE3_TEXT;
