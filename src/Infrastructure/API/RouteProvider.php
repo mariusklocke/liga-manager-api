@@ -57,10 +57,10 @@ class RouteProvider
             $controller = $container[SeasonQueryController::class];
             return $controller->findRanking($args['id']);
         });
-        $app->get('/season/{seasonId}/matches/{matchDay}', function ($request, $response, $args) use ($container) {
+        $app->get('/season/{seasonId}/matches', function ($request, $response, $args) use ($container) {
             /** @var MatchQueryController $controller */
             $controller = $container[MatchQueryController::class];
-            return $controller->findMatches($args['seasonId'], (int)$args['matchDay']);
+            return $controller->findMatches($args['seasonId'], $request);
         });
         $app->get('/match/{id}', function ($request, $response, $args) use ($container) {
             /** @var MatchQueryController $controller */

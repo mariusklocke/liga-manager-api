@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Repository;
 
+use DateTimeInterface;
+
 class MatchRepository extends AbstractRepository
 {
     /**
@@ -10,10 +12,36 @@ class MatchRepository extends AbstractRepository
      * @param int    $matchDay
      * @return array
      */
-    public function findMatches(string $seasonId, int $matchDay) : array
+    public function findMatchesByMatchDay(string $seasonId, int $matchDay) : array
     {
-        $query = 'SELECT * FROM `matches` WHERE season_id = :seasonId AND match_day = :matchDay';
+        $query = 'SELECT * FROM `matches` WHERE `season_id` = :seasonId AND `match_day` = :matchDay';
         return $this->getDb()->fetchAll($query, ['seasonId' => $seasonId, 'matchDay' => $matchDay]);
+    }
+
+    /**
+     * @param string $seasonId
+     * @param string $teamId
+     * @return array
+     */
+    public function findMatchesByTeam(string $seasonId, string $teamId) : array
+    {
+        $query = <<<'SQL'
+  SELECT * FROM `matches` WHERE `season_id` = :seasonId AND (`home_team_id` = :teamId OR `guest_team_id` = :teamId)
+SQL;
+        return $this->getDb()->fetchAll($query, ['seasonId' => $seasonId, 'teamId' => $teamId]);
+    }
+
+    /**
+     * @param string $seasonId
+     * @param DateTimeInterface $from
+     * @param DateTimeInterface $to
+     * @return array
+     */
+    public function findMatchesByDate(string $seasonId, DateTimeInterface $from, DateTimeInterface $to) : array
+    {
+        $query = 'SELECT * FROM `matches` WHERE `season_id` = :seasonId AND `kickoff` BETWEEN :from AND :to';
+        $params = ['seasonId' => $seasonId, 'from' => $from, 'to' => $to];
+        return $this->getDb()->fetchAll($query, $params);
     }
 
     /**

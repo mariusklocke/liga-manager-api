@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
+use DateTimeImmutable;
+use Exception;
 use HexagonalPlayground\Application\Repository\MatchRepository;
+use Slim\Http\Request;
 use Slim\Http\Response;
 
 class MatchQueryController
@@ -30,12 +33,31 @@ class MatchQueryController
     }
 
     /**
-     * @param string $seasonId
-     * @param int    $matchDay
+     * @param string  $seasonId
+     * @param Request $request
      * @return Response
      */
-    public function findMatches(string $seasonId, int $matchDay) : Response
+    public function findMatches(string $seasonId, Request $request) : Response
     {
-        return (new Response(200))->withJson($this->matchRepository->findMatches($seasonId, $matchDay));
+        if (($matchDay = $request->getQueryParam('match_day')) !== null) {
+            return (new Response(200))->withJson($this->matchRepository->findMatchesByMatchDay($seasonId, (int) $matchDay));
+        }
+        if (($teamId = $request->getQueryParam('team_id')) !== null) {
+            return (new Response(200))->withJson($this->matchRepository->findMatchesByTeam($seasonId, $teamId));
+        }
+        if (
+            ($from = $request->getQueryParam('from')) !== null &&
+            ($to = $request->getQueryParam('to')) !== null
+        ) {
+            try {
+                $from = new DateTimeImmutable($from);
+                $to = new DateTimeImmutable($to);
+            } catch (Exception $e) {
+                return (new Response(400))->withJson($e->getMessage());
+            }
+            return (new Response(200))->withJson($this->matchRepository->findMatchesByDate($seasonId, $from, $to));
+        }
+
+        return (new Response(400))->withJson('Missing query parameter');
     }
 }
