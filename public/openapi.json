@@ -255,14 +255,12 @@
             "description": "Operation successful"
           }
         }
-      }
-    },
-    "/season/{id}/matches/{match_day}": {
+      },
       "get": {
         "tags": [
           "match"
         ],
-        "summary": "Returns matches for a matchday",
+        "summary": "Find matches",
         "parameters": [
           {
             "name": "id",
@@ -275,11 +273,35 @@
           },
           {
             "name": "match_day",
-            "in": "path",
+            "in": "query",
             "description": "Number identifying the matchday",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "name": "team_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
             }
           }
         ],
