@@ -13,6 +13,7 @@ use ReflectionProperty;
  *
  * When loading entities which include embeddables, Doctrine instantiates these embeddables objects
  * even when it has never been set on the entity (all fields of embeddable are null)
+ * This listener hooks into loading of entities and removes embeddables where all fields are null
  *
  * @link https://github.com/doctrine/doctrine2/issues/4568
  */
