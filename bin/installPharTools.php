@@ -1,4 +1,6 @@
+#!/usr/bin/env php
 <?php
+declare(strict_types=1);
 
 $tools = [
     "https://getcomposer.org/download/1.5.6/composer.phar" => __DIR__ . '/../composer.phar',
