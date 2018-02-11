@@ -3,7 +3,7 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
     <embeddable name="HexagonalPlayground\Domain\MatchResult">
-        <field name="homeScore" type="integer" nullable="true" />
-        <field name="guestScore" type="integer" nullable="true" />
+        <field name="homeScore" column="home_score" type="integer" nullable="true" />
+        <field name="guestScore" column="guest_score" type="integer" nullable="true" />
     </embeddable>
 </doctrine-mapping>
