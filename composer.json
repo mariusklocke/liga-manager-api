@@ -12,6 +12,9 @@
     },
     "require": {
         "php" : "^7.1",
+        "ext-sqlite3": "*",
+        "ext-pdo": "*",
+        "ext-pdo_sqlite": "*",
         "doctrine/orm": "^2.5",
         "ramsey/uuid": "^3.7",
         "slim/slim": "^3.9.2",
