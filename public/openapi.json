@@ -35,7 +35,17 @@
         "summary": "Finds all teams",
         "responses": {
           "200": {
-            "description": "list of teams"
+            "description": "list of teams",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/team"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -90,7 +100,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Single team"
+            "description": "Single team",
+            "content": {
+              "application/json" : {
+                "schema": {
+                  "$ref": "#/components/schemas/team"
+                }
+              }
+            }
           }
         }
       },
@@ -152,7 +169,17 @@
         "summary": "Find all seasons",
         "responses": {
           "200": {
-            "description": "List of seasons"
+            "description": "List of seasons",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/season"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -204,7 +231,17 @@
         ],
         "responses": {
           "200": {
-            "description": "List of teams related to the season"
+            "description": "Array of teams related to the season",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/team"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -228,7 +265,14 @@
         ],
         "responses": {
           "200": {
-            "description": "List of rankings for the specified season"
+            "description": "Current season ranking",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ranking"
+                }
+              }
+            }
           }
         }
       }
@@ -307,7 +351,17 @@
         ],
         "responses": {
           "200": {
-            "description": "List of rankings for the specified season"
+            "description": "Array of matches",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/match"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -351,7 +405,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Contains a single season object"
+            "description": "Contains a single season object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/season"
+                }
+              }
+            }
           },
           "404": {
             "description": "Season could not be found"
@@ -406,7 +467,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Contains a single match object"
+            "description": "Contains a single match object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/match"
+                }
+              }
+            }
           },
           "404": {
             "description": "Match could not be found"
@@ -574,7 +642,17 @@
         "summary": "Find all pitches",
         "responses": {
           "200": {
-            "description": "Array of pitches"
+            "description": "Array of pitches",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/pitch"
+                  }
+                }
+              }
+            }
           }
         }
       },
@@ -626,7 +704,14 @@
         ],
         "responses": {
           "200": {
-            "description": "Contains a single pitch object"
+            "description": "Contains a single pitch object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/pitch"
+                }
+              }
+            }
           },
           "404": {
             "description": "Pitch could not be found"
@@ -652,6 +737,146 @@
         "responses": {
           "204": {
             "description": "Deletion successful"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "team": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "season": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": ["preparation", "progress", "ended"]
+          }
+        }
+      },
+      "match": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "season_id": {
+            "type": "string"
+          },
+          "home_team_id": {
+            "type": "string"
+          },
+          "guest_team_id": {
+            "type": "string"
+          },
+          "pitch_id": {
+            "type": "string"
+          },
+          "match_day": {
+            "type": "integer"
+          },
+          "cancelled_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "home_score": {
+            "type": "integer"
+          },
+          "guest_score": {
+            "type": "integer"
+          }
+        }
+      },
+      "pitch": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "location_longitude": {
+            "type": "number"
+          },
+          "location_latitude": {
+            "type": "number"
+          }
+        }
+      },
+      "ranking": {
+        "type": "object",
+        "properties": {
+          "season_id": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "positions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ranking_position"
+            }
+          }
+        }
+      },
+      "ranking_position": {
+        "type": "object",
+        "properties": {
+          "season_id": {
+            "type": "string"
+          },
+          "team_id": {
+            "type": "string"
+          },
+          "sort_index": {
+            "type": "integer"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "matches": {
+            "type": "integer"
+          },
+          "wins": {
+            "type": "integer"
+          },
+          "draws": {
+            "type": "integer"
+          },
+          "losses": {
+            "type": "integer"
+          },
+          "scored_goals": {
+            "type": "integer"
+          },
+          "conceded_goals": {
+            "type": "integer"
+          },
+          "points": {
+            "type": "integer"
           }
         }
       }
