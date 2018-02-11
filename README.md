@@ -1,13 +1,25 @@
-# Useful Commands
+## Requirements
+* PHP 7.1 or later
+* sqlite3 extension
+* pdo extension
+
+## Install
+```bash
+php bin/installPharTools.php
+php composer.phar install
+npm install swagger-ui-dist
+mv node_modules/swagger-ui-dist public/docs
+php bin/console.php orm:schema-tool:create
+php bin/console.php app:load-fixtures
+```
+
+## Run Application
+```bash
+php -S localhost:8080 -t public public/index.php
+```
 
 ## Create Migration
 
 ```bash
-php vendor/doctrine/orm/bin/doctrine.php orm:schema-tool:update --dump-sql > data/migrations/update_$(date +%Y%m%d%H%M%S).sql
-```
-
-## Install Swagger UI
-```bash
-npm install swagger-ui-dist
-mv node_modules/swagger-ui-dist public/docs
+php bin/console.php orm:schema-tool:update --dump-sql > data/migrations/update_$(date +%Y%m%d%H%M%S).sql
 ```
