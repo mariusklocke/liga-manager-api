@@ -38,7 +38,9 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
         }
 
         if (!is_object($object)) {
-            throw new NotFoundException(sprintf('Cannot find entity "%s" with ID "%s"', $class, $id));
+            throw new NotFoundException(
+                sprintf('Cannot find entity %s with ID %s', $this->stripNamespace($class), $id)
+            );
         }
 
         return $object;
@@ -106,5 +108,16 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
     private function wrapDoctrineException(Exception $e)
     {
         return new DoctrineException("EntityManager threw unexpected Exception. See previous exception", 0, $e);
+    }
+
+    /**
+     * Strips the namespace part from a fully qualified class name
+     *
+     * @param string $className fully qualified class name
+     * @return string
+     */
+    private function stripNamespace(string $className) : string
+    {
+        return substr($className, strrpos($className, '\\') + 1);
     }
 }
