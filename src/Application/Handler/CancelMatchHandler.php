@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Match;
@@ -27,7 +26,6 @@ class CancelMatchHandler
     /**
      * @param CancelMatchCommand $command
      * @throws NotFoundException
-     * @throws PersistenceExceptionInterface
      */
     public function handle(CancelMatchCommand $command)
     {

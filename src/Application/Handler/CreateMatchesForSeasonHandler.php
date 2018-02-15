@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Application\Factory\MatchFactory;
 use HexagonalPlayground\Domain\Season;
@@ -30,7 +29,6 @@ class CreateMatchesForSeasonHandler
 
     /**
      * @param CreateMatchesForSeasonCommand $command
-     * @throws PersistenceExceptionInterface
      * @throws NotFoundException
      */
     public function handle(CreateMatchesForSeasonCommand $command)

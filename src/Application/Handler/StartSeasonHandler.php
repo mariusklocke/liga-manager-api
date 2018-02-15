@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
 use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Season;
@@ -32,7 +31,6 @@ class StartSeasonHandler
     /**
      * @param StartSeasonCommand $command
      * @throws NotFoundException
-     * @throws PersistenceExceptionInterface
      */
     public function handle(StartSeasonCommand $command)
     {

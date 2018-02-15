@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application;
 
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 
 interface ObjectPersistenceInterface
 {
@@ -14,7 +13,6 @@ interface ObjectPersistenceInterface
      * @param string $class
      * @param mixed  $id
      * @return object
-     * @throws PersistenceExceptionInterface
      * @throws NotFoundException
      */
     public function find(string $class, $id);
@@ -24,7 +22,6 @@ interface ObjectPersistenceInterface
      *
      * @param object $entity
      * @return mixed
-     * @throws PersistenceExceptionInterface
      */
     public function persist($entity);
 
@@ -33,7 +30,6 @@ interface ObjectPersistenceInterface
      *
      * @param object $entity
      * @return mixed
-     * @throws PersistenceExceptionInterface
      */
     public function remove($entity);
 
@@ -44,7 +40,6 @@ interface ObjectPersistenceInterface
      *
      * @param callable $callable
      * @return mixed
-     * @throws PersistenceExceptionInterface
      */
     public function transactional(callable $callable);
 }

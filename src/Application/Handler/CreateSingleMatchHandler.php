@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
 use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Match;
@@ -35,7 +34,6 @@ class CreateSingleMatchHandler
     /**
      * @param CreateSingleMatchCommand $command
      * @throws NotFoundException
-     * @throws PersistenceExceptionInterface
      */
     public function handle(CreateSingleMatchCommand $command)
     {

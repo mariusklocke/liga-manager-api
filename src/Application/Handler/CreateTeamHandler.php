@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
-use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\UuidGeneratorInterface;
@@ -29,7 +28,6 @@ class CreateTeamHandler
     /**
      * @param CreateTeamCommand $command
      * @return string Created team's ID
-     * @throws PersistenceExceptionInterface
      */
     public function handle(CreateTeamCommand $command)
     {

@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Bus;
 
 use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Application\Exception\CommandBusException;
-use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 
 class BatchCommandBus extends CommandBus
 {
@@ -19,7 +18,6 @@ class BatchCommandBus extends CommandBus
 
     /**
      * @return mixed
-     * @throws PersistenceExceptionInterface
      * @throws CommandBusException
      */
     public function execute()

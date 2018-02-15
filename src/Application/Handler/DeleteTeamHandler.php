@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\DeleteTeamCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Exception\PersistenceExceptionInterface;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Domain\Team;
 
@@ -24,7 +23,6 @@ class DeleteTeamHandler
 
     /**
      * @param DeleteTeamCommand $command
-     * @throws PersistenceExceptionInterface
      * @throws NotFoundException
      */
     public function handle(DeleteTeamCommand $command)
