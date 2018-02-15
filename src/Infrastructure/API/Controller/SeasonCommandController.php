@@ -8,7 +8,6 @@ use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
-use HexagonalPlayground\Application\Exception\InvalidStateException;
 use Slim\Http\Response;
 
 class SeasonCommandController extends CommandController
@@ -19,11 +18,7 @@ class SeasonCommandController extends CommandController
      */
     public function createMatches(string $seasonId) : Response
     {
-        try {
-            $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId));
-        } catch (InvalidStateException $e) {
-            return $this->createBadRequestResponse($e->getMessage());
-        }
+        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId));
         return new Response(204);
     }
 
@@ -33,11 +28,7 @@ class SeasonCommandController extends CommandController
      */
     public function start(string $seasonId) : Response
     {
-        try {
-            $this->commandBus->execute(new StartSeasonCommand($seasonId));
-        } catch (InvalidStateException $e) {
-            return $this->createBadRequestResponse($e->getMessage());
-        }
+        $this->commandBus->execute(new StartSeasonCommand($seasonId));
         return new Response(204);
     }
 
@@ -47,11 +38,7 @@ class SeasonCommandController extends CommandController
      */
     public function delete(string $seasonId) : Response
     {
-        try {
-            $this->commandBus->execute(new DeleteSeasonCommand($seasonId));
-        } catch (InvalidStateException $e) {
-            return $this->createBadRequestResponse($e->getMessage());
-        }
+        $this->commandBus->execute(new DeleteSeasonCommand($seasonId));
         return new Response(204);
     }
 
@@ -62,11 +49,7 @@ class SeasonCommandController extends CommandController
      */
     public function addTeam(string $seasonId, string $teamId) : Response
     {
-        try {
-            $this->commandBus->execute(new AddTeamToSeasonCommand($seasonId, $teamId));
-        } catch (InvalidStateException $e) {
-            return $this->createBadRequestResponse($e->getMessage());
-        }
+        $this->commandBus->execute(new AddTeamToSeasonCommand($seasonId, $teamId));
         return new Response(204);
     }
 
@@ -77,11 +60,7 @@ class SeasonCommandController extends CommandController
      */
     public function removeTeam(string $seasonId, string $teamId) : Response
     {
-        try {
-            $this->commandBus->execute(new RemoveTeamFromSeasonCommand($seasonId, $teamId));
-        } catch (InvalidStateException $e) {
-            return $this->createBadRequestResponse($e->getMessage());
-        }
+        $this->commandBus->execute(new RemoveTeamFromSeasonCommand($seasonId, $teamId));
         return new Response(204);
     }
 }

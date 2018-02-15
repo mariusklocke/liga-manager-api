@@ -8,7 +8,6 @@ use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
-use HexagonalPlayground\Application\Exception\InvalidStateException;
 use InvalidArgumentException;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -24,18 +23,14 @@ class MatchCommandController extends CommandController
     {
         $homeScore = $request->getParsedBodyParam('home_score');
         $guestScore = $request->getParsedBodyParam('guest_score');
-        if (!is_int($homeScore) || $homeScore < 0) {
+        if (!is_int($homeScore) || $homeScore < 0 || $homeScore > 99) {
             return $this->createBadRequestResponse('Invalid home score');
         }
-        if (!is_int($guestScore) || $guestScore < 0) {
+        if (!is_int($guestScore) || $guestScore < 0 || $homeScore > 99) {
             return $this->createBadRequestResponse('Invalid guest score');
         }
 
-        try {
-            $this->commandBus->execute(new SubmitMatchResultCommand($matchId, $homeScore, $guestScore));
-        } catch (InvalidStateException $e) {
-            return $this->createBadRequestResponse($e->getMessage());
-        }
+        $this->commandBus->execute(new SubmitMatchResultCommand($matchId, $homeScore, $guestScore));
 
         return new Response(204);
     }
@@ -46,12 +41,7 @@ class MatchCommandController extends CommandController
      */
     public function cancel(string $matchId) : Response
     {
-        try {
-            $this->commandBus->execute(new CancelMatchCommand($matchId));
-        } catch (InvalidStateException $e) {
-            return $this->createBadRequestResponse($e->getMessage());
-        }
-
+        $this->commandBus->execute(new CancelMatchCommand($matchId));
         return new Response(204);
     }
 

@@ -22,6 +22,6 @@ abstract class CommandController
      */
     protected function createBadRequestResponse(string $message)
     {
-        return (new Response(400))->withJson($message);
+        return (new Response(400))->withJson(['title' => 'Bad Request', 'message' => $message]);
     }
 }

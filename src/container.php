@@ -11,6 +11,7 @@ use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
+use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
@@ -50,9 +51,6 @@ use HexagonalPlayground\Infrastructure\API\Controller\SeasonCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
-use HexagonalPlayground\Infrastructure\API\InternalErrorHandler;
-use HexagonalPlayground\Infrastructure\API\MethodNotAllowedHandler;
-use HexagonalPlayground\Infrastructure\API\NotFoundErrorHandler;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
 use HexagonalPlayground\Infrastructure\Persistence\SqliteReadDbAdapter;
@@ -199,17 +197,14 @@ $container['commandBus'] = function() use ($container) {
 $container['batchCommandBus'] = function () use ($container) {
     return new BatchCommandBus($container, $container['objectPersistence']);
 };
-$container['notAllowedHandler'] = function() use ($container) {
-    return new MethodNotAllowedHandler();
-};
-$container['notFoundHandler'] = function() use ($container) {
-    return new NotFoundErrorHandler();
-};
-$container['errorHandler'] = $container['phpErrorHandler'] = function() use ($container) {
-    return new InternalErrorHandler(true);
-};
 $container['logger'] = function() {
     return new Logger('logger', [new StreamHandler('php://stdout')]);
 };
+$container['errorHandler'] = function() use ($container) {
+    return new ErrorHandler($container['logger']);
+};
+unset($container['phpErrorHandler']);
+unset($container['notAllowedHandler']);
+unset($container['notFoundHandler']);
 
 return $container;
