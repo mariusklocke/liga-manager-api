@@ -522,6 +522,74 @@
         "summary": "Find all teams related to a single season"
       }
     },
+    "/season/{season_id}/team/{team_id}": {
+      "put": {
+        "parameters": [
+          {
+            "description": "ID of season",
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of team",
+            "in": "path",
+            "name": "team_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "400": {
+            "description": "Operation not allowed in the current season state"
+          },
+          "404": {
+            "description": "Team or season not found"
+          }
+        },
+        "tags": [
+          "season"
+        ],
+        "summary": "Add a team to a season"
+      },
+      "delete": {
+        "parameters": [
+          {
+            "description": "ID of season",
+            "in": "path",
+            "name": "season_id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "description": "ID of team",
+            "in": "path",
+            "name": "team_id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "400": {
+            "description": "Operation not allowed in the current season state"
+          },
+          "404": {
+            "description": "Team or season not found"
+          }
+        },
+        "tags": [
+          "season"
+        ],
+        "summary": "Remove a team from a season"
+      }
+    },
     "/team": {
       "get": {
         "parameters": [],

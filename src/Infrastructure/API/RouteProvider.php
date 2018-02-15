@@ -112,5 +112,15 @@ class RouteProvider
             $controller = $container[MatchCommandController::class];
             return $controller->cancel($args['id']);
         });
+        $app->put('/season/{seasonId}/team/{teamId}', function ($request, $response, $args) use ($container) {
+            /** @var SeasonCommandController $controller */
+            $controller = $container[SeasonCommandController::class];
+            return $controller->addTeam($args['seasonId'], $args['teamId']);
+        });
+        $app->delete('/season/{seasonId}/team/{teamId}', function ($request, $response, $args) use ($container) {
+            /** @var SeasonCommandController $controller */
+            $controller = $container[SeasonCommandController::class];
+            return $controller->removeTeam($args['seasonId'], $args['teamId']);
+        });
     }
 }

@@ -6,7 +6,11 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
+use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
+use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
+use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
@@ -106,6 +110,12 @@ $container[LocateMatchCommand::class] = function () use ($container) {
 };
 $container[CancelMatchCommand::class] = function () use ($container) {
     return new CancelMatchHandler($container['objectPersistence']);
+};
+$container[AddTeamToSeasonCommand::class] = function () use ($container) {
+    return new AddTeamToSeasonHandler($container['objectPersistence']);
+};
+$container[RemoveTeamFromSeasonCommand::class] = function () use ($container) {
+    return new RemoveTeamFromSeasonHandler($container['objectPersistence']);
 };
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);

@@ -46,7 +46,23 @@ class Season
         if ($this->hasStarted()) {
             throw new DomainException('Cannot add teams to season which has already started');
         }
-        $this->teams[] = $team;
+        if (!$this->teams->contains($team)) {
+            $this->teams[] = $team;
+        }
+        return $this;
+    }
+
+    /**
+     * @param Team $team
+     * @return Season
+     * @throws DomainException
+     */
+    public function removeTeam(Team $team) : Season
+    {
+        if ($this->hasStarted()) {
+            throw new DomainException('Cannot remove team from season which has already started');
+        }
+        $this->teams->removeElement($team);
         return $this;
     }
 
