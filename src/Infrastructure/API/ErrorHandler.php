@@ -57,9 +57,7 @@ class ErrorHandler
     private function createInternalErrorResponse() : Response
     {
         $response = new Response(500);
-        return $response->withJson([
-            'title' => 'Internal Server Error'
-        ]);
+        return $response->withJson(['title' => 'Internal Server Error']);
     }
 
     /**
@@ -69,7 +67,9 @@ class ErrorHandler
     private function createMethodNotAllowedResponse(array $allowedMethods) : Response
     {
         $response = new Response(405);
-        return $response->withJson(['title' => 'Method Not Allowed', 'allowedMethods' => $allowedMethods]);
+        return $response
+            ->withHeader('Allow', implode(', ', $allowedMethods))
+            ->withJson(['title' => 'Method Not Allowed', 'allowed_methods' => $allowedMethods]);
     }
 
     /**

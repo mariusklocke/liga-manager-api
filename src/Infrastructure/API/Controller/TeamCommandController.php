@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Command\DeleteTeamCommand;
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -17,12 +16,7 @@ class TeamCommandController extends CommandController
      */
     public function delete(string $teamId) : Response
     {
-        try {
-            $this->commandBus->execute(new DeleteTeamCommand($teamId));
-        } catch (NotFoundException $e) {
-            return new Response(404);
-        };
-
+        $this->commandBus->execute(new DeleteTeamCommand($teamId));
         return new Response(204);
     }
 
@@ -33,11 +27,11 @@ class TeamCommandController extends CommandController
     public function create(Request $request) : Response
     {
         $teamName = $request->getParsedBodyParam('name');
-        if (!is_string($teamName) || strlen($teamName) === 0 || strlen($teamName) > 255) {
-            return new Response(400);
+        if (!is_string($teamName) || mb_strlen($teamName) === 0 || mb_strlen($teamName) > 255) {
+            return $this->createBadRequestResponse('Invalid team name');
         }
         $teamId = $this->commandBus->execute(new CreateTeamCommand($teamName));
-        return (new Response(204))->withHeader('X-Object-Id', $teamId);
+        return (new Response(200))->withJson(['id' => $teamId]);
     }
 
     /**

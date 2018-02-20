@@ -122,5 +122,10 @@ class RouteProvider
             $controller = $container[SeasonCommandController::class];
             return $controller->removeTeam($args['seasonId'], $args['teamId']);
         });
+        $app->post('/season', function ($request) use ($container) {
+            /** @var SeasonCommandController $controller */
+            $controller = $container[SeasonCommandController::class];
+            return $controller->createSeason($request);
+        });
     }
 }

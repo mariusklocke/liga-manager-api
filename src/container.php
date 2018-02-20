@@ -7,9 +7,11 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
+use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
+use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
@@ -60,14 +62,17 @@ use Ramsey\Uuid\UuidFactory as RamseyUuidFactory;
 
 $container = new \Slim\Container([]);
 
+$container[SeasonFactory::class] = function () use ($container) {
+    return new SeasonFactory($container['uuidGenerator'], function() {
+        return new \Doctrine\Common\Collections\ArrayCollection();
+    });
+};
 $container[FixtureLoader::class] = function() use ($container) {
     return new FixtureLoader(
         $container['objectPersistence'],
         new FixtureGenerator(
             $container['uuidGenerator'],
-            new SeasonFactory($container['uuidGenerator'], function() {
-                return new \Doctrine\Common\Collections\ArrayCollection();
-            })
+            $container[SeasonFactory::class]
         )
     );
 };
@@ -114,6 +119,9 @@ $container[AddTeamToSeasonCommand::class] = function () use ($container) {
 };
 $container[RemoveTeamFromSeasonCommand::class] = function () use ($container) {
     return new RemoveTeamFromSeasonHandler($container['objectPersistence']);
+};
+$container[CreateSeasonCommand::class] = function () use ($container) {
+    return new CreateSeasonHandler($container['objectPersistence'], $container[SeasonFactory::class]);
 };
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
