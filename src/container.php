@@ -60,6 +60,8 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Ramsey\Uuid\UuidFactory as RamseyUuidFactory;
 
+(new Dotenv\Dotenv(__DIR__ . '/../'))->load();
+
 $container = new \Slim\Container([]);
 
 $container[SeasonFactory::class] = function () use ($container) {
@@ -189,10 +191,10 @@ $container[TeamCommandController::class] = function () use ($container) {
     return new TeamCommandController($container['commandBus']);
 };
 $container['pdo'] = function() {
-    return new PDO('sqlite:' . __DIR__ . '/../data/db.sqlite');
+    return new PDO('sqlite:' . getenv('SQLITE_PATH'));
 };
 $container['sqlite'] = function () {
-    return new SQLite3(__DIR__ . '/../data/db.sqlite');
+    return new SQLite3(getenv('SQLITE_PATH'));
 };
 $container['readDbAdapter'] = function() use ($container) {
     $db = new SqliteReadDbAdapter($container['sqlite']);
@@ -206,7 +208,9 @@ $container['batchCommandBus'] = function () use ($container) {
     return new BatchCommandBus($container, $container['objectPersistence']);
 };
 $container['logger'] = function() {
-    return new Logger('logger', [new StreamHandler('php://stdout')]);
+    $level = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'debug');
+    $handler = new StreamHandler('php://stdout', $level);
+    return new Logger('logger', [$handler]);
 };
 $container['errorHandler'] = function() use ($container) {
     return new ErrorHandler($container['logger']);

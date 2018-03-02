@@ -3,3 +3,4 @@ vendor
 data/*.sqlite
 *.phar
 phpda*
+.env
