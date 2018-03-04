@@ -60,7 +60,9 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Ramsey\Uuid\UuidFactory as RamseyUuidFactory;
 
-(new Dotenv\Dotenv(__DIR__ . '/../'))->load();
+if (file_exists(__DIR__ . '/../.env')) {
+    (new Dotenv\Dotenv(__DIR__ . '/../'))->load();
+}
 
 $container = new \Slim\Container([]);
 
