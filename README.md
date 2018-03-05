@@ -1,7 +1,7 @@
 ## Requirements
 * PHP 7.1 or later
-* sqlite3 extension
-* pdo extension
+* mysqli extension
+* pdo_mysql extension
 
 ## Install
 ```bash
