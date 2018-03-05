@@ -19,6 +19,6 @@ class PitchRepository extends AbstractRepository
      */
     public function findPitchById(string $id)
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = :id', ['id' => $id]);
+        return $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = ?', [$id]);
     }
 }

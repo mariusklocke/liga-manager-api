@@ -14,8 +14,8 @@ class MatchRepository extends AbstractRepository
      */
     public function findMatchesByMatchDay(string $seasonId, int $matchDay) : array
     {
-        $query = 'SELECT * FROM `matches` WHERE `season_id` = :seasonId AND `match_day` = :matchDay';
-        return $this->getDb()->fetchAll($query, ['seasonId' => $seasonId, 'matchDay' => $matchDay]);
+        $query = 'SELECT * FROM `matches` WHERE `season_id` = ? AND `match_day` = ?';
+        return $this->getDb()->fetchAll($query, [$seasonId, $matchDay]);
     }
 
     /**
@@ -26,9 +26,9 @@ class MatchRepository extends AbstractRepository
     public function findMatchesByTeam(string $seasonId, string $teamId) : array
     {
         $query = <<<'SQL'
-  SELECT * FROM `matches` WHERE `season_id` = :seasonId AND (`home_team_id` = :teamId OR `guest_team_id` = :teamId)
+  SELECT * FROM `matches` WHERE `season_id` = ? AND (`home_team_id` = ? OR `guest_team_id` = ?)
 SQL;
-        return $this->getDb()->fetchAll($query, ['seasonId' => $seasonId, 'teamId' => $teamId]);
+        return $this->getDb()->fetchAll($query, [$seasonId, $teamId, $teamId]);
     }
 
     /**
@@ -39,8 +39,8 @@ SQL;
      */
     public function findMatchesByDate(string $seasonId, DateTimeInterface $from, DateTimeInterface $to) : array
     {
-        $query = 'SELECT * FROM `matches` WHERE `season_id` = :seasonId AND `kickoff` BETWEEN :from AND :to';
-        $params = ['seasonId' => $seasonId, 'from' => $from, 'to' => $to];
+        $query = 'SELECT * FROM `matches` WHERE `season_id` = ? AND `kickoff` BETWEEN ? AND ?';
+        $params = [$seasonId, $from, $to];
         return $this->getDb()->fetchAll($query, $params);
     }
 
@@ -50,7 +50,7 @@ SQL;
      */
     public function findMatchById(string $matchId)
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM `matches` WHERE `id` = :id', ['id' => $matchId]);
+        return $this->getDb()->fetchFirstRow('SELECT * FROM `matches` WHERE `id` = ?', [$matchId]);
     }
 
     /**
@@ -59,8 +59,8 @@ SQL;
      */
     public function countMatchesInSeason(string $seasonId) : int
     {
-        $query = 'SELECT COUNT(id) FROM `matches` WHERE `season_id` = :seasonId';
-        $count = $this->getDb()->fetchSingleColumn($query, ['seasonId' => $seasonId]);
+        $query = 'SELECT COUNT(id) FROM `matches` WHERE `season_id` = ?';
+        $count = $this->getDb()->fetchSingleColumn($query, [$seasonId]);
         return (int) $count;
     }
 
@@ -70,8 +70,8 @@ SQL;
      */
     public function countMatchDaysInSeason(string $seasonId) : int
     {
-        $query = 'SELECT COUNT(DISTINCT `match_day`) FROM `matches` WHERE `season_id` = :seasonId';
-        $count = $this->getDb()->fetchSingleColumn($query, ['seasonId' => $seasonId]);
+        $query = 'SELECT COUNT(DISTINCT `match_day`) FROM `matches` WHERE `season_id` = ?';
+        $count = $this->getDb()->fetchSingleColumn($query, [$seasonId]);
         return (int) $count;
     }
 }
