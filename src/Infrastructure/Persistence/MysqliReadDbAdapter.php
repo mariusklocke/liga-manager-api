@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
+use Doctrine\DBAL\Logging\SQLLogger;
 use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use mysqli;
 use mysqli_result;
@@ -11,6 +12,9 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
 {
     /** @var mysqli */
     private $mysqli;
+
+    /** @var SQLLogger */
+    private $logger;
 
     /**
      * @param mysqli $mysqli
@@ -50,6 +54,16 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
     }
 
     /**
+     * @param SQLLogger $logger
+     * @return MysqliReadDbAdapter
+     */
+    public function setLogger(SQLLogger $logger) : self
+    {
+        $this->logger = $logger;
+        return $this;
+    }
+
+    /**
      * Executes a prepared statement and returns the result set
      *
      * @param string $query
@@ -58,6 +72,7 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
      */
     private function executeQuery(string $query, array $params) : mysqli_result
     {
+        $this->logger->startQuery($query, $params, []);
         $statement = $this->mysqli->prepare($query);
         $refs = [];
         $refs[0] = '';
@@ -67,7 +82,9 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
         }
         call_user_func_array([$statement, 'bind_param'], $refs);
         $statement->execute();
-        return $statement->get_result();
+        $result = $statement->get_result();
+        $this->logger->stopQuery();
+        return $result;
     }
 
     /**
