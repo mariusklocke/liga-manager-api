@@ -223,8 +223,16 @@ $container['batchCommandBus'] = function () use ($container) {
     return new BatchCommandBus($container, $container['objectPersistence']);
 };
 $container['logger'] = function() {
-    $level = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'debug');
-    $handler = new StreamHandler('php://stdout', $level);
+    $level   = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'debug');
+    $stream  = STDOUT;
+    if ($path = getenv('LOG_PATH')) {
+        if (strpos($path, '/') === 0) {
+            // Make path relative to application root
+            $path = __DIR__ . '/../' . $path;
+        }
+        $stream = $path;
+    }
+    $handler = new StreamHandler($stream, $level);
     return new Logger('logger', [$handler]);
 };
 $container['errorHandler'] = function() use ($container) {
