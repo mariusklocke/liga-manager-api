@@ -55,6 +55,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
+use HexagonalPlayground\Infrastructure\Persistence\MysqliReadDbAdapter;
 use HexagonalPlayground\Infrastructure\Persistence\SqliteReadDbAdapter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -158,8 +159,11 @@ $container['doctrine.config'] = function() use ($container) {
     $driver = new SimplifiedXmlDriver([__DIR__ . "/../config/doctrine" => "HexagonalPlayground\\Domain"]);
     $driver->setGlobalBasename('global');
     $config->setMetadataDriverImpl($driver);
-    $config->setSQLLogger(new DoctrineQueryLogger($container['logger']));
+    $config->setSQLLogger($container['doctrine.queryLogger']);
     return $config;
+};
+$container['doctrine.queryLogger'] = function () use ($container) {
+    return new DoctrineQueryLogger($container['logger']);
 };
 $container['uuidGenerator'] = function() {
     return new UuidGenerator(new RamseyUuidFactory());
@@ -193,14 +197,23 @@ $container[TeamCommandController::class] = function () use ($container) {
     return new TeamCommandController($container['commandBus']);
 };
 $container['pdo'] = function() {
-    return new PDO('sqlite:' . getenv('SQLITE_PATH'));
-};
-$container['sqlite'] = function () {
-    return new SQLite3(getenv('SQLITE_PATH'));
+    $mysql = new PDO(
+        'mysql:host=' . getenv('MYSQL_HOST') . ';dbname=' . getenv('MYSQL_DATABASE'),
+        getenv('MYSQL_USER'),
+        getenv('MYSQL_PASSWORD')
+    );
+    //$sqlite = new PDO('sqlite:' . getenv('SQLITE_PATH'));
+    return $mysql;
 };
 $container['readDbAdapter'] = function() use ($container) {
-    $db = new SqliteReadDbAdapter($container['sqlite']);
-    $db->setLogger($container['logger']);
+    //$db = new SqliteReadDbAdapter(new SQLite3(getenv('SQLITE_PATH')));
+    $db = new MysqliReadDbAdapter(new mysqli(
+        getenv('MYSQL_HOST'),
+        getenv('MYSQL_USER'),
+        getenv('MYSQL_PASSWORD'),
+        getenv('MYSQL_DATABASE')
+    ));
+    $db->setLogger($container['doctrine.queryLogger']);
     return $db;
 };
 $container['commandBus'] = function() use ($container) {
