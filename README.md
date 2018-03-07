@@ -21,5 +21,5 @@ php -S localhost:8080 -t public public/index.php
 ## Create Migration
 
 ```bash
-php bin/console.php orm:schema-tool:update --dump-sql > data/migrations/update_$(date +%Y%m%d%H%M%S).sql
+php bin/console.php orm:schema-tool:update --dump-sql > migrations/update_$(date +%Y%m%d%H%M%S).sql
 ```
