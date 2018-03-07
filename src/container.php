@@ -56,7 +56,6 @@ use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
 use HexagonalPlayground\Infrastructure\Persistence\MysqliReadDbAdapter;
-use HexagonalPlayground\Infrastructure\Persistence\SqliteReadDbAdapter;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Ramsey\Uuid\UuidFactory as RamseyUuidFactory;
@@ -202,11 +201,9 @@ $container['pdo'] = function() {
         getenv('MYSQL_USER'),
         getenv('MYSQL_PASSWORD')
     );
-    //$sqlite = new PDO('sqlite:' . getenv('SQLITE_PATH'));
     return $mysql;
 };
 $container['readDbAdapter'] = function() use ($container) {
-    //$db = new SqliteReadDbAdapter(new SQLite3(getenv('SQLITE_PATH')));
     $db = new MysqliReadDbAdapter(new mysqli(
         getenv('MYSQL_HOST'),
         getenv('MYSQL_USER'),
@@ -223,10 +220,10 @@ $container['batchCommandBus'] = function () use ($container) {
     return new BatchCommandBus($container, $container['objectPersistence']);
 };
 $container['logger'] = function() {
-    $level   = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'debug');
+    $level   = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'warning');
     $stream  = STDOUT;
     if ($path = getenv('LOG_PATH')) {
-        if (strpos($path, '/') === 0) {
+        if (strpos($path, '/') !== 0) {
             // Make path relative to application root
             $path = __DIR__ . '/../' . $path;
         }

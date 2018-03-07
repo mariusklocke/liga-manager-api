@@ -22,8 +22,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
             $container = $app->getContainer();
             /** @var EntityManagerInterface $em */
             $em = $container->get('doctrine.entityManager');
+            $metadata   = $em->getMetadataFactory()->getAllMetadata();
             $schemaTool = new SchemaTool($em);
-            $schemaTool->createSchema($em->getMetadataFactory()->getAllMetadata());
+            $schemaTool->dropSchema($metadata);
+            $schemaTool->createSchema($metadata);
             self::$client = new Client($app);
         }
 

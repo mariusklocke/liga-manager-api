@@ -64,6 +64,19 @@ class Client
     }
 
     /**
+     * Send a PUT Request
+     *
+     * @param string $uri
+     * @param array $bodyData
+     * @param array $headers
+     * @return ResponseInterface
+     */
+    public function put(string $uri, array $bodyData = [], array $headers = []) : ResponseInterface
+    {
+        return $this->processRequest($this->createRequest('PUT', $uri, $bodyData, $headers));
+    }
+
+    /**
      * Parse the response body data
      *
      * @param StreamInterface $body

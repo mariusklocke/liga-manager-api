@@ -7,6 +7,7 @@ use Doctrine\DBAL\Logging\SQLLogger;
 use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use mysqli;
 use mysqli_result;
+use mysqli_stmt;
 
 class MysqliReadDbAdapter implements ReadDbAdapterInterface
 {
@@ -74,13 +75,7 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
     {
         $this->logger->startQuery($query, $params, []);
         $statement = $this->mysqli->prepare($query);
-        $refs = [];
-        $refs[0] = '';
-        foreach ($params as $key => $value) {
-            $refs[0] .= $this->getParamType($value);
-            $refs[] = &$params[$key];
-        }
-        call_user_func_array([$statement, 'bind_param'], $refs);
+        $this->bindParams($statement, $params);
         $statement->execute();
         $result = $statement->get_result();
         $this->logger->stopQuery();
@@ -102,5 +97,24 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
             'double' => 'd'
         ];
         return isset($paramTypeMap[$valueType]) ? $paramTypeMap[$valueType] : 's';
+    }
+
+    /**
+     * Bind parameters to a prepared statement
+     *
+     * @param mysqli_stmt $statement
+     * @param array $params
+     */
+    private function bindParams(mysqli_stmt $statement, array $params)
+    {
+        $refs = [];
+        $refs[0] = '';
+        foreach ($params as $key => $value) {
+            $refs[0] .= $this->getParamType($value);
+            $refs[] = &$params[$key];
+        }
+        if (strlen($refs[0]) > 0) {
+            call_user_func_array([$statement, 'bind_param'], $refs);
+        }
     }
 }
