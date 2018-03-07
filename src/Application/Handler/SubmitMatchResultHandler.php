@@ -24,13 +24,9 @@ class SubmitMatchResultHandler
     {
         /** @var Match $match */
         $match = $this->persistence->find(Match::class, $command->getMatchId());
-        if ($match->hasResult()) {
-            throw new InvalidStateException('Match result has already been submitted');
-        }
         $result = new MatchResult($command->getHomeScore(), $command->getGuestScore());
-        $match->submitResult($result);
         try {
-            $match->getSeason()->addResult($match->getHomeTeam()->getId(), $match->getGuestTeam()->getId(), $result);
+            $match->submitResult($result);
         } catch (DomainException $e) {
             throw new InvalidStateException($e->getMessage());
         }

@@ -7,6 +7,8 @@
         <id name="id" type="string" />
         <field name="name" type="string" />
         <field name="state" type="string" />
+        <field name="matchDayCount" type="integer" column="match_day_count" />
+        <field name="teamCount" type="integer" column="team_count" />
         <one-to-one field="ranking" target-entity="HexagonalPlayground\Domain\Ranking" mapped-by="season" orphan-removal="true">
             <cascade>
                 <cascade-all/>

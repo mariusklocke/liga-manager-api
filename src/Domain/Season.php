@@ -27,6 +27,12 @@ class Season
     /** @var string */
     private $state;
 
+    /** @var int */
+    private $matchDayCount;
+
+    /** @var int */
+    private $teamCount;
+
     public function __construct(UuidGeneratorInterface $uuidGenerator, string $name, callable $collectionFactory)
     {
         $this->id = $uuidGenerator->generateUuid();
@@ -34,6 +40,8 @@ class Season
         $this->teams = $collectionFactory();
         $this->matches = $collectionFactory();
         $this->state = self::STATE_PREPARATION;
+        $this->matchDayCount = 0;
+        $this->teamCount = 0;
     }
 
     /**
@@ -48,6 +56,7 @@ class Season
         }
         if (!$this->teams->contains($team)) {
             $this->teams[] = $team;
+            $this->teamCount = count($this->teams);
         }
         return $this;
     }
@@ -63,6 +72,7 @@ class Season
             throw new DomainException('Cannot remove team from season which has already started');
         }
         $this->teams->removeElement($team);
+        $this->teamCount = count($this->teams);
         return $this;
     }
 
@@ -84,6 +94,7 @@ class Season
             throw new DomainException("Cannot remove teams from a season which has already started");
         }
         $this->teams->clear();
+        $this->teamCount = 0;
         return $this;
     }
 
@@ -98,6 +109,7 @@ class Season
             throw new DomainException('Cannot add matches to season which has already started');
         }
         $this->matches[] = $match;
+        $this->matchDayCount = max($this->matchDayCount, $match->getMatchDay());
         return $this;
     }
 
@@ -107,6 +119,7 @@ class Season
     public function clearMatches() : Season
     {
         $this->matches->clear();
+        $this->matchDayCount = 0;
         return $this;
     }
 
@@ -188,17 +201,20 @@ class Season
             throw new DomainException('Cannot add a result to a season which is not in progress');
         }
         $this->ranking->addResult($homeTeamId, $guestTeamId, $result);
-        if ($this->ranking->isFinal()) {
-            $this->end();
-        }
     }
 
     /**
-     * @return int
+     * @param string $homeTeamId
+     * @param string $guestTeamId
+     * @param MatchResult $result
+     * @throws DomainException
      */
-    public function getMatchCount(): int
+    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $result)
     {
-        return count($this->matches);
+        if (!$this->isInProgress()) {
+            throw new DomainException('Cannot revert a result from a season which is not in progress');
+        }
+        $this->ranking->revertResult($homeTeamId, $guestTeamId, $result);
     }
 
     /**

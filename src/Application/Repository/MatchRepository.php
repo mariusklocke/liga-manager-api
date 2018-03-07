@@ -63,15 +63,4 @@ SQL;
         $count = $this->getDb()->fetchSingleColumn($query, [$seasonId]);
         return (int) $count;
     }
-
-    /**
-     * @param string $seasonId
-     * @return int
-     */
-    public function countMatchDaysInSeason(string $seasonId) : int
-    {
-        $query = 'SELECT COUNT(DISTINCT `match_day`) FROM `matches` WHERE `season_id` = ?';
-        $count = $this->getDb()->fetchSingleColumn($query, [$seasonId]);
-        return (int) $count;
-    }
 }

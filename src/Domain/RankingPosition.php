@@ -82,6 +82,30 @@ class RankingPosition
     }
 
     /**
+     * @param int $scoredGoals
+     * @param int $concededGoals
+     */
+    public function revertResult(int $scoredGoals, int $concededGoals)
+    {
+        $this->scoredGoals -= $scoredGoals;
+        $this->concededGoals -= $concededGoals;
+
+        $this->matches--;
+        if ($scoredGoals > $concededGoals) {
+            $this->wins--;
+            $this->points -= 3;
+            return;
+        }
+        if ($scoredGoals < $concededGoals) {
+            $this->losses--;
+            return;
+        }
+
+        $this->points -= 1;
+        $this->draws--;
+    }
+
+    /**
      * @param RankingPosition $other
      * @return int
      */

@@ -867,6 +867,12 @@
             "ended"
           ],
           "type": "string"
+        },
+        "match_day_count": {
+          "type": "integer"
+        },
+        "team_count": {
+          "type": "integer"
         }
       },
       "type": "object"

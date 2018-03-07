@@ -59,6 +59,10 @@ class Match
      */
     public function submitResult(MatchResult $matchResult) : Match
     {
+        if ($this->matchResult !== null) {
+            $this->season->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+        }
+        $this->season->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         $this->matchResult = $matchResult;
         return $this;
     }
@@ -167,5 +171,13 @@ class Match
     public function hasResult() : bool
     {
         return ($this->matchResult !== null);
+    }
+
+    /**
+     * @return int
+     */
+    public function getMatchDay(): int
+    {
+        return $this->matchDay;
     }
 }

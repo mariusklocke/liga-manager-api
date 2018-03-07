@@ -29,18 +29,23 @@ class Ranking
      * @param string $homeTeamId
      * @param string $guestTeamId
      * @param MatchResult $matchResult
-     * @throws DomainException If a given team id does not have a ranking
      */
     public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult)
     {
-        if (!isset($this->positions[$homeTeamId])) {
-            throw new DomainException(sprintf('Home Team "%s" is not ranked', $homeTeamId));
-        }
-        if (!isset($this->positions[$guestTeamId])) {
-            throw new DomainException(sprintf('Guest Team "%s" is not ranked', $guestTeamId));
-        }
-        $this->positions[$homeTeamId]->addResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
-        $this->positions[$guestTeamId]->addResult($matchResult->getGuestScore(), $matchResult->getHomeScore());
+        $this->getPositionForTeam($homeTeamId)->addResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
+        $this->getPositionForTeam($guestTeamId)->addResult($matchResult->getGuestScore(), $matchResult->getHomeScore());
+        $this->reorder();
+    }
+
+    /**
+     * @param string $homeTeamId
+     * @param string $guestTeamId
+     * @param MatchResult $matchResult
+     */
+    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult)
+    {
+        $this->getPositionForTeam($homeTeamId)->revertResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
+        $this->getPositionForTeam($guestTeamId)->revertResult($matchResult->getGuestScore(), $matchResult->getHomeScore());
         $this->reorder();
     }
 
@@ -84,14 +89,15 @@ class Ranking
     }
 
     /**
-     * @return bool
+     * @param string $teamId
+     * @return RankingPosition
+     * @throws DomainException If a given team id does not have a RankingPosition
      */
-    public function isFinal(): bool
+    private function getPositionForTeam(string $teamId)
     {
-        $matches = 0;
-        foreach ($this->positions as $position) {
-            $matches += $position->getMatchCount();
+        if (!isset($this->positions[$teamId])) {
+            throw new DomainException(sprintf('Team "%s" is not ranked', $teamId));
         }
-        return $this->season->getMatchCount() === $matches;
+        return $this->positions[$teamId];
     }
 }
