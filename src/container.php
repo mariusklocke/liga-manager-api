@@ -221,14 +221,13 @@ $container['batchCommandBus'] = function () use ($container) {
 };
 $container['logger'] = function() {
     $level   = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'warning');
-    $stream  = STDOUT;
     if ($path = getenv('LOG_PATH')) {
         if (strpos($path, '/') !== 0) {
             // Make path relative to application root
             $path = __DIR__ . '/../' . $path;
         }
-        $stream = $path;
     }
+    $stream = $path ?: 'php://stdout';
     $handler = new StreamHandler($stream, $level);
     return new Logger('logger', [$handler]);
 };
