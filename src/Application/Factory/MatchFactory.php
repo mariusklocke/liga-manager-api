@@ -29,9 +29,6 @@ class MatchFactory extends EntityFactory
     /**
      * Create all matches for a given season (including rematches)
      *
-     * Implements an algorithm found on Wikipedia
-     * @link https://de.wikipedia.org/wiki/Spielplan_(Sport)
-     *
      * @param Season $season
      * @return Match[]
      */
@@ -59,7 +56,10 @@ class MatchFactory extends EntityFactory
     }
 
     /**
-     * Generates a set of Match objects for a given matchDay
+     * Generates a set of Match objects for a given MatchDay
+     *
+     * Implements an algorithm found on Wikipedia
+     * @link https://de.wikipedia.org/wiki/Spielplan_(Sport)
      *
      * @param int    $matchDay
      * @param array  $teams    0-based array of teams
@@ -86,6 +86,7 @@ class MatchFactory extends EntityFactory
         }
 
         if (count($teams) != 2) {
+            // This should never happen, but it's better to check for easier detection of an algorithmic problem
             throw new UnexpectedValueException(sprintf(
                 'MatchDay generation algorithm failed: Expected 2 teams left. Actual: %d teams',
                 count($teams)
