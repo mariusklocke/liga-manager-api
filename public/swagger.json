@@ -736,8 +736,8 @@
       }
     },
     "/team/{id}/rename": {
-      "operationId": "renameTeam",
       "post": {
+        "operationId": "renameTeam",
         "parameters": [
           {
             "description": "ID of team",
