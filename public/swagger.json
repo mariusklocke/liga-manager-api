@@ -766,13 +766,55 @@
         "operationId": "getAllTournaments",
         "tags": [
           "tournament"
-        ]
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of tournaments",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/tournament"
+              },
+              "type": "array"
+            }
+          }
+        }
       },
       "post": {
         "operationId": "createTournament",
         "tags": [
           "tournament"
-        ]
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Operation successful",
+            "schema": {
+              "$ref": "#/definitions/identifier"
+            }
+          },
+          "400": {
+            "description": "Invalid tournament name"
+          }
+        }
       }
     },
     "/tournament/{id}": {
@@ -780,7 +822,27 @@
         "operationId": "getTournament",
         "tags": [
           "tournament"
-        ]
+        ],
+        "parameters": [
+          {
+            "description": "ID of tournament",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Single tournament",
+            "schema": {
+              "$ref": "#/definitions/tournament"
+            }
+          },
+          "404": {
+            "description": "Tournament not found"
+          }
+        }
       }
     },
     "/tournament/{id}/round/{round}": {
@@ -788,7 +850,29 @@
         "operationId": "setRound",
         "tags": [
           "tournament"
-        ]
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/team-id-tuple"
+              },
+              "minItems": 1,
+              "maxItems": 64
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "404": {
+            "description": "Tournament or team not found"
+          }
+        }
       }
     },
     "/tournament/{id}/matches": {
@@ -796,7 +880,27 @@
         "operationId": "getMatchesInTournament",
         "tags": [
           "tournament"
-        ]
+        ],
+        "parameters": [
+          {
+            "description": "ID of tournament",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of matches",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/match"
+              },
+              "type": "array"
+            }
+          }
+        }
       }
     },
     "/auth/session": {
@@ -980,6 +1084,17 @@
           "type": "string"
         },
         "name": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "team-id-tuple": {
+      "properties": {
+        "home_team_id": {
+          "type": "string"
+        },
+        "guest_team_id": {
           "type": "string"
         }
       },
