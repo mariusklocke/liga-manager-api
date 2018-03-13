@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 
 class Match
 {
@@ -70,14 +69,9 @@ class Match
     /**
      * @param DateTimeImmutable $kickoff
      * @return Match
-     * @throws InvalidArgumentException If the given kickoff date lies in the past
      */
     public function schedule(DateTimeImmutable $kickoff) : Match
     {
-        $now = new DateTimeImmutable();
-        if ($kickoff < $now) {
-            throw new InvalidArgumentException('Cannot schedule matches in the past');
-        }
         $this->kickoff = $kickoff;
         return $this;
     }
