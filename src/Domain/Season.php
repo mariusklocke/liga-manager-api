@@ -226,4 +226,12 @@ class Season
     {
         return $this->id;
     }
+
+    /**
+     * @return bool
+     */
+    public function hasSecondHalf() : bool
+    {
+        return false;
+    }
 }

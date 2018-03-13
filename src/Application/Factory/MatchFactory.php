@@ -44,11 +44,12 @@ class MatchFactory extends EntityFactory
         $firstHalf = [];
         $secondHalf = [];
         for ($matchDay = 1; $matchDay <= $matchDaysPerHalf; $matchDay++) {
-            $rematchDay = $matchDay + $matchDaysPerHalf;
             foreach ($this->generateMatchDay($matchDay, $teams, $season) as $match) {
                 /** @var Match $match */
                 $firstHalf[] = $match;
-                $secondHalf[] = $match->rematch($this->getIdGenerator(), $rematchDay);
+                if ($season->hasSecondHalf()) {
+                    $secondHalf[] = $match->rematch($this->getIdGenerator(), $matchDay + $matchDaysPerHalf);
+                }
             }
         }
 

@@ -152,14 +152,6 @@ class Match
     }
 
     /**
-     * @return Season
-     */
-    public function getSeason() : Season
-    {
-        return $this->season;
-    }
-
-    /**
      * @return bool
      */
     public function hasResult() : bool
