@@ -56,7 +56,7 @@ class Season
         }
         if (!$this->teams->contains($team)) {
             $this->teams[] = $team;
-            $this->teamCount = count($this->teams);
+            $this->teamCount++;
         }
         return $this;
     }
@@ -71,8 +71,10 @@ class Season
         if ($this->hasStarted()) {
             throw new DomainException('Cannot remove team from season which has already started');
         }
-        $this->teams->removeElement($team);
-        $this->teamCount = count($this->teams);
+        if ($this->teams->contains($team)) {
+            $this->teams->removeElement($team);
+            $this->teamCount--;
+        }
         return $this;
     }
 
