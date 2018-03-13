@@ -152,14 +152,6 @@ class Match
     }
 
     /**
-     * @return bool
-     */
-    public function hasResult() : bool
-    {
-        return ($this->matchResult !== null);
-    }
-
-    /**
      * @return int
      */
     public function getMatchDay(): int
