@@ -12,6 +12,7 @@
   "paths": {
     "/match/{id}": {
       "get": {
+        "operationId": "getMatch",
         "parameters": [
           {
             "description": "match id",
@@ -40,6 +41,7 @@
     },
     "/match/{id}/cancellation": {
       "post": {
+        "operationId": "cancelMatch",
         "parameters": [
           {
             "description": "match id",
@@ -62,6 +64,7 @@
     },
     "/match/{id}/kickoff": {
       "post": {
+        "operationId": "scheduleMatch",
         "parameters": [
           {
             "description": "match id",
@@ -100,6 +103,7 @@
     },
     "/match/{id}/location": {
       "post": {
+        "operationId": "locateMatch",
         "parameters": [
           {
             "description": "match id",
@@ -137,6 +141,7 @@
     },
     "/match/{id}/result": {
       "post": {
+        "operationId": "submitMatchResult",
         "parameters": [
           {
             "description": "match id",
@@ -182,6 +187,7 @@
     },
     "/pitch": {
       "get": {
+        "operationId": "getPitchCollection",
         "parameters": [],
         "responses": {
           "200": {
@@ -200,6 +206,7 @@
         "summary": "Find all pitches"
       },
       "post": {
+        "operationId": "createPitch",
         "parameters": [
           {
             "in": "body",
@@ -238,6 +245,7 @@
     },
     "/pitch/{id}": {
       "delete": {
+        "operationId": "deletePitch",
         "parameters": [
           {
             "description": "pitch id",
@@ -258,6 +266,7 @@
         "summary": "Delete a single pitch"
       },
       "get": {
+        "operationId": "getPitch",
         "parameters": [
           {
             "description": "pitch id",
@@ -305,6 +314,7 @@
         "summary": "Find all seasons"
       },
       "post": {
+        "operationId": "createSeason",
         "parameters": [
           {
             "in": "body",
@@ -343,6 +353,7 @@
     },
     "/season/{id}": {
       "delete": {
+        "operationId": "deleteSeason",
         "parameters": [
           {
             "description": "ID of season",
@@ -392,6 +403,7 @@
     },
     "/season/{id}/matches": {
       "get": {
+        "operationId": "getMatchCollection",
         "parameters": [
           {
             "description": "ID of season",
@@ -443,6 +455,7 @@
         "summary": "Find matches"
       },
       "post": {
+        "operationId": "createMatches",
         "parameters": [
           {
             "description": "ID of season",
@@ -465,6 +478,7 @@
     },
     "/season/{id}/ranking": {
       "get": {
+        "operationId": "getRanking",
         "parameters": [
           {
             "description": "ID of season",
@@ -490,6 +504,7 @@
     },
     "/season/{id}/start": {
       "post": {
+        "operationId": "startSeason",
         "parameters": [
           {
             "description": "ID of season",
@@ -518,6 +533,7 @@
     },
     "/season/{id}/team": {
       "get": {
+        "operationId": "getTeamsInSeason",
         "parameters": [
           {
             "description": "ID of season",
@@ -546,6 +562,7 @@
     },
     "/season/{season_id}/team/{team_id}": {
       "put": {
+        "operationId": "addTeamToSeason",
         "parameters": [
           {
             "description": "ID of season",
@@ -579,6 +596,7 @@
         "summary": "Add a team to a season"
       },
       "delete": {
+        "operationId": "removeTeamFromSeason",
         "parameters": [
           {
             "description": "ID of season",
@@ -614,6 +632,7 @@
     },
     "/team": {
       "get": {
+        "operationId": "getTeamCollection",
         "parameters": [],
         "responses": {
           "200": {
@@ -632,6 +651,7 @@
         "summary": "Finds all teams"
       },
       "post": {
+        "operationId": "createTeam",
         "parameters": [
           {
             "in": "body",
@@ -670,6 +690,7 @@
     },
     "/team/{id}": {
       "delete": {
+        "operationId": "deleteTeam",
         "parameters": [
           {
             "description": "ID of team",
@@ -690,6 +711,7 @@
         "summary": "Delete a single team by id"
       },
       "get": {
+        "operationId": "getTeam",
         "parameters": [
           {
             "description": "ID of team",
@@ -714,6 +736,7 @@
       }
     },
     "/team/{id}/rename": {
+      "operationId": "renameTeam",
       "post": {
         "parameters": [
           {
