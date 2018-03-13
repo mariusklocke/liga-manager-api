@@ -1,0 +1,5 @@
+.idea
+build
+docker
+*.phar
+.env

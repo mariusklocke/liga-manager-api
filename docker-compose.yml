@@ -1,0 +1,25 @@
+nginx:
+  image: prooph/nginx:www
+  ports:
+    - "8080:80"
+    - "443:443"
+  links:
+    - php:php
+  volumes_from:
+    - php
+
+php:
+  image: ligamanager/php
+  volumes:
+      - .:/var/www
+  links:
+    - mariadb:mariadb
+  env_file:
+    - .env
+
+mariadb:
+   image: mariadb
+   ports:
+     - "3306:3306"
+   env_file:
+       - .env
