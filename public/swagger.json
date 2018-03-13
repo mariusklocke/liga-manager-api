@@ -286,6 +286,7 @@
     },
     "/season": {
       "get": {
+        "operationId": "getSeasonCollection",
         "parameters": [],
         "responses": {
           "200": {
@@ -362,6 +363,7 @@
         "summary": "Delete a single season"
       },
       "get": {
+        "operationId": "getSeason",
         "parameters": [
           {
             "description": "ID of season",
