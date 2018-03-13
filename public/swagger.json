@@ -858,7 +858,7 @@
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/team-id-tuple"
+                "$ref": "#/definitions/team_id_tuple"
               },
               "minItems": 1,
               "maxItems": 64
@@ -1089,7 +1089,7 @@
       },
       "type": "object"
     },
-    "team-id-tuple": {
+    "team_id_tuple": {
       "properties": {
         "home_team_id": {
           "type": "string"
