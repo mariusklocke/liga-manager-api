@@ -187,7 +187,7 @@
     },
     "/pitch": {
       "get": {
-        "operationId": "getPitchCollection",
+        "operationId": "getAllPitches",
         "parameters": [],
         "responses": {
           "200": {
@@ -295,7 +295,7 @@
     },
     "/season": {
       "get": {
-        "operationId": "getSeasonCollection",
+        "operationId": "getAllSeasons",
         "parameters": [],
         "responses": {
           "200": {
@@ -403,7 +403,7 @@
     },
     "/season/{id}/matches": {
       "get": {
-        "operationId": "getMatchCollection",
+        "operationId": "getMatchesInSeason",
         "parameters": [
           {
             "description": "ID of season",
@@ -632,7 +632,7 @@
     },
     "/team": {
       "get": {
-        "operationId": "getTeamCollection",
+        "operationId": "getAllTeams",
         "parameters": [],
         "responses": {
           "200": {
@@ -759,6 +759,60 @@
           "team"
         ],
         "summary": "Renames a single team"
+      }
+    },
+    "/tournament": {
+      "get": {
+        "operationId": "getAllTournaments",
+        "tags": [
+          "tournament"
+        ]
+      },
+      "post": {
+        "operationId": "createTournament",
+        "tags": [
+          "tournament"
+        ]
+      }
+    },
+    "/tournament/{id}": {
+      "get": {
+        "operationId": "getTournament",
+        "tags": [
+          "tournament"
+        ]
+      }
+    },
+    "/tournament/{id}/round/{round}": {
+      "put": {
+        "operationId": "setRound",
+        "tags": [
+          "tournament"
+        ]
+      }
+    },
+    "/tournament/{id}/matches": {
+      "get": {
+        "operationId": "getMatchesInTournament",
+        "tags": [
+          "tournament"
+        ]
+      }
+    },
+    "/auth/session": {
+      "post": {
+        "operationId": "login",
+        "tags": ["auth"]
+      },
+      "delete": {
+        "operationId": "logout",
+        "tags": ["auth"]
+      }
+    },
+    "/auth/password": {
+      "put": {
+        "operationId": "changePassword",
+        "tags": ["auth"]
       }
     }
   },
@@ -902,6 +956,20 @@
       },
       "type": "object"
     },
+    "tournament": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "rounds": {
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
     "team": {
       "properties": {
         "created_at": {
@@ -933,6 +1001,12 @@
     },
     {
       "name": "pitch"
+    },
+    {
+      "name": "tournament"
+    },
+    {
+      "name": "auth"
     }
   ],
   "x-components": {}
