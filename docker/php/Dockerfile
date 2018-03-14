@@ -33,7 +33,8 @@ RUN set -xe \
     && rm -rf /tmp/* \
     && rm -rf /var/www \
     && mkdir -p /var/www \
-    && wget -O /var/www/phpunit.phar https://phar.phpunit.de/phpunit-6.5.5.phar
+    && wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-6.5.5.phar \
+    && chmod +x /usr/local/bin/phpunit
 
 ADD . /var/www
 
