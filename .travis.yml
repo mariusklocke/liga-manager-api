@@ -1,9 +1,17 @@
+sudo: required
 language: php
 php:
   - '7.1'
   - '7.2'
-
-install: composer install
-
+services:
+  - docker
+before_install:
+  - docker --version
+  - echo "ENV GIT_SHA ${TRAVIS_COMMIT}" >> docker/php/Dockerfile
+install:
+  - composer install --ignore-platform-reqs --prefer-dist --no-dev --optimize-autoloader
+  - docker build -f docker/php/Dockerfile -t ligamanager/php .
+script:
+  - phpunit
 addons:
   mariadb: '10.2'
