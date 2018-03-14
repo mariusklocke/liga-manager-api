@@ -1,7 +1,6 @@
 sudo: required
 language: php
 php:
-  - '7.1'
   - '7.2'
 services:
   - docker
@@ -12,6 +11,5 @@ install:
   - composer install --ignore-platform-reqs --prefer-dist --no-dev --optimize-autoloader
   - docker build -f docker/php/Dockerfile -t ligamanager/php .
 script:
-  - phpunit
-addons:
-  mariadb: '10.2'
+  - docker run -d --name mariadb mariadb:10.2
+  - docker run --link mariadb -e MYSQL_HOST=mariadb ligamanager/php phpunit
