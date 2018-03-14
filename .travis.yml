@@ -1,15 +1,9 @@
-sudo: required
 language: php
 php:
+  - '7.1'
   - '7.2'
-services:
-  - docker
-install:
-  - composer install --ignore-platform-reqs --prefer-dist --no-dev --optimize-autoloader
-  - docker build -f docker/php/Dockerfile -t ligamanager/php .
-before_script:
-  - env > .env
-script:
-  - docker run -d --name mariadb --env-file .env mariadb
-  - docker ps
-  - docker run --link mariadb --env-file .env ligamanager/php phpunit
+
+install: composer install
+
+addons:
+  mariadb: '10.2'
