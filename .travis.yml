@@ -11,5 +11,5 @@ install:
   - composer install --ignore-platform-reqs --prefer-dist --no-dev --optimize-autoloader
   - docker build -f docker/php/Dockerfile -t ligamanager/php .
 script:
-  - docker run -d --name mariadb mariadb:10.2
-  - docker run --link mariadb -e MYSQL_HOST=mariadb ligamanager/php phpunit
+  - docker run -d --name mariadb mariadb
+  - docker run --link mariadb ligamanager/php phpunit
