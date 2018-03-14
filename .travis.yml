@@ -8,5 +8,6 @@ install:
   - composer install --ignore-platform-reqs --prefer-dist --no-dev --optimize-autoloader
   - docker build -f docker/php/Dockerfile -t ligamanager/php .
 script:
-  - docker run -d --name mariadb mariadb
+  - docker run -d --name mariadb -e MYSQL_ALLOW_EMPTY_PASSWORD=yes mariadb
+  - docker ps
   - docker run --link mariadb ligamanager/php phpunit
