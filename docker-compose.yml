@@ -11,15 +11,15 @@ nginx:
 php:
   image: ligamanager/php
   volumes:
-      - .:/var/www
+    - .:/var/www
   links:
     - mariadb:mariadb
   env_file:
     - .env
 
 mariadb:
-   image: mariadb
-   ports:
-     - "3306:3306"
-   env_file:
-       - .env
+  image: mariadb
+  ports:
+    - "3306:3306"
+  env_file:
+    - .env
