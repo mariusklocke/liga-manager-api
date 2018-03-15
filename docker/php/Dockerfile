@@ -33,8 +33,9 @@ RUN set -xe \
     && rm -rf /tmp/* \
     && rm -rf /var/www \
     && mkdir -p /var/www \
-    && wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-6.5.5.phar \
-    && chmod +x /usr/local/bin/phpunit
+    && wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar \
+    && wget -O /usr/local/bin/composer https://getcomposer.org/download/1.6.3/composer.phar \
+    && chmod +x /usr/local/bin/*
 
 ADD . /var/www
 

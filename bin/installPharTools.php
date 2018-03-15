@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 $tools = [
-    "https://getcomposer.org/download/1.5.6/composer.phar" => __DIR__ . '/../composer.phar',
-    "https://phar.phpunit.de/phpunit-6.5.5.phar" => __DIR__ . '/../phpunit.phar',
+    "https://getcomposer.org/download/1.6.3/composer.phar" => __DIR__ . '/../composer.phar',
+    "https://phar.phpunit.de/phpunit-7.0.2.phar" => __DIR__ . '/../phpunit.phar',
     "https://raw.github.com/mamuz/PhpDependencyAnalysis/master/download/phpda.pubkey" => __DIR__ . '/../phpda.phar.pubkey',
     "https://raw.github.com/mamuz/PhpDependencyAnalysis/master/download/phpda" => __DIR__ . '/../phpda.phar'
 ];
