@@ -38,6 +38,7 @@ RUN set -xe \
     && chmod +x /usr/local/bin/*
 
 ADD . /var/www
+RUN chmod +x /var/www/bin/*
 
 # Possible values for ext-name:
 # bcmath bz2 calendar ctype curl dba dom enchant exif fileinfo filter ftp gd gettext gmp hash iconv imap interbase intl
