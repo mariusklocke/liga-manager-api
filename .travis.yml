@@ -15,7 +15,7 @@ install:
   - composer install --ignore-platform-reqs --prefer-dist --no-dev --optimize-autoloader
   - docker build -f docker/php/Dockerfile -t ligamanager/php .
 before_script:
-  - env > .env
+  - env | grep "^MYSQL_" > .env
 script:
   - docker run -d --name mariadb --env-file .env mariadb
   - docker run --link mariadb dadarek/wait-for-dependencies mariadb:3306
