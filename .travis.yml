@@ -3,11 +3,12 @@ language: php
 php:
   - '7.2'
 env:
-  - MYSQL_HOST=mariadb
-  - MYSQL_DATABASE=travis
-  - MYSQL_USER=travis
-  - MYSQL_PASSWORD=travis
-  - MYSQL_ROOT_PASSWORD=travis
+  global:
+    - MYSQL_HOST=mariadb
+    - MYSQL_DATABASE=travis
+    - MYSQL_USER=travis
+    - MYSQL_PASSWORD=travis
+    - MYSQL_ROOT_PASSWORD=travis
 services:
   - docker
 install:
