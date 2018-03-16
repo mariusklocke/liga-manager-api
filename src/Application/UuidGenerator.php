@@ -19,7 +19,7 @@ class UuidGenerator implements UuidGeneratorInterface
     /**
      * {@inheritdoc}
      */
-    public function generateUuid() : string
+    public function generate() : string
     {
         return $this->factory->uuid4()->toString();
     }

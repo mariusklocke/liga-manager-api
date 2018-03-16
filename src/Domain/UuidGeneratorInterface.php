@@ -6,9 +6,9 @@ namespace HexagonalPlayground\Domain;
 interface UuidGeneratorInterface
 {
     /**
-     * Generates a UUID v4
+     * Generates a unique identifier
      *
      * @return string
      */
-    public function generateUuid() : string;
+    public function generate() : string;
 }
