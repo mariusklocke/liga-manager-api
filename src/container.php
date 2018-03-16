@@ -112,7 +112,7 @@ $container[CreateMatchesForSeasonCommand::class] = function() use ($container) {
     return new CreateMatchesForSeasonHandler($container['objectPersistence'], $container[MatchFactory::class]);
 };
 $container[CreateSingleMatchCommand::class] = function() use ($container) {
-    return new CreateSingleMatchHandler($container['objectPersistence'], $container['uuidGenerator']);
+    return new CreateSingleMatchHandler($container['objectPersistence'], $container[MatchFactory::class]);
 };
 $container[DeleteSeasonCommand::class] = function() use ($container) {
     return new DeleteSeasonHandler($container['objectPersistence']);

@@ -5,28 +5,27 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Factory\MatchFactory;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
-use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
-use HexagonalPlayground\Domain\UuidGeneratorInterface;
 
 class CreateSingleMatchHandler
 {
     /** @var ObjectPersistenceInterface */
     private $persistence;
 
-    /** @var UuidGeneratorInterface */
-    private $uuidGenerator;
+    /** @var MatchFactory */
+    private $matchFactory;
 
     /**
      * @param ObjectPersistenceInterface $persistence
-     * @param UuidGeneratorInterface $uuidGenerator
+     * @param MatchFactory $matchFactory
      */
-    public function __construct(ObjectPersistenceInterface $persistence, UuidGeneratorInterface $uuidGenerator)
+    public function __construct(ObjectPersistenceInterface $persistence, MatchFactory $matchFactory)
     {
-        $this->persistence = $persistence;
-        $this->uuidGenerator = $uuidGenerator;
+        $this->persistence  = $persistence;
+        $this->matchFactory = $matchFactory;
     }
 
     /**
@@ -42,7 +41,7 @@ class CreateSingleMatchHandler
         /** @var Team $guestTeam */
         $guestTeam = $this->persistence->find(Team::class, $command->getGuestTeamId());
 
-        $match = new Match($this->uuidGenerator, $season, $command->getMatchDay(), $homeTeam, $guestTeam);
+        $match = $this->matchFactory->createMatch($season, $command->getMatchDay(), $homeTeam, $guestTeam);
         $season->addMatch($match);
         $this->persistence->persist($match);
     }
