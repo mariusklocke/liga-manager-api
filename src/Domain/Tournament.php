@@ -9,13 +9,13 @@ class Tournament extends Competition
     private $rounds;
 
     /**
-     * @param UuidGeneratorInterface $uuidGenerator
+     * @param string $id
      * @param string $name
      * @param callable $collectionFactory
      */
-    public function __construct(UuidGeneratorInterface $uuidGenerator, string $name, callable $collectionFactory)
+    public function __construct(string $id, string $name, callable $collectionFactory)
     {
-        $this->id = $uuidGenerator->generateUuid();
+        $this->id = $id;
         $this->name = $name;
         $this->matches = $collectionFactory();
         $this->rounds = 0;

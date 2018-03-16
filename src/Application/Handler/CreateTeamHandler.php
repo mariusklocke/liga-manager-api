@@ -31,7 +31,7 @@ class CreateTeamHandler
      */
     public function handle(CreateTeamCommand $command)
     {
-        $team = new Team($this->uuidGenerator, $command->getTeamName());
+        $team = new Team($this->uuidGenerator->generateUuid(), $command->getTeamName());
         $this->persistence->persist($team);
         return $team->getId();
     }

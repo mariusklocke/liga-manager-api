@@ -24,7 +24,7 @@ class MatchFactory extends EntityFactory
      */
     public function createMatch(Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam) : Match
     {
-        return new Match($this->getIdGenerator(), $competition, $matchDay, $homeTeam, $guestTeam);
+        return new Match($this->getIdGenerator()->generateUuid(), $competition, $matchDay, $homeTeam, $guestTeam);
     }
 
     /**
@@ -49,7 +49,7 @@ class MatchFactory extends EntityFactory
                 /** @var Match $match */
                 $firstHalf[] = $match;
                 if ($season->hasSecondHalf()) {
-                    $secondHalf[] = $match->rematch($this->getIdGenerator(), $matchDay + $matchDaysPerHalf);
+                    $secondHalf[] = $match->rematch($this->getIdGenerator()->generateUuid(), $matchDay + $matchDaysPerHalf);
                 }
             }
         }

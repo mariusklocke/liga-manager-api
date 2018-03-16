@@ -19,9 +19,9 @@ class Team
     /** @var DateTimeImmutable */
     private $createdAt;
 
-    public function __construct(UuidGeneratorInterface $uuidGenerator, string $name)
+    public function __construct(string $id, string $name)
     {
-        $this->id = $uuidGenerator->generateUuid();
+        $this->id = $id;
         $this->name = $name;
         $this->previousNames = [];
         $this->createdAt = new DateTimeImmutable();

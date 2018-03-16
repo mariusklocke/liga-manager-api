@@ -40,25 +40,25 @@ class Match
     /**
      * Create a new match
      *
-     * @param UuidGeneratorInterface $uuidGenerator
-     * @param Competition            $competition
-     * @param int                    $matchDay
-     * @param Team                   $homeTeam
-     * @param Team                   $guestTeam
-     * @throws DomainException       If $homeTeam and $guestTeam are equal
+     * @param string $id
+     * @param Competition $competition
+     * @param int $matchDay
+     * @param Team $homeTeam
+     * @param Team $guestTeam
+     * @throws DomainException If $homeTeam and $guestTeam are equal
      */
-    public function __construct(UuidGeneratorInterface $uuidGenerator, Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam)
+    public function __construct(string $id, Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam)
     {
         if ($homeTeam === $guestTeam) {
             throw new DomainException('A team cannot play against itself');
         }
 
-        $this->id = $uuidGenerator->generateUuid();
         if ($competition instanceof Season) {
             $this->season = $competition;
         } else {
             $this->tournament = $competition;
         }
+        $this->id = $id;
         $this->matchDay = $matchDay;
         $this->homeTeam = $homeTeam;
         $this->guestTeam = $guestTeam;
@@ -155,10 +155,10 @@ class Match
         $this->cancelledAt = null;
     }
 
-    public function rematch(UuidGeneratorInterface $uuidGenerator, int $matchDay) : Match
+    public function rematch(string $id, int $matchDay) : Match
     {
         $clone = clone $this;
-        $clone->id = $uuidGenerator->generateUuid();
+        $clone->id = $id;
         $clone->matchDay = $matchDay;
         $clone->homeTeam = $this->guestTeam;
         $clone->guestTeam = $this->homeTeam;

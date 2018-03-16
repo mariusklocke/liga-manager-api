@@ -24,9 +24,9 @@ class Season extends Competition
     /** @var int */
     private $teamCount;
 
-    public function __construct(UuidGeneratorInterface $uuidGenerator, string $name, callable $collectionFactory)
+    public function __construct(string $id, string $name, callable $collectionFactory)
     {
-        $this->id = $uuidGenerator->generateUuid();
+        $this->id = $id;
         $this->name = $name;
         $this->teams = $collectionFactory();
         $this->matches = $collectionFactory();

@@ -14,21 +14,17 @@ class Pitch
     /** @var GeographicLocation */
     private $location;
 
-    public function __construct(UuidGeneratorInterface $uuidGenerator, string $label, GeographicLocation $location)
+    public function __construct(string $id, string $label, GeographicLocation $location)
     {
-        $this->id = $uuidGenerator->generateUuid();
+        $this->id = $id;
         $this->label = $label;
         $this->location = $location;
     }
 
-    /**
-     * @param UuidGeneratorInterface $uuidGenerator
-     * @return Pitch
-     */
-    public function copy(UuidGeneratorInterface $uuidGenerator)
+    public function copy(string $id)
     {
         $clone = clone $this;
-        $clone->id = $uuidGenerator->generateUuid();
+        $clone->id = $id;
         return $clone;
     }
 
