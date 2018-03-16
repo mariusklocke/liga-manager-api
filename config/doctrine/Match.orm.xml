@@ -13,7 +13,10 @@
         <field name="cancelledAt" column="cancelled_at" type="datetime_immutable" nullable="true"/>
         <embedded name="matchResult" class="HexagonalPlayground\Domain\MatchResult" use-column-prefix="false" />
         <many-to-one field="season" target-entity="HexagonalPlayground\Domain\Season">
-            <join-column name="season_id" referenced-column-name="id" nullable="false" />
+            <join-column name="season_id" referenced-column-name="id" />
+        </many-to-one>
+        <many-to-one field="tournament" target-entity="HexagonalPlayground\Domain\Tournament">
+            <join-column name="tournament_id" referenced-column-name="id" />
         </many-to-one>
         <many-to-one field="homeTeam" target-entity="HexagonalPlayground\Domain\Team">
             <join-column name="home_team_id" referenced-column-name="id" nullable="false" />

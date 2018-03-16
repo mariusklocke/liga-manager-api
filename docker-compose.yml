@@ -1,7 +1,7 @@
 nginx:
   image: prooph/nginx:www
   ports:
-    - "8080:80"
+    - "80:80"
     - "443:443"
   links:
     - php:php

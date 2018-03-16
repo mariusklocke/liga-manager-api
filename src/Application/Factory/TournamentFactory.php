@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Factory;
 
-use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\UuidGeneratorInterface;
 
-class SeasonFactory extends EntityFactory
+class TournamentFactory extends EntityFactory
 {
     /** @var callable */
     private $collectionFactory;
@@ -23,10 +23,10 @@ class SeasonFactory extends EntityFactory
 
     /**
      * @param string $name
-     * @return Season
+     * @return Tournament
      */
-    public function createSeason(string $name) : Season
+    public function createTournament(string $name) : Tournament
     {
-        return new Season($this->getIdGenerator(), $name, $this->collectionFactory);
+        return new Tournament($this->getIdGenerator(), $name, $this->collectionFactory);
     }
 }

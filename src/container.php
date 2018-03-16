@@ -8,11 +8,17 @@ use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
+use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
+use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
+use HexagonalPlayground\Application\Factory\TournamentFactory;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
+use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
+use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
+use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
@@ -71,6 +77,14 @@ $container[SeasonFactory::class] = function () use ($container) {
         return new \Doctrine\Common\Collections\ArrayCollection();
     });
 };
+$container[TournamentFactory::class] = function () use ($container) {
+    return new TournamentFactory($container['uuidGenerator'], function() {
+        return new \Doctrine\Common\Collections\ArrayCollection();
+    });
+};
+$container[MatchFactory::class] = function () use ($container) {
+    return new MatchFactory($container['uuidGenerator']);
+};
 $container[FixtureLoader::class] = function() use ($container) {
     return new FixtureLoader(
         $container['objectPersistence'],
@@ -95,10 +109,7 @@ $container[StartSeasonCommand::class] = function() use ($container) {
     );
 };
 $container[CreateMatchesForSeasonCommand::class] = function() use ($container) {
-    return new CreateMatchesForSeasonHandler(
-        $container['objectPersistence'],
-        new MatchFactory($container['uuidGenerator'])
-    );
+    return new CreateMatchesForSeasonHandler($container['objectPersistence'], $container[MatchFactory::class]);
 };
 $container[CreateSingleMatchCommand::class] = function() use ($container) {
     return new CreateSingleMatchHandler($container['objectPersistence'], $container['uuidGenerator']);
@@ -126,6 +137,12 @@ $container[RemoveTeamFromSeasonCommand::class] = function () use ($container) {
 };
 $container[CreateSeasonCommand::class] = function () use ($container) {
     return new CreateSeasonHandler($container['objectPersistence'], $container[SeasonFactory::class]);
+};
+$container[CreateTournamentCommand::class] = function () use ($container) {
+    return new CreateTournamentHandler($container['objectPersistence'], $container[TournamentFactory::class]);
+};
+$container[SetTournamentRoundCommand::class] = function () use ($container) {
+    return new SetTournamentRoundHandler($container['objectPersistence'], $container[MatchFactory::class]);
 };
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
@@ -194,6 +211,9 @@ $container[TeamQueryController::class] = function() use ($container) {
 };
 $container[TeamCommandController::class] = function () use ($container) {
     return new TeamCommandController($container['commandBus']);
+};
+$container[TournamentCommandController::class] = function () use ($container) {
+    return new TournamentCommandController($container['commandBus']);
 };
 $container['pdo'] = function() {
     $mysql = new PDO(

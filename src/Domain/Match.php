@@ -13,6 +13,9 @@ class Match
     /** @var Season */
     private $season;
 
+    /** @var Tournament */
+    private $tournament;
+
     /** @var int */
     private $matchDay;
 
@@ -38,15 +41,24 @@ class Match
      * Create a new match
      *
      * @param UuidGeneratorInterface $uuidGenerator
-     * @param Season                 $season
+     * @param Competition            $competition
      * @param int                    $matchDay
      * @param Team                   $homeTeam
      * @param Team                   $guestTeam
+     * @throws DomainException       If $homeTeam and $guestTeam are equal
      */
-    public function __construct(UuidGeneratorInterface $uuidGenerator, Season $season, int $matchDay, Team $homeTeam, Team $guestTeam)
+    public function __construct(UuidGeneratorInterface $uuidGenerator, Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam)
     {
+        if ($homeTeam === $guestTeam) {
+            throw new DomainException('A team cannot play against itself');
+        }
+
         $this->id = $uuidGenerator->generateUuid();
-        $this->season = $season;
+        if ($competition instanceof Season) {
+            $this->season = $competition;
+        } else {
+            $this->tournament = $competition;
+        }
         $this->matchDay = $matchDay;
         $this->homeTeam = $homeTeam;
         $this->guestTeam = $guestTeam;
@@ -58,10 +70,12 @@ class Match
      */
     public function submitResult(MatchResult $matchResult) : Match
     {
-        if ($this->matchResult !== null) {
-            $this->season->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+        if ($this->season !== null) {
+            if ($this->matchResult !== null) {
+                $this->season->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+            }
+            $this->season->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         }
-        $this->season->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         $this->matchResult = $matchResult;
         return $this;
     }

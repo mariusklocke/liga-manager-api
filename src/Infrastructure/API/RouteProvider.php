@@ -10,6 +10,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\SeasonCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
 use Slim\App;
 
 class RouteProvider
@@ -150,5 +151,16 @@ class RouteProvider
             return $controller->createSeason($request);
         });
 
+        $app->post('/tournament', function ($request) use ($container) {
+            /** @var TournamentCommandController $controller */
+            $controller = $container[TournamentCommandController::class];
+            return $controller->create($request);
+        });
+
+        $app->put('/tournament/{id}/round/{round:[0-9]+}', function ($request, $response, $args) use ($container) {
+            /** @var TournamentCommandController $controller */
+            $controller = $container[TournamentCommandController::class];
+            return $controller->setRound($args['id'], (int) $args['round'], $request);
+        });
     }
 }

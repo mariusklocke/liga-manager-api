@@ -4,26 +4,27 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Factory;
 
 use Generator;
+use HexagonalPlayground\Domain\Competition;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 use UnexpectedValueException;
 
 /**
- * A factory which constructs Match domain objects and implements a match day generation algorithm
+ * A factory which constructs Match objects and implements a match day generation algorithm
  */
 class MatchFactory extends EntityFactory
 {
     /**
-     * @param Season $season
-     * @param int    $matchDay
-     * @param Team   $homeTeam
-     * @param Team   $guestTeam
+     * @param Competition $competition
+     * @param int         $matchDay
+     * @param Team        $homeTeam
+     * @param Team        $guestTeam
      * @return Match
      */
-    public function createMatch(Season $season, int $matchDay, Team $homeTeam, Team $guestTeam) : Match
+    public function createMatch(Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam) : Match
     {
-        return new Match($this->getIdGenerator(), $season, $matchDay, $homeTeam, $guestTeam);
+        return new Match($this->getIdGenerator(), $competition, $matchDay, $homeTeam, $guestTeam);
     }
 
     /**
@@ -87,7 +88,7 @@ class MatchFactory extends EntityFactory
         }
 
         if (count($teams) != 2) {
-            // This should never happen, but it's better to check for easier detection of an algorithmic problem
+            // This should never happen, but a check doesn't hurt and a potential algorithmic flaw can be found early
             throw new UnexpectedValueException(sprintf(
                 'MatchDay generation algorithm failed: Expected 2 teams left. Actual: %d teams',
                 count($teams)

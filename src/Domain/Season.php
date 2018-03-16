@@ -3,23 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
-class Season
+class Season extends Competition
 {
     const STATE_PREPARATION = 'preparation';
     const STATE_PROGRESS = 'progress';
     const STATE_ENDED = 'ended';
 
-    /** @var string */
-    private $id;
-
-    /** @var string */
-    private $name;
-
     /** @var CollectionInterface|Team[] */
     private $teams;
-
-    /** @var CollectionInterface|Match[] */
-    private $matches;
 
     /** @var Ranking|null */
     private $ranking;
@@ -217,14 +208,6 @@ class Season
             throw new DomainException('Cannot revert a result from a season which is not in progress');
         }
         $this->ranking->revertResult($homeTeamId, $guestTeamId, $result);
-    }
-
-    /**
-     * @return string
-     */
-    public function getId() : string
-    {
-        return $this->id;
     }
 
     /**
