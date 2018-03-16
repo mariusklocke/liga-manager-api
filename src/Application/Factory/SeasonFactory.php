@@ -12,13 +12,13 @@ class SeasonFactory extends EntityFactory
     private $collectionFactory;
 
     /**
-     * @param IdGeneratorInterface $uuidGenerator
+     * @param IdGeneratorInterface $idGenerator
      * @param callable $collectionFactory
      */
-    public function __construct(IdGeneratorInterface $uuidGenerator, callable $collectionFactory)
+    public function __construct(IdGeneratorInterface $idGenerator, callable $collectionFactory)
     {
         $this->collectionFactory = $collectionFactory;
-        parent::__construct($uuidGenerator);
+        parent::__construct($idGenerator);
     }
 
     /**

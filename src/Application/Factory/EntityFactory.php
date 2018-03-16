@@ -8,11 +8,11 @@ use HexagonalPlayground\Application\IdGeneratorInterface;
 abstract class EntityFactory
 {
     /** @var IdGeneratorInterface */
-    private $uuidGenerator;
+    private $idGenerator;
 
-    public function __construct(IdGeneratorInterface $uuidGenerator)
+    public function __construct(IdGeneratorInterface $idGenerator)
     {
-        $this->uuidGenerator = $uuidGenerator;
+        $this->idGenerator = $idGenerator;
     }
 
     /**
@@ -20,6 +20,6 @@ abstract class EntityFactory
      */
     protected function getIdGenerator()
     {
-        return $this->uuidGenerator;
+        return $this->idGenerator;
     }
 }

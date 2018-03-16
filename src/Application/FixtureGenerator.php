@@ -12,14 +12,14 @@ use HexagonalPlayground\Domain\Team;
 class FixtureGenerator
 {
     /** @var IdGeneratorInterface */
-    private $uuidGenerator;
+    private $idGenerator;
 
     /** @var SeasonFactory */
     private $seasonFactory;
 
-    public function __construct(IdGeneratorInterface $uuidGenerator, SeasonFactory $seasonFactory)
+    public function __construct(IdGeneratorInterface $idGenerator, SeasonFactory $seasonFactory)
     {
-        $this->uuidGenerator = $uuidGenerator;
+        $this->idGenerator = $idGenerator;
         $this->seasonFactory = $seasonFactory;
     }
 
@@ -41,7 +41,7 @@ class FixtureGenerator
     {
         for ($i = 1; $i <= 8; $i++) {
             $teamName = sprintf('Team No. %02d', $i);
-            yield new Team($this->uuidGenerator->generate(), $teamName);
+            yield new Team($this->idGenerator->generate(), $teamName);
         }
     }
 
@@ -53,7 +53,7 @@ class FixtureGenerator
         $colors = ['Red', 'Blue'];
         foreach ($colors as $color) {
             yield new Pitch(
-                $this->uuidGenerator->generate(),
+                $this->idGenerator->generate(),
                 'Pitch ' . $color,
                 new GeographicLocation(12.34, 23.45)
             );

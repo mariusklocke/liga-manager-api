@@ -13,16 +13,16 @@ class CreateTeamHandler
     /** @var ObjectPersistenceInterface */
     private $persistence;
     /** @var IdGeneratorInterface */
-    private $uuidGenerator;
+    private $idGenerator;
 
     /**
      * @param ObjectPersistenceInterface $persistence
-     * @param IdGeneratorInterface $uuidGenerator
+     * @param IdGeneratorInterface $idGenerator
      */
-    public function __construct(ObjectPersistenceInterface $persistence, IdGeneratorInterface $uuidGenerator)
+    public function __construct(ObjectPersistenceInterface $persistence, IdGeneratorInterface $idGenerator)
     {
         $this->persistence = $persistence;
-        $this->uuidGenerator = $uuidGenerator;
+        $this->idGenerator = $idGenerator;
     }
 
     /**
@@ -31,7 +31,7 @@ class CreateTeamHandler
      */
     public function handle(CreateTeamCommand $command)
     {
-        $team = new Team($this->uuidGenerator->generate(), $command->getTeamName());
+        $team = new Team($this->idGenerator->generate(), $command->getTeamName());
         $this->persistence->persist($team);
         return $team->getId();
     }
