@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Factory;
 
 use HexagonalPlayground\Domain\Tournament;
-use HexagonalPlayground\Domain\IdGeneratorInterface;
+use HexagonalPlayground\Application\IdGeneratorInterface;
 
 class TournamentFactory extends EntityFactory
 {

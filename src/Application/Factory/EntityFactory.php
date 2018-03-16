@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Factory;
 
-use HexagonalPlayground\Domain\IdGeneratorInterface;
+use HexagonalPlayground\Application\IdGeneratorInterface;
 
 abstract class EntityFactory
 {

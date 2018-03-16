@@ -8,7 +8,6 @@ use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Domain\GeographicLocation;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Team;
-use HexagonalPlayground\Domain\IdGeneratorInterface;
 
 class FixtureGenerator
 {

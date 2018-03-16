@@ -5,8 +5,8 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\IdGeneratorInterface;
 use HexagonalPlayground\Domain\Team;
-use HexagonalPlayground\Domain\IdGeneratorInterface;
 
 class CreateTeamHandler
 {

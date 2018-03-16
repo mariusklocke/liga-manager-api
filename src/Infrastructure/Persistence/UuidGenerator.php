@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
-use HexagonalPlayground\Domain\IdGeneratorInterface;
+use HexagonalPlayground\Application\IdGeneratorInterface;
 use Ramsey\Uuid\UuidFactoryInterface;
 
 class UuidGenerator implements IdGeneratorInterface
