@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application;
+namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use HexagonalPlayground\Domain\UuidGeneratorInterface;
 use Ramsey\Uuid\UuidFactoryInterface;
