@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Domain\DomainException;
 use Psr\Http\Message\RequestInterface;
@@ -40,7 +39,6 @@ class ErrorHandler
             case ($throwable instanceof SlimNotFoundException):
                 $this->logger->notice((string)$throwable);
                 return $this->createNotFoundResponse($throwable->getMessage());
-            case ($throwable instanceof InvalidStateException):
             case ($throwable instanceof DomainException):
                 $this->logger->notice((string)$throwable);
                 return $this->createBadRequestResponse($throwable->getMessage());

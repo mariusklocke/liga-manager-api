@@ -111,6 +111,10 @@ class Season extends Competition
      */
     public function clearMatches() : Season
     {
+        if ($this->hasStarted()) {
+            throw new DomainException('Cannot remove matches from a season which has already started');
+        }
+
         $this->matches->clear();
         $this->matchDayCount = 0;
         return $this;

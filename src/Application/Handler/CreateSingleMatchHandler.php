@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
-use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
-use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
@@ -45,11 +43,7 @@ class CreateSingleMatchHandler
         $guestTeam = $this->persistence->find(Team::class, $command->getGuestTeamId());
 
         $match = new Match($this->uuidGenerator, $season, $command->getMatchDay(), $homeTeam, $guestTeam);
-        try {
-            $season->addMatch($match);
-        } catch (DomainException $e) {
-            throw new InvalidStateException($e->getMessage());
-        }
+        $season->addMatch($match);
         $this->persistence->persist($match);
     }
 }

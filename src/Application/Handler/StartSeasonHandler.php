@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
-use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
-use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Season;
 
 class StartSeasonHandler
@@ -36,12 +34,7 @@ class StartSeasonHandler
     {
         /** @var Season $season */
         $season = $this->persistence->find(Season::class, $command->getSeasonId());
-        try {
-            $season->start($this->collectionFactory);
-        } catch (DomainException $e) {
-            throw new InvalidStateException($e->getMessage());
-        }
-
+        $season->start($this->collectionFactory);
         $this->persistence->persist($season);
     }
 }

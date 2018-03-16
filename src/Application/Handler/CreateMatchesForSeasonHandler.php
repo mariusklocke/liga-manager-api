@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
-use HexagonalPlayground\Application\Exception\InvalidStateException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Application\Factory\MatchFactory;
@@ -35,9 +34,6 @@ class CreateMatchesForSeasonHandler
     {
         /** @var Season $season */
         $season = $this->persistence->find(Season::class, $command->getSeasonId());
-        if ($season->hasStarted()) {
-            throw new InvalidStateException('Cannot add matches to season which has already started');
-        }
         $season->clearMatches();
         $matches = $this->matchFactory->createMatchesForSeason($season);
         foreach ($matches as $match) {
