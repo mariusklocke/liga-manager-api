@@ -8,17 +8,17 @@ use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Domain\GeographicLocation;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Team;
-use HexagonalPlayground\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Domain\IdGeneratorInterface;
 
 class FixtureGenerator
 {
-    /** @var UuidGeneratorInterface */
+    /** @var IdGeneratorInterface */
     private $uuidGenerator;
 
     /** @var SeasonFactory */
     private $seasonFactory;
 
-    public function __construct(UuidGeneratorInterface $uuidGenerator, SeasonFactory $seasonFactory)
+    public function __construct(IdGeneratorInterface $uuidGenerator, SeasonFactory $seasonFactory)
     {
         $this->uuidGenerator = $uuidGenerator;
         $this->seasonFactory = $seasonFactory;

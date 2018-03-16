@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
-use HexagonalPlayground\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Domain\IdGeneratorInterface;
 use Ramsey\Uuid\UuidFactoryInterface;
 
-class UuidGenerator implements UuidGeneratorInterface
+class UuidGenerator implements IdGeneratorInterface
 {
     /** @var UuidFactoryInterface */
     private $factory;

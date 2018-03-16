@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Factory;
 
-use HexagonalPlayground\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Domain\IdGeneratorInterface;
 
 abstract class EntityFactory
 {
-    /** @var UuidGeneratorInterface */
+    /** @var IdGeneratorInterface */
     private $uuidGenerator;
 
-    public function __construct(UuidGeneratorInterface $uuidGenerator)
+    public function __construct(IdGeneratorInterface $uuidGenerator)
     {
         $this->uuidGenerator = $uuidGenerator;
     }
 
     /**
-     * @return UuidGeneratorInterface
+     * @return IdGeneratorInterface
      */
     protected function getIdGenerator()
     {

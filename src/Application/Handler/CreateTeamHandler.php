@@ -6,20 +6,20 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Domain\Team;
-use HexagonalPlayground\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Domain\IdGeneratorInterface;
 
 class CreateTeamHandler
 {
     /** @var ObjectPersistenceInterface */
     private $persistence;
-    /** @var UuidGeneratorInterface */
+    /** @var IdGeneratorInterface */
     private $uuidGenerator;
 
     /**
      * @param ObjectPersistenceInterface $persistence
-     * @param UuidGeneratorInterface $uuidGenerator
+     * @param IdGeneratorInterface $uuidGenerator
      */
-    public function __construct(ObjectPersistenceInterface $persistence, UuidGeneratorInterface $uuidGenerator)
+    public function __construct(ObjectPersistenceInterface $persistence, IdGeneratorInterface $uuidGenerator)
     {
         $this->persistence = $persistence;
         $this->uuidGenerator = $uuidGenerator;

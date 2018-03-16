@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Factory;
 
 use HexagonalPlayground\Domain\Tournament;
-use HexagonalPlayground\Domain\UuidGeneratorInterface;
+use HexagonalPlayground\Domain\IdGeneratorInterface;
 
 class TournamentFactory extends EntityFactory
 {
@@ -12,10 +12,10 @@ class TournamentFactory extends EntityFactory
     private $collectionFactory;
 
     /**
-     * @param UuidGeneratorInterface $uuidGenerator
+     * @param IdGeneratorInterface $uuidGenerator
      * @param callable $collectionFactory
      */
-    public function __construct(UuidGeneratorInterface $uuidGenerator, callable $collectionFactory)
+    public function __construct(IdGeneratorInterface $uuidGenerator, callable $collectionFactory)
     {
         $this->collectionFactory = $collectionFactory;
         parent::__construct($uuidGenerator);

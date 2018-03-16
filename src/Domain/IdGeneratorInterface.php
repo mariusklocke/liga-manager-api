@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
-interface UuidGeneratorInterface
+interface IdGeneratorInterface
 {
     /**
      * Generates a unique identifier
