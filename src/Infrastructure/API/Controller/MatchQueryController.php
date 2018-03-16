@@ -37,7 +37,7 @@ class MatchQueryController
      * @param Request $request
      * @return Response
      */
-    public function findMatches(string $seasonId, Request $request) : Response
+    public function findMatchesInSeason(string $seasonId, Request $request) : Response
     {
         if (($matchDay = $request->getQueryParam('match_day')) !== null) {
             return (new Response(200))->withJson($this->matchRepository->findMatchesByMatchDay($seasonId, (int) $matchDay));
@@ -59,5 +59,14 @@ class MatchQueryController
         }
 
         return (new Response(400))->withJson('Missing query parameter');
+    }
+
+    /**
+     * @param string $tournamentId
+     * @return Response
+     */
+    public function findMatchesInTournament(string $tournamentId) : Response
+    {
+        return (new Response(200))->withJson($this->matchRepository->findMatchesInTournament($tournamentId));
     }
 }

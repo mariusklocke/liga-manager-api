@@ -54,13 +54,12 @@ SQL;
     }
 
     /**
-     * @param string $seasonId
-     * @return int
+     * @param string $tournamentId
+     * @return array
      */
-    public function countMatchesInSeason(string $seasonId) : int
+    public function findMatchesInTournament(string $tournamentId) : array
     {
-        $query = 'SELECT COUNT(id) FROM `matches` WHERE `season_id` = ?';
-        $count = $this->getDb()->fetchSingleColumn($query, [$seasonId]);
-        return (int) $count;
+        $query = 'SELECT * FROM `matches` WHERE `tournament_id` = ?';
+        return $this->getDb()->fetchAll($query, [$tournamentId]);
     }
 }

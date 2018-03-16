@@ -18,7 +18,9 @@ use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
+use HexagonalPlayground\Application\Repository\TournamentRepository;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
+use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
@@ -159,6 +161,9 @@ $container[PitchRepository::class] = function() use ($container) {
 $container[MatchRepository::class] = function() use ($container) {
     return new MatchRepository($container['readDbAdapter']);
 };
+$container[TournamentRepository::class] = function () use ($container) {
+    return new TournamentRepository($container['readDbAdapter']);
+};
 $container['doctrine.entityManager'] = function() use ($container) {
     $em = EntityManager::create($container['doctrine.connection'], $container['doctrine.config']);
     $em->getEventManager()->addEventListener(
@@ -214,6 +219,9 @@ $container[TeamCommandController::class] = function () use ($container) {
 };
 $container[TournamentCommandController::class] = function () use ($container) {
     return new TournamentCommandController($container['commandBus']);
+};
+$container[TournamentQueryController::class] = function () use ($container) {
+    return new TournamentQueryController($container[TournamentRepository::class]);
 };
 $container['pdo'] = function() {
     $mysql = new PDO(

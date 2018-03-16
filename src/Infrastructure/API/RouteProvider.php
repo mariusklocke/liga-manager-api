@@ -11,6 +11,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
+use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use Slim\App;
 
 class RouteProvider
@@ -70,7 +71,7 @@ class RouteProvider
         $app->get('/season/{seasonId}/matches', function ($request, $response, $args) use ($container) {
             /** @var MatchQueryController $controller */
             $controller = $container[MatchQueryController::class];
-            return $controller->findMatches($args['seasonId'], $request);
+            return $controller->findMatchesInSeason($args['seasonId'], $request);
         });
 
         $app->get('/match/{id}', function ($request, $response, $args) use ($container) {
@@ -161,6 +162,24 @@ class RouteProvider
             /** @var TournamentCommandController $controller */
             $controller = $container[TournamentCommandController::class];
             return $controller->setRound($args['id'], (int) $args['round'], $request);
+        });
+
+        $app->get('/tournament', function () use ($container) {
+            /** @var TournamentQueryController $controller */
+            $controller = $container[TournamentQueryController::class];
+            return $controller->findAllTournaments();
+        });
+
+        $app->get('/tournament/{id}', function ($request, $response, $args) use ($container) {
+            /** @var TournamentQueryController $controller */
+            $controller = $container[TournamentQueryController::class];
+            return $controller->findTournamentById($args['id']);
+        });
+
+        $app->get('/tournament/{id}/matches', function ($request, $response, $args) use ($container) {
+            /** @var MatchQueryController $controller */
+            $controller = $container[MatchQueryController::class];
+            return $controller->findMatchesInTournament($args['id']);
         });
     }
 }
