@@ -24,12 +24,21 @@ class Season extends Competition
     /** @var int */
     private $teamCount;
 
-    public function __construct(string $id, string $name, callable $collectionFactory)
+    /**
+     * Season constructor.
+     * @param string $id
+     * @param string $name
+     * @param CollectionInterface|Team[]  $teams
+     * @param CollectionInterface|Match[] $matches
+     */
+    public function __construct(string $id, string $name, $teams, $matches)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->teams = $collectionFactory();
-        $this->matches = $collectionFactory();
+        $this->teams = $teams;
+        $this->teams->clear();
+        $this->matches = $matches;
+        $this->matches->clear();
         $this->state = self::STATE_PREPARATION;
         $this->matchDayCount = 0;
         $this->teamCount = 0;
@@ -155,11 +164,11 @@ class Season extends Competition
     /**
      * Initializes the season ranking
      *
-     * @param callable $collectionFactory
+     * @param CollectionInterface $emptyCollection
      * @return Season
      * @throws DomainException
      */
-    public function start(callable $collectionFactory)
+    public function start($emptyCollection)
     {
         if ($this->hasStarted()) {
             throw new DomainException('Cannot start a season which has already been started');
@@ -168,7 +177,7 @@ class Season extends Competition
             throw new DomainException('Cannot start a season which has no matches');
         }
 
-        $this->ranking = new Ranking($this, $collectionFactory);
+        $this->ranking = new Ranking($this, $emptyCollection);
         $this->state = self::STATE_PROGRESS;
         return $this;
     }

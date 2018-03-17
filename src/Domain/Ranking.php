@@ -16,10 +16,15 @@ class Ranking
     /** @var CollectionInterface|RankingPosition[] */
     private $positions;
 
-    public function __construct(Season $season, callable $collectionFactory)
+    /**
+     * @param Season $season
+     * @param CollectionInterface $positions
+     */
+    public function __construct(Season $season, $positions)
     {
         $this->season = $season;
-        $this->positions = $collectionFactory();
+        $this->positions = $positions;
+        $this->positions->clear();
         foreach ($season->getTeams() as $team) {
             $this->positions[$team->getId()] = new RankingPosition($this, $team);
         }
