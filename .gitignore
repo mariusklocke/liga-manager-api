@@ -3,3 +3,4 @@ vendor
 *.phar
 phpda*
 .env
+docker-compose.yml
