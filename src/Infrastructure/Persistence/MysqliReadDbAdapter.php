@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 use Doctrine\DBAL\Logging\SQLLogger;
 use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use mysqli;
+use mysqli_driver;
 use mysqli_result;
 use mysqli_stmt;
 
@@ -23,6 +24,8 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
     public function __construct(mysqli $mysqli)
     {
         $this->mysqli = $mysqli;
+        $driver = new mysqli_driver();
+        $driver->report_mode = MYSQLI_REPORT_ALL & ~MYSQLI_REPORT_INDEX;
     }
 
     /**
