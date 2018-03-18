@@ -254,7 +254,7 @@ $container['logger'] = function() {
             $path = __DIR__ . '/../' . $path;
         }
     }
-    $stream = $path ?: 'php://stdout';
+    $stream = $path ?: (getenv('LOG_STREAM') ?: 'php://stdout');
     $level = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'warning');
     $handler = new StreamHandler($stream, $level);
     return new Logger('logger', [$handler]);

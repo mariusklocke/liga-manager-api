@@ -40,6 +40,10 @@ RUN set -xe \
 ADD . /var/www
 RUN chmod +x /var/www/bin/*
 
+# Workaround https://bugs.php.net/bug.php?id=71880
+ENV LOG_STREAM="/tmp/stdout"
+RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
+
 # Possible values for ext-name:
 # bcmath bz2 calendar ctype curl dba dom enchant exif fileinfo filter ftp gd gettext gmp hash iconv imap interbase intl
 # json ldap mbstring mcrypt mssql mysql mysqli oci8 odbc opcache pcntl pdo pdo_dblib pdo_firebird pdo_mysql pdo_oci
@@ -47,3 +51,5 @@ RUN chmod +x /var/www/bin/*
 # sockets spl standard sybase_ct sysvmsg sysvsem sysvshm tidy tokenizer wddx xml xmlreader xmlrpc xmlwriter xsl zip
 
 WORKDIR /var/www
+RUN composer install --prefer-dist --no-dev --optimize-autoloader
+CMD ["/bin/sh", "-c", "php-fpm | tail -f $LOG_STREAM"]
