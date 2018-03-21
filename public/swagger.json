@@ -917,21 +917,80 @@
         }
       }
     },
-    "/auth/session": {
-      "post": {
-        "operationId": "login",
-        "tags": ["auth"]
-      },
-      "delete": {
-        "operationId": "logout",
-        "tags": ["auth"]
+    "/user/me": {
+      "get": {
+        "summary": "Retrieve the authenticated user",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
+        "operationId": "getAuthenticatedUser",
+        "tags": ["user"],
+        "responses": {
+          "200": {
+            "description": "The authenticated user as object",
+            "schema": {
+              "$ref": "#/definitions/user"
+            }
+          },
+          "401": {
+            "description": "Invalid authentication"
+          }
+        }
       }
     },
-    "/auth/password": {
+    "/user/me/password": {
       "put": {
+        "summary": "Change the authenticated user's password",
+        "security": [
+          {"JWT": []}
+        ],
         "operationId": "changePassword",
-        "tags": ["auth"]
+        "tags": ["user"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "current_password": {
+                  "type": "string",
+                  "minLength": 8,
+                  "maxLength": 255
+                },
+                "new_password": {
+                  "type": "string",
+                  "minLength": 8,
+                  "maxLength": 255
+                }
+              },
+              "required": [
+                "current_password",
+                "new_password"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "401": {
+            "description": "Invalid authentication"
+          }
+        }
       }
+    }
+  },
+  "securityDefinitions": {
+    "basic-auth": {
+      "type": "basic"
+    },
+    "JWT": {
+      "type": "apiKey",
+      "name": "token",
+      "in": "header"
     }
   },
   "definitions": {
@@ -1113,6 +1172,17 @@
         }
       },
       "type": "object"
+    },
+    "user": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      },
+      "type": "object"
     }
   },
   "tags": [
@@ -1135,7 +1205,7 @@
       "name": "tournament"
     },
     {
-      "name": "auth"
+      "name": "user"
     }
   ],
   "x-components": {}
