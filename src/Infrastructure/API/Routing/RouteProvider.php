@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API;
+namespace HexagonalPlayground\Infrastructure\API\Routing;
 
 use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
@@ -12,6 +12,10 @@ use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
+use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
+use HexagonalPlayground\Infrastructure\API\Security\BasicAuthMiddleware;
+use HexagonalPlayground\Infrastructure\API\Security\TokenAuthMiddleware;
 use Slim\App;
 
 class RouteProvider
@@ -19,12 +23,14 @@ class RouteProvider
     public function registerRoutes(App $app)
     {
         $container = $app->getContainer();
+        $basicAuth = new BasicAuthMiddleware($container);
+        $tokenAuth = new TokenAuthMiddleware($container);
 
         $app->get('/team', function () use ($container) {
             /** @var TeamQueryController $controller */
             $controller = $container[TeamQueryController::class];
             return $controller->findAllTeams();
-        })->setName('findAllTeams');
+        });
 
         $app->get('/team/{id}', function ($request, $response, $args) use ($container) {
             /** @var TeamQueryController $controller */
@@ -181,5 +187,17 @@ class RouteProvider
             $controller = $container[MatchQueryController::class];
             return $controller->findMatchesInTournament($args['id']);
         });
+
+        $app->get('/user/me', function () use ($container) {
+            /** @var UserQueryController $controller */
+            $controller = $container[UserQueryController::class];
+            return $controller->getAuthenticatedUser();
+        })->add($basicAuth)->add($tokenAuth);
+
+        $app->put('/user/me/password', function ($request) use ($container) {
+            /** @var UserCommandController $controller */
+            $controller = $container[UserCommandController::class];
+            return $controller->changePassword($request);
+        })->add($basicAuth);
     }
 }

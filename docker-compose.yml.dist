@@ -1,25 +1,28 @@
-nginx:
-  image: prooph/nginx:www
-  ports:
-    - "80:80"
-    - "443:443"
-  links:
-    - php:php
-  volumes_from:
-    - php
+version: '2'
+services:
+  nginx:
+    image: prooph/nginx:www
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - php:php
+    volumes_from:
+      - php
 
-php:
-  image: ligamanager/php
-  volumes:
-    - .:/var/www
-  links:
-    - mariadb:mariadb
-  env_file:
-    - .env
+  php:
+    image: ligamanager/php
+    volumes:
+      - .:/var/www
+      - /path/to/your/jwt/keys:/var/www/config/jwt
+    links:
+      - mariadb:mariadb
+    env_file:
+      - .env
 
-mariadb:
-  image: mariadb
-  ports:
-    - "3306:3306"
-  env_file:
-    - .env
+  mariadb:
+    image: mariadb
+    ports:
+      - "3306:3306"
+    env_file:
+      - .env

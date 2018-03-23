@@ -943,7 +943,7 @@
       "put": {
         "summary": "Change the authenticated user's password",
         "security": [
-          {"JWT": []}
+          {"basic-auth": []}
         ],
         "operationId": "changePassword",
         "tags": ["user"],
@@ -954,19 +954,13 @@
             "schema": {
               "type": "object",
               "properties": {
-                "current_password": {
-                  "type": "string",
-                  "minLength": 8,
-                  "maxLength": 255
-                },
                 "new_password": {
                   "type": "string",
-                  "minLength": 8,
+                  "minLength": 6,
                   "maxLength": 255
                 }
               },
               "required": [
-                "current_password",
                 "new_password"
               ]
             }
@@ -989,7 +983,7 @@
     },
     "JWT": {
       "type": "apiKey",
-      "name": "token",
+      "name": "Authorization",
       "in": "header"
     }
   },

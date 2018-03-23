@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
+use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Domain\DomainException;
+use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\MethodNotAllowedException;
-use Slim\Exception\NotFoundException as SlimNotFoundException;
+use Slim\Exception\NotFoundException as RouteNotFoundException;
 use Slim\Http\Response;
 use Throwable;
 
@@ -35,11 +37,15 @@ class ErrorHandler
     public function __invoke(RequestInterface $request, ResponseInterface $response, Throwable $throwable) : Response
     {
         switch (true) {
+            case ($throwable instanceof AuthenticationException):
+                $this->logger->notice((string)$throwable);
+                return $this->createUnauthorizedResponse($throwable->getMessage());
             case ($throwable instanceof NotFoundException):
-            case ($throwable instanceof SlimNotFoundException):
+            case ($throwable instanceof RouteNotFoundException):
                 $this->logger->notice((string)$throwable);
                 return $this->createNotFoundResponse($throwable->getMessage());
             case ($throwable instanceof DomainException):
+            case ($throwable instanceof BadRequestException):
                 $this->logger->notice((string)$throwable);
                 return $this->createBadRequestResponse($throwable->getMessage());
             case ($throwable instanceof MethodNotAllowedException):
@@ -89,5 +95,14 @@ class ErrorHandler
     private function createBadRequestResponse(string $message) : Response
     {
         return (new Response(400))->withJson(['title' => 'Bad Request', 'message' => $message]);
+    }
+
+    /**
+     * @param string $message
+     * @return Response
+     */
+    private function createUnauthorizedResponse(string $message): Response
+    {
+        return (new Response(401))->withJson(['title' => 'Unauthorized', 'message' => $message]);
     }
 }

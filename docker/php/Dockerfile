@@ -38,7 +38,9 @@ RUN set -xe \
     && chmod +x /usr/local/bin/*
 
 ADD . /var/www
-RUN chmod +x /var/www/bin/*
+
+# Configure path for JWT key pairs
+ENV JWT_SECRET="/var/www/config/jwt/secret.key"
 
 # Workaround https://bugs.php.net/bug.php?id=71880
 ENV LOG_STREAM="/tmp/stdout"
@@ -52,4 +54,6 @@ RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
 
 WORKDIR /var/www
 RUN composer install --prefer-dist --no-dev --optimize-autoloader
+RUN chmod +x /var/www/bin/*
+RUN chown -R www-data:www-data /var/www
 CMD ["/bin/sh", "-c", "php-fpm | tail -f $LOG_STREAM"]

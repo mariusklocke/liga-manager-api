@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalPlayground\Infrastructure\API\Middleware\RemoveTrailingSlash;
+use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
+use HexagonalPlayground\Infrastructure\API\Routing\RouteProvider;
 use Slim\Container;
 
 class Bootstrap

@@ -17,7 +17,7 @@ class TournamentCommandController extends CommandController
     public function create(Request $request) : Response
     {
         $name = $request->getParsedBodyParam('name');
-        if (!is_string($name) || strlen($name) < 1 || strlen($name) > 255) {
+        if (!is_string($name) || mb_strlen($name) < 1 || mb_strlen($name) > 255) {
             return $this->createBadRequestResponse('Invalid parameter "name"');
         }
 

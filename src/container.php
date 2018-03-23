@@ -7,6 +7,7 @@ use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
+use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
@@ -14,14 +15,21 @@ use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Application\Factory\TournamentFactory;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
+use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
 use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
 use HexagonalPlayground\Application\Repository\TournamentRepository;
+use HexagonalPlayground\Application\Security\Authenticator;
+use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Application\Security\UserRepository;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
+use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
+use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
@@ -146,6 +154,9 @@ $container[CreateTournamentCommand::class] = function () use ($container) {
 $container[SetTournamentRoundCommand::class] = function () use ($container) {
     return new SetTournamentRoundHandler($container['objectPersistence'], $container[MatchFactory::class]);
 };
+$container[ChangeUserPasswordCommand::class] = function () use ($container) {
+    return new ChangeUserPasswordHandler($container[Authenticator::class]);
+};
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
 };
@@ -223,6 +234,12 @@ $container[TournamentCommandController::class] = function () use ($container) {
 $container[TournamentQueryController::class] = function () use ($container) {
     return new TournamentQueryController($container[TournamentRepository::class]);
 };
+$container[UserCommandController::class] = function () use ($container) {
+    return new UserCommandController($container['commandBus']);
+};
+$container[UserQueryController::class] = function () use ($container) {
+    return new UserQueryController($container[Authenticator::class]);
+};
 $container['pdo'] = function() {
     $mysql = new PDO(
         'mysql:host=' . getenv('MYSQL_HOST') . ';dbname=' . getenv('MYSQL_DATABASE'),
@@ -246,6 +263,15 @@ $container['commandBus'] = function() use ($container) {
 };
 $container['batchCommandBus'] = function () use ($container) {
     return new BatchCommandBus($container, $container['objectPersistence']);
+};
+$container[TokenFactoryInterface::class] = function () {
+    return new JsonWebTokenFactory();
+};
+$container[UserRepository::class] = function () {
+    return new UserRepository();
+};
+$container[Authenticator::class] = function () use ($container) {
+    return new Authenticator($container[TokenFactoryInterface::class], $container[UserRepository::class]);
 };
 $container['logger'] = function() {
     if ($path = getenv('LOG_PATH')) {
