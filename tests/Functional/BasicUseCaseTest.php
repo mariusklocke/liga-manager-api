@@ -94,7 +94,9 @@ class BasicUseCaseTest extends TestCase
     public function testMatchesCanBeCreated(string $seasonId) : string
     {
         $client = static::getClient();
-        $response = $client->post('/api/season/' . $seasonId . '/matches');
+        $response = $client->post('/api/season/' . $seasonId . '/matches', [
+            'start_at' => '2018-03-02'
+        ]);
         self::assertEquals(204, $response->getStatusCode());
         return $seasonId;
     }
