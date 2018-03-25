@@ -463,6 +463,22 @@
             "name": "id",
             "required": true,
             "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "start_at": {
+                  "type": "string",
+                  "format": "date"
+                }
+              },
+              "required": [
+                "start_at"
+              ],
+              "type": "object"
+            }
           }
         ],
         "responses": {
