@@ -13,7 +13,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * @return Client
      */
-    protected static function getClient() : Client
+    protected static function getClient(): Client
     {
         if (null === self::$client) {
             self::$client = new Client(Bootstrap::bootstrap());

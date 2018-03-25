@@ -9,6 +9,8 @@ php bin/installPharTools.php
 php composer.phar install
 npm install swagger-ui-dist
 mv node_modules/swagger-ui-dist public/docs
+bin/generate-jwt-key.sh config/jwt/secret.key
+chmod 644 config/jwt/secret.key
 php bin/console.php orm:schema-tool:create
 php bin/console.php app:load-fixtures
 ```

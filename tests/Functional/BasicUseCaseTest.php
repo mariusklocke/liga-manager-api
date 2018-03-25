@@ -8,7 +8,7 @@ class BasicUseCaseTest extends TestCase
     public function testSeasonCanBeCreated() : string
     {
         $client = static::getClient();
-        $response = $client->post('/season', ['name' => 'bar']);
+        $response = $client->post('/api/season', ['name' => 'bar']);
         self::assertEquals(200, $response->getStatusCode());
         $data = $client->parseBody($response->getBody());
         self::assertArrayHasKey('id', $data);
@@ -20,11 +20,11 @@ class BasicUseCaseTest extends TestCase
     public function testTeamsCanBeCreated() : array
     {
         $client = static::getClient();
-        $response = $client->post('/team', []);
+        $response = $client->post('/api/team', []);
         self::assertEquals(400, $response->getStatusCode());
         $teamIds = [];
         for ($i = 1; $i <= 4; $i++) {
-            $response = $client->post('/team', ['name' => 'Team No. ' . $i]);
+            $response = $client->post('/api/team', ['name' => 'Team No. ' . $i]);
             self::assertEquals(200, $response->getStatusCode());
             $data = $client->parseBody($response->getBody());
             self::assertArrayHasKey('id', $data);
@@ -42,7 +42,7 @@ class BasicUseCaseTest extends TestCase
     public function testSeasonCanBeFound(string $seasonId)
     {
         $client = static::getClient();
-        $response = $client->get('/season');
+        $response = $client->get('/api/season');
         self::assertEquals(200, $response->getStatusCode());
         $seasonList = $client->parseBody($response->getBody());
         self::assertTrue(is_array($seasonList));
@@ -58,7 +58,7 @@ class BasicUseCaseTest extends TestCase
         }
         self::assertTrue($found);
 
-        $response = $client->get('/season/' . $seasonId);
+        $response = $client->get('/api/season/' . $seasonId);
         $season = $client->parseBody($response->getBody());
         self::assertEquals(200, $response->getStatusCode());
         self::assertArrayHasKey('id', $season);
@@ -78,7 +78,7 @@ class BasicUseCaseTest extends TestCase
     {
         $client = static::getClient();
         foreach ($teamIds as $teamId) {
-            $uri = sprintf('/season/%s/team/%s', $seasonId, $teamId);
+            $uri = sprintf('/api/season/%s/team/%s', $seasonId, $teamId);
             $response = $client->put($uri);
             self::assertEquals(204, $response->getStatusCode());
         }
@@ -94,7 +94,7 @@ class BasicUseCaseTest extends TestCase
     public function testMatchesCanBeCreated(string $seasonId) : string
     {
         $client = static::getClient();
-        $response = $client->post('/season/' . $seasonId . '/matches');
+        $response = $client->post('/api/season/' . $seasonId . '/matches');
         self::assertEquals(204, $response->getStatusCode());
         return $seasonId;
     }
@@ -110,7 +110,7 @@ class BasicUseCaseTest extends TestCase
         $queryParams = [
             'match_day' => 1
         ];
-        $response = $client->get('/season/' . $seasonId . '/matches?' . http_build_query($queryParams));
+        $response = $client->get('/api/season/' . $seasonId . '/matches?' . http_build_query($queryParams));
         self::assertEquals(200, $response->getStatusCode());
         $matches = $client->parseBody($response->getBody());
         self::assertEquals(2, count($matches));
@@ -131,7 +131,7 @@ class BasicUseCaseTest extends TestCase
     public function testSeasonCanBeStarted(string $seasonId) : string
     {
         $client = static::getClient();
-        $response = $client->post('/season/' . $seasonId . '/start');
+        $response = $client->post('/api/season/' . $seasonId . '/start');
         self::assertEquals(204, $response->getStatusCode());
         return $seasonId;
     }
@@ -144,7 +144,7 @@ class BasicUseCaseTest extends TestCase
     public function testRankingCanBeFound(string $seasonId)
     {
         $client = static::getClient();
-        $response = $client->get('/season/' . $seasonId . '/ranking');
+        $response = $client->get('/api/season/' . $seasonId . '/ranking');
         self::assertEquals(200, $response->getStatusCode());
         $ranking = $client->parseBody($response->getBody());
         self::assertArrayHasKey('positions', $ranking);
@@ -188,7 +188,7 @@ class BasicUseCaseTest extends TestCase
             'home_score' => 3,
             'guest_score' => 1
         ];
-        $response = $client->post('/match/' . $matchId . '/result', $matchResult);
+        $response = $client->post('/api/match/' . $matchId . '/result', $matchResult);
         self::assertEquals(204, $response->getStatusCode());
         return $matchId;
     }
@@ -201,7 +201,7 @@ class BasicUseCaseTest extends TestCase
     public function testMatchResultCanBeFound(string $matchId) : array
     {
         $client = static::getClient();
-        $response = $client->get('/match/' . $matchId);
+        $response = $client->get('/api/match/' . $matchId);
         $match = $client->parseBody($response->getBody());
         self::assertTrue(is_array($match));
         self::assertArrayHasKey('home_score', $match);
@@ -221,7 +221,7 @@ class BasicUseCaseTest extends TestCase
     public function testRankingReflectsLatestMatchResults(array $match)
     {
         $client  = static::getClient();
-        $response = $client->get('/season/' . $match['season_id'] . '/ranking');
+        $response = $client->get('/api/season/' . $match['season_id'] . '/ranking');
         $ranking  = $client->parseBody($response->getBody());
         self::assertArrayHasKey('positions', $ranking);
         self::assertArrayHasKey('updated_at', $ranking);

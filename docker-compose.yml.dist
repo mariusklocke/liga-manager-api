@@ -1,12 +1,14 @@
 version: '2'
 services:
   nginx:
-    image: prooph/nginx:www
+    image: nginx:alpine
     ports:
       - "80:80"
       - "443:443"
     links:
       - php:php
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
     volumes_from:
       - php
 

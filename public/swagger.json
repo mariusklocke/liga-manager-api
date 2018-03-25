@@ -10,7 +10,7 @@
     "version": "0.1"
   },
   "paths": {
-    "/match/{id}": {
+    "/api/match/{id}": {
       "get": {
         "operationId": "getMatch",
         "parameters": [
@@ -39,7 +39,7 @@
         "summary": "Find a single match by id"
       }
     },
-    "/match/{id}/cancellation": {
+    "/api/match/{id}/cancellation": {
       "post": {
         "operationId": "cancelMatch",
         "parameters": [
@@ -62,7 +62,7 @@
         "summary": "Cancel a match"
       }
     },
-    "/match/{id}/kickoff": {
+    "/api/match/{id}/kickoff": {
       "post": {
         "operationId": "scheduleMatch",
         "parameters": [
@@ -101,7 +101,7 @@
         "summary": "Schedule a match"
       }
     },
-    "/match/{id}/location": {
+    "/api/match/{id}/location": {
       "post": {
         "operationId": "locateMatch",
         "parameters": [
@@ -139,7 +139,7 @@
         "summary": "Locate a match on a pitch"
       }
     },
-    "/match/{id}/result": {
+    "/api/match/{id}/result": {
       "post": {
         "operationId": "submitMatchResult",
         "parameters": [
@@ -185,7 +185,7 @@
         "summary": "Submit a matches result"
       }
     },
-    "/pitch": {
+    "/api/pitch": {
       "get": {
         "operationId": "getAllPitches",
         "parameters": [],
@@ -243,7 +243,7 @@
         "summary": "Creates a new pitch"
       }
     },
-    "/pitch/{id}": {
+    "/api/pitch/{id}": {
       "delete": {
         "operationId": "deletePitch",
         "parameters": [
@@ -293,7 +293,7 @@
         "summary": "Find a single pitch by id"
       }
     },
-    "/season": {
+    "/api/season": {
       "get": {
         "operationId": "getAllSeasons",
         "parameters": [],
@@ -351,7 +351,7 @@
         "summary": "Create a new season"
       }
     },
-    "/season/{id}": {
+    "/api/season/{id}": {
       "delete": {
         "operationId": "deleteSeason",
         "parameters": [
@@ -401,7 +401,7 @@
         "summary": "Finds a single season"
       }
     },
-    "/season/{id}/matches": {
+    "/api/season/{id}/matches": {
       "get": {
         "operationId": "getMatchesInSeason",
         "parameters": [
@@ -476,7 +476,7 @@
         "summary": "Creates matches for a given season"
       }
     },
-    "/season/{id}/ranking": {
+    "/api/season/{id}/ranking": {
       "get": {
         "operationId": "getRanking",
         "parameters": [
@@ -502,7 +502,7 @@
         "summary": "Returns the current season ranking"
       }
     },
-    "/season/{id}/start": {
+    "/api/season/{id}/start": {
       "post": {
         "operationId": "startSeason",
         "parameters": [
@@ -531,7 +531,7 @@
         "summary": "Starts a season"
       }
     },
-    "/season/{id}/team": {
+    "/api/season/{id}/team": {
       "get": {
         "operationId": "getTeamsInSeason",
         "parameters": [
@@ -560,7 +560,7 @@
         "summary": "Find all teams related to a single season"
       }
     },
-    "/season/{season_id}/team/{team_id}": {
+    "/api/season/{season_id}/team/{team_id}": {
       "put": {
         "operationId": "addTeamToSeason",
         "parameters": [
@@ -630,7 +630,7 @@
         "summary": "Remove a team from a season"
       }
     },
-    "/team": {
+    "/api/team": {
       "get": {
         "operationId": "getAllTeams",
         "parameters": [],
@@ -688,7 +688,7 @@
         "summary": "Creates a new team"
       }
     },
-    "/team/{id}": {
+    "/api/team/{id}": {
       "delete": {
         "operationId": "deleteTeam",
         "parameters": [
@@ -735,7 +735,7 @@
         "summary": "Finds a single team by id"
       }
     },
-    "/team/{id}/rename": {
+    "/api/team/{id}/rename": {
       "post": {
         "operationId": "renameTeam",
         "parameters": [
@@ -761,7 +761,7 @@
         "summary": "Renames a single team"
       }
     },
-    "/tournament": {
+    "/api/tournament": {
       "get": {
         "operationId": "getAllTournaments",
         "tags": [
@@ -817,7 +817,7 @@
         }
       }
     },
-    "/tournament/{id}": {
+    "/api/tournament/{id}": {
       "get": {
         "operationId": "getTournament",
         "tags": [
@@ -845,7 +845,7 @@
         }
       }
     },
-    "/tournament/{id}/round/{round}": {
+    "/api/tournament/{id}/round/{round}": {
       "put": {
         "operationId": "setRound",
         "tags": [
@@ -889,7 +889,7 @@
         }
       }
     },
-    "/tournament/{id}/matches": {
+    "/api/tournament/{id}/matches": {
       "get": {
         "operationId": "getMatchesInTournament",
         "tags": [
@@ -917,7 +917,7 @@
         }
       }
     },
-    "/user/me": {
+    "/api/user/me": {
       "get": {
         "summary": "Retrieve the authenticated user",
         "security": [
@@ -939,7 +939,7 @@
         }
       }
     },
-    "/user/me/password": {
+    "/api/user/me/password": {
       "put": {
         "summary": "Change the authenticated user's password",
         "security": [
