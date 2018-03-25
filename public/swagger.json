@@ -75,7 +75,7 @@
           },
           {
             "in": "body",
-            "name": "body",
+            "name": "scheduleMatchBody",
             "schema": {
               "properties": {
                 "kickoff": {
@@ -114,7 +114,7 @@
           },
           {
             "in": "body",
-            "name": "body",
+            "name": "locateMatchBody",
             "schema": {
               "properties": {
                 "pitch_id": {
@@ -152,7 +152,7 @@
           },
           {
             "in": "body",
-            "name": "body",
+            "name": "submitMatchResultBody",
             "schema": {
               "properties": {
                 "guest_score": {
@@ -210,7 +210,7 @@
         "parameters": [
           {
             "in": "body",
-            "name": "body",
+            "name": "createPitchBody",
             "schema": {
               "properties": {
                 "label": {
@@ -318,7 +318,7 @@
         "parameters": [
           {
             "in": "body",
-            "name": "body",
+            "name": "createSeasonBody",
             "schema": {
               "properties": {
                 "name": {
@@ -466,7 +466,7 @@
           },
           {
             "in": "body",
-            "name": "body",
+            "name": "createMatchesBody",
             "schema": {
               "properties": {
                 "start_at": {
@@ -671,7 +671,7 @@
         "parameters": [
           {
             "in": "body",
-            "name": "body",
+            "name": "createTeamBody",
             "schema": {
               "properties": {
                 "name": {
@@ -804,7 +804,7 @@
         "parameters": [
           {
             "in": "body",
-            "name": "body",
+            "name": "createTournamentBody",
             "schema": {
               "properties": {
                 "name": {
@@ -884,7 +884,7 @@
           },
           {
             "in": "body",
-            "name": "body",
+            "name": "setRoundBody",
             "schema": {
               "type": "array",
               "items": {
@@ -966,7 +966,7 @@
         "parameters": [
           {
             "in": "body",
-            "name": "body",
+            "name": "changePasswordBody",
             "schema": {
               "type": "object",
               "properties": {
