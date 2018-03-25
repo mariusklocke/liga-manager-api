@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
+use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
@@ -30,11 +31,23 @@ class SeasonCommandController extends CommandController
 
     /**
      * @param string $seasonId
+     * @param Request $request
      * @return Response
      */
-    public function createMatches(string $seasonId) : Response
+    public function createMatches(string $seasonId, Request $request) : Response
     {
-        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId));
+        $startAtString = $request->getParsedBodyParam('start_at');
+        if (!is_string($startAtString)) {
+            return $this->createBadRequestResponse('Missing "start_at" parameter');
+        }
+
+        try {
+            $startAt = new DateTimeImmutable($startAtString);
+        } catch (\Exception $e) {
+            return $this->createBadRequestResponse('Invalid date format');
+        }
+
+        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, $startAt));
         return new Response(204);
     }
 

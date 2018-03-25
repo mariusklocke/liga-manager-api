@@ -1033,11 +1033,19 @@
         "id": {
           "type": "string"
         },
+        "kickoff": {
+          "type": "string",
+          "format": "date-time"
+        },
         "match_day": {
           "type": "integer"
         },
         "pitch_id": {
           "type": "string"
+        },
+        "planned_for": {
+          "type": "string",
+          "format": "date"
         },
         "season_id": {
           "type": "string"

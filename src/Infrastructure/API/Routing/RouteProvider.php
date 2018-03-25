@@ -114,7 +114,7 @@ class RouteProvider
             $app->post('/season/{id}/matches', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
-                return $controller->createMatches($args['id']);
+                return $controller->createMatches($args['id'], $request);
             });
 
             $app->post('/match/{id}/kickoff', function ($request, $response, $args) use ($container) {

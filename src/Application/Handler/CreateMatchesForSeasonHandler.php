@@ -35,7 +35,7 @@ class CreateMatchesForSeasonHandler
         /** @var Season $season */
         $season = $this->persistence->find(Season::class, $command->getSeasonId());
         $season->clearMatches();
-        $matches = $this->matchFactory->createMatchesForSeason($season);
+        $matches = $this->matchFactory->createMatchesForSeason($season, $command->getStartAt());
         foreach ($matches as $match) {
             $season->addMatch($match);
             $this->persistence->persist($match);

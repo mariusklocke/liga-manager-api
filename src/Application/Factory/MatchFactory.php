@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Factory;
 
+use DateInterval;
+use DateTimeImmutable;
 use Generator;
 use HexagonalPlayground\Domain\Competition;
 use HexagonalPlayground\Domain\Match;
@@ -16,24 +18,26 @@ use UnexpectedValueException;
 class MatchFactory extends EntityFactory
 {
     /**
-     * @param Competition $competition
-     * @param int         $matchDay
-     * @param Team        $homeTeam
-     * @param Team        $guestTeam
+     * @param Competition            $competition
+     * @param int                    $matchDay
+     * @param Team                   $homeTeam
+     * @param Team                   $guestTeam
+     * @param DateTimeImmutable|null $plannedFor
      * @return Match
      */
-    public function createMatch(Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam) : Match
+    public function createMatch(Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam, DateTimeImmutable $plannedFor = null) : Match
     {
-        return new Match($this->getIdGenerator()->generate(), $competition, $matchDay, $homeTeam, $guestTeam);
+        return new Match($this->getIdGenerator()->generate(), $competition, $matchDay, $homeTeam, $guestTeam, $plannedFor);
     }
 
     /**
      * Create all matches for a given season (including rematches)
      *
-     * @param Season $season
+     * @param Season            $season
+     * @param DateTimeImmutable $startAt
      * @return Match[]
      */
-    public function createMatchesForSeason(Season $season) : array
+    public function createMatchesForSeason(Season $season, DateTimeImmutable $startAt) : array
     {
         $teams = array_values($season->getTeams());
         if (count($teams) % 2 != 0) {
@@ -44,14 +48,16 @@ class MatchFactory extends EntityFactory
 
         $firstHalf = [];
         $secondHalf = [];
+        $matchPlannedFor = $startAt;
         for ($matchDay = 1; $matchDay <= $matchDaysPerHalf; $matchDay++) {
-            foreach ($this->generateMatchDay($matchDay, $teams, $season) as $match) {
+            foreach ($this->generateMatchDay($matchDay, $teams, $season, $matchPlannedFor) as $match) {
                 /** @var Match $match */
                 $firstHalf[] = $match;
                 if ($season->hasSecondHalf()) {
                     $secondHalf[] = $match->rematch($this->getIdGenerator()->generate(), $matchDay + $matchDaysPerHalf);
                 }
             }
+            $matchPlannedFor = $matchPlannedFor->add(new DateInterval('P1W'));
         }
 
         return array_merge($firstHalf, $secondHalf);
@@ -63,12 +69,13 @@ class MatchFactory extends EntityFactory
      * Implements an algorithm found on Wikipedia
      * @link https://de.wikipedia.org/wiki/Spielplan_(Sport)
      *
-     * @param int    $matchDay
-     * @param array  $teams    0-based array of teams
+     * @param int $matchDay
+     * @param array $teams 0-based array of teams
      * @param Season $season
+     * @param DateTimeImmutable $plannedFor
      * @return Generator
      */
-    private function generateMatchDay(int $matchDay, array $teams, Season $season) : Generator
+    private function generateMatchDay(int $matchDay, array $teams, Season $season, DateTimeImmutable $plannedFor) : Generator
     {
         $matchDayCount = count($teams) - 1;
         $teamCount = count($teams);
@@ -79,7 +86,7 @@ class MatchFactory extends EntityFactory
                     $homeTeam = $sumIsEven ? $teams[$k-1] : $teams[$l-1];
                     $guestTeam = $sumIsEven ? $teams[$l-1] : $teams[$k-1];
                     if (null !== $homeTeam && null !== $guestTeam) {
-                        yield $this->createMatch($season, $matchDay, $homeTeam, $guestTeam);
+                        yield $this->createMatch($season, $matchDay, $homeTeam, $guestTeam, $plannedFor);
                     }
                     unset($teams[$k-1]);
                     unset($teams[$l-1]);
@@ -100,7 +107,7 @@ class MatchFactory extends EntityFactory
         $homeTeam = $l+1 > $matchDayCount/2 ? $teams[$k] : $teams[$l];
         $guestTeam = $l+1 > $matchDayCount/2 ? $teams[$l] : $teams[$k];
         if (null !== $homeTeam && null !== $guestTeam) {
-            yield $this->createMatch($season, $matchDay, $homeTeam, $guestTeam);
+            yield $this->createMatch($season, $matchDay, $homeTeam, $guestTeam, $plannedFor);
         }
     }
 }

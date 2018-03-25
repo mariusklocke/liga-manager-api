@@ -3,14 +3,20 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
+use DateTimeImmutable;
+
 class CreateMatchesForSeasonCommand implements CommandInterface
 {
     /** @var string */
     private $seasonId;
 
-    public function __construct(string $seasonId)
+    /** @var DateTimeImmutable */
+    private $startAt;
+
+    public function __construct(string $seasonId, DateTimeImmutable $startAt)
     {
         $this->seasonId = $seasonId;
+        $this->startAt  = $startAt;
     }
 
     /**
@@ -19,5 +25,13 @@ class CreateMatchesForSeasonCommand implements CommandInterface
     public function getSeasonId(): string
     {
         return $this->seasonId;
+    }
+
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getStartAt(): DateTimeImmutable
+    {
+        return $this->startAt;
     }
 }
