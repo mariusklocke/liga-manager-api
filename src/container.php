@@ -249,17 +249,20 @@ $container['pdo'] = function() {
     $mysql = new PDO(
         'mysql:host=' . getenv('MYSQL_HOST') . ';dbname=' . getenv('MYSQL_DATABASE'),
         getenv('MYSQL_USER'),
-        getenv('MYSQL_PASSWORD')
+        getenv('MYSQL_PASSWORD'),
+        [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
     );
     return $mysql;
 };
 $container['readDbAdapter'] = function() use ($container) {
-    $db = new MysqliReadDbAdapter(new mysqli(
+    $mysqli = new mysqli(
         getenv('MYSQL_HOST'),
         getenv('MYSQL_USER'),
         getenv('MYSQL_PASSWORD'),
         getenv('MYSQL_DATABASE')
-    ));
+    );
+    $mysqli->set_charset('utf8');
+    $db = new MysqliReadDbAdapter($mysqli);
     $db->setLogger($container['doctrine.queryLogger']);
     return $db;
 };
