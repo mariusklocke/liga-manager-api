@@ -133,7 +133,7 @@ class RouteProvider
                 /** @var MatchCommandController $controller */
                 $controller = $container[MatchCommandController::class];
                 return $controller->submitResult($args['id'], $request);
-            });
+            })->add($basicAuth)->add($tokenAuth);
 
             $app->post('/match/{id}/cancellation', function ($request, $response, $args) use ($container) {
                 /** @var MatchCommandController $controller */

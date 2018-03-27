@@ -25,7 +25,6 @@ class ScheduleMatchHandler
     /**
      * @param ScheduleMatchCommand $command
      * @throws NotFoundException
-     * @throws InvalidArgumentException
      */
     public function handle(ScheduleMatchCommand $command)
     {

@@ -14,6 +14,7 @@ use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Application\Factory\TournamentFactory;
+use HexagonalPlayground\Application\Factory\UserFactory;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
 use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
@@ -23,7 +24,8 @@ use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
 use HexagonalPlayground\Application\Repository\TournamentRepository;
 use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
-use HexagonalPlayground\Application\Security\UserRepository;
+use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
@@ -100,7 +102,10 @@ $container[FixtureLoader::class] = function() use ($container) {
         $container['objectPersistence'],
         new FixtureGenerator(
             $container['uuidGenerator'],
-            $container[SeasonFactory::class]
+            $container[SeasonFactory::class],
+            new UserFactory($container['uuidGenerator'], function() {
+                return new \Doctrine\Common\Collections\ArrayCollection();
+            })
         )
     );
 };
@@ -131,7 +136,7 @@ $container[ScheduleMatchCommand::class] = function() use ($container) {
     return new ScheduleMatchHandler($container['objectPersistence']);
 };
 $container[SubmitMatchResultCommand::class] = function () use ($container) {
-    return new SubmitMatchResultHandler($container['objectPersistence']);
+    return new SubmitMatchResultHandler($container['objectPersistence'], $container[Authenticator::class]);
 };
 $container[LocateMatchCommand::class] = function () use ($container) {
     return new LocateMatchHandler($container['objectPersistence']);
@@ -267,11 +272,12 @@ $container['batchCommandBus'] = function () use ($container) {
 $container[TokenFactoryInterface::class] = function () {
     return new JsonWebTokenFactory();
 };
-$container[UserRepository::class] = function () {
-    return new UserRepository();
-};
 $container[Authenticator::class] = function () use ($container) {
-    return new Authenticator($container[TokenFactoryInterface::class], $container[UserRepository::class]);
+    /** @var EntityManager $em */
+    $em = $container['doctrine.entityManager'];
+    /** @var UserRepositoryInterface $userRepository */
+    $userRepository = $em->getRepository(User::class);
+    return new Authenticator($container[TokenFactoryInterface::class], $userRepository);
 };
 $container['logger'] = function() {
     if ($path = getenv('LOG_PATH')) {
@@ -279,6 +285,9 @@ $container['logger'] = function() {
             // Make path relative to application root
             $path = __DIR__ . '/../' . $path;
         }
+    }
+    if (php_sapi_name() === 'cli') {
+        putenv('LOG_STREAM=php://stdout');
     }
     $stream = $path ?: (getenv('LOG_STREAM') ?: 'php://stdout');
     $level = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'warning');

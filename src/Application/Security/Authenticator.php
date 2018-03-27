@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Security;
 
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Domain\User;
 
 class Authenticator
 {
@@ -17,14 +18,14 @@ class Authenticator
     /** @var TokenFactoryInterface */
     private $tokenFactory;
 
-    /** @var UserRepository */
+    /** @var UserRepositoryInterface */
     private $userRepository;
 
     /**
      * @param TokenFactoryInterface $tokenFactory
-     * @param UserRepository $userRepository
+     * @param UserRepositoryInterface $userRepository
      */
-    public function __construct(TokenFactoryInterface $tokenFactory, UserRepository $userRepository)
+    public function __construct(TokenFactoryInterface $tokenFactory, UserRepositoryInterface $userRepository)
     {
         $this->tokenFactory       = $tokenFactory;
         $this->userRepository     = $userRepository;

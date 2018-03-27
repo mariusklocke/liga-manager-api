@@ -55,5 +55,4 @@ RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
 WORKDIR /var/www
 RUN composer install --prefer-dist --no-dev --optimize-autoloader
 RUN chmod +x /var/www/bin/*
-RUN chown -R www-data:www-data /var/www
 CMD ["/bin/sh", "-c", "php-fpm | tail -f $LOG_STREAM"]

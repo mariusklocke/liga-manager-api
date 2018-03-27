@@ -59,11 +59,7 @@ class MatchCommandController extends CommandController
             return $this->createBadRequestResponse('Invalid kickoff date format');
         }
 
-        try {
-            $this->commandBus->execute(new ScheduleMatchCommand($matchId, $kickoff));
-        } catch (InvalidArgumentException $e) {
-            return $this->createBadRequestResponse($e->getMessage());
-        }
+        $this->commandBus->execute(new ScheduleMatchCommand($matchId, $kickoff));
 
         return new Response(204);
     }

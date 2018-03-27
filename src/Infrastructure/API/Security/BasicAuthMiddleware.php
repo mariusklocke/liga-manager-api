@@ -23,7 +23,7 @@ class BasicAuthMiddleware extends AuthenticationMiddleware
         $response = $next($request, $response);
 
         /**
-         * Adding the token after the controller is important when changing a user password
+         * Creating the token after the controller is important when changing a user password
          * In this case the token has to be created *AFTER* the password has been changed, because otherwise
          * it would be considered invalid for the next request
          *

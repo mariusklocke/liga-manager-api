@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Security;
+namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 
@@ -19,17 +19,22 @@ class User
     /** @var DateTimeImmutable|null */
     private $lastPasswordChange;
 
+    /** @var Team[]|CollectionInterface */
+    private $teams;
+
     /**
      * @param string $id
      * @param string $email
      * @param string $password
+     * @param Team[]|CollectionInterface $teams
      */
-    public function __construct(string $id, string $email, string $password)
+    public function __construct(string $id, string $email, string $password, $teams)
     {
         $this->id = $id;
         $this->email = $email;
         $this->password = $this->hashPassword($password);
         $this->lastPasswordChange = null;
+        $this->teams = $teams;
     }
 
     /**
@@ -94,6 +99,25 @@ class User
     public function verifyPassword(string $password): bool
     {
         return password_verify($password, $this->password);
+    }
+
+    /**
+     * @param Team $team
+     */
+    public function addTeam(Team $team): void
+    {
+        if (!$this->teams->contains($team)) {
+            $this->teams[] = $team;
+        }
+    }
+
+    /**
+     * @param Team $team
+     * @return bool
+     */
+    public function isInTeam(Team $team): bool
+    {
+        return $this->teams->contains($team);
     }
 
     /**

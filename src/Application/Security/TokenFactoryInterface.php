@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Security;
 
+use HexagonalPlayground\Domain\User;
+
 interface TokenFactoryInterface
 {
     /**

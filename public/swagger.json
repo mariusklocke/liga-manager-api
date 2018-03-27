@@ -142,6 +142,10 @@
     "/api/match/{id}/result": {
       "post": {
         "operationId": "submitMatchResult",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "match id",

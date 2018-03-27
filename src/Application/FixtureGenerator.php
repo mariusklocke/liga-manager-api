@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application;
 
 use Generator;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
+use HexagonalPlayground\Application\Factory\UserFactory;
 use HexagonalPlayground\Domain\GeographicLocation;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Team;
@@ -17,10 +18,14 @@ class FixtureGenerator
     /** @var SeasonFactory */
     private $seasonFactory;
 
-    public function __construct(IdGeneratorInterface $idGenerator, SeasonFactory $seasonFactory)
+    /** @var UserFactory */
+    private $userFactory;
+
+    public function __construct(IdGeneratorInterface $idGenerator, SeasonFactory $seasonFactory, UserFactory $userFactory)
     {
         $this->idGenerator = $idGenerator;
         $this->seasonFactory = $seasonFactory;
+        $this->userFactory = $userFactory;
     }
 
     /**
@@ -57,6 +62,16 @@ class FixtureGenerator
                 'Pitch ' . $color,
                 new GeographicLocation(12.34, 23.45)
             );
+        }
+    }
+
+    /**
+     * @return Generator
+     */
+    public function generateUsers()
+    {
+        for ($i = 1; $i <= 3; $i++) {
+            yield $this->userFactory->createUser('user' . $i, 'user' . $i);
         }
     }
 }

@@ -27,6 +27,12 @@ class FixtureLoader
                 $teams[] = $team;
                 $this->persistence->persist($team);
             }
+            foreach ($this->generator->generateUsers() as $user) {
+                foreach ($teams as $team) {
+                    $user->addTeam($team);
+                }
+                $this->persistence->persist($user);
+            }
             foreach ($this->generator->generateSeasons() as $season) {
                 foreach ($teams as $team) {
                     $season->addTeam($team);

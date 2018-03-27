@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Infrastructure\API\Security;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\TokenInterface;
-use HexagonalPlayground\Application\Security\User;
+use HexagonalPlayground\Domain\User;
 
 class JsonWebTokenFactory implements TokenFactoryInterface
 {

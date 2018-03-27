@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Application\Exception\AuthenticationException;
+use HexagonalPlayground\Application\Exception\AuthorizationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
@@ -37,6 +38,7 @@ class ErrorHandler
     public function __invoke(RequestInterface $request, ResponseInterface $response, Throwable $throwable) : Response
     {
         switch (true) {
+            case ($throwable instanceof AuthorizationException):
             case ($throwable instanceof AuthenticationException):
                 $this->logger->notice((string)$throwable);
                 return $this->createUnauthorizedResponse($throwable->getMessage());
