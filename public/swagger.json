@@ -181,6 +181,9 @@
         "responses": {
           "204": {
             "description": "Operation successful"
+          },
+          "403": {
+            "description": "User is not authorized to perform this operation"
           }
         },
         "tags": [

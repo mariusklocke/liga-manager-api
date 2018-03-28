@@ -38,10 +38,12 @@ class ErrorHandler
     public function __invoke(RequestInterface $request, ResponseInterface $response, Throwable $throwable) : Response
     {
         switch (true) {
-            case ($throwable instanceof AuthorizationException):
             case ($throwable instanceof AuthenticationException):
                 $this->logger->notice((string)$throwable);
                 return $this->createUnauthorizedResponse($throwable->getMessage());
+            case ($throwable instanceof AuthorizationException):
+                $this->logger->notice((string)$throwable);
+                return $this->createForbiddenResponse($throwable->getMessage());
             case ($throwable instanceof NotFoundException):
             case ($throwable instanceof RouteNotFoundException):
                 $this->logger->notice((string)$throwable);
@@ -106,5 +108,14 @@ class ErrorHandler
     private function createUnauthorizedResponse(string $message): Response
     {
         return (new Response(401))->withJson(['title' => 'Unauthorized', 'message' => $message]);
+    }
+
+    /**
+     * @param string $message
+     * @return Response
+     */
+    private function createForbiddenResponse(string $message): Response
+    {
+        return (new Response(403))->withJson(['title' => 'Forbidden', 'message' => $message]);
     }
 }
