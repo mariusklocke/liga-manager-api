@@ -27,8 +27,7 @@ class UserFactory extends EntityFactory
         return new User(
             $this->getIdGenerator()->generate(),
             $email,
-            $password,
-            call_user_func($this->collectionFactory)
+            $password
         );
     }
 }

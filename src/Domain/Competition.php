@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use Doctrine\Common\Collections\Collection;
+
 abstract class Competition
 {
     /** @var string */
@@ -11,7 +13,7 @@ abstract class Competition
     /** @var string */
     protected $name;
 
-    /** @var CollectionInterface|Match[] */
+    /** @var Collection|Match[] */
     protected $matches;
 
     /**

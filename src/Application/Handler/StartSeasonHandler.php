@@ -34,7 +34,7 @@ class StartSeasonHandler
     {
         /** @var Season $season */
         $season = $this->persistence->find(Season::class, $command->getSeasonId());
-        $season->start(call_user_func($this->collectionFactory));
+        $season->start();
         $this->persistence->persist($season);
     }
 }

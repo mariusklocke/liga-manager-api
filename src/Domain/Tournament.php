@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 class Tournament extends Competition
 {
     /** @var int */
@@ -11,13 +13,12 @@ class Tournament extends Competition
     /**
      * @param string $id
      * @param string $name
-     * @param CollectionInterface|Match[] $matches
      */
-    public function __construct(string $id, string $name, $matches)
+    public function __construct(string $id, string $name)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->matches = $matches;
+        $this->matches = new ArrayCollection();
         $this->updateRoundCount();
     }
 

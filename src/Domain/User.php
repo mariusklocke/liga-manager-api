@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class User
 {
@@ -19,22 +21,21 @@ class User
     /** @var DateTimeImmutable|null */
     private $lastPasswordChange;
 
-    /** @var Team[]|CollectionInterface */
+    /** @var Collection|Team[] */
     private $teams;
 
     /**
      * @param string $id
      * @param string $email
      * @param string $password
-     * @param Team[]|CollectionInterface $teams
      */
-    public function __construct(string $id, string $email, string $password, $teams)
+    public function __construct(string $id, string $email, string $password)
     {
         $this->id = $id;
         $this->email = $email;
         $this->password = $this->hashPassword($password);
         $this->lastPasswordChange = null;
-        $this->teams = $teams;
+        $this->teams = new ArrayCollection();
     }
 
     /**

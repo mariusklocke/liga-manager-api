@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class Ranking
 {
@@ -13,18 +15,16 @@ class Ranking
     /** @var DateTimeImmutable */
     private $updatedAt;
 
-    /** @var CollectionInterface|RankingPosition[] */
+    /** @var Collection|RankingPosition[] */
     private $positions;
 
     /**
      * @param Season $season
-     * @param CollectionInterface $positions
      */
-    public function __construct(Season $season, $positions)
+    public function __construct(Season $season)
     {
         $this->season = $season;
-        $this->positions = $positions;
-        $this->positions->clear();
+        $this->positions = new ArrayCollection();
         foreach ($season->getTeams() as $team) {
             $this->positions[$team->getId()] = new RankingPosition($this, $team);
         }
