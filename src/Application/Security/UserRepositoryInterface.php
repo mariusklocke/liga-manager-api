@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Security;
 
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\User;
 
-interface UserRepositoryInterface
+interface UserRepositoryInterface extends OrmRepositoryInterface
 {
     /**
      * Finds a user by Id

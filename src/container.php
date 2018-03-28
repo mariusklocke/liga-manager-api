@@ -10,6 +10,7 @@ use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
+use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
@@ -19,6 +20,7 @@ use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
 use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
+use HexagonalPlayground\Application\Handler\CreateUserHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
 use HexagonalPlayground\Application\Repository\TournamentRepository;
@@ -97,15 +99,18 @@ $container[TournamentFactory::class] = function () use ($container) {
 $container[MatchFactory::class] = function () use ($container) {
     return new MatchFactory($container['uuidGenerator']);
 };
+$container[UserFactory::class] = function () use ($container) {
+    return new UserFactory($container['uuidGenerator'], function() {
+        return new \Doctrine\Common\Collections\ArrayCollection();
+    });
+};
 $container[FixtureLoader::class] = function() use ($container) {
     return new FixtureLoader(
         $container['objectPersistence'],
         new FixtureGenerator(
             $container['uuidGenerator'],
             $container[SeasonFactory::class],
-            new UserFactory($container['uuidGenerator'], function() {
-                return new \Doctrine\Common\Collections\ArrayCollection();
-            })
+            $container[UserFactory::class]
         )
     );
 };
@@ -161,6 +166,9 @@ $container[SetTournamentRoundCommand::class] = function () use ($container) {
 };
 $container[ChangeUserPasswordCommand::class] = function () use ($container) {
     return new ChangeUserPasswordHandler($container[Authenticator::class]);
+};
+$container[CreateUserCommand::class] = function () use ($container) {
+    return new CreateUserHandler($container[UserRepositoryInterface::class], $container[UserFactory::class]);
 };
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
@@ -281,6 +289,11 @@ $container[Authenticator::class] = function () use ($container) {
     /** @var UserRepositoryInterface $userRepository */
     $userRepository = $em->getRepository(User::class);
     return new Authenticator($container[TokenFactoryInterface::class], $userRepository);
+};
+$container[UserRepositoryInterface::class] = function () use ($container) {
+    /** @var EntityManager $em */
+    $em = $container['doctrine.entityManager'];
+    return $em->getRepository(User::class);
 };
 $container['logger'] = function() {
     if ($path = getenv('LOG_PATH')) {

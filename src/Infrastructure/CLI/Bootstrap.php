@@ -26,6 +26,7 @@ class Bootstrap
         // Add own command
         $app->add(new ImportMatchesCommand($container['batchCommandBus']));
         $app->add(new LoadFixturesCommand($container[FixtureLoader::class]));
+        $app->add(new CreateUserCommand($container['commandBus']));
         return $app;
     }
 
