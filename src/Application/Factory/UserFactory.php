@@ -8,15 +8,6 @@ use HexagonalPlayground\Domain\User;
 
 class UserFactory extends EntityFactory
 {
-    /** @var callable */
-    private $collectionFactory;
-
-    public function __construct(IdGeneratorInterface $idGenerator, callable $collectionFactory)
-    {
-        parent::__construct($idGenerator);
-        $this->collectionFactory = $collectionFactory;
-    }
-
     /**
      * @param string $email
      * @param string $password

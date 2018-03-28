@@ -13,17 +13,12 @@ class StartSeasonHandler
     /** @var ObjectPersistenceInterface */
     private $persistence;
 
-    /** @var callable */
-    private $collectionFactory;
-
     /**
      * @param ObjectPersistenceInterface $persistence
-     * @param callable $collectionFactory
      */
-    public function __construct(ObjectPersistenceInterface $persistence, callable $collectionFactory)
+    public function __construct(ObjectPersistenceInterface $persistence)
     {
         $this->persistence = $persistence;
-        $this->collectionFactory = $collectionFactory;
     }
 
     /**

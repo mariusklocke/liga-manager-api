@@ -87,22 +87,16 @@ if (file_exists(__DIR__ . '/../.env')) {
 $container = new \Slim\Container([]);
 
 $container[SeasonFactory::class] = function () use ($container) {
-    return new SeasonFactory($container['uuidGenerator'], function() {
-        return new \Doctrine\Common\Collections\ArrayCollection();
-    });
+    return new SeasonFactory($container['uuidGenerator']);
 };
 $container[TournamentFactory::class] = function () use ($container) {
-    return new TournamentFactory($container['uuidGenerator'], function() {
-        return new \Doctrine\Common\Collections\ArrayCollection();
-    });
+    return new TournamentFactory($container['uuidGenerator']);
 };
 $container[MatchFactory::class] = function () use ($container) {
     return new MatchFactory($container['uuidGenerator']);
 };
 $container[UserFactory::class] = function () use ($container) {
-    return new UserFactory($container['uuidGenerator'], function() {
-        return new \Doctrine\Common\Collections\ArrayCollection();
-    });
+    return new UserFactory($container['uuidGenerator']);
 };
 $container[FixtureLoader::class] = function() use ($container) {
     return new FixtureLoader(
@@ -121,12 +115,7 @@ $container[DeleteTeamCommand::class] = function() use ($container) {
     return new DeleteTeamHandler($container['objectPersistence']);
 };
 $container[StartSeasonCommand::class] = function() use ($container) {
-    return new StartSeasonHandler(
-        $container['objectPersistence'],
-        function() {
-            return new \Doctrine\Common\Collections\ArrayCollection();
-        }
-    );
+    return new StartSeasonHandler($container['objectPersistence']);
 };
 $container[CreateMatchesForSeasonCommand::class] = function() use ($container) {
     return new CreateMatchesForSeasonHandler($container['objectPersistence'], $container[MatchFactory::class]);
