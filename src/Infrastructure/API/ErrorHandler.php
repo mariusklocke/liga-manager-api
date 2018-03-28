@@ -13,7 +13,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\MethodNotAllowedException;
 use Slim\Exception\NotFoundException as RouteNotFoundException;
+use Slim\Http\Headers;
 use Slim\Http\Response;
+use Slim\Interfaces\Http\HeadersInterface;
 use Throwable;
 
 class ErrorHandler
@@ -40,82 +42,41 @@ class ErrorHandler
         switch (true) {
             case ($throwable instanceof AuthenticationException):
                 $this->logger->notice((string)$throwable);
-                return $this->createUnauthorizedResponse($throwable->getMessage());
+                return $this->createResponse(401, 'Unauthorized', $throwable->getMessage());
             case ($throwable instanceof AuthorizationException):
                 $this->logger->notice((string)$throwable);
-                return $this->createForbiddenResponse($throwable->getMessage());
+                return $this->createResponse(403, 'Forbidden', $throwable->getMessage());
             case ($throwable instanceof NotFoundException):
             case ($throwable instanceof RouteNotFoundException):
                 $this->logger->notice((string)$throwable);
-                return $this->createNotFoundResponse($throwable->getMessage());
+                return $this->createResponse(404, 'Not Found', $throwable->getMessage());
             case ($throwable instanceof DomainException):
             case ($throwable instanceof BadRequestException):
                 $this->logger->notice((string)$throwable);
-                return $this->createBadRequestResponse($throwable->getMessage());
+                return $this->createResponse(400, 'Bad Request', $throwable->getMessage());
             case ($throwable instanceof MethodNotAllowedException):
                 $this->logger->notice((string)$throwable);
-                return $this->createMethodNotAllowedResponse($throwable->getAllowedMethods());
+                $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);
+                $message = 'See Allow-Header for a list of allowed methods';
+                return $this->createResponse(405, 'Method not allowed', $message, $headers);
         }
 
         $this->logger->error((string)$throwable);
-        return $this->createInternalErrorResponse();
+        return $this->createResponse(500, 'Internal Server Error', '');
     }
 
     /**
-     * @return Response
-     */
-    private function createInternalErrorResponse() : Response
-    {
-        $response = new Response(500);
-        return $response->withJson(['title' => 'Internal Server Error']);
-    }
-
-    /**
-     * @param array $allowedMethods
-     * @return Response
-     */
-    private function createMethodNotAllowedResponse(array $allowedMethods) : Response
-    {
-        $response = new Response(405);
-        return $response
-            ->withHeader('Allow', implode(', ', $allowedMethods))
-            ->withJson(['title' => 'Method Not Allowed', 'allowed_methods' => $allowedMethods]);
-    }
-
-    /**
+     * @param int $statusCode
+     * @param string $title
      * @param string $message
+     * @param HeadersInterface|null $headers
      * @return Response
      */
-    private function createNotFoundResponse(string $message) : Response
+    private function createResponse(int $statusCode, string $title, string $message, HeadersInterface $headers = null): Response
     {
-        $response = new Response(404);
-        return $response->withJson(['title' => 'Not Found', 'message' => $message]);
-    }
-
-    /**
-     * @param string $message
-     * @return Response
-     */
-    private function createBadRequestResponse(string $message) : Response
-    {
-        return (new Response(400))->withJson(['title' => 'Bad Request', 'message' => $message]);
-    }
-
-    /**
-     * @param string $message
-     * @return Response
-     */
-    private function createUnauthorizedResponse(string $message): Response
-    {
-        return (new Response(401))->withJson(['title' => 'Unauthorized', 'message' => $message]);
-    }
-
-    /**
-     * @param string $message
-     * @return Response
-     */
-    private function createForbiddenResponse(string $message): Response
-    {
-        return (new Response(403))->withJson(['title' => 'Forbidden', 'message' => $message]);
+        return (new Response($statusCode, $headers))->withJson([
+            'title'   => $title,
+            'message' => $message
+        ]);
     }
 }
