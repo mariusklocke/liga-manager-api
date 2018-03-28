@@ -128,6 +128,7 @@ class User
         return [
             'id' => $this->id,
             'email' => $this->email,
+            'teams' => $this->teams->getKeys()
         ];
     }
 }

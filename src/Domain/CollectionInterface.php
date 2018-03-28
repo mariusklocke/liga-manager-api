@@ -46,4 +46,12 @@ interface CollectionInterface extends Countable, IteratorAggregate, ArrayAccess
      * @return static A collection with the results of the filter operation.
      */
     public function filter(Closure $p);
+
+    /**
+     * Gets all keys/indices of the collection.
+     *
+     * @return array The keys/indices of the collection, in the order of the corresponding
+     *               elements in the collection.
+     */
+    public function getKeys();
 }

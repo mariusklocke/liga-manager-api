@@ -1202,6 +1202,12 @@
         },
         "email": {
           "type": "string"
+        },
+        "teams": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "type": "object"
