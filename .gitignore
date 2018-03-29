@@ -1,6 +1,7 @@
 .idea
 build
-config/jwt
+config/jwt/*
+!config/jwt/.gitkeep
 vendor
 *.phar
 phpda*
