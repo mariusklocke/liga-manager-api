@@ -40,9 +40,12 @@ class Tournament extends Competition
      */
     public function clearMatchesForRound(int $round) : void
     {
-        $this->matches = $this->matches->filter(function (Match $match) use ($round) {
-            return $match->getMatchDay() !== $round;
+        $toRemove = $this->matches->filter(function (Match $match) use ($round) {
+            return $match->getMatchDay() === $round;
         });
+        foreach ($toRemove->getKeys() as $key) {
+            $this->matches->remove($key);
+        }
         $this->updateRoundCount();
     }
 
