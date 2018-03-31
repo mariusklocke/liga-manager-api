@@ -19,15 +19,15 @@ class PitchCommandController extends CommandController
     {
         $latitude = $request->getParsedBodyParam('location_latitude');
         $longitude = $request->getParsedBodyParam('location_longitude');
-        if (!is_float($latitude)) {
+        if (!is_float($latitude) && !is_int($latitude)) {
             throw new BadRequestException(sprintf(
-                'Invalid parameter "location_latitude". Float expected. %s given',
+                'Invalid parameter "location_latitude". Number expected. %s given',
                 gettype($latitude)
             ));
         }
-        if (!is_float($longitude)) {
+        if (!is_float($longitude) && !is_int($longitude)) {
             throw new BadRequestException(sprintf(
-                'Invalid parameter "location_longitude". Float expected. %s given',
+                'Invalid parameter "location_longitude". Number expected. %s given',
                 gettype($longitude)
             ));
         }
