@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Bus\SingleCommandBus;
-use Slim\Http\Response;
 
 abstract class CommandController
 {
@@ -14,14 +13,5 @@ abstract class CommandController
     public function __construct(SingleCommandBus $commandBus)
     {
         $this->commandBus = $commandBus;
-    }
-
-    /**
-     * @param string $message
-     * @return Response
-     */
-    protected function createBadRequestResponse(string $message)
-    {
-        return (new Response(400))->withJson(['title' => 'Bad Request', 'message' => $message]);
     }
 }

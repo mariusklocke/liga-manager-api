@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
+use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -13,7 +14,7 @@ class UserCommandController extends CommandController
     {
         $newPassword = $request->getParsedBodyParam('new_password');
         if (!is_string($newPassword) || mb_strlen($newPassword) < 6 || mb_strlen($newPassword) > 255) {
-            return $this->createBadRequestResponse('New password requires a length between 6 and 255 characters');
+            throw new BadRequestException('New password requires a length between 6 and 255 characters');
         }
 
         $this->commandBus->execute(new ChangeUserPasswordCommand($newPassword));

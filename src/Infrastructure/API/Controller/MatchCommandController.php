@@ -8,7 +8,7 @@ use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
-use InvalidArgumentException;
+use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -24,10 +24,10 @@ class MatchCommandController extends CommandController
         $homeScore = $request->getParsedBodyParam('home_score');
         $guestScore = $request->getParsedBodyParam('guest_score');
         if (!is_int($homeScore) || $homeScore < 0 || $homeScore > 99) {
-            return $this->createBadRequestResponse('Invalid home score');
+            throw new BadRequestException('Invalid home score');
         }
         if (!is_int($guestScore) || $guestScore < 0 || $homeScore > 99) {
-            return $this->createBadRequestResponse('Invalid guest score');
+            throw new BadRequestException('Invalid guest score');
         }
 
         $this->commandBus->execute(new SubmitMatchResultCommand($matchId, $homeScore, $guestScore));
@@ -56,7 +56,7 @@ class MatchCommandController extends CommandController
         try {
             $kickoff = new DateTimeImmutable($kickoffString);
         } catch (\Exception $e) {
-            return $this->createBadRequestResponse('Invalid kickoff date format');
+            throw new BadRequestException('Invalid kickoff date format');
         }
 
         $this->commandBus->execute(new ScheduleMatchCommand($matchId, $kickoff));
@@ -73,7 +73,7 @@ class MatchCommandController extends CommandController
     {
         $pitchId = $request->getParsedBodyParam('pitch_id');
         if (!is_string($pitchId)) {
-            return $this->createBadRequestResponse('Parameter "pitch_id" has to be a string');
+            throw new BadRequestException('Parameter "pitch_id" has to be a string');
         }
 
         $this->commandBus->execute(new LocateMatchCommand($matchId, $pitchId));

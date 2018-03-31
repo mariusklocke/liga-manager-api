@@ -10,6 +10,7 @@ use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -23,7 +24,7 @@ class SeasonCommandController extends CommandController
     {
         $name = $request->getParsedBodyParam('name');
         if (!is_string($name) || mb_strlen($name) === 0 || mb_strlen($name) > 255) {
-            return $this->createBadRequestResponse('Invalid season name');
+            throw new BadRequestException('Invalid season name');
         }
         $id = $this->commandBus->execute(new CreateSeasonCommand($name));
         return (new Response(200))->withJson(['id' => $id]);
@@ -38,13 +39,13 @@ class SeasonCommandController extends CommandController
     {
         $startAtString = $request->getParsedBodyParam('start_at');
         if (!is_string($startAtString)) {
-            return $this->createBadRequestResponse('Missing "start_at" parameter');
+            throw new BadRequestException('Missing "start_at" parameter');
         }
 
         try {
             $startAt = new DateTimeImmutable($startAtString);
         } catch (\Exception $e) {
-            return $this->createBadRequestResponse('Invalid date format');
+            throw new BadRequestException('Invalid date format');
         }
 
         $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, $startAt));
