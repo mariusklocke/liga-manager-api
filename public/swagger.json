@@ -224,10 +224,22 @@
                   "type": "string",
                   "minLength": 1,
                   "maxLength": 255
+                },
+                "location_latitude": {
+                  "type": "number",
+                  "minimum": -90,
+                  "maximum": 90
+                },
+                "location_longitude": {
+                  "type": "number",
+                  "minimum": -180,
+                  "maximum": 180
                 }
               },
               "required": [
-                "label"
+                "label",
+                "location_latitude",
+                "location_longitude"
               ],
               "type": "object"
             }
@@ -241,7 +253,7 @@
             }
           },
           "400": {
-            "description": "Indicates an invalid value of the label parameter"
+            "description": "Indicates an invalid parameter value"
           }
         },
         "tags": [

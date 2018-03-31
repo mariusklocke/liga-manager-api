@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
+use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
@@ -18,6 +19,7 @@ use HexagonalPlayground\Application\Factory\TournamentFactory;
 use HexagonalPlayground\Application\Factory\UserFactory;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
+use HexagonalPlayground\Application\Handler\CreatePitchHandler;
 use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\CreateUserHandler;
@@ -28,6 +30,7 @@ use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
+use HexagonalPlayground\Infrastructure\API\Controller\PitchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
@@ -159,6 +162,9 @@ $container[ChangeUserPasswordCommand::class] = function () use ($container) {
 $container[CreateUserCommand::class] = function () use ($container) {
     return new CreateUserHandler($container[UserRepositoryInterface::class], $container[UserFactory::class]);
 };
+$container[CreatePitchCommand::class] = function () use ($container) {
+    return new CreatePitchHandler($container['objectPersistence'], $container['uuidGenerator']);
+};
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
 };
@@ -213,6 +219,9 @@ $container[MatchQueryController::class] = function() use ($container) {
 };
 $container[PitchQueryController::class] = function() use ($container) {
     return new PitchQueryController($container[PitchRepository::class]);
+};
+$container[PitchCommandController::class] = function () use ($container) {
+    return new PitchCommandController($container['commandBus']);
 };
 $container[SeasonQueryController::class] = function() use ($container) {
     return new SeasonQueryController(

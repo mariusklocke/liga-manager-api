@@ -28,6 +28,14 @@ class Pitch
         return $clone;
     }
 
+    /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
     private function __clone()
     {
         $this->id = null;

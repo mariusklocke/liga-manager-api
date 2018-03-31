@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Routing;
 
 use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\PitchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\SeasonCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\SeasonQueryController;
@@ -98,6 +99,12 @@ class RouteProvider
                 $controller = $container[PitchQueryController::class];
                 return $controller->findPitchById($args['id']);
             })->setName('findPitchById');
+
+            $app->post('/pitch', function ($request) use ($container) {
+                /** @var PitchCommandController $controller */
+                $controller = $container[PitchCommandController::class];
+                return $controller->create($request);
+            });
 
             $app->post('/season/{id}/start', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
