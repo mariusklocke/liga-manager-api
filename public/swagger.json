@@ -5,12 +5,13 @@
       "email": "marius.klocke@gmail.com",
       "name": "Marius Klocke"
     },
-    "description": "RESTful API for managing soccer leagues and illustrating hexagonal architecture",
-    "title": "Hexagonal Playground API",
+    "description": "RESTful API for managing Wilde Liga Bremen",
+    "title": "Wilde Liga Bremen API",
     "version": "0.1"
   },
+  "basePath": "/api",
   "paths": {
-    "/api/match/{id}": {
+    "/match/{id}": {
       "get": {
         "operationId": "getMatch",
         "parameters": [
@@ -39,7 +40,7 @@
         "summary": "Find a single match by id"
       }
     },
-    "/api/match/{id}/cancellation": {
+    "/match/{id}/cancellation": {
       "post": {
         "operationId": "cancelMatch",
         "parameters": [
@@ -62,7 +63,7 @@
         "summary": "Cancel a match"
       }
     },
-    "/api/match/{id}/kickoff": {
+    "/match/{id}/kickoff": {
       "post": {
         "operationId": "scheduleMatch",
         "parameters": [
@@ -101,7 +102,7 @@
         "summary": "Schedule a match"
       }
     },
-    "/api/match/{id}/location": {
+    "/match/{id}/location": {
       "post": {
         "operationId": "locateMatch",
         "parameters": [
@@ -139,7 +140,7 @@
         "summary": "Locate a match on a pitch"
       }
     },
-    "/api/match/{id}/result": {
+    "/match/{id}/result": {
       "post": {
         "operationId": "submitMatchResult",
         "security": [
@@ -192,7 +193,7 @@
         "summary": "Submit a matches result"
       }
     },
-    "/api/pitch": {
+    "/pitch": {
       "get": {
         "operationId": "getAllPitches",
         "parameters": [],
@@ -262,7 +263,7 @@
         "summary": "Creates a new pitch"
       }
     },
-    "/api/pitch/{id}": {
+    "/pitch/{id}": {
       "delete": {
         "operationId": "deletePitch",
         "parameters": [
@@ -312,7 +313,7 @@
         "summary": "Find a single pitch by id"
       }
     },
-    "/api/season": {
+    "/season": {
       "get": {
         "operationId": "getAllSeasons",
         "parameters": [],
@@ -370,7 +371,7 @@
         "summary": "Create a new season"
       }
     },
-    "/api/season/{id}": {
+    "/season/{id}": {
       "delete": {
         "operationId": "deleteSeason",
         "parameters": [
@@ -420,7 +421,7 @@
         "summary": "Finds a single season"
       }
     },
-    "/api/season/{id}/matches": {
+    "/season/{id}/matches": {
       "get": {
         "operationId": "getMatchesInSeason",
         "parameters": [
@@ -511,7 +512,7 @@
         "summary": "Creates matches for a given season"
       }
     },
-    "/api/season/{id}/ranking": {
+    "/season/{id}/ranking": {
       "get": {
         "operationId": "getRanking",
         "parameters": [
@@ -537,7 +538,7 @@
         "summary": "Returns the current season ranking"
       }
     },
-    "/api/season/{id}/start": {
+    "/season/{id}/start": {
       "post": {
         "operationId": "startSeason",
         "parameters": [
@@ -566,7 +567,7 @@
         "summary": "Starts a season"
       }
     },
-    "/api/season/{id}/team": {
+    "/season/{id}/team": {
       "get": {
         "operationId": "getTeamsInSeason",
         "parameters": [
@@ -595,7 +596,7 @@
         "summary": "Find all teams related to a single season"
       }
     },
-    "/api/season/{season_id}/team/{team_id}": {
+    "/season/{season_id}/team/{team_id}": {
       "put": {
         "operationId": "addTeamToSeason",
         "parameters": [
@@ -665,7 +666,7 @@
         "summary": "Remove a team from a season"
       }
     },
-    "/api/team": {
+    "/team": {
       "get": {
         "operationId": "getAllTeams",
         "parameters": [],
@@ -723,7 +724,7 @@
         "summary": "Creates a new team"
       }
     },
-    "/api/team/{id}": {
+    "/team/{id}": {
       "delete": {
         "operationId": "deleteTeam",
         "parameters": [
@@ -770,7 +771,7 @@
         "summary": "Finds a single team by id"
       }
     },
-    "/api/team/{id}/rename": {
+    "/team/{id}/rename": {
       "post": {
         "operationId": "renameTeam",
         "parameters": [
@@ -796,7 +797,7 @@
         "summary": "Renames a single team"
       }
     },
-    "/api/tournament": {
+    "/tournament": {
       "get": {
         "operationId": "getAllTournaments",
         "tags": [
@@ -852,7 +853,7 @@
         }
       }
     },
-    "/api/tournament/{id}": {
+    "/tournament/{id}": {
       "get": {
         "operationId": "getTournament",
         "tags": [
@@ -880,7 +881,7 @@
         }
       }
     },
-    "/api/tournament/{id}/round/{round}": {
+    "/tournament/{id}/round/{round}": {
       "put": {
         "operationId": "setRound",
         "tags": [
@@ -924,7 +925,7 @@
         }
       }
     },
-    "/api/tournament/{id}/matches": {
+    "/tournament/{id}/matches": {
       "get": {
         "operationId": "getMatchesInTournament",
         "tags": [
@@ -952,7 +953,7 @@
         }
       }
     },
-    "/api/user/me": {
+    "/user/me": {
       "get": {
         "summary": "Retrieve the authenticated user",
         "security": [
@@ -974,7 +975,7 @@
         }
       }
     },
-    "/api/user/me/password": {
+    "/user/me/password": {
       "put": {
         "summary": "Change the authenticated user's password",
         "security": [
