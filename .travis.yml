@@ -1,7 +1,4 @@
 sudo: required
-language: php
-php:
-  - '7.2'
 env:
   global:
     - MYSQL_HOST=mariadb
