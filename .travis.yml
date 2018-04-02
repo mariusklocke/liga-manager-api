@@ -12,8 +12,7 @@ env:
 services:
   - docker
 install:
-  - composer install --ignore-platform-reqs --prefer-dist --no-dev --optimize-autoloader
-  - docker build -f docker/php/Dockerfile -t ligamanager/php .
+  - sh docker/build-images.sh
 before_script:
   - env | grep "^MYSQL_" > .env
 script:
