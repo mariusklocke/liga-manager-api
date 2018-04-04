@@ -12,6 +12,7 @@ ENV PHPIZE_DEPS \
     make \
     pkgconf \
     re2c
+ENV APP_HOME="/var/www/api"
 
 RUN apk add --no-cache --virtual .persistent-deps
 
@@ -31,16 +32,16 @@ RUN set -xe \
         mbstring \
     && apk del .build-deps \
     && rm -rf /tmp/* \
-    && rm -rf /var/www \
-    && mkdir -p /var/www \
+    && rm -rf ${APP_HOME} \
+    && mkdir -p ${APP_HOME} \
     && wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar \
     && wget -O /usr/local/bin/composer https://getcomposer.org/download/1.6.3/composer.phar \
     && chmod +x /usr/local/bin/*
 
-ADD . /var/www
+ADD . ${APP_HOME}
 
 # Configure path for JWT key pairs
-ENV JWT_SECRET="/var/www/config/jwt/secret.key"
+ENV JWT_SECRET="${APP_HOME}/config/jwt/secret.key"
 
 # Workaround https://bugs.php.net/bug.php?id=71880
 ENV LOG_STREAM="/tmp/stdout"
@@ -52,7 +53,7 @@ RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
 # pdo_odbc pdo_pgsql pdo_sqlite pgsql phar posix pspell readline recode reflection session shmop simplexml snmp soap
 # sockets spl standard sybase_ct sysvmsg sysvsem sysvshm tidy tokenizer wddx xml xmlreader xmlrpc xmlwriter xsl zip
 
-WORKDIR /var/www
+WORKDIR ${APP_HOME}
 RUN composer install --prefer-dist --no-dev --optimize-autoloader
-RUN chmod +x /var/www/bin/*
+RUN chmod +x ${APP_HOME}/bin/*
 CMD ["/bin/sh", "-c", "php-fpm | tail -f $LOG_STREAM"]

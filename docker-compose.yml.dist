@@ -3,8 +3,7 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
     links:
       - php:php
     volumes:
@@ -13,9 +12,9 @@ services:
       - php
 
   php:
-    image: ligamanager/php
+    image: mklocke/liga-manager-api
     volumes:
-      - .:/var/www
+      - .:/var/www/api
     links:
       - mariadb:mariadb
     env_file:
@@ -27,3 +26,10 @@ services:
       - "3306:3306"
     env_file:
       - .env
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    ports:
+      - "80:8080"
+    environment:
+      - API_URL=http://localhost:8080/api/swagger.json

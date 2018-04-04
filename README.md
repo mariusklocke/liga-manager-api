@@ -28,8 +28,3 @@ docker-compose exec php php bin/console.php app:load-fixtures
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
 
-## Install Swagger UI
-```bash
-npm install swagger-ui-dist
-mv node_modules/swagger-ui-dist public/docs
-```
