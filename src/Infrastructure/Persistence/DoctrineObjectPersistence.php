@@ -37,7 +37,7 @@ class DoctrineObjectPersistence implements ObjectPersistenceInterface
 
         if (!is_object($object)) {
             throw new NotFoundException(
-                sprintf('Cannot find entity %s with ID %s', $this->stripNamespace($class), $id)
+                sprintf('Cannot find %s with ID %s', $this->stripNamespace($class), $id)
             );
         }
 

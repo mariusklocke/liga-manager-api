@@ -953,6 +953,56 @@
         }
       }
     },
+    "/user": {
+      "post": {
+        "summary": "Create a user",
+        "operationId": "createUser",
+        "tags": ["user"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "createUserBody",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 6,
+                  "maxLength": 255
+                },
+                "teams": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "role": {
+                  "type": "string",
+                  "enum": ["admin", "team_manager"]
+                },
+                "first_name": {
+                  "type": "string"
+                },
+                "last_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "400": {
+            "description": "Invalid user object"
+          }
+        }
+      }
+    },
     "/user/me": {
       "get": {
         "summary": "Retrieve the authenticated user",
@@ -1224,6 +1274,16 @@
           "items": {
             "type": "string"
           }
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "team_manager"]
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
         }
       },
       "type": "object"

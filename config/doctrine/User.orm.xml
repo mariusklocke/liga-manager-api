@@ -8,6 +8,9 @@
         <field name="email" type="string" unique="true" />
         <field name="password" type="string" />
         <field name="lastPasswordChange" column="last_password_change" type="datetime_immutable" nullable="true"/>
+        <field name="role" type="string" />
+        <field name="firstName" column="first_name" type="string" />
+        <field name="lastName" column="last_name" type="string" />
         <many-to-many target-entity="HexagonalPlayground\Domain\Team" field="teams" index-by="id">
             <join-table name="users_teams_link">
                 <join-columns>

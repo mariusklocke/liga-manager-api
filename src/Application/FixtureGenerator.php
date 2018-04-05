@@ -9,6 +9,7 @@ use HexagonalPlayground\Application\Factory\UserFactory;
 use HexagonalPlayground\Domain\GeographicLocation;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Domain\User;
 
 class FixtureGenerator
 {
@@ -70,8 +71,14 @@ class FixtureGenerator
      */
     public function generateUsers()
     {
-        for ($i = 1; $i <= 3; $i++) {
-            yield $this->userFactory->createUser('user' . $i, 'user' . $i);
+        $admin = $this->userFactory->createUser('admin', 'admin', 'admin', 'admin');
+        $admin->setRole(User::ROLE_ADMIN);
+        yield $admin;
+
+        for ($i = 1; $i <= 8; $i++) {
+            $teamManager = $this->userFactory->createUser('user' . $i, 'user' . $i, 'admin', 'admin');
+            $teamManager->setRole(User::ROLE_TEAM_MANAGER);
+            yield $teamManager;
         }
     }
 }

@@ -28,6 +28,7 @@ use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
 use HexagonalPlayground\Application\Repository\TournamentRepository;
 use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchCommandController;
@@ -37,6 +38,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
+use HexagonalPlayground\Infrastructure\ORM\BaseRepository;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
@@ -160,7 +162,12 @@ $container[ChangeUserPasswordCommand::class] = function () use ($container) {
     return new ChangeUserPasswordHandler($container[Authenticator::class]);
 };
 $container[CreateUserCommand::class] = function () use ($container) {
-    return new CreateUserHandler($container[UserRepositoryInterface::class], $container[UserFactory::class]);
+    return new CreateUserHandler(
+        $container[UserRepositoryInterface::class],
+        $container[UserFactory::class],
+        $container['doctrine.entityManager']->getRepository(Team::class),
+        $container[Authenticator::class]
+    );
 };
 $container[CreatePitchCommand::class] = function () use ($container) {
     return new CreatePitchHandler($container['objectPersistence'], $container['uuidGenerator']);
@@ -200,6 +207,7 @@ $container['doctrine.config'] = function() use ($container) {
     $driver->setGlobalBasename('global');
     $config->setMetadataDriverImpl($driver);
     $config->setSQLLogger($container['doctrine.queryLogger']);
+    $config->setDefaultRepositoryClassName(BaseRepository::class);
     return $config;
 };
 $container['doctrine.queryLogger'] = function () use ($container) {

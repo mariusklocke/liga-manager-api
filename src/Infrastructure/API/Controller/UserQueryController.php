@@ -25,6 +25,13 @@ class UserQueryController
     public function getAuthenticatedUser(): Response
     {
         $user = $this->authenticator->getAuthenticatedUser();
-        return (new Response(200))->withJson($user->toArray());
+        return (new Response(200))->withJson([
+            'id' => $user->getId(),
+            'email' => $user->getEmail(),
+            'teams' => $user->getTeamIds(),
+            'role' => $user->getRole(),
+            'first_name' => $user->getFirstName(),
+            'last_name' => $user->getLastName()
+        ]);
     }
 }

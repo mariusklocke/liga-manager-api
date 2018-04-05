@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\API;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\AuthorizationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Psr\Http\Message\RequestInterface;
@@ -51,6 +52,7 @@ class ErrorHandler
                 $this->logger->notice((string)$throwable);
                 return $this->createResponse(404, 'Not Found', $throwable->getMessage());
             case ($throwable instanceof DomainException):
+            case ($throwable instanceof UniquenessException):
             case ($throwable instanceof BadRequestException):
                 $this->logger->notice((string)$throwable);
                 return $this->createResponse(400, 'Bad Request', $throwable->getMessage());

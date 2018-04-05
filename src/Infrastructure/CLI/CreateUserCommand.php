@@ -23,13 +23,25 @@ class CreateUserCommand extends Command
     protected function configure()
     {
         $this->setName('app:create-user')->setDefinition([
-            new InputArgument('email', InputArgument::REQUIRED, "Email address uniquely identifying the user")
+            new InputArgument('email', InputArgument::REQUIRED, "Email address uniquely identifying the user"),
+            new InputArgument('password', InputArgument::REQUIRED, "User password"),
+            new InputArgument('first_name', InputArgument::REQUIRED, "User first name"),
+            new InputArgument('last_name', InputArgument::REQUIRED, "User last name"),
+            new InputArgument('role', InputArgument::REQUIRED, "User role")
         ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $userId = $this->commandBus->execute(new CreateUserApplicationCommand($input->getArgument('email')));
+        $command = new CreateUserApplicationCommand(
+            $input->getArgument('email'),
+            $input->getArgument('password'),
+            $input->getArgument('first_name'),
+            $input->getArgument('last_name'),
+            $input->getArgument('role'),
+            []
+        );
+        $userId = $this->commandBus->execute($command);
         if (is_string($userId)) {
             $output->writeln('User successfully created. ID: ' . $userId);
             return;

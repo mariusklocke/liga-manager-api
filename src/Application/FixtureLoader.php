@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application;
 
+use HexagonalPlayground\Domain\User;
+
 class FixtureLoader
 {
     /** @var ObjectPersistenceInterface */
@@ -27,9 +29,12 @@ class FixtureLoader
                 $teams[] = $team;
                 $this->persistence->persist($team);
             }
+            $i = 0;
             foreach ($this->generator->generateUsers() as $user) {
-                foreach ($teams as $team) {
-                    $user->addTeam($team);
+                /** @var User $user */
+                if ($user->hasRole(User::ROLE_TEAM_MANAGER)) {
+                    $user->addTeam($teams[$i]);
+                    $i++;
                 }
                 $this->persistence->persist($user);
             }

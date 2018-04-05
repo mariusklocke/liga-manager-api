@@ -11,14 +11,18 @@ class UserFactory extends EntityFactory
     /**
      * @param string $email
      * @param string $password
+     * @param string $firstName
+     * @param string $lastName
      * @return User
      */
-    public function createUser(string $email, string $password)
+    public function createUser(string $email, string $password, string $firstName, string $lastName)
     {
         return new User(
             $this->getIdGenerator()->generate(),
             $email,
-            $password
+            $password,
+            $firstName,
+            $lastName
         );
     }
 }

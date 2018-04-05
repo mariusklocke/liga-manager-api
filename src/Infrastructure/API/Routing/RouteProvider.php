@@ -207,6 +207,12 @@ class RouteProvider
                 $controller = $container[UserCommandController::class];
                 return $controller->changePassword($request);
             })->add($basicAuth);
+
+            $app->post('/user', function ($request) use ($container) {
+                /** @var UserCommandController $controller */
+                $controller = $container[UserCommandController::class];
+                return $controller->createUser($request);
+            })->add($basicAuth)->add($tokenAuth);
         });
     }
 }

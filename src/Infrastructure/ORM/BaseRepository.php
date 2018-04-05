@@ -17,7 +17,7 @@ class BaseRepository extends EntityRepository implements OrmRepositoryInterface
         $entity = parent::find($id, $lockMode, $lockVersion);
         if (null === $entity) {
             throw new NotFoundException(
-                sprintf('Cannot find entity %s with ID %s', $this->stripNamespace($this->_class->getName()), $id)
+                sprintf('Cannot find %s with ID %s', $this->stripNamespace($this->_class->getName()), $id)
             );
         }
 
