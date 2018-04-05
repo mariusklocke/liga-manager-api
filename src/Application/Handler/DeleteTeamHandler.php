@@ -5,20 +5,20 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\DeleteTeamCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
 
 class DeleteTeamHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
+    /** @var OrmRepositoryInterface */
+    private $teamRepository;
 
     /**
-     * @param ObjectPersistenceInterface $persistence
+     * @param OrmRepositoryInterface $teamRepository
      */
-    public function __construct(ObjectPersistenceInterface $persistence)
+    public function __construct(OrmRepositoryInterface $teamRepository)
     {
-        $this->persistence = $persistence;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -28,7 +28,7 @@ class DeleteTeamHandler
     public function handle(DeleteTeamCommand $command)
     {
         /** @var Team $team */
-        $team = $this->persistence->find(Team::class, $command->getTeamId());
-        $this->persistence->remove($team);
+        $team = $this->teamRepository->find($command->getTeamId());
+        $this->teamRepository->delete($team);
     }
 }

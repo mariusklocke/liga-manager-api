@@ -5,24 +5,24 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Factory\TournamentFactory;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 
 class CreateTournamentHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
-
     /** @var TournamentFactory */
     private $tournamentFactory;
 
+    /** @var OrmRepositoryInterface */
+    private $tournamentRepository;
+
     /**
-     * @param ObjectPersistenceInterface $persistence
      * @param TournamentFactory $tournamentFactory
+     * @param OrmRepositoryInterface $tournamentRepository
      */
-    public function __construct(ObjectPersistenceInterface $persistence, TournamentFactory $tournamentFactory)
+    public function __construct(TournamentFactory $tournamentFactory, OrmRepositoryInterface $tournamentRepository)
     {
-        $this->persistence = $persistence;
         $this->tournamentFactory = $tournamentFactory;
+        $this->tournamentRepository = $tournamentRepository;
     }
 
     /**
@@ -32,7 +32,7 @@ class CreateTournamentHandler
     public function handle(CreateTournamentCommand $command)
     {
         $tournament = $this->tournamentFactory->createTournament($command->getName());
-        $this->persistence->persist($tournament);
+        $this->tournamentRepository->save($tournament);
         return $tournament->getId();
     }
 }

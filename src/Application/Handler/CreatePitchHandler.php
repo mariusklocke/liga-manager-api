@@ -1,27 +1,28 @@
 <?php
+declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\IdGeneratorInterface;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Pitch;
 
 class CreatePitchHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
+    /** @var OrmRepositoryInterface */
+    private $pitchRepository;
 
     /** @var IdGeneratorInterface */
     private $idGenerator;
 
     /**
-     * @param ObjectPersistenceInterface $persistence
-     * @param IdGeneratorInterface       $idGenerator
+     * @param OrmRepositoryInterface $pitchRepository
+     * @param IdGeneratorInterface $idGenerator
      */
-    public function __construct(ObjectPersistenceInterface $persistence, IdGeneratorInterface $idGenerator)
+    public function __construct(OrmRepositoryInterface $pitchRepository, IdGeneratorInterface $idGenerator)
     {
-        $this->persistence = $persistence;
+        $this->pitchRepository = $pitchRepository;
         $this->idGenerator = $idGenerator;
     }
 
@@ -32,7 +33,7 @@ class CreatePitchHandler
     public function handle(CreatePitchCommand $command)
     {
         $pitch = new Pitch($this->idGenerator->generate(), $command->getLabel(), $command->getLocation());
-        $this->persistence->persist($pitch);
+        $this->pitchRepository->save($pitch);
         return $pitch->getId();
     }
 }

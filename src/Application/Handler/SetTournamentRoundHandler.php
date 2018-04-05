@@ -5,26 +5,36 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Factory\MatchFactory;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 
 class SetTournamentRoundHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
-
     /** @var MatchFactory */
     private $matchFactory;
 
+    /** @var OrmRepositoryInterface */
+    private $tournamentRepository;
+
+    /** @var OrmRepositoryInterface */
+    private $matchRepository;
+
+    /** @var OrmRepositoryInterface */
+    private $teamRepository;
+
     /**
-     * @param ObjectPersistenceInterface $persistence
      * @param MatchFactory $matchFactory
+     * @param OrmRepositoryInterface $tournamentRepository
+     * @param OrmRepositoryInterface $matchRepository
+     * @param OrmRepositoryInterface $teamRepository
      */
-    public function __construct(ObjectPersistenceInterface $persistence, MatchFactory $matchFactory)
+    public function __construct(MatchFactory $matchFactory, OrmRepositoryInterface $tournamentRepository, OrmRepositoryInterface $matchRepository, OrmRepositoryInterface $teamRepository)
     {
-        $this->persistence  = $persistence;
         $this->matchFactory = $matchFactory;
+        $this->tournamentRepository = $tournamentRepository;
+        $this->matchRepository = $matchRepository;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -33,16 +43,16 @@ class SetTournamentRoundHandler
     public function handle(SetTournamentRoundCommand $command)
     {
         /** @var Tournament $tournament */
-        $tournament = $this->persistence->find(Tournament::class, $command->getTournamentId());
+        $tournament = $this->tournamentRepository->find($command->getTournamentId());
         $tournament->clearMatchesForRound($command->getRound());
         foreach ($command->getTeamIdPairs() as $pair) {
             /** @var Team $homeTeam */
-            $homeTeam = $this->persistence->find(Team::class, $pair[0]);
+            $homeTeam = $this->teamRepository->find($pair[0]);
             /** @var Team $guestTeam */
-            $guestTeam = $this->persistence->find(Team::class, $pair[1]);
+            $guestTeam = $this->teamRepository->find($pair[1]);
 
             $match = $this->matchFactory->createMatch($tournament, $command->getRound(), $homeTeam, $guestTeam);
-            $this->persistence->persist($match);
+            $this->matchRepository->save($match);
             $tournament->addMatch($match);
         }
     }

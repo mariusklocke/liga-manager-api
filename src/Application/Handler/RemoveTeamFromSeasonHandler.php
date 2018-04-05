@@ -5,21 +5,26 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 
 class RemoveTeamFromSeasonHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
+    /** @var OrmRepositoryInterface */
+    private $seasonRepository;
+
+    /** @var OrmRepositoryInterface */
+    private $teamRepository;
 
     /**
-     * @param ObjectPersistenceInterface $persistence
+     * @param OrmRepositoryInterface $seasonRepository
+     * @param OrmRepositoryInterface $teamRepository
      */
-    public function __construct(ObjectPersistenceInterface $persistence)
+    public function __construct(OrmRepositoryInterface $seasonRepository, OrmRepositoryInterface $teamRepository)
     {
-        $this->persistence = $persistence;
+        $this->seasonRepository = $seasonRepository;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -29,9 +34,9 @@ class RemoveTeamFromSeasonHandler
     public function handle(RemoveTeamFromSeasonCommand $command)
     {
         /** @var Season $season */
-        $season = $this->persistence->find(Season::class, $command->getSeasonId());
+        $season = $this->seasonRepository->find($command->getSeasonId());
         /** @var Team $team */
-        $team = $this->persistence->find(Team::class, $command->getTeamId());
+        $team = $this->teamRepository->find($command->getTeamId());
 
         $season->removeTeam($team);
     }

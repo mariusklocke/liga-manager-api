@@ -5,21 +5,20 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Match;
-use InvalidArgumentException;
 
 class ScheduleMatchHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
+    /** @var OrmRepositoryInterface */
+    private $matchRepository;
 
     /**
-     * @param ObjectPersistenceInterface $persistence
+     * @param OrmRepositoryInterface $matchRepository
      */
-    public function __construct(ObjectPersistenceInterface $persistence)
+    public function __construct(OrmRepositoryInterface $matchRepository)
     {
-        $this->persistence = $persistence;
+        $this->matchRepository = $matchRepository;
     }
 
     /**
@@ -29,7 +28,7 @@ class ScheduleMatchHandler
     public function handle(ScheduleMatchCommand $command)
     {
         /** @var Match $match */
-        $match = $this->persistence->find(Match::class, $command->getMatchId());
+        $match = $this->matchRepository->find($command->getMatchId());
         $match->schedule($command->getKickoff());
     }
 }

@@ -4,24 +4,24 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Application\IdGeneratorInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
 
 class CreateTeamHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
+    /** @var OrmRepositoryInterface */
+    private $teamRepository;
     /** @var IdGeneratorInterface */
     private $idGenerator;
 
     /**
-     * @param ObjectPersistenceInterface $persistence
+     * @param OrmRepositoryInterface $teamRepository
      * @param IdGeneratorInterface $idGenerator
      */
-    public function __construct(ObjectPersistenceInterface $persistence, IdGeneratorInterface $idGenerator)
+    public function __construct(OrmRepositoryInterface $teamRepository, IdGeneratorInterface $idGenerator)
     {
-        $this->persistence = $persistence;
+        $this->teamRepository = $teamRepository;
         $this->idGenerator = $idGenerator;
     }
 
@@ -32,7 +32,7 @@ class CreateTeamHandler
     public function handle(CreateTeamCommand $command)
     {
         $team = new Team($this->idGenerator->generate(), $command->getTeamName());
-        $this->persistence->persist($team);
+        $this->teamRepository->save($team);
         return $team->getId();
     }
 }

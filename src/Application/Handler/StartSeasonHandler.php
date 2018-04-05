@@ -4,32 +4,30 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
-use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Season;
 
 class StartSeasonHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
+    /** @var OrmRepositoryInterface */
+    private $seasonRepository;
 
     /**
-     * @param ObjectPersistenceInterface $persistence
+     * @param OrmRepositoryInterface $seasonRepository
      */
-    public function __construct(ObjectPersistenceInterface $persistence)
+    public function __construct(OrmRepositoryInterface $seasonRepository)
     {
-        $this->persistence = $persistence;
+        $this->seasonRepository = $seasonRepository;
     }
 
     /**
      * @param StartSeasonCommand $command
-     * @throws NotFoundException
      */
     public function handle(StartSeasonCommand $command)
     {
         /** @var Season $season */
-        $season = $this->persistence->find(Season::class, $command->getSeasonId());
+        $season = $this->seasonRepository->find($command->getSeasonId());
         $season->start();
-        $this->persistence->persist($season);
+        $this->seasonRepository->save($season);
     }
 }

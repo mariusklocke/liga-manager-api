@@ -6,26 +6,36 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Factory\MatchFactory;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 
 class CreateSingleMatchHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
-
     /** @var MatchFactory */
     private $matchFactory;
 
+    /** @var OrmRepositoryInterface */
+    private $matchRepository;
+
+    /** @var OrmRepositoryInterface */
+    private $teamRepository;
+
+    /** @var OrmRepositoryInterface */
+    private $seasonRepository;
+
     /**
-     * @param ObjectPersistenceInterface $persistence
      * @param MatchFactory $matchFactory
+     * @param OrmRepositoryInterface $matchRepository
+     * @param OrmRepositoryInterface $teamRepository
+     * @param OrmRepositoryInterface $seasonRepository
      */
-    public function __construct(ObjectPersistenceInterface $persistence, MatchFactory $matchFactory)
+    public function __construct(MatchFactory $matchFactory, OrmRepositoryInterface $matchRepository, OrmRepositoryInterface $teamRepository, OrmRepositoryInterface $seasonRepository)
     {
-        $this->persistence  = $persistence;
         $this->matchFactory = $matchFactory;
+        $this->matchRepository = $matchRepository;
+        $this->teamRepository = $teamRepository;
+        $this->seasonRepository = $seasonRepository;
     }
 
     /**
@@ -35,14 +45,14 @@ class CreateSingleMatchHandler
     public function handle(CreateSingleMatchCommand $command)
     {
         /** @var Season $season */
-        $season = $this->persistence->find(Season::class, $command->getSeasonId());
+        $season = $this->seasonRepository->find($command->getSeasonId());
         /** @var Team $homeTeam */
-        $homeTeam = $this->persistence->find(Team::class, $command->getHomeTeamId());
+        $homeTeam = $this->teamRepository->find($command->getHomeTeamId());
         /** @var Team $guestTeam */
-        $guestTeam = $this->persistence->find(Team::class, $command->getGuestTeamId());
+        $guestTeam = $this->teamRepository->find($command->getGuestTeamId());
 
         $match = $this->matchFactory->createMatch($season, $command->getMatchDay(), $homeTeam, $guestTeam);
         $season->addMatch($match);
-        $this->persistence->persist($match);
+        $this->matchRepository->save($match);
     }
 }

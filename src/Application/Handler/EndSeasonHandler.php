@@ -4,23 +4,27 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\EndSeasonCommand;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Season;
 
 class EndSeasonHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
+    /** @var OrmRepositoryInterface */
+    private $seasonRepository;
 
-    public function __construct(ObjectPersistenceInterface $persistence)
+    /**
+     * @param OrmRepositoryInterface $seasonRepository
+     */
+    public function __construct(OrmRepositoryInterface $seasonRepository)
     {
-        $this->persistence = $persistence;
+        $this->seasonRepository = $seasonRepository;
     }
+
 
     public function handle(EndSeasonCommand $command)
     {
         /** @var Season $season */
-        $season = $this->persistence->find(Season::class, $command->getSeasonId());
+        $season = $this->seasonRepository->find($command->getSeasonId());
         $season->end();
     }
 }

@@ -28,7 +28,11 @@ use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
 use HexagonalPlayground\Application\Repository\TournamentRepository;
 use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\Pitch;
+use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchCommandController;
@@ -114,49 +118,84 @@ $container[FixtureLoader::class] = function() use ($container) {
     );
 };
 $container[CreateTeamCommand::class] = function () use ($container) {
-    return new CreateTeamHandler($container['objectPersistence'], $container['uuidGenerator']);
+    return new CreateTeamHandler(
+        $container['doctrine.entityManager']->getRepository(Team::class),
+        $container['uuidGenerator']
+    );
 };
 $container[DeleteTeamCommand::class] = function() use ($container) {
-    return new DeleteTeamHandler($container['objectPersistence']);
+    return new DeleteTeamHandler($container['doctrine.entityManager']->getRepository(Team::class));
 };
 $container[StartSeasonCommand::class] = function() use ($container) {
-    return new StartSeasonHandler($container['objectPersistence']);
+    return new StartSeasonHandler($container['doctrine.entityManager']->getRepository(Season::class));
 };
 $container[CreateMatchesForSeasonCommand::class] = function() use ($container) {
-    return new CreateMatchesForSeasonHandler($container['objectPersistence'], $container[MatchFactory::class]);
+    return new CreateMatchesForSeasonHandler(
+        $container[MatchFactory::class],
+        $container['doctrine.entityManager']->getRepository(Season::class),
+        $container['doctrine.entityManager']->getRepository(Match::class)
+    );
 };
 $container[CreateSingleMatchCommand::class] = function() use ($container) {
-    return new CreateSingleMatchHandler($container['objectPersistence'], $container[MatchFactory::class]);
+    return new CreateSingleMatchHandler(
+        $container[MatchFactory::class],
+        $container['doctrine.entityManager']->getRepository(Match::class),
+        $container['doctrine.entityManager']->getRepository(Team::class),
+        $container['doctrine.entityManager']->getRepository(Season::class)
+    );
 };
 $container[DeleteSeasonCommand::class] = function() use ($container) {
-    return new DeleteSeasonHandler($container['objectPersistence']);
+    return new DeleteSeasonHandler($container['doctrine.entityManager']->getRepository(Season::class));
 };
 $container[ScheduleMatchCommand::class] = function() use ($container) {
-    return new ScheduleMatchHandler($container['objectPersistence']);
+    return new ScheduleMatchHandler($container['doctrine.entityManager']->getRepository(Match::class));
 };
 $container[SubmitMatchResultCommand::class] = function () use ($container) {
-    return new SubmitMatchResultHandler($container['objectPersistence'], $container[Authenticator::class]);
+    return new SubmitMatchResultHandler(
+        $container['doctrine.entityManager']->getRepository(Match::class),
+        $container[Authenticator::class]
+    );
 };
 $container[LocateMatchCommand::class] = function () use ($container) {
-    return new LocateMatchHandler($container['objectPersistence']);
+    return new LocateMatchHandler(
+        $container['doctrine.entityManager']->getRepository(Match::class),
+        $container['doctrine.entityManager']->getRepository(Pitch::class)
+    );
 };
 $container[CancelMatchCommand::class] = function () use ($container) {
-    return new CancelMatchHandler($container['objectPersistence']);
+    return new CancelMatchHandler($container['doctrine.entityManager']->getRepository(Match::class));
 };
 $container[AddTeamToSeasonCommand::class] = function () use ($container) {
-    return new AddTeamToSeasonHandler($container['objectPersistence']);
+    return new AddTeamToSeasonHandler(
+        $container['doctrine.entityManager']->getRepository(Season::class),
+        $container['doctrine.entityManager']->getRepository(Team::class)
+    );
 };
 $container[RemoveTeamFromSeasonCommand::class] = function () use ($container) {
-    return new RemoveTeamFromSeasonHandler($container['objectPersistence']);
+    return new RemoveTeamFromSeasonHandler(
+        $container['doctrine.entityManager']->getRepository(Season::class),
+        $container['doctrine.entityManager']->getRepository(Team::class)
+    );
 };
 $container[CreateSeasonCommand::class] = function () use ($container) {
-    return new CreateSeasonHandler($container['objectPersistence'], $container[SeasonFactory::class]);
+    return new CreateSeasonHandler(
+        $container[SeasonFactory::class],
+        $container['doctrine.entityManager']->getRepository(Season::class)
+    );
 };
 $container[CreateTournamentCommand::class] = function () use ($container) {
-    return new CreateTournamentHandler($container['objectPersistence'], $container[TournamentFactory::class]);
+    return new CreateTournamentHandler(
+        $container[TournamentFactory::class],
+        $container['doctrine.entityManager']->getRepository(Tournament::class)
+    );
 };
 $container[SetTournamentRoundCommand::class] = function () use ($container) {
-    return new SetTournamentRoundHandler($container['objectPersistence'], $container[MatchFactory::class]);
+    return new SetTournamentRoundHandler(
+        $container[MatchFactory::class],
+        $container['doctrine.entityManager']->getRepository(Tournament::class),
+        $container['doctrine.entityManager']->getRepository(Match::class),
+        $container['doctrine.entityManager']->getRepository(Team::class)
+    );
 };
 $container[ChangeUserPasswordCommand::class] = function () use ($container) {
     return new ChangeUserPasswordHandler($container[Authenticator::class]);
@@ -170,7 +209,10 @@ $container[CreateUserCommand::class] = function () use ($container) {
     );
 };
 $container[CreatePitchCommand::class] = function () use ($container) {
-    return new CreatePitchHandler($container['objectPersistence'], $container['uuidGenerator']);
+    return new CreatePitchHandler(
+        $container['doctrine.entityManager']->getRepository(Pitch::class),
+        $container['uuidGenerator']
+    );
 };
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);

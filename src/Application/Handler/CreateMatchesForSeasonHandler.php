@@ -5,25 +5,29 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
 use HexagonalPlayground\Application\Factory\MatchFactory;
+use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\Season;
 
 class CreateMatchesForSeasonHandler
 {
-    /** @var ObjectPersistenceInterface */
-    private $persistence;
     /** @var MatchFactory */
     private $matchFactory;
+    /** @var OrmRepositoryInterface */
+    private $seasonRepository;
+    /** @var OrmRepositoryInterface */
+    private $matchRepository;
 
     /**
-     * @param ObjectPersistenceInterface $persistence
      * @param MatchFactory $matchFactory
+     * @param OrmRepositoryInterface $seasonRepository
+     * @param OrmRepositoryInterface $matchRepository
      */
-    public function __construct(ObjectPersistenceInterface $persistence, MatchFactory $matchFactory)
+    public function __construct(MatchFactory $matchFactory, OrmRepositoryInterface $seasonRepository, OrmRepositoryInterface $matchRepository)
     {
-        $this->persistence = $persistence;
         $this->matchFactory = $matchFactory;
+        $this->seasonRepository = $seasonRepository;
+        $this->matchRepository = $matchRepository;
     }
 
     /**
@@ -33,12 +37,12 @@ class CreateMatchesForSeasonHandler
     public function handle(CreateMatchesForSeasonCommand $command)
     {
         /** @var Season $season */
-        $season = $this->persistence->find(Season::class, $command->getSeasonId());
+        $season = $this->seasonRepository->find($command->getSeasonId());
         $season->clearMatches();
         $matches = $this->matchFactory->createMatchesForSeason($season, $command->getStartAt());
         foreach ($matches as $match) {
             $season->addMatch($match);
-            $this->persistence->persist($match);
+            $this->matchRepository->save($match);
         }
     }
 }
