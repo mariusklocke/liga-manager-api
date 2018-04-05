@@ -48,7 +48,7 @@ class CreateUserHandler
      */
     public function handle(CreateUserCommand $command)
     {
-        $this->checkPermissions();
+        //$this->checkPermissions();
         $this->assertEmailDoesNotExist($command->getEmail());
         $user = $this->userFactory->createUser($command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
         $user->setRole($command->getRole());
