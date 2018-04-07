@@ -14,3 +14,5 @@ before_script:
   - env | grep "^MYSQL_" > .env
 script:
   - sh docker/run-tests.sh
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker push mklocke/liga-manager-api:latest
