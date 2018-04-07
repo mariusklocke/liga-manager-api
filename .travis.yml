@@ -6,6 +6,7 @@ env:
     - MYSQL_USER=travis
     - MYSQL_PASSWORD=travis
     - MYSQL_ROOT_PASSWORD=travis
+    - DOCKER_USER=mklocke
     - secure: WU99En5KXxuRxR8gerESKxq37j/ivQYSWSOigepRrUJbTgl8jSXTDA5Pc0sME6ZltBqarhZWch5mCduSKREkLs6z2XVj2n3E8v+HgkOYyNreT1O/KRR6iIHe2Hv+Vbyj4qzFU0pQ2+frGprqg16/+WQJav0zYAviXkFskkJ1C3stRSXNCvu5wyy55aLbY/9Swd6nPmNO5bMEr7Haq/w8VcTemW5+hNInsYAVYhtK6zlGW/xyrhmOV9xElSu66+vE3dcWDtvKBtv1COIZHJuUTWemTncI7RuJqkqnZh/jdgsbxXqzpCRiEQoXaAeFHctUlVawgPJRUkEc1FA5gqKJ9WihVWYH/4iYTnH1iPIQ0SrZA+PzKWuLmLp8KE8p88Jq0of0iq89ZbwwcvgD4GdSzU5d8gZFZTzZkktIK2O7TLBIrLeBD6GrmYw2NTJvXEmZqJWJGM//XBCvCbra7b/g05VBRAbc0tczc6VKdp0MOB83oFk3WYeTmF0eiAoms7yETW4a0+YdUliiaht11+KIMcDj627UKmP4Vck+P7Ww/fdpv9uHOgovlZsMZl7TlLgqdkcNbiHS7Wn9B0znshsn2A5tx/gUnxWUBIWuUjBN/z5J9E9lz5Hc2zQ3D3u/pTrD+Agt9elw4pbuZta89XqAH8gDUH2t75vNPVEt/oXN4lc=
 services:
   - docker
@@ -15,5 +16,5 @@ before_script:
   - env | grep "^MYSQL_" > .env
 script:
   - sh docker/run-tests.sh
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - docker login -u $DOCKER_USER -p "$DOCKER_PASS"
   - docker push mklocke/liga-manager-api:latest
