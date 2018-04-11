@@ -16,7 +16,6 @@ install:
   - sh docker/build-images.sh
 before_script:
   - env | grep "^MYSQL_" > .env
-  - env | grep "JWT_SECRET_PATH" >> .env
 script:
   - sh docker/run-tests.sh
   - docker login -u $DOCKER_USER -p "$DOCKER_PASS"

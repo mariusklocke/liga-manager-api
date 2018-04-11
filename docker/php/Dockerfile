@@ -13,6 +13,7 @@ ENV PHPIZE_DEPS \
     pkgconf \
     re2c
 ENV APP_HOME="/var/www/api"
+ENV JWT_SECRET_PATH="/etc/jwt"
 
 RUN apk add --no-cache --virtual .persistent-deps
 
