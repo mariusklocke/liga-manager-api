@@ -184,7 +184,6 @@ class BasicUseCaseTest extends TestCase
      */
     public function testMatchResultCanBeSubmitted(array $matchIds) : string
     {
-        self::markTestSkipped('Needs fixing of authentication issue');
         $matchId = array_shift($matchIds);
         $client = static::getClient();
         $matchResult = [

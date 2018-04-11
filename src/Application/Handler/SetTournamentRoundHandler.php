@@ -51,7 +51,7 @@ class SetTournamentRoundHandler
             /** @var Team $guestTeam */
             $guestTeam = $this->teamRepository->find($pair[1]);
 
-            $match = $this->matchFactory->createMatch($tournament, $command->getRound(), $homeTeam, $guestTeam);
+            $match = $this->matchFactory->createMatch($tournament, $command->getRound(), $homeTeam, $guestTeam, $command->getPlannedFor());
             $this->matchRepository->save($match);
             $tournament->addMatch($match);
         }

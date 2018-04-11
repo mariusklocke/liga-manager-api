@@ -38,14 +38,11 @@ RUN set -xe \
     && wget -O /usr/local/bin/composer https://getcomposer.org/download/1.6.3/composer.phar \
     && chmod +x /usr/local/bin/*
 
-ADD . ${APP_HOME}
-
-# Configure path for JWT key pairs
-ENV JWT_SECRET="${APP_HOME}/config/jwt/secret.key"
-
 # Workaround https://bugs.php.net/bug.php?id=71880
 ENV LOG_STREAM="/tmp/stdout"
 RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
+
+ADD . ${APP_HOME}
 
 # Possible values for ext-name:
 # bcmath bz2 calendar ctype curl dba dom enchant exif fileinfo filter ftp gd gettext gmp hash iconv imap interbase intl

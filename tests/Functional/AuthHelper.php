@@ -7,7 +7,7 @@ class AuthHelper
 {
     public function getBasicAuthHeaders(): array
     {
-        $secret = base64_encode('user1:user1');
+        $secret = base64_encode('admin:admin');
         return ['Authorization' => 'Basic ' . $secret];
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateUserCommand;
-use HexagonalPlayground\Application\Exception\AuthorizationException;
+use HexagonalPlayground\Application\Exception\PermissionException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Application\Factory\UserFactory;
@@ -48,7 +48,7 @@ class CreateUserHandler
      */
     public function handle(CreateUserCommand $command)
     {
-        //$this->checkPermissions();
+        $this->checkPermissions($command);
         $this->assertEmailDoesNotExist($command->getEmail());
         $user = $this->userFactory->createUser($command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
         $user->setRole($command->getRole());
@@ -62,16 +62,34 @@ class CreateUserHandler
     }
 
     /**
-     * @throws AuthorizationException
+     * @param CreateUserCommand $command
+     * @throws PermissionException
      */
-    private function checkPermissions()
+    private function checkPermissions(CreateUserCommand $command)
     {
-        $requiredRole = User::ROLE_ADMIN;
-        if (!$this->authenticator->getAuthenticatedUser()->hasRole($requiredRole)) {
-            throw new AuthorizationException(sprintf(
-                "Users can only be created from users with role '%s'", $requiredRole)
-            );
+        $authenticatedUser = $this->authenticator->getAuthenticatedUser();
+        if ($authenticatedUser->hasRole(User::ROLE_ADMIN)) {
+            return;
         }
+
+        if ($authenticatedUser->hasRole(User::ROLE_TEAM_MANAGER)) {
+            if ($command->getRole() !== User::ROLE_TEAM_MANAGER) {
+                throw new PermissionException("Authenticated user can only create users with role 'team_manager'");
+            }
+
+            $permittedTeamIds = array_flip($authenticatedUser->getTeamIds());
+            foreach ($command->getTeamIds() as $teamId) {
+                if (!isset($permittedTeamIds[$teamId])) {
+                    throw new PermissionException(sprintf(
+                        "Authenticated user is not permitted to create users for team '%s'",
+                        $teamId
+                    ));
+                }
+            }
+            return;
+        }
+
+        throw new PermissionException('Authenticated user is not permitted to create users');
     }
 
     /**
@@ -87,7 +105,7 @@ class CreateUserHandler
         }
 
         throw new UniquenessException(
-            sprintf('A user with email address "%s" already exists', $email)
+            sprintf("A user with email address '%s' already exists", $email)
         );
     }
 }

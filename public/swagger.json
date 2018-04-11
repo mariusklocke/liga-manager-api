@@ -906,12 +906,29 @@
             "in": "body",
             "name": "setRoundBody",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/team_id_tuple"
-              },
-              "minItems": 1,
-              "maxItems": 64
+              "type": "object",
+              "properties": {
+                "team_pairs": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "home_team_id": {
+                        "type": "string"
+                      },
+                      "guest_team_id": {
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "minItems": 1,
+                  "maxItems": 64
+                },
+                "planned_for": {
+                  "type": "string",
+                  "format": "date"
+                }
+              }
             }
           }
         ],
@@ -956,6 +973,10 @@
     "/user": {
       "post": {
         "summary": "Create a user",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "operationId": "createUser",
         "tags": ["user"],
         "parameters": [
@@ -1245,17 +1266,6 @@
           "type": "string"
         },
         "name": {
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "team_id_tuple": {
-      "properties": {
-        "home_team_id": {
-          "type": "string"
-        },
-        "guest_team_id": {
           "type": "string"
         }
       },

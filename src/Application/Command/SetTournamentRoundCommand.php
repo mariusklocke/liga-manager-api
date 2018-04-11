@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
+use DateTimeImmutable;
+
 class SetTournamentRoundCommand implements CommandInterface
 {
     /** @var string */
@@ -14,10 +16,14 @@ class SetTournamentRoundCommand implements CommandInterface
     /** @var array */
     private $teamIdPairs;
 
-    public function __construct(string $tournamentId, int $round)
+    /** @var DateTimeImmutable|null */
+    private $plannedFor;
+
+    public function __construct(string $tournamentId, int $round, DateTimeImmutable $plannedFor = null)
     {
         $this->tournamentId = $tournamentId;
         $this->round = $round;
+        $this->plannedFor = $plannedFor;
         $this->teamIdPairs = [];
     }
 
@@ -52,5 +58,13 @@ class SetTournamentRoundCommand implements CommandInterface
     public function getRound(): int
     {
         return $this->round;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    public function getPlannedFor()
+    {
+        return $this->plannedFor;
     }
 }

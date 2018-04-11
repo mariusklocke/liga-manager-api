@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
-use HexagonalPlayground\Application\Exception\AuthorizationException;
+use HexagonalPlayground\Application\Exception\PermissionException;
 use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\MatchResult;
+use HexagonalPlayground\Domain\User;
 
 class SubmitMatchResultHandler
 {
@@ -27,17 +28,29 @@ class SubmitMatchResultHandler
         $this->authenticator = $authenticator;
     }
 
+    /**
+     * @param SubmitMatchResultCommand $command
+     */
     public function handle(SubmitMatchResultCommand $command)
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());
-        $user  = $this->authenticator->getAuthenticatedUser();
-        if ($user->isInTeam($match->getHomeTeam()) || $user->isInTeam($match->getGuestTeam())) {
-            $result = new MatchResult($command->getHomeScore(), $command->getGuestScore());
-            $match->submitResult($result);
+        $this->checkPermissions($match);
+        $result = new MatchResult($command->getHomeScore(), $command->getGuestScore());
+        $match->submitResult($result);
+    }
+
+    /**
+     * @param Match $match
+     * @throws PermissionException
+     */
+    private function checkPermissions(Match $match)
+    {
+        $user = $this->authenticator->getAuthenticatedUser();
+        if ($user->hasRole(User::ROLE_ADMIN) || $user->isInTeam($match->getHomeTeam()) || $user->isInTeam($match->getGuestTeam())) {
             return;
         }
 
-        throw new AuthorizationException('User is not authorized to submit results for this match');
+        throw new PermissionException('User is not permitted to submit results for this match');
     }
 }

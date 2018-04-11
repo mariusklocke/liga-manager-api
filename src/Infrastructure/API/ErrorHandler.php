@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Application\Exception\AuthenticationException;
-use HexagonalPlayground\Application\Exception\AuthorizationException;
+use HexagonalPlayground\Application\Exception\PermissionException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Domain\DomainException;
@@ -44,7 +44,7 @@ class ErrorHandler
             case ($throwable instanceof AuthenticationException):
                 $this->logger->notice((string)$throwable);
                 return $this->createResponse(401, 'Unauthorized', $throwable->getMessage());
-            case ($throwable instanceof AuthorizationException):
+            case ($throwable instanceof PermissionException):
                 $this->logger->notice((string)$throwable);
                 return $this->createResponse(403, 'Forbidden', $throwable->getMessage());
             case ($throwable instanceof NotFoundException):

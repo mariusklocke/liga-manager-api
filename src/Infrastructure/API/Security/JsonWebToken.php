@@ -78,7 +78,7 @@ final class JsonWebToken implements TokenInterface
     private static function getSecret(): string
     {
         if (null === self::$secret) {
-            self::$secret = file_get_contents(getenv('JWT_SECRET'));
+            self::$secret = file_get_contents(getenv('JWT_SECRET_PATH'));
         }
         return self::$secret;
     }

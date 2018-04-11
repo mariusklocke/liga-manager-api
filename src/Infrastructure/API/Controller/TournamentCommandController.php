@@ -11,6 +11,8 @@ use Slim\Http\Response;
 
 class TournamentCommandController extends CommandController
 {
+    use DateParser;
+
     /**
      * @param Request $request
      * @return Response
@@ -34,11 +36,19 @@ class TournamentCommandController extends CommandController
      */
     public function setRound(string $tournamentId, int $round, Request $request)
     {
-        $teamIdPairs = $request->getParsedBody();
-        if (!is_array($teamIdPairs)) {
-            throw new BadRequestException(
-                sprintf('Request body has to be array, %s given', gettype($teamIdPairs))
-            );
+        $body = $request->getParsedBody();
+        $this->assertTypeExact('body', $body, 'array');
+        if (!isset($body['team_pairs'])) {
+            // Sending team pairs directly in body is deprecated
+            // Keep this for compatibility
+            $teamIdPairs = $body;
+            $plannedFor  = null;
+        } else {
+            $teamIdPairs = $request->getParsedBodyParam('team_pairs');
+            $plannedFor  = $request->getParsedBodyParam('planned_for');
+            $this->assertTypeExact('team_pairs', $teamIdPairs, 'array');
+            $this->assertTypeExact('planned_for', $plannedFor, 'string');
+            $plannedFor = $this->parseDate($plannedFor);
         }
 
         if (count($teamIdPairs) < 1 || count($teamIdPairs) > 64) {
@@ -47,11 +57,10 @@ class TournamentCommandController extends CommandController
             );
         }
 
-        $command = new SetTournamentRoundCommand($tournamentId, $round);
+        $command = new SetTournamentRoundCommand($tournamentId, $round, $plannedFor);
         foreach ($teamIdPairs as $pair) {
-            if (!is_string($pair['home_team_id']) || !is_string($pair['guest_team_id'])) {
-                throw new BadRequestException('Team IDs have to be of type string');
-            }
+            $this->assertTypeExact('home_team_id', $pair['home_team_id'], 'string');
+            $this->assertTypeExact('guest_team_id', $pair['guest_team_id'], 'string');
             $command->addPair($pair['home_team_id'], $pair['guest_team_id']);
         }
 

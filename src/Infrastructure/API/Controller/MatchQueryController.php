@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use DateTimeImmutable;
-use Exception;
 use HexagonalPlayground\Application\Repository\MatchRepository;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class MatchQueryController
 {
+    use DateParser;
+
     /** @var MatchRepository */
     private $matchRepository;
 
@@ -49,12 +49,8 @@ class MatchQueryController
             ($from = $request->getQueryParam('from')) !== null &&
             ($to = $request->getQueryParam('to')) !== null
         ) {
-            try {
-                $from = new DateTimeImmutable($from);
-                $to = new DateTimeImmutable($to);
-            } catch (Exception $e) {
-                return (new Response(400))->withJson($e->getMessage());
-            }
+            $from = $this->parseDate($from);
+            $to   = $this->parseDate($to);
             return (new Response(200))->withJson($this->matchRepository->findMatchesByDate($seasonId, $from, $to));
         }
 

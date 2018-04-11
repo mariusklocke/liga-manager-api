@@ -3,17 +3,17 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
-use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class MatchCommandController extends CommandController
 {
+    use DateParser;
+
     /**
      * @param string $matchId
      * @param Request $request
@@ -23,12 +23,8 @@ class MatchCommandController extends CommandController
     {
         $homeScore = $request->getParsedBodyParam('home_score');
         $guestScore = $request->getParsedBodyParam('guest_score');
-        if (!is_int($homeScore) || $homeScore < 0 || $homeScore > 99) {
-            throw new BadRequestException('Invalid home score');
-        }
-        if (!is_int($guestScore) || $guestScore < 0 || $homeScore > 99) {
-            throw new BadRequestException('Invalid guest score');
-        }
+        $this->assertTypeExact('home_score', $homeScore, 'integer');
+        $this->assertTypeExact('guest_score', $guestScore, 'integer');
 
         $this->commandBus->execute(new SubmitMatchResultCommand($matchId, $homeScore, $guestScore));
 
@@ -52,12 +48,7 @@ class MatchCommandController extends CommandController
      */
     public function schedule(string $matchId, Request $request) : Response
     {
-        $kickoffString = $request->getParsedBodyParam('kickoff');
-        try {
-            $kickoff = new DateTimeImmutable($kickoffString);
-        } catch (\Exception $e) {
-            throw new BadRequestException('Invalid kickoff date format');
-        }
+        $kickoff = $this->parseDate($request->getParsedBodyParam('kickoff'));
 
         $this->commandBus->execute(new ScheduleMatchCommand($matchId, $kickoff));
 
@@ -72,9 +63,7 @@ class MatchCommandController extends CommandController
     public function locate(string $matchId, Request $request) : Response
     {
         $pitchId = $request->getParsedBodyParam('pitch_id');
-        if (!is_string($pitchId)) {
-            throw new BadRequestException('Parameter "pitch_id" has to be a string');
-        }
+        $this->assertTypeExact('pitch_id', $pitchId, 'string');
 
         $this->commandBus->execute(new LocateMatchCommand($matchId, $pitchId));
 

@@ -4,10 +4,9 @@ A working installation of `docker` and `docker-compose`
 ## Get started
 This application comes with an example configuration for running with `docker-compose`. To get started rename `.env.dist` to `.env` and `docker-compose.yml.dist` to `docker-compose.yml` and adjust both configuration files to your local needs.
 
-Before you run the application, you need to generate the secret for signing JSON Web Tokens (JWT) and adjust the permissions, so the container can read it:
+Before you run the application for the first time, you need to generate the secret for signing JSON Web Tokens (JWT):
 ```bash
-ssh-keygen -t rsa -b 4096 -f config/jwt/secret.key -N ''
-chmod 644 config/jwt/secret.key
+sudo sh bin/generate-jwt-key.sh
 ```
 
 Now you are ready to go and can build & start the containers

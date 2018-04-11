@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Application\Exception;
 
 use Exception;
 
-class AuthorizationException extends Exception
+class PermissionException extends Exception
 {
 
 }
