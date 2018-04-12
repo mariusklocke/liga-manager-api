@@ -25,6 +25,7 @@ use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\CreateUserHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
+use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepository;
 use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
@@ -43,6 +44,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
 use HexagonalPlayground\Infrastructure\ORM\BaseRepository;
+use HexagonalPlayground\Infrastructure\ORM\DoctrineTransactionWrapper;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
@@ -258,6 +260,9 @@ $container['uuidGenerator'] = function() {
 $container['objectPersistence'] = function() use ($container) {
     return new DoctrineObjectPersistence($container['doctrine.entityManager']);
 };
+$container[OrmTransactionWrapperInterface::class] = function() use ($container) {
+    return new DoctrineTransactionWrapper($container['doctrine.entityManager']);
+};
 $container[MatchCommandController::class] = function() use ($container) {
     return new MatchCommandController($container['commandBus']);
 };
@@ -320,10 +325,10 @@ $container['readDbAdapter'] = function() use ($container) {
     return $db;
 };
 $container['commandBus'] = function() use ($container) {
-    return new SingleCommandBus($container, $container['objectPersistence']);
+    return new SingleCommandBus($container, $container[OrmTransactionWrapperInterface::class]);
 };
 $container['batchCommandBus'] = function () use ($container) {
-    return new BatchCommandBus($container, $container['objectPersistence']);
+    return new BatchCommandBus($container, $container[OrmTransactionWrapperInterface::class]);
 };
 $container[TokenFactoryInterface::class] = function () {
     return new JsonWebTokenFactory();

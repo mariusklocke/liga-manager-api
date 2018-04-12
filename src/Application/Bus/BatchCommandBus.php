@@ -22,7 +22,7 @@ class BatchCommandBus extends CommandBus
      */
     public function execute()
     {
-        return $this->persistence->transactional(function() {
+        return $this->transactionWrapper->transactional(function() {
             foreach ($this->scheduledCommands as $command) {
                 $this->getHandler($command)->handle($command);
             }

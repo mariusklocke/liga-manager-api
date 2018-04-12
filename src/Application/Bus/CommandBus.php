@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Application\Bus;
 
 use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Application\Exception\CommandBusException;
-use HexagonalPlayground\Application\ObjectPersistenceInterface;
+use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 
@@ -13,17 +13,17 @@ abstract class CommandBus
 {
     /** @var ContainerInterface */
     protected $container;
-    /** @var ObjectPersistenceInterface */
-    protected $persistence;
+    /** @var OrmTransactionWrapperInterface */
+    protected $transactionWrapper;
 
     /**
      * @param ContainerInterface $container
-     * @param ObjectPersistenceInterface $persistence
+     * @param OrmTransactionWrapperInterface $transactionWrapper
      */
-    public function __construct(ContainerInterface $container, ObjectPersistenceInterface $persistence)
+    public function __construct(ContainerInterface $container, OrmTransactionWrapperInterface $transactionWrapper)
     {
         $this->container = $container;
-        $this->persistence = $persistence;
+        $this->transactionWrapper = $transactionWrapper;
     }
 
     /**

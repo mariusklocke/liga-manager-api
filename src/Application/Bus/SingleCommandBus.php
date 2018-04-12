@@ -16,7 +16,7 @@ class SingleCommandBus extends CommandBus
     public function execute(CommandInterface $command)
     {
         $handler = $this->getHandler($command);
-        return $this->persistence->transactional(function() use ($handler, $command) {
+        return $this->transactionWrapper->transactional(function() use ($handler, $command) {
             return $handler->handle($command);
         });
     }
