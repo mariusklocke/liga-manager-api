@@ -244,7 +244,8 @@ $container['doctrine.connection'] = function() use ($container) {
     return DriverManager::getConnection(['pdo' => $container['pdo']], $container['doctrine.config']);
 };
 $container['doctrine.config'] = function() use ($container) {
-    $config = Setup::createConfiguration(true);
+    $isDevMode = (getenv('APP_ENVIRONMENT') === 'development');
+    $config = Setup::createConfiguration($isDevMode);
     $driver = new SimplifiedXmlDriver([__DIR__ . "/../config/doctrine" => "HexagonalPlayground\\Domain"]);
     $driver->setGlobalBasename('global');
     $config->setMetadataDriverImpl($driver);

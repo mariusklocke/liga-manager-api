@@ -30,14 +30,15 @@ RUN set -xe \
         mysqli \
         pcntl \
         pdo_mysql \
-        mbstring \
-    && apk del .build-deps \
-    && rm -rf /tmp/* \
-    && rm -rf ${APP_HOME} \
-    && mkdir -p ${APP_HOME} \
-    && wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar \
-    && wget -O /usr/local/bin/composer https://getcomposer.org/download/1.6.3/composer.phar \
-    && chmod +x /usr/local/bin/*
+        mbstring
+
+RUN pecl install apcu
+RUN echo "extension=apcu.so" > /usr/local/etc/php/conf.d/apcu.ini
+RUN apk del .build-deps
+RUN rm -rf /tmp/* && rm -rf ${APP_HOME} && mkdir -p ${APP_HOME}
+RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar
+RUN wget -O /usr/local/bin/composer https://getcomposer.org/download/1.6.3/composer.phar
+RUN chmod +x /usr/local/bin/*
 
 # Workaround https://bugs.php.net/bug.php?id=71880
 ENV LOG_STREAM="/tmp/stdout"
@@ -53,5 +54,6 @@ ADD . ${APP_HOME}
 
 WORKDIR ${APP_HOME}
 RUN composer install --prefer-dist --no-dev --optimize-autoloader
-RUN chmod +x ${APP_HOME}/bin/*
-CMD ["/bin/sh", "-c", "php-fpm | tail -f $LOG_STREAM"]
+COPY docker/php/start.sh /usr/local/bin/start.sh
+RUN chmod +x ${APP_HOME}/bin/* /usr/local/bin/start.sh
+CMD ["/bin/sh", "-c", "start.sh | tail -f $LOG_STREAM"]
