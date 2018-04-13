@@ -14,6 +14,7 @@ use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
+use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Application\Factory\TournamentFactory;
 use HexagonalPlayground\Application\Factory\UserFactory;
@@ -43,6 +44,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
+use HexagonalPlayground\Infrastructure\Email\SwiftMailer;
 use HexagonalPlayground\Infrastructure\ORM\BaseRepository;
 use HexagonalPlayground\Infrastructure\ORM\DoctrineTransactionWrapper;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
@@ -87,6 +89,7 @@ use HexagonalPlayground\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
 use HexagonalPlayground\Infrastructure\Persistence\MysqliReadDbAdapter;
 use HexagonalPlayground\Infrastructure\Persistence\UuidGenerator;
+use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Ramsey\Uuid\UuidFactory as RamseyUuidFactory;
@@ -303,6 +306,23 @@ $container[UserCommandController::class] = function () use ($container) {
 $container[UserQueryController::class] = function () use ($container) {
     return new UserQueryController($container[Authenticator::class]);
 };
+$container['cli.command'] = [
+    'app:load-fixtures' => function () use ($container) {
+        return new \HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand($container[FixtureLoader::class]);
+    },
+    'app:create-user' => function () use ($container) {
+        return new \HexagonalPlayground\Infrastructure\CLI\CreateUserCommand($container['commandBus']);
+    },
+    'app:import-matches' => function () use ($container) {
+        return new \HexagonalPlayground\Infrastructure\CLI\ImportMatchesCommand($container['batchCommandBus']);
+    },
+    'app:reset-password' => function () use ($container) {
+        return new \HexagonalPlayground\Infrastructure\CLI\ResetPasswordCommand(
+            $container[MailerInterface::class],
+            $container[TemplateRenderer::class]
+        );
+    }
+];
 $container['pdo'] = function() {
     $mysql = new PDO(
         'mysql:host=' . getenv('MYSQL_HOST') . ';dbname=' . getenv('MYSQL_DATABASE'),
@@ -329,6 +349,18 @@ $container['commandBus'] = function() use ($container) {
 };
 $container['batchCommandBus'] = function () use ($container) {
     return new BatchCommandBus($container, $container[OrmTransactionWrapperInterface::class]);
+};
+$container[MailerInterface::class] = function () use ($container) {
+    $transport = new Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'));
+    list($senderAddress, $senderName) = explode(';', getenv('EMAIL_SENDER'));
+    return new SwiftMailer(
+        new Swift_Mailer($transport),
+        $senderAddress,
+        $senderName
+    );
+};
+$container[TemplateRenderer::class] = function () use ($container) {
+    return new TemplateRenderer(__DIR__ . '/../templates');
 };
 $container[TokenFactoryInterface::class] = function () {
     return new JsonWebTokenFactory();

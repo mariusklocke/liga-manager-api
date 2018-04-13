@@ -33,3 +33,8 @@ services:
       - "80:8080"
     environment:
       - API_URL=http://localhost:8080/api/swagger.json
+
+  maildev:
+    image: djfarrelly/maildev
+    ports:
+      - "1080:80"
