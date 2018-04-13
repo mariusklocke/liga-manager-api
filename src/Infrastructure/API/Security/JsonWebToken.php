@@ -20,17 +20,22 @@ final class JsonWebToken implements TokenInterface
     /** @var DateTimeImmutable */
     private $issuedAt;
 
+    /** @var DateTimeImmutable */
+    private $expiresAt;
+
     /** @var string */
     private static $secret;
 
     /**
      * @param string $userId
      * @param DateTimeImmutable $issuedAt
+     * @param DateTimeImmutable $expiresAt
      */
-    public function __construct(string $userId, DateTimeImmutable $issuedAt)
+    public function __construct(string $userId, DateTimeImmutable $issuedAt, DateTimeImmutable $expiresAt)
     {
         $this->userId = $userId;
         $this->issuedAt = $issuedAt;
+        $this->expiresAt = $expiresAt;
     }
 
     /**
@@ -54,7 +59,11 @@ final class JsonWebToken implements TokenInterface
      */
     public function encode(): string
     {
-        $payload = ['sub' => $this->userId, 'iat' => $this->issuedAt->format(self::DATE_FORMAT)];
+        $payload = [
+            'sub' => $this->userId,
+            'iat' => $this->issuedAt->format(self::DATE_FORMAT),
+            'exp' => $this->expiresAt->format(self::DATE_FORMAT)
+        ];
         return JWT::encode($payload, self::getSecret(), self::ALGORITHM);
     }
 
@@ -69,7 +78,14 @@ final class JsonWebToken implements TokenInterface
         } catch (UnexpectedValueException $e) {
             throw new AuthenticationException('Invalid Token');
         }
-        return new self($payload->sub, DateTimeImmutable::createFromFormat(self::DATE_FORMAT, $payload->iat));
+
+        $subject   = $payload->sub;
+        $issuedAt  = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, $payload->iat);
+        $expiresAt = isset($payload->bla)
+            ? DateTimeImmutable::createFromFormat(self::DATE_FORMAT, $payload->exp)
+            : new DateTimeImmutable();
+
+        return new self($subject, $issuedAt, $expiresAt);
     }
 
     /**
@@ -81,5 +97,15 @@ final class JsonWebToken implements TokenInterface
             self::$secret = file_get_contents(getenv('JWT_SECRET_PATH') . '/secret.key');
         }
         return self::$secret;
+    }
+
+    /**
+     * Returns when the token expires
+     *
+     * @return DateTimeImmutable
+     */
+    public function getExpiresAt(): DateTimeImmutable
+    {
+        return $this->expiresAt;
     }
 }

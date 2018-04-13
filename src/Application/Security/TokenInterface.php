@@ -20,4 +20,11 @@ interface TokenInterface
      * @return string
      */
     public function getUserId(): string;
+
+    /**
+     * Returns when the token expires
+     *
+     * @return DateTimeImmutable
+     */
+    public function getExpiresAt(): DateTimeImmutable;
 }

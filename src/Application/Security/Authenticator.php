@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Security;
 
+use DateTimeImmutable;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Domain\User;
@@ -71,6 +72,11 @@ class Authenticator
             throw $this->createException();
         }
 
+        $now = new DateTimeImmutable();
+        if ($token->getExpiresAt() < $now) {
+            throw $this->createException('Token has expired');
+        }
+
         if ($user->hasPasswordChangedSince($token->getIssuedAt())) {
             throw $this->createException('Password has changed after token has been issued.');
         }
@@ -96,7 +102,10 @@ class Authenticator
     public function getAuthenticatedToken(): TokenInterface
     {
         if (null === $this->authenticatedToken) {
-            $this->authenticatedToken = $this->tokenFactory->create($this->getAuthenticatedUser());
+            $this->authenticatedToken = $this->tokenFactory->create(
+                $this->getAuthenticatedUser(),
+                new DateTimeImmutable('now + 1 year')
+            );
         }
         return $this->authenticatedToken;
     }

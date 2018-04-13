@@ -12,10 +12,11 @@ class JsonWebTokenFactory implements TokenFactoryInterface
 {
     /**
      * @param User $user
+     * @param DateTimeImmutable $expiresAt
      * @return JsonWebToken
      */
-    public function create(User $user): TokenInterface
+    public function create(User $user, DateTimeImmutable $expiresAt): TokenInterface
     {
-        return new JsonWebToken($user->getId(), new DateTimeImmutable());
+        return new JsonWebToken($user->getId(), new DateTimeImmutable(), $expiresAt);
     }
 }
