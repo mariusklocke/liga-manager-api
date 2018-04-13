@@ -13,14 +13,14 @@ env:
 services:
   - docker
 install:
-  - sh bin/generate-jwt-key.sh ~/jwt
+  - ./bin/generate-jwt-key.sh ~/jwt
   - export BRANCH=`if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi`
   - export TAG=`if [ "$BRANCH" == "master" ]; then echo "latest"; else echo $BRANCH ; fi`
   - docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG .
 before_script:
   - env | grep "^MYSQL_" > .env
 script:
-  - sh docker/run-tests.sh
+  - ./docker/run-tests.sh
 after_success:
   - docker login -u $DOCKER_USER -p "$DOCKER_PASS"
   - docker push $DOCKER_REPO:$TAG
