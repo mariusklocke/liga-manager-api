@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use HexagonalPlayground\Application\FixtureLoader;
-use Slim\Container;
 use Symfony\Component\Console\Application;
 
 class Bootstrap
@@ -15,7 +14,7 @@ class Bootstrap
      */
     public static function bootstrap()
     {
-        $container = self::buildContainer();
+        $container = require __DIR__ . '/../../../config/container.php';
 
         $app = new Application();
         $app->setHelperSet(ConsoleRunner::createHelperSet($container['doctrine.entityManager']));
@@ -28,13 +27,5 @@ class Bootstrap
         $app->add(new LoadFixturesCommand($container[FixtureLoader::class]));
         $app->add(new CreateUserCommand($container['commandBus']));
         return $app;
-    }
-
-    /**
-     * @return Container
-     */
-    public static function buildContainer()
-    {
-        return require __DIR__ . '/../../container.php';
     }
 }

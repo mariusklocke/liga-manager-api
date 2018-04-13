@@ -5,24 +5,16 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Routing\RouteProvider;
-use Slim\Container;
 
 class Bootstrap
 {
     public static function bootstrap()
     {
-        $app = new App(self::buildContainer());
+        $container = require __DIR__ . '/../../../config/container.php';
+        $app = new App($container);
         (new RouteProvider())->registerRoutes($app);
         $app->add(new RemoveTrailingSlash());
 
         return $app;
-    }
-
-    /**
-     * @return Container
-     */
-    public static function buildContainer()
-    {
-        return require __DIR__ . '/../../container.php';
     }
 }
