@@ -36,7 +36,6 @@ use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\User;
-use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
@@ -120,82 +119,82 @@ $container[FixtureLoader::class] = function() use ($container) {
 };
 $container[CreateTeamCommand::class] = function () use ($container) {
     return new CreateTeamHandler(
-        $container['doctrine.entityManager']->getRepository(Team::class),
+        $container['orm.repository.team'],
         $container['uuidGenerator']
     );
 };
 $container[DeleteTeamCommand::class] = function() use ($container) {
-    return new DeleteTeamHandler($container['doctrine.entityManager']->getRepository(Team::class));
+    return new DeleteTeamHandler($container['orm.repository.team']);
 };
 $container[StartSeasonCommand::class] = function() use ($container) {
-    return new StartSeasonHandler($container['doctrine.entityManager']->getRepository(Season::class));
+    return new StartSeasonHandler($container['orm.repository.season']);
 };
 $container[CreateMatchesForSeasonCommand::class] = function() use ($container) {
     return new CreateMatchesForSeasonHandler(
         $container[MatchFactory::class],
-        $container['doctrine.entityManager']->getRepository(Season::class),
-        $container['doctrine.entityManager']->getRepository(Match::class)
+        $container['orm.repository.season'],
+        $container['orm.repository.match']
     );
 };
 $container[CreateSingleMatchCommand::class] = function() use ($container) {
     return new CreateSingleMatchHandler(
         $container[MatchFactory::class],
-        $container['doctrine.entityManager']->getRepository(Match::class),
-        $container['doctrine.entityManager']->getRepository(Team::class),
-        $container['doctrine.entityManager']->getRepository(Season::class)
+        $container['orm.repository.match'],
+        $container['orm.repository.team'],
+        $container['orm.repository.season']
     );
 };
 $container[DeleteSeasonCommand::class] = function() use ($container) {
-    return new DeleteSeasonHandler($container['doctrine.entityManager']->getRepository(Season::class));
+    return new DeleteSeasonHandler($container['orm.repository.season']);
 };
 $container[ScheduleMatchCommand::class] = function() use ($container) {
-    return new ScheduleMatchHandler($container['doctrine.entityManager']->getRepository(Match::class));
+    return new ScheduleMatchHandler($container['orm.repository.match']);
 };
 $container[SubmitMatchResultCommand::class] = function () use ($container) {
     return new SubmitMatchResultHandler(
-        $container['doctrine.entityManager']->getRepository(Match::class),
+        $container['orm.repository.match'],
         $container[Authenticator::class]
     );
 };
 $container[LocateMatchCommand::class] = function () use ($container) {
     return new LocateMatchHandler(
-        $container['doctrine.entityManager']->getRepository(Match::class),
-        $container['doctrine.entityManager']->getRepository(Pitch::class)
+        $container['orm.repository.match'],
+        $container['orm.repository.pitch']
     );
 };
 $container[CancelMatchCommand::class] = function () use ($container) {
-    return new CancelMatchHandler($container['doctrine.entityManager']->getRepository(Match::class));
+    return new CancelMatchHandler($container['orm.repository.match']);
 };
 $container[AddTeamToSeasonCommand::class] = function () use ($container) {
     return new AddTeamToSeasonHandler(
-        $container['doctrine.entityManager']->getRepository(Season::class),
-        $container['doctrine.entityManager']->getRepository(Team::class)
+        $container['orm.repository.season'],
+        $container['orm.repository.team']
     );
 };
 $container[RemoveTeamFromSeasonCommand::class] = function () use ($container) {
     return new RemoveTeamFromSeasonHandler(
-        $container['doctrine.entityManager']->getRepository(Season::class),
-        $container['doctrine.entityManager']->getRepository(Team::class)
+        $container['orm.repository.season'],
+        $container['orm.repository.team']
     );
 };
 $container[CreateSeasonCommand::class] = function () use ($container) {
     return new CreateSeasonHandler(
         $container[SeasonFactory::class],
-        $container['doctrine.entityManager']->getRepository(Season::class)
+        $container['orm.repository.season']
     );
 };
 $container[CreateTournamentCommand::class] = function () use ($container) {
     return new CreateTournamentHandler(
         $container[TournamentFactory::class],
-        $container['doctrine.entityManager']->getRepository(Tournament::class)
+        $container['orm.repository.tournament']
     );
 };
 $container[SetTournamentRoundCommand::class] = function () use ($container) {
     return new SetTournamentRoundHandler(
         $container[MatchFactory::class],
-        $container['doctrine.entityManager']->getRepository(Tournament::class),
-        $container['doctrine.entityManager']->getRepository(Match::class),
-        $container['doctrine.entityManager']->getRepository(Team::class)
+        $container['orm.repository.tournament'],
+        $container['orm.repository.match'],
+        $container['orm.repository.team']
     );
 };
 $container[ChangeUserPasswordCommand::class] = function () use ($container) {
@@ -203,15 +202,15 @@ $container[ChangeUserPasswordCommand::class] = function () use ($container) {
 };
 $container[CreateUserCommand::class] = function () use ($container) {
     return new CreateUserHandler(
-        $container[UserRepositoryInterface::class],
+        $container['orm.repository.user'],
         $container[UserFactory::class],
-        $container['doctrine.entityManager']->getRepository(Team::class),
+        $container['orm.repository.team'],
         $container[Authenticator::class]
     );
 };
 $container[CreatePitchCommand::class] = function () use ($container) {
     return new CreatePitchHandler(
-        $container['doctrine.entityManager']->getRepository(Pitch::class),
+        $container['orm.repository.pitch'],
         $container['uuidGenerator']
     );
 };
@@ -323,6 +322,24 @@ $container['cli.command'] = [
         );
     }
 ];
+$container['orm.repository.user'] = function () use ($container) {
+    return $container['doctrine.entityManager']->getRepository(User::class);
+};
+$container['orm.repository.team'] = function () use ($container) {
+    return $container['doctrine.entityManager']->getRepository(Team::class);
+};
+$container['orm.repository.match'] = function () use ($container) {
+    return $container['doctrine.entityManager']->getRepository(Match::class);
+};
+$container['orm.repository.season'] = function () use ($container) {
+    return $container['doctrine.entityManager']->getRepository(Season::class);
+};
+$container['orm.repository.tournament'] = function () use ($container) {
+    return $container['doctrine.entityManager']->getRepository(Tournament::class);
+};
+$container['orm.repository.pitch'] = function () use ($container) {
+    return $container['doctrine.entityManager']->getRepository(Pitch::class);
+};
 $container['pdo'] = function() {
     $mysql = new PDO(
         'mysql:host=' . getenv('MYSQL_HOST') . ';dbname=' . getenv('MYSQL_DATABASE'),
@@ -366,16 +383,7 @@ $container[TokenFactoryInterface::class] = function () {
     return new JsonWebTokenFactory();
 };
 $container[Authenticator::class] = function () use ($container) {
-    /** @var EntityManager $em */
-    $em = $container['doctrine.entityManager'];
-    /** @var UserRepositoryInterface $userRepository */
-    $userRepository = $em->getRepository(User::class);
-    return new Authenticator($container[TokenFactoryInterface::class], $userRepository);
-};
-$container[UserRepositoryInterface::class] = function () use ($container) {
-    /** @var EntityManager $em */
-    $em = $container['doctrine.entityManager'];
-    return $em->getRepository(User::class);
+    return new Authenticator($container[TokenFactoryInterface::class], $container['orm.repository.user']);
 };
 $container['logger'] = function() {
     $stream = null;
