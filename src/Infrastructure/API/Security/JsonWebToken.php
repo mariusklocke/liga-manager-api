@@ -11,7 +11,7 @@ use UnexpectedValueException;
 
 final class JsonWebToken implements TokenInterface
 {
-    private const DATE_FORMAT = DateTimeImmutable::RFC3339;
+    private const DATE_FORMAT = 'U';
     private const ALGORITHM = 'HS256';
 
     /** @var string */
@@ -81,7 +81,7 @@ final class JsonWebToken implements TokenInterface
 
         $subject   = $payload->sub;
         $issuedAt  = DateTimeImmutable::createFromFormat(self::DATE_FORMAT, $payload->iat);
-        $expiresAt = isset($payload->bla)
+        $expiresAt = isset($payload->exp)
             ? DateTimeImmutable::createFromFormat(self::DATE_FORMAT, $payload->exp)
             : new DateTimeImmutable();
 
