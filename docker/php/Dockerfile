@@ -15,7 +15,8 @@ ENV PHPIZE_DEPS \
 ENV APP_HOME="/var/www/api"
 ENV JWT_SECRET_PATH="/etc/jwt"
 
-RUN apk add --no-cache --virtual .persistent-deps
+RUN apk add --no-cache --virtual .persistent-deps \
+    openssh-keygen
 
 RUN set -xe \
     && apk add --no-cache --virtual .build-deps \

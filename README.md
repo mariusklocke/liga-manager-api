@@ -4,15 +4,19 @@ A working installation of `docker` and `docker-compose`
 ## Get started
 This application comes with an example configuration for running with `docker-compose`. To get started rename `.env.dist` to `.env` and `docker-compose.yml.dist` to `docker-compose.yml` and adjust both configuration files to your local needs.
 
-Before you run the application for the first time, you need to generate the secret for signing JSON Web Tokens (JWT):
+Before you run the application for the first time, you need to build the docker images:
 ```bash
-sudo sh bin/generate-jwt-key.sh
+bash docker/build-images.sh
 ```
 
-Now you are ready to go and can build & start the containers
+Now you are ready to start the containers
 ```bash
-sh docker/build-images.sh
 docker-compose up -d
+```
+
+If you run the `php` container for the first time, you need to generate the secret for signing JSON Web Tokens (JWT) first
+```bash
+docker-compose exec php bin/generate-jwt-key.sh
 ```
 
 After creating the `mariadb` container you need to create the schema first:

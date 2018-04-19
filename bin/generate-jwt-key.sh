@@ -1,6 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/sh
+set -xe
 
-mkdir $1
-ssh-keygen -t rsa -b 4096 -f $1/secret.key -N ''
-rm $1/secret.key.pub
-chmod 644 $1/secret.key
+if [ ! -d /etc/jwt ]; then
+    mkdir /etc/jwt
+fi
+ssh-keygen -t rsa -b 4096 -f /etc/jwt/secret.key -N ''
+rm /etc/jwt/secret.key.pub
+chmod 644 /etc/jwt/secret.key
