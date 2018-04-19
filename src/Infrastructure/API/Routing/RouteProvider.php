@@ -40,6 +40,12 @@ class RouteProvider
                 return $controller->findTeamById($args['id']);
             })->setName('findTeamById');
 
+            $app->put('/team/{id}/contact', function ($request, $response, $args) use ($container) {
+                /** @var TeamCommandController $controller */
+                $controller = $container[TeamCommandController::class];
+                return $controller->updateContact($args['id'], $request);
+            });
+
             $app->get('/season/{id}/team', function ($request, $response, $args) use ($container) {
                 /** @var TeamQueryController $controller */
                 $controller = $container[TeamQueryController::class];

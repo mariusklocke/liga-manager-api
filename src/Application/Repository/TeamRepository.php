@@ -10,7 +10,9 @@ class TeamRepository extends AbstractRepository
      */
     public function findAllTeams()
     {
-        return $this->getDb()->fetchAll('SELECT * FROM `teams`');
+        return array_map(function($row) {
+            return $this->reconstructEmbeddedObject($row, 'contact');
+        }, $this->getDb()->fetchAll('SELECT * FROM `teams`'));
     }
 
     /**
@@ -19,7 +21,12 @@ class TeamRepository extends AbstractRepository
      */
     public function findTeamById(string $id)
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM `teams` WHERE `id` = ?', [$id]);
+        $team = $this->getDb()->fetchFirstRow('SELECT * FROM `teams` WHERE `id` = ?', [$id]);
+        if (null === $team) {
+            return null;
+        }
+
+        return $this->reconstructEmbeddedObject($team, 'contact');
     }
 
     /**
@@ -32,6 +39,8 @@ class TeamRepository extends AbstractRepository
   SELECT t.* FROM seasons_teams_link st JOIN `teams` t ON t.id = st.team_id WHERE st.season_id = ?
 SQL;
 
-        return $this->getDb()->fetchAll($query, [$seasonId]);
+        return array_map(function ($row) {
+            return $this->reconstructEmbeddedObject($row, 'contact');
+        }, $this->getDb()->fetchAll($query, [$seasonId]));
     }
 }

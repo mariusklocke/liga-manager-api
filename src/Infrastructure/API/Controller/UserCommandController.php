@@ -55,15 +55,4 @@ class UserCommandController extends CommandController
             throw new BadRequestException('Passwords require a length between 6 and 255 characters');
         }
     }
-
-    /**
-     * @param $email
-     * @throws BadRequestException
-     */
-    private function validateEmail($email)
-    {
-        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            throw new BadRequestException('Invalid email syntax');
-        }
-    }
 }

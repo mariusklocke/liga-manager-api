@@ -19,6 +19,9 @@ class Team
     /** @var DateTimeImmutable */
     private $createdAt;
 
+    /** @var ContactPerson */
+    private $contact;
+
     public function __construct(string $id, string $name)
     {
         $this->id = $id;
@@ -61,5 +64,13 @@ class Team
     public function equals(Team $otherTeam) : bool
     {
         return $this->getId() === $otherTeam->getId();
+    }
+
+    /**
+     * @param ContactPerson $person
+     */
+    public function setContact(ContactPerson $person): void
+    {
+        $this->contact = $person;
     }
 }

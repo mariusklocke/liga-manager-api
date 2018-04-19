@@ -7,7 +7,7 @@
     },
     "description": "RESTful API for managing Wilde Liga Bremen",
     "title": "Wilde Liga Bremen API",
-    "version": "0.1"
+    "version": "0.2"
   },
   "basePath": "/api",
   "paths": {
@@ -771,9 +771,9 @@
         "summary": "Finds a single team by id"
       }
     },
-    "/team/{id}/rename": {
-      "post": {
-        "operationId": "renameTeam",
+    "/team/{id}/contact": {
+      "put": {
+        "operationId": "updateTeamContact",
         "parameters": [
           {
             "description": "ID of team",
@@ -781,11 +781,18 @@
             "name": "id",
             "required": true,
             "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "updateTeamContactBody",
+            "schema": {
+              "$ref": "#/definitions/contact_person"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "Team has been successfully renamed"
+            "description": "Team contact has been modified successfully"
           },
           "404": {
             "description": "Team could not be found"
@@ -794,7 +801,7 @@
         "tags": [
           "team"
         ],
-        "summary": "Renames a single team"
+        "summary": "Updates the contact person of team"
       }
     },
     "/tournament": {
@@ -1267,6 +1274,9 @@
         },
         "name": {
           "type": "string"
+        },
+        "contact": {
+          "$ref": "#/definitions/contact_person"
         }
       },
       "type": "object"
@@ -1297,6 +1307,22 @@
         }
       },
       "type": "object"
+    },
+    "contact_person": {
+      "properties": {
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [

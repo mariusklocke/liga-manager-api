@@ -66,4 +66,15 @@ abstract class CommandController
         }
         return $type;
     }
+
+    /**
+     * @param $email
+     * @throws BadRequestException
+     */
+    protected function validateEmail($email)
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            throw new BadRequestException('Invalid email syntax');
+        }
+    }
 }

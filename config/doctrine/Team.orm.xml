@@ -7,5 +7,6 @@
         <id name="id" type="string" />
         <field name="name" type="string" />
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <embedded name="contact" class="HexagonalPlayground\Domain\ContactPerson" />
     </entity>
 </doctrine-mapping>
