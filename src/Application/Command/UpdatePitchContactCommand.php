@@ -3,21 +3,21 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-class UpdateTeamContactCommand extends UpdateContactCommand
+class UpdatePitchContactCommand extends UpdateContactCommand
 {
     /** @var string */
-    private $teamId;
+    private $pitchId;
 
     /**
-     * @param string $teamId
+     * @param string $pitchId
      * @param string $firstName
      * @param string $lastName
      * @param string $phone
      * @param string $email
      */
-    public function __construct(string $teamId, string $firstName, string $lastName, string $phone, string $email)
+    public function __construct(string $pitchId, string $firstName, string $lastName, string $phone, string $email)
     {
-        $this->teamId = $teamId;
+        $this->pitchId = $pitchId;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->phone = $phone;
@@ -27,8 +27,8 @@ class UpdateTeamContactCommand extends UpdateContactCommand
     /**
      * @return string
      */
-    public function getTeamId(): string
+    public function getPitchId(): string
     {
-        return $this->teamId;
+        return $this->pitchId;
     }
 }

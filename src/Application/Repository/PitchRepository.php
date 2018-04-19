@@ -10,7 +10,9 @@ class PitchRepository extends AbstractRepository
      */
     public function findAllPitches()
     {
-        return $this->getDb()->fetchAll('SELECT * FROM `pitches`');
+        return array_map(function ($row) {
+            return $this->reconstructEmbeddedObject($row, 'contact');
+        }, $this->getDb()->fetchAll('SELECT * FROM `pitches`'));
     }
 
     /**
@@ -19,6 +21,11 @@ class PitchRepository extends AbstractRepository
      */
     public function findPitchById(string $id)
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = ?', [$id]);
+        $pitch = $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = ?', [$id]);
+        if (null === $pitch) {
+            return null;
+        }
+
+        return $this->reconstructEmbeddedObject($pitch, 'contact');
     }
 }

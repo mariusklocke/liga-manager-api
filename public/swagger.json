@@ -313,6 +313,39 @@
         "summary": "Find a single pitch by id"
       }
     },
+    "/pitch/{id}/contact": {
+      "put": {
+        "operationId": "updatePitchContact",
+        "parameters": [
+          {
+            "description": "ID of pitch",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "updatePitchContactBody",
+            "schema": {
+              "$ref": "#/definitions/contact_person"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Pitch contact has been modified successfully"
+          },
+          "404": {
+            "description": "Pitch could not be found"
+          }
+        },
+        "tags": [
+          "pitch"
+        ],
+        "summary": "Updates the contact person of a pitch"
+      }
+    },
     "/season": {
       "get": {
         "operationId": "getAllSeasons",
@@ -1164,6 +1197,9 @@
         },
         "location_longitude": {
           "type": "number"
+        },
+        "contact": {
+          "$ref": "#/definitions/contact_person"
         }
       },
       "type": "object"

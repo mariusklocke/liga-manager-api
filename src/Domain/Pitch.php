@@ -14,6 +14,9 @@ class Pitch
     /** @var GeographicLocation */
     private $location;
 
+    /** @var ContactPerson */
+    private $contact;
+
     public function __construct(string $id, string $label, GeographicLocation $location)
     {
         $this->id = $id;
@@ -34,6 +37,14 @@ class Pitch
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @param ContactPerson $contact
+     */
+    public function setContact(ContactPerson $contact): void
+    {
+        $this->contact = $contact;
     }
 
     private function __clone()

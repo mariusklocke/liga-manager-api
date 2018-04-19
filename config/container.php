@@ -14,6 +14,7 @@ use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
+use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
@@ -27,6 +28,7 @@ use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\CreateUserHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
+use HexagonalPlayground\Application\Handler\UpdatePitchContactHandler;
 use HexagonalPlayground\Application\Handler\UpdateTeamContactHandler;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepository;
@@ -218,6 +220,9 @@ $container[CreatePitchCommand::class] = function () use ($container) {
 };
 $container[UpdateTeamContactCommand::class] = function () use ($container) {
     return new UpdateTeamContactHandler($container['orm.repository.team']);
+};
+$container[UpdatePitchContactCommand::class] = function () use ($container) {
+    return new UpdatePitchContactHandler($container['orm.repository.pitch']);
 };
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);

@@ -112,6 +112,12 @@ class RouteProvider
                 return $controller->create($request);
             });
 
+            $app->put('/pitch/{id}/contact', function ($request, $response, $args) use ($container) {
+                /** @var PitchCommandController $controller */
+                $controller = $container[PitchCommandController::class];
+                return $controller->updateContact($args['id'], $request);
+            });
+
             $app->post('/season/{id}/start', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
