@@ -12,6 +12,7 @@ use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
+use HexagonalPlayground\Application\Command\LoadFixturesCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
@@ -26,6 +27,7 @@ use HexagonalPlayground\Application\Handler\CreatePitchHandler;
 use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\CreateUserHandler;
+use HexagonalPlayground\Application\Handler\LoadFixturesHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
 use HexagonalPlayground\Application\Handler\UpdatePitchContactHandler;
@@ -67,7 +69,6 @@ use HexagonalPlayground\Application\Command\StartSeasonCommand;
 use HexagonalPlayground\Application\Bus\SingleCommandBus;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\FixtureGenerator;
-use HexagonalPlayground\Application\FixtureLoader;
 use HexagonalPlayground\Application\Handler\CancelMatchHandler;
 use HexagonalPlayground\Application\Handler\CreateMatchesForSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreateSingleMatchHandler;
@@ -89,7 +90,6 @@ use HexagonalPlayground\Infrastructure\API\Controller\SeasonCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
-use HexagonalPlayground\Infrastructure\Persistence\DoctrineObjectPersistence;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
 use HexagonalPlayground\Infrastructure\Persistence\MysqliReadDbAdapter;
 use HexagonalPlayground\Infrastructure\Persistence\UuidGenerator;
@@ -112,16 +112,6 @@ $container[MatchFactory::class] = function () use ($container) {
 };
 $container[UserFactory::class] = function () use ($container) {
     return new UserFactory($container['uuidGenerator']);
-};
-$container[FixtureLoader::class] = function() use ($container) {
-    return new FixtureLoader(
-        $container['objectPersistence'],
-        new FixtureGenerator(
-            $container['uuidGenerator'],
-            $container[SeasonFactory::class],
-            $container[UserFactory::class]
-        )
-    );
 };
 $container[CreateTeamCommand::class] = function () use ($container) {
     return new CreateTeamHandler(
@@ -226,6 +216,15 @@ $container[UpdateTeamContactCommand::class] = function () use ($container) {
 $container[UpdatePitchContactCommand::class] = function () use ($container) {
     return new UpdatePitchContactHandler($container['orm.repository.pitch']);
 };
+$container[LoadFixturesCommand::class] = function () use ($container) {
+    return new LoadFixturesHandler(
+        $container['orm.repository.team'],
+        $container['orm.repository.season'],
+        $container['orm.repository.pitch'],
+        $container['orm.repository.user'],
+        new FixtureGenerator($container['uuidGenerator'], $container[SeasonFactory::class], $container[UserFactory::class])
+    );
+};
 $container[TeamRepository::class] = function() use ($container) {
     return new TeamRepository($container['readDbAdapter']);
 };
@@ -270,9 +269,6 @@ $container['doctrine.queryLogger'] = function () use ($container) {
 };
 $container['uuidGenerator'] = function() {
     return new UuidGenerator(new RamseyUuidFactory());
-};
-$container['objectPersistence'] = function() use ($container) {
-    return new DoctrineObjectPersistence($container['doctrine.entityManager']);
 };
 $container[OrmTransactionWrapperInterface::class] = function() use ($container) {
     return new DoctrineTransactionWrapper($container['doctrine.entityManager']);
@@ -319,7 +315,7 @@ $container[UserQueryController::class] = function () use ($container) {
 };
 $container['cli.command'] = [
     'app:load-fixtures' => function () use ($container) {
-        return new \HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand($container[FixtureLoader::class]);
+        return new \HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand($container['commandBus']);
     },
     'app:create-user' => function () use ($container) {
         return new \HexagonalPlayground\Infrastructure\CLI\CreateUserCommand($container['commandBus']);

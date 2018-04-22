@@ -3,21 +3,22 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Application\FixtureLoader;
+use HexagonalPlayground\Application\Bus\SingleCommandBus;
+use HexagonalPlayground\Application\Command\LoadFixturesCommand as LoadFixturesApplicationCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class LoadFixturesCommand extends Command
 {
-    /** @var FixtureLoader */
-    private $fixtureLoader;
+    /** @var SingleCommandBus */
+    private $commandBus;
 
     /**
-     * @param FixtureLoader $fixtureLoader
+     * @param SingleCommandBus $commandBus
      */
-    public function __construct(FixtureLoader $fixtureLoader)
+    public function __construct(SingleCommandBus $commandBus)
     {
-        $this->fixtureLoader = $fixtureLoader;
+        $this->commandBus = $commandBus;
         parent::__construct();
     }
 
@@ -28,7 +29,7 @@ class LoadFixturesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->fixtureLoader->__invoke();
+        $this->commandBus->execute(new LoadFixturesApplicationCommand());
         $output->writeln('Fixtures successfully loaded');
     }
 }
