@@ -18,7 +18,7 @@
         <field name="scoredGoals" type="integer" column="scored_goals" />
         <field name="concededGoals" type="integer" column="conceded_goals" />
         <field name="points" type="integer" />
-        <many-to-one field="ranking" target-entity="HexagonalPlayground\Domain\Ranking">
+        <many-to-one field="ranking" target-entity="HexagonalPlayground\Domain\Ranking" inversed-by="positions">
             <join-column name="season_id" referenced-column-name="season_id" nullable="false" />
         </many-to-one>
         <many-to-one field="team" target-entity="HexagonalPlayground\Domain\Team">
