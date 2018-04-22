@@ -193,4 +193,55 @@ class BasicUseCaseTest extends TestCase
 
         return $matchId;
     }
+
+    /**
+     * @return string
+     */
+    public function testTournamentCanBeCreated(): string
+    {
+        $response = $this->client->createTournament('Foo');
+        self::assertObjectHasAttribute('id', $response);
+        self::assertInternalType('string', $response->id);
+        self::assertGreaterThan(0, strlen($response->id));
+
+        return $response->id;
+    }
+
+    /**
+     * @param string $tournamentId
+     * @param array  $teamIds
+     * @depends testTournamentCanBeCreated
+     * @depends testTeamsCanBeCreated
+     */
+    public function testTournamentRoundsCanBeCreated(string $tournamentId, array $teamIds)
+    {
+        $firstRound = [
+            ['home_team_id' => $teamIds[0], 'guest_team_id' => $teamIds[1]],
+            ['home_team_id' => $teamIds[2], 'guest_team_id' => $teamIds[3]]
+        ];
+        $this->client->setTournamentRound($tournamentId, 1, $firstRound, new \DateTimeImmutable('2018-03-01'));
+        $tournament = $this->client->getTournament($tournamentId);
+        self::assertObjectHasAttribute('rounds', $tournament);
+        self::assertEquals(1, $tournament->rounds);
+        $matches = $this->client->getMatchesInTournament($tournamentId);
+        self::assertEquals(2, count($matches));
+
+        $secondRound = [
+            ['home_team_id' => $teamIds[1], 'guest_team_id' => $teamIds[2]]
+        ];
+        $this->client->setTournamentRound($tournamentId, 2, $secondRound, new \DateTimeImmutable('2018-03-08'));
+        $tournament = $this->client->getTournament($tournamentId);
+        self::assertObjectHasAttribute('rounds', $tournament);
+        self::assertEquals(2, $tournament->rounds);
+        $matches = $this->client->getMatchesInTournament($tournamentId);
+        self::assertEquals(3, count($matches));
+    }
+
+    public function testUserCanBeAuthenticated()
+    {
+        $this->client->setBasicAuth();
+        $user = $this->client->getAuthenticatedUser();
+        self::assertObjectHasAttribute('email', $user);
+        self::assertEquals('admin', $user->email);
+    }
 }
