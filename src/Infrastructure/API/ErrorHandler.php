@@ -9,6 +9,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
+use HexagonalPlayground\Infrastructure\API\Exception\HttpException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -53,9 +54,11 @@ class ErrorHandler
                 return $this->createResponse(404, 'Not Found', $throwable->getMessage());
             case ($throwable instanceof DomainException):
             case ($throwable instanceof UniquenessException):
-            case ($throwable instanceof BadRequestException):
                 $this->logger->notice((string)$throwable);
                 return $this->createResponse(400, 'Bad Request', $throwable->getMessage());
+            case ($throwable instanceof BadRequestException):
+                $this->logger->notice((string)$throwable);
+                return $this->createResponseFromHttpException($throwable);
             case ($throwable instanceof MethodNotAllowedException):
                 $this->logger->notice((string)$throwable);
                 $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);
@@ -80,5 +83,14 @@ class ErrorHandler
             'title'   => $title,
             'message' => $message
         ]);
+    }
+
+    /**
+     * @param HttpException $exception
+     * @return Response
+     */
+    private function createResponseFromHttpException(HttpException $exception): Response
+    {
+        return (new Response($exception->getStatusCode()))->withJson($exception);
     }
 }

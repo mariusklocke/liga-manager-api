@@ -46,6 +46,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
+use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
 use HexagonalPlayground\Infrastructure\Email\SwiftMailer;
 use HexagonalPlayground\Infrastructure\ORM\BaseRepository;
@@ -96,6 +97,7 @@ use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Ramsey\Uuid\UuidFactory as RamseyUuidFactory;
+use Slim\Http\Request;
 
 $container = new \Slim\Container([]);
 
@@ -394,6 +396,11 @@ $container[TokenFactoryInterface::class] = function () {
 };
 $container[Authenticator::class] = function () use ($container) {
     return new Authenticator($container[TokenFactoryInterface::class], $container['orm.repository.user']);
+};
+$container['request'] = function ($container) {
+    /** @var Request $request */
+    $request = (new RemoveTrailingSlash())->__invoke(Request::createFromEnvironment($container['environment']));
+    return $request;
 };
 $container['logger'] = function() {
     $stream = null;

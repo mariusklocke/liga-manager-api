@@ -21,6 +21,7 @@
         "symfony/console": "^4.0.1",
         "monolog/monolog": "^1.23.0",
         "firebase/php-jwt": "^5.0",
-        "swiftmailer/swiftmailer": "^6.0"
+        "swiftmailer/swiftmailer": "^6.0",
+        "league/json-guard": "^1.0"
     }
 }

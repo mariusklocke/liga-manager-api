@@ -82,10 +82,10 @@ class RouteProvider
                 return $controller->findRanking($args['id']);
             });
 
-            $app->get('/season/{seasonId}/matches', function ($request, $response, $args) use ($container) {
+            $app->get('/season/{id}/matches', function ($request, $response, $args) use ($container) {
                 /** @var MatchQueryController $controller */
                 $controller = $container[MatchQueryController::class];
-                return $controller->findMatchesInSeason($args['seasonId'], $request);
+                return $controller->findMatchesInSeason($args['id'], $request);
             });
 
             $app->get('/match/{id}', function ($request, $response, $args) use ($container) {
@@ -160,16 +160,16 @@ class RouteProvider
                 return $controller->cancel($args['id']);
             });
 
-            $app->put('/season/{seasonId}/team/{teamId}', function ($request, $response, $args) use ($container) {
+            $app->put('/season/{season_id}/team/{team_id}', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
-                return $controller->addTeam($args['seasonId'], $args['teamId']);
+                return $controller->addTeam($args['season_id'], $args['team_id']);
             });
 
-            $app->delete('/season/{seasonId}/team/{teamId}', function ($request, $response, $args) use ($container) {
+            $app->delete('/season/{season_id}/team/{team_id}', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
-                return $controller->removeTeam($args['seasonId'], $args['teamId']);
+                return $controller->removeTeam($args['season_id'], $args['team_id']);
             });
 
             $app->post('/season', function ($request) use ($container) {
@@ -184,7 +184,7 @@ class RouteProvider
                 return $controller->create($request);
             });
 
-            $app->put('/tournament/{id}/round/{round:[0-9]+}', function ($request, $response, $args) use ($container) {
+            $app->put('/tournament/{id}/round/{round}', function ($request, $response, $args) use ($container) {
                 /** @var TournamentCommandController $controller */
                 $controller = $container[TournamentCommandController::class];
                 return $controller->setRound($args['id'], (int) $args['round'], $request);
