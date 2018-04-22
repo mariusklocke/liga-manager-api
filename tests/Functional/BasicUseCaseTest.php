@@ -5,30 +5,21 @@ namespace HexagonalPlayground\Tests\Functional;
 
 class BasicUseCaseTest extends TestCase
 {
-    public function testSeasonCanBeCreated() : string
+    public function testSeasonCanBeCreated(): string
     {
-        $client = static::getClient();
-        $response = $client->post('/api/season', ['name' => 'bar']);
-        self::assertEquals(200, $response->getStatusCode());
-        $data = $client->parseBody($response->getBody());
-        self::assertArrayHasKey('id', $data);
-        self::assertGreaterThan(0, strlen($data['id']));
-
-        return $data['id'];
+        $response = $this->client->createSeason('bar');
+        self::assertObjectHasAttribute('id', $response);
+        self::assertGreaterThan(0, strlen($response->id));
+        return $response->id;
     }
 
-    public function testTeamsCanBeCreated() : array
+    public function testTeamsCanBeCreated(): array
     {
-        $client = static::getClient();
-        $response = $client->post('/api/team', []);
-        self::assertEquals(400, $response->getStatusCode());
         $teamIds = [];
         for ($i = 1; $i <= 4; $i++) {
-            $response = $client->post('/api/team', ['name' => 'Team No. ' . $i]);
-            self::assertEquals(200, $response->getStatusCode());
-            $data = $client->parseBody($response->getBody());
-            self::assertArrayHasKey('id', $data);
-            $teamIds[] = $data['id'];
+            $response = $this->client->createTeam('Team No. ' . $i);
+            self::assertObjectHasAttribute('id', $response);
+            $teamIds[] = $response->id;
         }
 
         return $teamIds;
@@ -41,29 +32,24 @@ class BasicUseCaseTest extends TestCase
      */
     public function testSeasonCanBeFound(string $seasonId)
     {
-        $client = static::getClient();
-        $response = $client->get('/api/season');
-        self::assertEquals(200, $response->getStatusCode());
-        $seasonList = $client->parseBody($response->getBody());
-        self::assertTrue(is_array($seasonList));
+        $seasonList = $this->client->getAllSeasons();
+        self::assertInternalType('array', $seasonList);
 
         $found = false;
         foreach ($seasonList as $season) {
-            self::assertArrayHasKey('id', $season);
-            self::assertArrayHasKey('name', $season);
-            self::assertArrayHasKey('state', $season);
-            if (!$found && $season['id'] === $seasonId) {
+            self::assertObjectHasAttribute('id', $season);
+            self::assertObjectHasAttribute('name', $season);
+            self::assertObjectHasAttribute('state', $season);
+            if (!$found && $season->id === $seasonId) {
                 $found = true;
             }
         }
         self::assertTrue($found);
 
-        $response = $client->get('/api/season/' . $seasonId);
-        $season = $client->parseBody($response->getBody());
-        self::assertEquals(200, $response->getStatusCode());
-        self::assertArrayHasKey('id', $season);
-        self::assertArrayHasKey('name', $season);
-        self::assertArrayHasKey('state', $season);
+        $season = $this->client->getSeason($seasonId);
+        self::assertObjectHasAttribute('id', $season);
+        self::assertObjectHasAttribute('name', $season);
+        self::assertObjectHasAttribute('state', $season);
     }
 
     /**
@@ -76,12 +62,11 @@ class BasicUseCaseTest extends TestCase
      */
     public function testTeamsCanBeAddedToSeason(array $teamIds, string $seasonId) : string
     {
-        $client = static::getClient();
+        $previousTeams = $this->client->getTeamsInSeason($seasonId);
         foreach ($teamIds as $teamId) {
-            $uri = sprintf('/api/season/%s/team/%s', $seasonId, $teamId);
-            $response = $client->put($uri);
-            self::assertEquals(204, $response->getStatusCode());
+            $this->client->addTeamToSeason($seasonId, $teamId);
         }
+        self::assertEquals(count($previousTeams) + count($teamIds), count($this->client->getTeamsInSeason($seasonId)));
 
         return $seasonId;
     }
@@ -93,11 +78,11 @@ class BasicUseCaseTest extends TestCase
      */
     public function testMatchesCanBeCreated(string $seasonId) : string
     {
-        $client = static::getClient();
-        $response = $client->post('/api/season/' . $seasonId . '/matches', [
-            'start_at' => '2018-03-02'
-        ]);
-        self::assertEquals(204, $response->getStatusCode());
+        $this->client->createMatches($seasonId, new \DateTimeImmutable('2018-03-02'));
+        $season = $this->client->getSeason($seasonId);
+        self::assertObjectHasAttribute('match_day_count', $season);
+        self::assertGreaterThan(0, $season->match_day_count);
+
         return $seasonId;
     }
 
@@ -108,18 +93,12 @@ class BasicUseCaseTest extends TestCase
      */
     public function testMatchesCanBeFound(string $seasonId) : array
     {
-        $client = static::getClient();
-        $queryParams = [
-            'match_day' => 1
-        ];
-        $response = $client->get('/api/season/' . $seasonId . '/matches?' . http_build_query($queryParams));
-        self::assertEquals(200, $response->getStatusCode());
-        $matches = $client->parseBody($response->getBody());
+        $matches = $this->client->findMatchesByMatchDay($seasonId, 1);
         self::assertEquals(2, count($matches));
         $matchIds = [];
         foreach ($matches as $match) {
-            self::assertArrayHasKey('id', $match);
-            $matchIds[] = $match['id'];
+            self::assertObjectHasAttribute('id', $match);
+            $matchIds[] = $match->id;
         }
 
         return $matchIds;
@@ -132,9 +111,10 @@ class BasicUseCaseTest extends TestCase
      */
     public function testSeasonCanBeStarted(string $seasonId) : string
     {
-        $client = static::getClient();
-        $response = $client->post('/api/season/' . $seasonId . '/start');
-        self::assertEquals(204, $response->getStatusCode());
+        $this->client->startSeason($seasonId);
+        $season = $this->client->getSeason($seasonId);
+        self::assertObjectHasAttribute('state', $season);
+        self::assertEquals('progress', $season->state);
         return $seasonId;
     }
 
@@ -145,14 +125,12 @@ class BasicUseCaseTest extends TestCase
      */
     public function testRankingCanBeFound(string $seasonId)
     {
-        $client = static::getClient();
-        $response = $client->get('/api/season/' . $seasonId . '/ranking');
-        self::assertEquals(200, $response->getStatusCode());
-        $ranking = $client->parseBody($response->getBody());
-        self::assertArrayHasKey('positions', $ranking);
-        self::assertArrayHasKey('updated_at', $ranking);
-        $positions = $ranking['positions'];
-        self::assertTrue(is_array($positions));
+        $ranking = $this->client->getSeasonRanking($seasonId);
+
+        self::assertObjectHasAttribute('positions', $ranking);
+        self::assertObjectHasAttribute('updated_at', $ranking);
+        $positions = $ranking->positions;
+        self::assertInternalType('array', $positions);
         $count = 0;
         $expectedProperties = [
             'conceded_goals',
@@ -169,7 +147,7 @@ class BasicUseCaseTest extends TestCase
         ];
         foreach ($positions as $position) {
             foreach ($expectedProperties as $expectedProperty) {
-                self::assertArrayHasKey($expectedProperty, $position);
+                self::assertObjectHasAttribute($expectedProperty, $position);
             }
             $count++;
         }
@@ -185,62 +163,34 @@ class BasicUseCaseTest extends TestCase
     public function testMatchResultCanBeSubmitted(array $matchIds) : string
     {
         $matchId = array_shift($matchIds);
-        $client = static::getClient();
-        $matchResult = [
-            'home_score' => 3,
-            'guest_score' => 1
-        ];
-        $authHelper = new AuthHelper();
-        $headers = $authHelper->getBasicAuthHeaders();
-        $response = $client->post('/api/match/' . $matchId . '/result', $matchResult, $headers);
-        self::assertEquals(204, $response->getStatusCode());
-        return $matchId;
-    }
+        $this->client->setBasicAuth();
+        $this->client->submitMatchResult($matchId, 3, 1);
+        $this->client->clearAuth();
 
-    /**
-     * @param string $matchId
-     * @return array
-     * @depends testMatchResultCanBeSubmitted
-     */
-    public function testMatchResultCanBeFound(string $matchId) : array
-    {
-        $client = static::getClient();
-        $response = $client->get('/api/match/' . $matchId);
-        $match = $client->parseBody($response->getBody());
-        self::assertTrue(is_array($match));
-        self::assertArrayHasKey('home_score', $match);
-        self::assertArrayHasKey('guest_score', $match);
-        self::assertArrayHasKey('home_team_id', $match);
-        self::assertArrayHasKey('guest_team_id', $match);
-        self::assertEquals(3, $match['home_score']);
-        self::assertEquals(1, $match['guest_score']);
+        $match = $this->client->getMatch($matchId);
+        self::assertObjectHasAttribute('home_score', $match);
+        self::assertObjectHasAttribute('guest_score', $match);
+        self::assertObjectHasAttribute('home_team_id', $match);
+        self::assertObjectHasAttribute('guest_team_id', $match);
+        self::assertEquals(3, $match->home_score);
+        self::assertEquals(1, $match->guest_score);
 
-        return $match;
-    }
+        $ranking = $this->client->getSeasonRanking($match->season_id);
+        self::assertObjectHasAttribute('positions', $ranking);
+        $positions = $ranking->positions;
+        self::assertInternalType('array', $positions);
 
-    /**
-     * @param array $match
-     * @depends testMatchResultCanBeFound
-     */
-    public function testRankingReflectsLatestMatchResults(array $match)
-    {
-        $client  = static::getClient();
-        $response = $client->get('/api/season/' . $match['season_id'] . '/ranking');
-        $ranking  = $client->parseBody($response->getBody());
-        self::assertArrayHasKey('positions', $ranking);
-        self::assertArrayHasKey('updated_at', $ranking);
-
-        $positions = $ranking['positions'];
-        self::assertTrue(is_array($positions));
         $count = 0;
         $found = false;
         foreach ($positions as $position) {
-            if (!$found && $position['wins'] === 1) {
-                $found = $position['scored_goals'] === 3 && $position['conceded_goals'] === 1;
+            if (!$found && $position->wins === 1) {
+                $found = $position->scored_goals === 3 && $position->conceded_goals === 1;
             }
             $count++;
         }
         self::assertTrue($found);
         self::assertEquals(4, $count);
+
+        return $matchId;
     }
 }

@@ -4,21 +4,29 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\Functional;
 
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
+use HexagonalPlayground\Tests\Functional\Framework\HttpClient;
+use HexagonalPlayground\Tests\Functional\Framework\RichClient;
+use Slim\App;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
-    /** @var Client */
-    private static $client;
+    /** @var RichClient */
+    protected $client;
 
-    /**
-     * @return Client
-     */
-    protected static function getClient(): Client
+    /** @var App */
+    private static $app;
+
+    public function setUp()
     {
-        if (null === self::$client) {
-            self::$client = new Client(Bootstrap::bootstrap());
+        $this->client = new RichClient(new HttpClient(self::getApp()));
+    }
+
+    private static function getApp(): App
+    {
+        if (null === self::$app) {
+            self::$app = Bootstrap::bootstrap();
         }
 
-        return self::$client;
+        return self::$app;
     }
 }

@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\Functional;
+namespace HexagonalPlayground\Tests\Functional\Framework;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 use Slim\App;
 use Slim\Http\Body;
 use Slim\Http\Headers;
@@ -13,7 +14,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Uri;
 
-class Client
+class HttpClient
 {
     /** @var App */
     private $app;
@@ -86,7 +87,7 @@ class Client
     {
         $body->rewind();
         $data = $body->getContents();
-        return json_decode($data, true);
+        return json_decode($data);
     }
 
     /**
