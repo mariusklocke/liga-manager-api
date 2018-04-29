@@ -4,27 +4,14 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application;
 
 use Generator;
-use HexagonalPlayground\Application\Factory\SeasonFactory;
-use HexagonalPlayground\Application\Factory\UserFactory;
 use HexagonalPlayground\Domain\GeographicLocation;
 use HexagonalPlayground\Domain\Pitch;
+use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\User;
 
 class FixtureGenerator
 {
-    /** @var SeasonFactory */
-    private $seasonFactory;
-
-    /** @var UserFactory */
-    private $userFactory;
-
-    public function __construct(SeasonFactory $seasonFactory, UserFactory $userFactory)
-    {
-        $this->seasonFactory = $seasonFactory;
-        $this->userFactory = $userFactory;
-    }
-
     /**
      * @return Generator
      */
@@ -32,7 +19,7 @@ class FixtureGenerator
     {
         $years = ['17/18', '18/19', '19/20'];
         foreach ($years as $year) {
-            yield $this->seasonFactory->createSeason('Season ' . $year);
+            yield new Season('Season ' . $year);
         }
     }
 
@@ -66,12 +53,12 @@ class FixtureGenerator
      */
     public function generateUsers()
     {
-        $admin = $this->userFactory->createUser('admin', 'admin', 'admin', 'admin');
+        $admin = new User('admin', 'admin', 'admin', 'admin');
         $admin->setRole(User::ROLE_ADMIN);
         yield $admin;
 
         for ($i = 1; $i <= 8; $i++) {
-            $teamManager = $this->userFactory->createUser('user' . $i, 'user' . $i, 'admin', 'admin');
+            $teamManager = new User('user' . $i, 'user' . $i, 'admin', 'admin');
             $teamManager->setRole(User::ROLE_TEAM_MANAGER);
             yield $teamManager;
         }

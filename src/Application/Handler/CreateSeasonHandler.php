@@ -4,24 +4,19 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
-use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Domain\Season;
 
 class CreateSeasonHandler
 {
-    /** @var SeasonFactory */
-    private $seasonFactory;
-
     /** @var OrmRepositoryInterface */
     private $seasonRepository;
 
     /**
-     * @param SeasonFactory $seasonFactory
      * @param OrmRepositoryInterface $seasonRepository
      */
-    public function __construct(SeasonFactory $seasonFactory, OrmRepositoryInterface $seasonRepository)
+    public function __construct(OrmRepositoryInterface $seasonRepository)
     {
-        $this->seasonFactory = $seasonFactory;
         $this->seasonRepository = $seasonRepository;
     }
 
@@ -31,7 +26,7 @@ class CreateSeasonHandler
      */
     public function handle(CreateSeasonCommand $command)
     {
-        $season = $this->seasonFactory->createSeason($command->getName());
+        $season = new Season($command->getName());
         $this->seasonRepository->save($season);
         return $season->getId();
     }

@@ -7,7 +7,6 @@ use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Exception\PermissionException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\UniquenessException;
-use HexagonalPlayground\Application\Factory\UserFactory;
 use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
@@ -19,9 +18,6 @@ class CreateUserHandler
     /** @var UserRepositoryInterface */
     private $userRepository;
 
-    /** @var UserFactory */
-    private $userFactory;
-
     /** @var OrmRepositoryInterface */
     private $teamRepository;
 
@@ -30,14 +26,12 @@ class CreateUserHandler
 
     /**
      * @param UserRepositoryInterface $userRepository
-     * @param UserFactory $userFactory
      * @param OrmRepositoryInterface $teamRepository
      * @param Authenticator $authenticator
      */
-    public function __construct(UserRepositoryInterface $userRepository, UserFactory $userFactory, OrmRepositoryInterface $teamRepository, Authenticator $authenticator)
+    public function __construct(UserRepositoryInterface $userRepository, OrmRepositoryInterface $teamRepository, Authenticator $authenticator)
     {
         $this->userRepository = $userRepository;
-        $this->userFactory = $userFactory;
         $this->teamRepository = $teamRepository;
         $this->authenticator = $authenticator;
     }
@@ -50,7 +44,7 @@ class CreateUserHandler
     {
         $this->checkPermissions($command);
         $this->assertEmailDoesNotExist($command->getEmail());
-        $user = $this->userFactory->createUser($command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
+        $user = new User($command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
         $user->setRole($command->getRole());
         foreach ($command->getTeamIds() as $teamId) {
             /** @var Team $team */

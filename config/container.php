@@ -19,9 +19,6 @@ use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\EventStoreInterface;
-use HexagonalPlayground\Application\Factory\SeasonFactory;
-use HexagonalPlayground\Application\Factory\TournamentFactory;
-use HexagonalPlayground\Application\Factory\UserFactory;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
 use HexagonalPlayground\Application\Handler\CreatePitchHandler;
@@ -100,17 +97,8 @@ use Slim\Http\Request;
 
 $container = new \Slim\Container([]);
 
-$container[SeasonFactory::class] = function () use ($container) {
-    return new SeasonFactory();
-};
-$container[TournamentFactory::class] = function () use ($container) {
-    return new TournamentFactory();
-};
 $container[MatchFactory::class] = function () use ($container) {
     return new MatchFactory();
-};
-$container[UserFactory::class] = function () use ($container) {
-    return new UserFactory();
 };
 $container[CreateTeamCommand::class] = function () use ($container) {
     return new CreateTeamHandler(
@@ -172,16 +160,10 @@ $container[RemoveTeamFromSeasonCommand::class] = function () use ($container) {
     );
 };
 $container[CreateSeasonCommand::class] = function () use ($container) {
-    return new CreateSeasonHandler(
-        $container[SeasonFactory::class],
-        $container['orm.repository.season']
-    );
+    return new CreateSeasonHandler($container['orm.repository.season']);
 };
 $container[CreateTournamentCommand::class] = function () use ($container) {
-    return new CreateTournamentHandler(
-        $container[TournamentFactory::class],
-        $container['orm.repository.tournament']
-    );
+    return new CreateTournamentHandler($container['orm.repository.tournament']);
 };
 $container[SetTournamentRoundCommand::class] = function () use ($container) {
     return new SetTournamentRoundHandler(
@@ -197,7 +179,6 @@ $container[ChangeUserPasswordCommand::class] = function () use ($container) {
 $container[CreateUserCommand::class] = function () use ($container) {
     return new CreateUserHandler(
         $container['orm.repository.user'],
-        $container[UserFactory::class],
         $container['orm.repository.team'],
         $container[Authenticator::class]
     );
@@ -219,7 +200,7 @@ $container[LoadFixturesCommand::class] = function () use ($container) {
         $container['orm.repository.season'],
         $container['orm.repository.pitch'],
         $container['orm.repository.user'],
-        new FixtureGenerator($container[SeasonFactory::class], $container[UserFactory::class])
+        new FixtureGenerator()
     );
 };
 $container[TeamRepository::class] = function() use ($container) {
