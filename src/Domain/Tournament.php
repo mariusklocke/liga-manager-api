@@ -11,12 +11,11 @@ class Tournament extends Competition
     private $rounds;
 
     /**
-     * @param string $id
      * @param string $name
      */
-    public function __construct(string $id, string $name)
+    public function __construct(string $name)
     {
-        $this->id = $id;
+        $this->id = Uuid::create();
         $this->name = $name;
         $this->matches = new ArrayCollection();
         $this->updateRoundCount();

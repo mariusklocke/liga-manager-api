@@ -32,7 +32,7 @@ class CreatePitchHandler
      */
     public function handle(CreatePitchCommand $command)
     {
-        $pitch = new Pitch($this->idGenerator->generate(), $command->getLabel(), $command->getLocation());
+        $pitch = new Pitch($command->getLabel(), $command->getLocation());
         $this->pitchRepository->save($pitch);
         return $pitch->getId();
     }

@@ -47,7 +47,7 @@ class FixtureGenerator
     {
         for ($i = 1; $i <= 8; $i++) {
             $teamName = sprintf('Team No. %02d', $i);
-            yield new Team($this->idGenerator->generate(), $teamName);
+            yield new Team($teamName);
         }
     }
 
@@ -59,7 +59,6 @@ class FixtureGenerator
         $colors = ['Red', 'Blue'];
         foreach ($colors as $color) {
             yield new Pitch(
-                $this->idGenerator->generate(),
                 'Pitch ' . $color,
                 new GeographicLocation(12.34, 23.45)
             );

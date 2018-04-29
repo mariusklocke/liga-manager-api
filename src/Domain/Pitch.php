@@ -17,9 +17,9 @@ class Pitch
     /** @var ContactPerson */
     private $contact;
 
-    public function __construct(string $id, string $label, GeographicLocation $location)
+    public function __construct(string $label, GeographicLocation $location)
     {
-        $this->id = $id;
+        $this->id = Uuid::create();
         $this->label = $label;
         $this->location = $location;
     }

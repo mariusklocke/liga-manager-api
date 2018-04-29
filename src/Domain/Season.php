@@ -28,12 +28,11 @@ class Season extends Competition
     private $teamCount;
 
     /**
-     * @param string $id
      * @param string $name
      */
-    public function __construct(string $id, string $name)
+    public function __construct(string $name)
     {
-        $this->id = $id;
+        $this->id = Uuid::create();
         $this->name = $name;
         $this->teams = new ArrayCollection();
         $this->matches = new ArrayCollection();

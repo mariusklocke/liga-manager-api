@@ -17,12 +17,6 @@ class UserFactory extends EntityFactory
      */
     public function createUser(string $email, string $password, string $firstName, string $lastName)
     {
-        return new User(
-            $this->getIdGenerator()->generate(),
-            $email,
-            $password,
-            $firstName,
-            $lastName
-        );
+        return new User($email, $password, $firstName, $lastName);
     }
 }

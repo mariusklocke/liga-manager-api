@@ -27,7 +27,7 @@ class MatchFactory extends EntityFactory
      */
     public function createMatch(Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam, DateTimeImmutable $plannedFor = null) : Match
     {
-        return new Match($this->getIdGenerator()->generate(), $competition, $matchDay, $homeTeam, $guestTeam, $plannedFor);
+        return new Match($competition, $matchDay, $homeTeam, $guestTeam, $plannedFor);
     }
 
     /**

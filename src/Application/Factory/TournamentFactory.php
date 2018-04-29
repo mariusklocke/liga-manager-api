@@ -14,6 +14,6 @@ class TournamentFactory extends EntityFactory
      */
     public function createTournament(string $name) : Tournament
     {
-        return new Tournament($this->getIdGenerator()->generate(), $name);
+        return new Tournament($name);
     }
 }

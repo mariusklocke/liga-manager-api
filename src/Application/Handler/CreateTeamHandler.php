@@ -31,7 +31,7 @@ class CreateTeamHandler
      */
     public function handle(CreateTeamCommand $command)
     {
-        $team = new Team($this->idGenerator->generate(), $command->getTeamName());
+        $team = new Team($command->getTeamName());
         $this->teamRepository->save($team);
         return $team->getId();
     }

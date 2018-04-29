@@ -22,9 +22,9 @@ class Team
     /** @var ContactPerson */
     private $contact;
 
-    public function __construct(string $id, string $name)
+    public function __construct(string $name)
     {
-        $this->id = $id;
+        $this->id = Uuid::create();
         $this->name = $name;
         $this->previousNames = [];
         $this->createdAt = new DateTimeImmutable();

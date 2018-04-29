@@ -37,20 +37,18 @@ class User
     private $role;
 
     /**
-     * @param string $id
      * @param string $email
      * @param string $password
      * @param string $firstName
      * @param string $lastName
      */
     public function __construct(
-        string $id,
         string $email,
         string $password,
         string $firstName,
         string $lastName
     ) {
-        $this->id = $id;
+        $this->id = Uuid::create();
         $this->email = $email;
         $this->password = $this->hashPassword($password);
         $this->lastPasswordChange = null;

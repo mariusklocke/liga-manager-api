@@ -43,7 +43,6 @@ class Match
     /**
      * Create a new match
      *
-     * @param string $id
      * @param Competition $competition
      * @param int $matchDay
      * @param Team $homeTeam
@@ -51,7 +50,7 @@ class Match
      * @param DateTimeImmutable|null $plannedFor
      * @throws DomainException If $homeTeam and $guestTeam are equal
      */
-    public function __construct(string $id, Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam, DateTimeImmutable $plannedFor = null)
+    public function __construct(Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam, DateTimeImmutable $plannedFor = null)
     {
         if ($homeTeam === $guestTeam) {
             throw new DomainException('A team cannot play against itself');
@@ -62,7 +61,7 @@ class Match
         } else {
             $this->tournament = $competition;
         }
-        $this->id = $id;
+        $this->id = Uuid::create();
         $this->matchDay = $matchDay;
         $this->homeTeam = $homeTeam;
         $this->guestTeam = $guestTeam;

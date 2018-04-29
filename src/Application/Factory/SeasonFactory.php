@@ -14,6 +14,6 @@ class SeasonFactory extends EntityFactory
      */
     public function createSeason(string $name) : Season
     {
-        return new Season($this->getIdGenerator()->generate(), $name);
+        return new Season($name);
     }
 }
