@@ -34,7 +34,9 @@ RUN set -xe \
         mbstring
 
 RUN pecl install apcu
+RUN pecl install mongodb
 RUN echo "extension=apcu.so" > /usr/local/etc/php/conf.d/apcu.ini
+RUN echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
 RUN apk del .build-deps
 RUN rm -rf /tmp/* && rm -rf ${APP_HOME} && mkdir -p ${APP_HOME}
 RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar

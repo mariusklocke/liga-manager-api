@@ -22,6 +22,7 @@
         "monolog/monolog": "^1.23.0",
         "firebase/php-jwt": "^5.0",
         "swiftmailer/swiftmailer": "^6.0",
-        "league/json-guard": "^1.0"
+        "league/json-guard": "^1.0",
+        "mongodb/mongodb": "^1.3"
     }
 }

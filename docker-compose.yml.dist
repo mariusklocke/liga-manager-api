@@ -30,6 +30,11 @@ services:
     env_file:
       - .env
 
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+
   maildev:
     image: djfarrelly/maildev
     ports:

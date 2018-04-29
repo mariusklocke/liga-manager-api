@@ -15,7 +15,7 @@ class MatchResult
     {
         $this->assertValidScoreValue($homeScore);
         $this->assertValidScoreValue($guestScore);
-        $this->homeScore = $homeScore;
+        $this->homeScore  = $homeScore;
         $this->guestScore = $guestScore;
     }
 
@@ -33,6 +33,14 @@ class MatchResult
     public function getGuestScore(): int
     {
         return $this->guestScore;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return get_object_vars($this);
     }
 
     /**

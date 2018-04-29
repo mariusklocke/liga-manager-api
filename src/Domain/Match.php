@@ -82,6 +82,7 @@ class Match
             $this->season->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         }
         $this->matchResult = $matchResult;
+        EventPublisher::getInstance()->publish(new MatchResultSubmitted($this->id, $matchResult));
         return $this;
     }
 

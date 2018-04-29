@@ -18,6 +18,7 @@ use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Application\Factory\SeasonFactory;
 use HexagonalPlayground\Application\Factory\TournamentFactory;
 use HexagonalPlayground\Application\Factory\UserFactory;
@@ -328,8 +329,16 @@ $container['cli.command'] = [
             $container[MailerInterface::class],
             $container[TemplateRenderer::class]
         );
+    },
+    'app:list-events' => function () use ($container) {
+        return new \HexagonalPlayground\Infrastructure\CLI\ListEventsCommand($container[EventStoreInterface::class]);
     }
 ];
+$container[EventStoreInterface::class] = function () use ($container) {
+    $client = new \MongoDB\Client('mongodb://' . getenv('MONGO_HOST'));
+    $db = $client->{getenv('MONGO_DATABASE')};
+    return new \HexagonalPlayground\Infrastructure\MongoEventStore($db->events);
+};
 $container['orm.repository.user'] = function () use ($container) {
     return $container['doctrine.entityManager']->getRepository(User::class);
 };
