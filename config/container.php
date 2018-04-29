@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
+use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
@@ -48,6 +49,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
+use HexagonalPlayground\Infrastructure\CommandHandlerResolver;
 use HexagonalPlayground\Infrastructure\Email\SwiftMailer;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\BaseRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineTransactionWrapper;
@@ -352,11 +354,14 @@ $container['readDbAdapter'] = function() use ($container) {
     $db->setLogger($container['doctrine.queryLogger']);
     return $db;
 };
+$container[HandlerResolver::class] = function () use ($container) {
+    return new CommandHandlerResolver($container);
+};
 $container['commandBus'] = function() use ($container) {
-    return new SingleCommandBus($container, $container[OrmTransactionWrapperInterface::class]);
+    return new SingleCommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
 };
 $container['batchCommandBus'] = function () use ($container) {
-    return new BatchCommandBus($container, $container[OrmTransactionWrapperInterface::class]);
+    return new BatchCommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
 };
 $container[MailerInterface::class] = function () use ($container) {
     $transport = new Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'));
