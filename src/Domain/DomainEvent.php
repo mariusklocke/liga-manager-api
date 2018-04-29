@@ -43,7 +43,7 @@ abstract class DomainEvent
     {
         return [
             'id'         => $this->id,
-            'occurredAt' => $this->occurredAt->format('U')
+            'occurredAt' => $this->occurredAt->format(DATE_ATOM)
         ];
     }
 }

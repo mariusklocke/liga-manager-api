@@ -11,11 +11,15 @@ class MatchResultSubmitted extends DomainEvent
     /** @var MatchResult */
     private $matchResult;
 
-    public function __construct(string $matchId, MatchResult $matchResult)
+    /** @var string */
+    private $userId;
+
+    public function __construct(string $matchId, MatchResult $matchResult, string $userId)
     {
         parent::__construct();
         $this->matchId     = $matchId;
         $this->matchResult = $matchResult;
+        $this->userId      = $userId;
     }
 
     public function toArray(): array
@@ -23,6 +27,7 @@ class MatchResultSubmitted extends DomainEvent
         $array = parent::toArray();
         $array['matchId'] = $this->matchId;
         $array['matchResult'] = $this->matchResult->toArray();
+        $array['userId'] = $this->userId;
 
         return $array;
     }

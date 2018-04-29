@@ -35,18 +35,19 @@ class SubmitMatchResultHandler
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());
-        $this->checkPermissions($match);
+        $user  = $this->authenticator->getAuthenticatedUser();
+        $this->checkPermissions($match, $user);
         $result = new MatchResult($command->getHomeScore(), $command->getGuestScore());
-        $match->submitResult($result);
+        $match->submitResult($result, $user);
     }
 
     /**
      * @param Match $match
+     * @param User $user
      * @throws PermissionException
      */
-    private function checkPermissions(Match $match)
+    private function checkPermissions(Match $match, User $user)
     {
-        $user = $this->authenticator->getAuthenticatedUser();
         if ($user->hasRole(User::ROLE_ADMIN) || $user->isInTeam($match->getHomeTeam()) || $user->isInTeam($match->getGuestTeam())) {
             return;
         }
