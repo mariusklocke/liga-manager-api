@@ -6,15 +6,15 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use Symfony\Component\Console\Application;
 
-class Bootstrap
+class Bootstrap extends \HexagonalPlayground\Application\Bootstrap
 {
     /**
      * @return Application
      */
-    public static function bootstrap()
+    public static function bootstrap(): Application
     {
         $container = require __DIR__ . '/../../../config/container.php';
-
+        parent::configureEventPublisher($container);
         $app = new Application();
         $app->setHelperSet(ConsoleRunner::createHelperSet($container['doctrine.entityManager']));
         $app->setCatchExceptions(true);
