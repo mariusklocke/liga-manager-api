@@ -15,7 +15,7 @@ use UnexpectedValueException;
 /**
  * A factory which constructs Match objects and implements a match day generation algorithm
  */
-class MatchFactory extends EntityFactory
+class MatchFactory
 {
     /**
      * @param Competition            $competition
@@ -54,7 +54,7 @@ class MatchFactory extends EntityFactory
                 /** @var Match $match */
                 $firstHalf[] = $match;
                 if ($season->hasSecondHalf()) {
-                    $secondHalf[] = $match->rematch($this->getIdGenerator()->generate(), $matchDay + $matchDaysPerHalf);
+                    $secondHalf[] = $match->rematch($matchDay + $matchDaysPerHalf);
                 }
             }
             $matchPlannedFor = $matchPlannedFor->add(new DateInterval('P1W'));

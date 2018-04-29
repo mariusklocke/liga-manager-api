@@ -164,10 +164,10 @@ class Match
         $this->cancelledAt = null;
     }
 
-    public function rematch(string $id, int $matchDay) : Match
+    public function rematch(int $matchDay) : Match
     {
         $clone = clone $this;
-        $clone->id = $id;
+        $clone->id = Uuid::create();
         $clone->matchDay = $matchDay;
         $clone->homeTeam = $this->guestTeam;
         $clone->guestTeam = $this->homeTeam;

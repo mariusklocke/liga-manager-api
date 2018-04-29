@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Factory;
 
-use HexagonalPlayground\Application\IdGeneratorInterface;
 use HexagonalPlayground\Domain\User;
 
-class UserFactory extends EntityFactory
+class UserFactory
 {
     /**
      * @param string $email

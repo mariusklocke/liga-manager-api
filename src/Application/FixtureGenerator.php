@@ -13,18 +13,14 @@ use HexagonalPlayground\Domain\User;
 
 class FixtureGenerator
 {
-    /** @var IdGeneratorInterface */
-    private $idGenerator;
-
     /** @var SeasonFactory */
     private $seasonFactory;
 
     /** @var UserFactory */
     private $userFactory;
 
-    public function __construct(IdGeneratorInterface $idGenerator, SeasonFactory $seasonFactory, UserFactory $userFactory)
+    public function __construct(SeasonFactory $seasonFactory, UserFactory $userFactory)
     {
-        $this->idGenerator = $idGenerator;
         $this->seasonFactory = $seasonFactory;
         $this->userFactory = $userFactory;
     }

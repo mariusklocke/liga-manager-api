@@ -4,9 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Factory;
 
 use HexagonalPlayground\Domain\Season;
-use HexagonalPlayground\Application\IdGeneratorInterface;
 
-class SeasonFactory extends EntityFactory
+class SeasonFactory
 {
     /**
      * @param string $name

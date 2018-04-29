@@ -93,31 +93,28 @@ use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
 use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
 use HexagonalPlayground\Infrastructure\Persistence\MysqliReadDbAdapter;
-use HexagonalPlayground\Infrastructure\Persistence\UuidGenerator;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-use Ramsey\Uuid\UuidFactory as RamseyUuidFactory;
 use Slim\Http\Request;
 
 $container = new \Slim\Container([]);
 
 $container[SeasonFactory::class] = function () use ($container) {
-    return new SeasonFactory($container['uuidGenerator']);
+    return new SeasonFactory();
 };
 $container[TournamentFactory::class] = function () use ($container) {
-    return new TournamentFactory($container['uuidGenerator']);
+    return new TournamentFactory();
 };
 $container[MatchFactory::class] = function () use ($container) {
-    return new MatchFactory($container['uuidGenerator']);
+    return new MatchFactory();
 };
 $container[UserFactory::class] = function () use ($container) {
-    return new UserFactory($container['uuidGenerator']);
+    return new UserFactory();
 };
 $container[CreateTeamCommand::class] = function () use ($container) {
     return new CreateTeamHandler(
-        $container['orm.repository.team'],
-        $container['uuidGenerator']
+        $container['orm.repository.team']
     );
 };
 $container[DeleteTeamCommand::class] = function() use ($container) {
@@ -207,8 +204,7 @@ $container[CreateUserCommand::class] = function () use ($container) {
 };
 $container[CreatePitchCommand::class] = function () use ($container) {
     return new CreatePitchHandler(
-        $container['orm.repository.pitch'],
-        $container['uuidGenerator']
+        $container['orm.repository.pitch']
     );
 };
 $container[UpdateTeamContactCommand::class] = function () use ($container) {
@@ -223,7 +219,7 @@ $container[LoadFixturesCommand::class] = function () use ($container) {
         $container['orm.repository.season'],
         $container['orm.repository.pitch'],
         $container['orm.repository.user'],
-        new FixtureGenerator($container['uuidGenerator'], $container[SeasonFactory::class], $container[UserFactory::class])
+        new FixtureGenerator($container[SeasonFactory::class], $container[UserFactory::class])
     );
 };
 $container[TeamRepository::class] = function() use ($container) {
@@ -267,9 +263,6 @@ $container['doctrine.config'] = function() use ($container) {
 };
 $container['doctrine.queryLogger'] = function () use ($container) {
     return new DoctrineQueryLogger($container['logger']);
-};
-$container['uuidGenerator'] = function() {
-    return new UuidGenerator(new RamseyUuidFactory());
 };
 $container[OrmTransactionWrapperInterface::class] = function() use ($container) {
     return new DoctrineTransactionWrapper($container['doctrine.entityManager']);

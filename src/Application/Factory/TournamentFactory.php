@@ -4,9 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Factory;
 
 use HexagonalPlayground\Domain\Tournament;
-use HexagonalPlayground\Application\IdGeneratorInterface;
 
-class TournamentFactory extends EntityFactory
+class TournamentFactory
 {
     /**
      * @param string $name
