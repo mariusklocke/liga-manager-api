@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Persistence;
+namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\DBAL\Logging\SQLLogger;
 use Psr\Log\LoggerInterface;

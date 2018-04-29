@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Filesystem;
+namespace HexagonalPlayground\Infrastructure;
 
 use InvalidArgumentException;
 use Iterator;

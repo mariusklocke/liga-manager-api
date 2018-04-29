@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\ORM;
+namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\ORM\EntityManagerInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;

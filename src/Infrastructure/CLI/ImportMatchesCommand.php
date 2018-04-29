@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
-use HexagonalPlayground\Infrastructure\Filesystem\CsvFileReader;
+use HexagonalPlayground\Infrastructure\CsvFileReader;
 use InvalidArgumentException;
 use Iterator;
 use Symfony\Component\Console\Input\InputArgument;

@@ -49,9 +49,9 @@ use HexagonalPlayground\Infrastructure\API\ErrorHandler;
 use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
 use HexagonalPlayground\Infrastructure\Email\SwiftMailer;
-use HexagonalPlayground\Infrastructure\ORM\BaseRepository;
-use HexagonalPlayground\Infrastructure\ORM\DoctrineTransactionWrapper;
-use HexagonalPlayground\Infrastructure\Persistence\DoctrineEmbeddableListener;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\BaseRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineTransactionWrapper;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineEmbeddableListener;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
 use HexagonalPlayground\Application\Bus\BatchCommandBus;
@@ -88,7 +88,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\SeasonCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\SeasonQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\TeamQueryController;
-use HexagonalPlayground\Infrastructure\Persistence\DoctrineQueryLogger;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineQueryLogger;
 use HexagonalPlayground\Infrastructure\Persistence\MysqliReadDbAdapter;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Monolog\Logger;
@@ -311,7 +311,7 @@ $container['cli.command'] = [
 $container[EventStoreInterface::class] = function () use ($container) {
     $client = new \MongoDB\Client('mongodb://' . getenv('MONGO_HOST'));
     $db = $client->{getenv('MONGO_DATABASE')};
-    return new \HexagonalPlayground\Infrastructure\MongoEventStore($db->events);
+    return new \HexagonalPlayground\Infrastructure\Persistence\MongoEventStore($db->events);
 };
 $container['orm.repository.user'] = function () use ($container) {
     return $container['doctrine.entityManager']->getRepository(User::class);

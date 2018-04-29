@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure;
+namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Domain\DomainEvent;

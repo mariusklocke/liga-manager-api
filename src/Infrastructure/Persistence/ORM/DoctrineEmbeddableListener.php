@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Persistence;
+namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\LifecycleEventArgs;
