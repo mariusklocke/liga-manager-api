@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
+use HexagonalPlayground\Application\Command\RequestPasswordResetCommand;
 use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -43,6 +44,19 @@ class UserCommandController extends CommandController
 
         $id = $this->commandBus->execute($command);
         return (new Response(200))->withJson(['id' => $id]);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function requestPasswordReset(Request $request): Response
+    {
+        $email     = $request->getParsedBodyParam('email');
+        $targetUri = $request->getUri()->withPath($request->getParsedBodyParam('target_path'));
+
+        $this->commandBus->execute(new RequestPasswordResetCommand($email, $targetUri));
+        return new Response(204);
     }
 
     /**

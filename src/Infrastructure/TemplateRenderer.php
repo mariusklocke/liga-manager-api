@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure;
 
-class TemplateRenderer
+use HexagonalPlayground\Application\TemplateRendererInterface;
+
+class TemplateRenderer implements TemplateRendererInterface
 {
     private $templatePath;
 

@@ -7,7 +7,7 @@
     },
     "description": "RESTful API for managing Wilde Liga Bremen",
     "title": "Wilde Liga Bremen API",
-    "version": "0.2"
+    "version": "0.3"
   },
   "basePath": "/api",
   "paths": {
@@ -1119,6 +1119,38 @@
           },
           "401": {
             "description": "Invalid authentication"
+          }
+        }
+      }
+    },
+    "/user/me/password/reset": {
+      "post": {
+        "operationId": "requestPasswordReset",
+        "summary": "Request a password reset for the user with the given email address",
+        "tags": ["user"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "requestPasswordResetBody",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "email"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "404": {
+            "description": "User not found"
           }
         }
       }

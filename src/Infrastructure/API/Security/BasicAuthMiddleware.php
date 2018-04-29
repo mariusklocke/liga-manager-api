@@ -30,7 +30,6 @@ class BasicAuthMiddleware extends AuthenticationMiddleware
          * @see Authenticator::authenticateByToken()
          */
 
-        /** @var JsonWebToken $token */
         $token = $this->getAuthenticator()->getAuthenticatedToken();
         return $response->withHeader('X-Token', $token->encode());
     }

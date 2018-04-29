@@ -27,4 +27,11 @@ interface TokenInterface
      * @return DateTimeImmutable
      */
     public function getExpiresAt(): DateTimeImmutable;
+
+    /**
+     * Encodes the token into a string
+     *
+     * @return string
+     */
+    public function encode(): string;
 }
