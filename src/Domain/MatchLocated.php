@@ -5,25 +5,40 @@ namespace HexagonalPlayground\Domain;
 
 class MatchLocated extends DomainEvent
 {
-    /** @var string */
-    private $matchId;
-
-    /** @var string */
-    private $pitchId;
-
-    public function __construct(string $matchId, string $pitchId)
+    /**
+     * @param string $matchId
+     * @param string $pitchId
+     * @return self
+     */
+    public static function create(string $matchId, string $pitchId): self
     {
-        parent::__construct();
-        $this->matchId = $matchId;
-        $this->pitchId = $pitchId;
+        return self::createFromPayload([
+            'matchId' => $matchId,
+            'pitchId' => $pitchId
+        ]);
     }
 
-    public function toArray(): array
+    /**
+     * @return string
+     */
+    public function getMatchId(): string
     {
-        $array = parent::toArray();
-        $array['matchId'] = $this->matchId;
-        $array['pitchId'] = $this->pitchId;
+        return $this->payload['matchId'];
+    }
 
-        return $array;
+    /**
+     * @return string
+     */
+    public function getPitchId(): string
+    {
+        return $this->payload['pitchId'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return 'match:located';
     }
 }

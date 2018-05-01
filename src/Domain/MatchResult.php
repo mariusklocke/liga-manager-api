@@ -36,14 +36,6 @@ class MatchResult
     }
 
     /**
-     * @return array
-     */
-    public function toArray(): array
-    {
-        return get_object_vars($this);
-    }
-
-    /**
      * @param int $value
      * @throws DomainException
      */

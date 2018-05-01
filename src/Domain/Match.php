@@ -82,7 +82,12 @@ class Match
             $this->season->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         }
         $this->matchResult = $matchResult;
-        EventPublisher::getInstance()->publish(new MatchResultSubmitted($this->id, $matchResult, $user->getId()));
+        EventPublisher::getInstance()->publish(MatchResultSubmitted::create(
+            $this->id,
+            $matchResult->getHomeScore(),
+            $matchResult->getGuestScore(),
+            $user->getId()
+        ));
         return $this;
     }
 
@@ -93,7 +98,7 @@ class Match
     public function schedule(DateTimeImmutable $kickoff) : Match
     {
         $this->kickoff = $kickoff;
-        EventPublisher::getInstance()->publish(new MatchScheduled($this->id, $kickoff));
+        EventPublisher::getInstance()->publish(MatchScheduled::create($this->id, $kickoff));
         return $this;
     }
 
@@ -117,7 +122,7 @@ class Match
     public function locate(Pitch $pitch) : Match
     {
         $this->pitch = $pitch;
-        EventPublisher::getInstance()->publish(new MatchLocated($this->id, $pitch->getId()));
+        EventPublisher::getInstance()->publish(MatchLocated::create($this->id, $pitch->getId()));
         return $this;
     }
 

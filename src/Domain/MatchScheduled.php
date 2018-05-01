@@ -7,25 +7,40 @@ use DateTimeImmutable;
 
 class MatchScheduled extends DomainEvent
 {
-    /** @var string */
-    private $matchId;
-
-    /** @var DateTimeImmutable */
-    private $kickoff;
-
-    public function __construct(string $matchId, DateTimeImmutable $kickoff)
+    /**
+     * @param string $matchId
+     * @param DateTimeImmutable $kickoff
+     * @return self
+     */
+    public static function create(string $matchId, DateTimeImmutable $kickoff): self
     {
-        parent::__construct();
-        $this->matchId = $matchId;
-        $this->kickoff = $kickoff;
+        return self::createFromPayload([
+            'matchId' => $matchId,
+            'kickoff' => $kickoff->getTimestamp()
+        ]);
     }
 
-    public function toArray(): array
+    /**
+     * @return string
+     */
+    public function getMatchId(): string
     {
-        $array = parent::toArray();
-        $array['matchId'] = $this->matchId;
-        $array['kickoff'] = $this->kickoff->format(DATE_ATOM);
+        return $this->payload['matchId'];
+    }
 
-        return $array;
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getKickoff(): DateTimeImmutable
+    {
+        return new DateTimeImmutable('@' . $this->payload['kickoff']);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return 'match:scheduled';
     }
 }

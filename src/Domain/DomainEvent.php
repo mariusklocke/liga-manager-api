@@ -8,22 +8,33 @@ use DateTimeInterface;
 
 abstract class DomainEvent
 {
+    public const DATE_FORMAT = 'U';
+
     /** @var string */
     private $id;
 
     /** @var DateTimeImmutable */
     private $occurredAt;
 
-    public function __construct()
+    /** @var array */
+    protected $payload;
+
+    public function __construct(string $id, DateTimeImmutable $occurredAt, array $payload)
     {
-        $this->id         = Uuid::create();
-        $this->occurredAt = new DateTimeImmutable();
+        $this->id         = $id;
+        $this->occurredAt = $occurredAt;
+        $this->payload    = $payload;
+    }
+
+    protected static function createFromPayload(array $payload)
+    {
+        return new static(Uuid::create(), new DateTimeImmutable(), $payload);
     }
 
     /**
      * @return DateTimeInterface
      */
-    public function occurredAt(): DateTimeInterface
+    public function getOccurredAt(): DateTimeInterface
     {
         return $this->occurredAt;
     }
@@ -39,11 +50,13 @@ abstract class DomainEvent
     /**
      * @return array
      */
-    public function toArray(): array
+    public function getPayload(): array
     {
-        return [
-            'id'         => $this->id,
-            'occurredAt' => $this->occurredAt->format(DATE_ATOM)
-        ];
+        return $this->payload;
     }
+
+    /**
+     * @return string
+     */
+    abstract public function getName(): string;
 }

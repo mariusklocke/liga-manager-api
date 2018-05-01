@@ -5,30 +5,53 @@ namespace HexagonalPlayground\Domain;
 
 class MatchResultSubmitted extends DomainEvent
 {
-    /** @var string */
-    private $matchId;
-
-    /** @var MatchResult */
-    private $matchResult;
-
-    /** @var string */
-    private $userId;
-
-    public function __construct(string $matchId, MatchResult $matchResult, string $userId)
+    public static function create(string $matchId, int $homeScore, int $guestScore, string $userId): self
     {
-        parent::__construct();
-        $this->matchId     = $matchId;
-        $this->matchResult = $matchResult;
-        $this->userId      = $userId;
+        return self::createFromPayload([
+            'matchId'    => $matchId,
+            'homeScore'  => $homeScore,
+            'guestScore' => $guestScore,
+            'userId'     => $userId
+        ]);
     }
 
-    public function toArray(): array
+    /**
+     * @return string
+     */
+    public function getMatchId(): string
     {
-        $array = parent::toArray();
-        $array['matchId'] = $this->matchId;
-        $array['matchResult'] = $this->matchResult->toArray();
-        $array['userId'] = $this->userId;
+        return $this->payload['matchId'];
+    }
 
-        return $array;
+    /**
+     * @return int
+     */
+    public function getHomeScore(): int
+    {
+        return $this->payload['homeScore'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getGuestScore(): int
+    {
+        return $this->payload['guestScore'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getUserId(): string
+    {
+        return $this->payload['userId'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return 'match:result:submitted';
     }
 }

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\Functional;
 
+use HexagonalPlayground\Domain\MatchResultSubmitted;
+
 class BasicUseCaseTest extends TestCase
 {
     public function testSeasonCanBeCreated(): string
@@ -166,6 +168,13 @@ class BasicUseCaseTest extends TestCase
         $this->client->setBasicAuth();
         $this->client->submitMatchResult($matchId, 3, 1);
         $this->client->clearAuth();
+        $events = $this->getEventStore()->findMany();
+        self::assertCount(1, $events);
+        /** @var MatchResultSubmitted $event */
+        $event = $events[0];
+        self::assertInstanceOf(MatchResultSubmitted::class, $event);
+        self::assertEquals(3, $event->getHomeScore());
+        self::assertEquals(1, $event->getGuestScore());
 
         $match = $this->client->getMatch($matchId);
         self::assertObjectHasAttribute('home_score', $match);

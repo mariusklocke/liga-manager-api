@@ -19,6 +19,7 @@ use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\EventSerializer;
 use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
@@ -51,6 +52,7 @@ use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
 use HexagonalPlayground\Infrastructure\CommandHandlerResolver;
 use HexagonalPlayground\Infrastructure\Email\SwiftMailer;
+use HexagonalPlayground\Infrastructure\Persistence\MongoEventStore;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\BaseRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineTransactionWrapper;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineEmbeddableListener;
@@ -313,7 +315,20 @@ $container['cli.command'] = [
 $container[EventStoreInterface::class] = function () use ($container) {
     $client = new \MongoDB\Client('mongodb://' . getenv('MONGO_HOST'));
     $db = $client->{getenv('MONGO_DATABASE')};
-    return new \HexagonalPlayground\Infrastructure\Persistence\MongoEventStore($db->events);
+    return new MongoEventStore($db->events, $container[EventSerializer::class]);
+};
+$container[EventSerializer::class] = function () {
+    return new EventSerializer([
+        'match:result:submitted' => function ($id, $occurredAt, $payload) {
+            return new \HexagonalPlayground\Domain\MatchResultSubmitted($id, $occurredAt, $payload);
+        },
+        'match:located' => function ($id, $occurredAt, $payload) {
+            return new \HexagonalPlayground\Domain\MatchLocated($id, $occurredAt, $payload);
+        },
+        'match:scheduled' => function ($id, $occurredAt, $payload) {
+            return new \HexagonalPlayground\Domain\MatchScheduled($id, $occurredAt, $payload);
+        }
+    ]);
 };
 $container['orm.repository.user'] = function () use ($container) {
     return $container['doctrine.entityManager']->getRepository(User::class);
