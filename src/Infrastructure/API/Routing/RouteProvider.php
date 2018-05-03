@@ -16,6 +16,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\Security\BasicAuthMiddleware;
+use HexagonalPlayground\Infrastructure\API\Security\JsonSchemaValidator;
 use HexagonalPlayground\Infrastructure\API\Security\TokenAuthMiddleware;
 use Slim\App;
 
@@ -27,6 +28,7 @@ class RouteProvider
             $container = $app->getContainer();
             $basicAuth = new BasicAuthMiddleware($container);
             $tokenAuth = new TokenAuthMiddleware($container);
+            $validator = new JsonSchemaValidator(__DIR__ . '/../../../../public/swagger.json');
 
             $app->get('/team', function () use ($container) {
                 /** @var TeamQueryController $controller */
@@ -56,7 +58,7 @@ class RouteProvider
                 /** @var TeamCommandController $controller */
                 $controller = $container[TeamCommandController::class];
                 return $controller->create($request);
-            });
+            })->add($validator);
 
             $app->delete('/team/{id}', function ($request, $response, $args) use ($container) {
                 /** @var TeamCommandController $controller */
@@ -134,7 +136,7 @@ class RouteProvider
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
                 return $controller->createMatches($args['id'], $request);
-            });
+            })->add($validator);
 
             $app->post('/match/{id}/kickoff', function ($request, $response, $args) use ($container) {
                 /** @var MatchCommandController $controller */
@@ -176,19 +178,19 @@ class RouteProvider
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
                 return $controller->createSeason($request);
-            });
+            })->add($validator);
 
             $app->post('/tournament', function ($request) use ($container) {
                 /** @var TournamentCommandController $controller */
                 $controller = $container[TournamentCommandController::class];
                 return $controller->create($request);
-            });
+            })->add($validator);
 
             $app->put('/tournament/{id}/round/{round}', function ($request, $response, $args) use ($container) {
                 /** @var TournamentCommandController $controller */
                 $controller = $container[TournamentCommandController::class];
                 return $controller->setRound($args['id'], (int) $args['round'], $request);
-            });
+            })->add($validator);
 
             $app->get('/tournament', function () use ($container) {
                 /** @var TournamentQueryController $controller */

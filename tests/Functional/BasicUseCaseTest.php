@@ -80,7 +80,7 @@ class BasicUseCaseTest extends TestCase
      */
     public function testMatchesCanBeCreated(string $seasonId) : string
     {
-        $this->client->createMatches($seasonId, new \DateTimeImmutable('2018-03-02'));
+        $this->client->createMatches($seasonId, '2018-03-02');
         $season = $this->client->getSeason($seasonId);
         self::assertObjectHasAttribute('match_day_count', $season);
         self::assertGreaterThan(0, $season->match_day_count);

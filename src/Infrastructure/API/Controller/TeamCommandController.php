@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Command\DeleteTeamCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
-use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -28,12 +27,9 @@ class TeamCommandController extends CommandController
      */
     public function create(Request $request) : Response
     {
-        $teamName = $request->getParsedBodyParam('name');
-        if (!is_string($teamName) || mb_strlen($teamName) === 0 || mb_strlen($teamName) > 255) {
-            throw new BadRequestException('Invalid team name');
-        }
-        $teamId = $this->commandBus->execute(new CreateTeamCommand($teamName));
-        return (new Response(200))->withJson(['id' => $teamId]);
+        $name = $request->getParsedBodyParam('name');
+        $id   = $this->commandBus->execute(new CreateTeamCommand($name));
+        return (new Response(200))->withJson(['id' => $id]);
     }
 
     /**

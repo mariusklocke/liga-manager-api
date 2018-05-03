@@ -81,11 +81,11 @@ class RichClient
         return $this->decodeBody($this->httpClient->post('/api/team', ['name' => $name], $this->headers));
     }
 
-    public function createMatches(string $seasonId, DateTimeInterface $startAt): void
+    public function createMatches(string $seasonId, string $startAt): void
     {
         $this->handleErrors($this->httpClient->post(
             '/api/season/' . $seasonId . '/matches',
-            ['start_at' => $startAt->format(DATE_ATOM)],
+            ['start_at' => $startAt],
             $this->headers
         ));
     }

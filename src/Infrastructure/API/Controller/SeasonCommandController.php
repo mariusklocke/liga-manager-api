@@ -9,7 +9,6 @@ use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
-use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -24,10 +23,7 @@ class SeasonCommandController extends CommandController
     public function createSeason(Request $request) : Response
     {
         $name = $request->getParsedBodyParam('name');
-        if (!is_string($name) || mb_strlen($name) === 0 || mb_strlen($name) > 255) {
-            throw new BadRequestException('Invalid season name');
-        }
-        $id = $this->commandBus->execute(new CreateSeasonCommand($name));
+        $id   = $this->commandBus->execute(new CreateSeasonCommand($name));
         return (new Response(200))->withJson(['id' => $id]);
     }
 
