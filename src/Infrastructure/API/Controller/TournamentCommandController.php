@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
-use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -32,31 +31,11 @@ class TournamentCommandController extends CommandController
      */
     public function setRound(string $tournamentId, int $round, Request $request)
     {
-        $body = $request->getParsedBody();
-        $this->assertTypeExact('body', $body, 'array');
-        if (!isset($body['team_pairs'])) {
-            // Sending team pairs directly in body is deprecated
-            // Keep this for compatibility
-            $teamIdPairs = $body;
-            $plannedFor  = null;
-        } else {
-            $teamIdPairs = $request->getParsedBodyParam('team_pairs');
-            $plannedFor  = $request->getParsedBodyParam('planned_for');
-            $this->assertTypeExact('team_pairs', $teamIdPairs, 'array');
-            $this->assertTypeExact('planned_for', $plannedFor, 'string');
-            $plannedFor = $this->parseDate($plannedFor);
-        }
-
-        if (count($teamIdPairs) < 1 || count($teamIdPairs) > 64) {
-            throw new BadRequestException(
-                sprintf('Expected amount of team pairs between and 1 and 64, %s given', count($teamIdPairs))
-            );
-        }
+        $teamIdPairs = $request->getParsedBodyParam('team_pairs');
+        $plannedFor  = $this->parseDate($request->getParsedBodyParam('planned_for'));
 
         $command = new SetTournamentRoundCommand($tournamentId, $round, $plannedFor);
         foreach ($teamIdPairs as $pair) {
-            $this->assertTypeExact('home_team_id', $pair['home_team_id'], 'string');
-            $this->assertTypeExact('guest_team_id', $pair['guest_team_id'], 'string');
             $command->addPair($pair['home_team_id'], $pair['guest_team_id']);
         }
 

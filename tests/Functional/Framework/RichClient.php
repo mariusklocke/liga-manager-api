@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\Functional\Framework;
 
-use DateTimeInterface;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
@@ -134,12 +133,12 @@ class RichClient
         return $this->decodeBody($this->httpClient->get('/api/tournament/' . $id));
     }
 
-    public function setTournamentRound(string $tournamentId, int $round, array $teamPairs, DateTimeInterface $plannedFor): void
+    public function setTournamentRound(string $tournamentId, int $round, array $teamPairs, string $plannedFor): void
     {
         $this->handleErrors($this->httpClient->put(
             '/api/tournament/' . $tournamentId . '/round/' . $round,
             [
-                'planned_for' => $plannedFor->format(DATE_ATOM),
+                'planned_for' => $plannedFor,
                 'team_pairs'  => $teamPairs
             ],
             $this->headers

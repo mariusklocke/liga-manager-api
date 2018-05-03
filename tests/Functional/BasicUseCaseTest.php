@@ -228,7 +228,7 @@ class BasicUseCaseTest extends TestCase
             ['home_team_id' => $teamIds[0], 'guest_team_id' => $teamIds[1]],
             ['home_team_id' => $teamIds[2], 'guest_team_id' => $teamIds[3]]
         ];
-        $this->client->setTournamentRound($tournamentId, 1, $firstRound, new \DateTimeImmutable('2018-03-01'));
+        $this->client->setTournamentRound($tournamentId, 1, $firstRound, '2018-03-01');
         $tournament = $this->client->getTournament($tournamentId);
         self::assertObjectHasAttribute('rounds', $tournament);
         self::assertEquals(1, $tournament->rounds);
@@ -238,7 +238,7 @@ class BasicUseCaseTest extends TestCase
         $secondRound = [
             ['home_team_id' => $teamIds[1], 'guest_team_id' => $teamIds[2]]
         ];
-        $this->client->setTournamentRound($tournamentId, 2, $secondRound, new \DateTimeImmutable('2018-03-08'));
+        $this->client->setTournamentRound($tournamentId, 2, $secondRound, '2018-03-08');
         $tournament = $this->client->getTournament($tournamentId);
         self::assertObjectHasAttribute('rounds', $tournament);
         self::assertEquals(2, $tournament->rounds);

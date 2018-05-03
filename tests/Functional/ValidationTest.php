@@ -36,4 +36,37 @@ class ValidationTest extends TestCase
         self::expectExceptionCode(400);
         $this->client->createMatches($seasonId, 'foobar');
     }
+
+    public function testSettingTournamentRoundWithInvalidPlanningDateFails()
+    {
+        $response = $this->client->createTournament('Bar');
+        $tournamentId = $response->id;
+        self::expectException(ApiException::class);
+        self::expectExceptionCode(400);
+        $teamPairs = [
+            'home_team_id' => '', 'guest_team_id' => ''
+        ];
+        $this->client->setTournamentRound($tournamentId, 1, $teamPairs, 'no real date');
+    }
+
+    public function testSettingTournamentRoundWithEmptyTeamPairsFails()
+    {
+        $response = $this->client->createTournament('Bar');
+        $tournamentId = $response->id;
+        self::expectException(ApiException::class);
+        self::expectExceptionCode(400);
+        $this->client->setTournamentRound($tournamentId, 1, [], '2018-04-01');
+    }
+
+    public function testSettingTournamentRoundWithTooManyTeamPairsFails()
+    {
+        $response = $this->client->createTournament('Bar');
+        $tournamentId = $response->id;
+        self::expectException(ApiException::class);
+        self::expectExceptionCode(400);
+        $teamPairs = array_fill(0, 100, [
+            'home_team_id' => '', 'guest_team_id' => ''
+        ]);
+        $this->client->setTournamentRound($tournamentId, 1, $teamPairs, '2018-04-01');
+    }
 }
