@@ -47,7 +47,16 @@ RUN chmod +x /usr/local/bin/*
 ENV LOG_STREAM="/tmp/stdout"
 RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
 
-ADD . ${APP_HOME}
+COPY bin ${APP_HOME}/bin
+COPY config ${APP_HOME}/config
+COPY migrations ${APP_HOME}/migrations
+COPY public ${APP_HOME}/public
+COPY src ${APP_HOME}/src
+COPY templates ${APP_HOME}/templates
+COPY tests ${APP_HOME}/tests
+COPY composer.json ${APP_HOME}/composer.json
+COPY composer.lock ${APP_HOME}/composer.lock
+COPY phpunit.xml ${APP_HOME}/phpunit.xml
 
 # Possible values for ext-name:
 # bcmath bz2 calendar ctype curl dba dom enchant exif fileinfo filter ftp gd gettext gmp hash iconv imap interbase intl
