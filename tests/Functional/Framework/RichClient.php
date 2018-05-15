@@ -20,9 +20,9 @@ class RichClient
         $this->headers    = [];
     }
 
-    public function setBasicAuth(): void
+    public function setBasicAuth(string $username, string $password): void
     {
-        $this->headers['Authorization'] = 'Basic ' . base64_encode('admin:admin');
+        $this->headers['Authorization'] = 'Basic ' . base64_encode($username . ':' . $password);
     }
 
     public function clearAuth(): void
@@ -159,6 +159,11 @@ class RichClient
         ));
     }
 
+    public function createUser(array $properties): stdClass
+    {
+        return $this->decodeBody($this->httpClient->post('/api/user', $properties, $this->headers));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);
@@ -168,7 +173,9 @@ class RichClient
     private function handleErrors(ResponseInterface $response): void
     {
         if ($response->getStatusCode() >= 400) {
-            throw new ApiException($response->getReasonPhrase(), $response->getStatusCode());
+            $body    = $this->httpClient->parseBody($response->getBody());
+            $message = isset($body->message) ? $body->message : $response->getReasonPhrase();
+            throw new ApiException($message, $response->getStatusCode());
         }
     }
 }

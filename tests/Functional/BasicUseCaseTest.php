@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\Functional;
 
-use HexagonalPlayground\Domain\MatchResultSubmitted;
+use HexagonalPlayground\Tests\Functional\Framework\ApiException;
 
 class BasicUseCaseTest extends TestCase
 {
@@ -158,6 +158,21 @@ class BasicUseCaseTest extends TestCase
 
     /**
      * @param string[] $matchIds
+     * @depends testMatchesCanBeFound
+     * @depends testRankingCanBeFound
+     */
+    public function testSubmittingMatchResultsRequiresPermission(array $matchIds)
+    {
+        self::expectException(ApiException::class);
+        self::expectExceptionCode(403);
+        $matchId = array_shift($matchIds);
+        $this->client->setBasicAuth('user1','user1');
+        $this->client->submitMatchResult($matchId, 2, 2);
+        $this->client->clearAuth();
+    }
+
+    /**
+     * @param string[] $matchIds
      * @return string
      * @depends testMatchesCanBeFound
      * @depends testRankingCanBeFound
@@ -165,17 +180,9 @@ class BasicUseCaseTest extends TestCase
     public function testMatchResultCanBeSubmitted(array $matchIds) : string
     {
         $matchId = array_shift($matchIds);
-        $this->client->setBasicAuth();
+        $this->client->setBasicAuth('admin', 'admin');
         $this->client->submitMatchResult($matchId, 3, 1);
         $this->client->clearAuth();
-        $events = $this->getEventStore()->findMany();
-        self::assertCount(1, $events);
-        /** @var MatchResultSubmitted $event */
-        $event = $events[0];
-        self::assertInstanceOf(MatchResultSubmitted::class, $event);
-        self::assertEquals(3, $event->getHomeScore());
-        self::assertEquals(1, $event->getGuestScore());
-
         $match = $this->client->getMatch($matchId);
         self::assertObjectHasAttribute('home_score', $match);
         self::assertObjectHasAttribute('guest_score', $match);
@@ -248,9 +255,23 @@ class BasicUseCaseTest extends TestCase
 
     public function testUserCanBeAuthenticated()
     {
-        $this->client->setBasicAuth();
+        $this->client->setBasicAuth('admin', 'admin');
         $user = $this->client->getAuthenticatedUser();
         self::assertObjectHasAttribute('email', $user);
         self::assertEquals('admin', $user->email);
+    }
+
+    public function testUserCanBeCreated()
+    {
+        $this->client->setBasicAuth('admin', 'admin');
+        $user = $this->client->createUser([
+            'email' => 'nobody@example.com',
+            'password' => 'secret',
+            'first_name' => 'My Name Is',
+            'last_name' => 'Nobody',
+            'role' => 'team_manager',
+            'teams' => []
+        ]);
+        self::assertObjectHasAttribute('id', $user);
     }
 }

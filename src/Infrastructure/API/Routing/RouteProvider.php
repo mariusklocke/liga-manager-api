@@ -15,9 +15,8 @@ use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandControlle
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
-use HexagonalPlayground\Infrastructure\API\Security\BasicAuthMiddleware;
+use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\JsonSchemaValidator;
-use HexagonalPlayground\Infrastructure\API\Security\TokenAuthMiddleware;
 use Slim\App;
 
 class RouteProvider
@@ -26,8 +25,8 @@ class RouteProvider
     {
         $app->group('/api', function() use ($app) {
             $container = $app->getContainer();
-            $basicAuth = new BasicAuthMiddleware($container);
-            $tokenAuth = new TokenAuthMiddleware($container);
+            $anyAuth   = new AuthenticationMiddleware($container);
+            $basicAuth = new AuthenticationMiddleware($container, true);
             $validator = new JsonSchemaValidator(__DIR__ . '/../../../../public/swagger.json');
 
             $app->get('/team', function () use ($container) {
@@ -154,7 +153,7 @@ class RouteProvider
                 /** @var MatchCommandController $controller */
                 $controller = $container[MatchCommandController::class];
                 return $controller->submitResult($args['id'], $request);
-            })->add($basicAuth)->add($tokenAuth);
+            })->add($anyAuth);
 
             $app->post('/match/{id}/cancellation', function ($request, $response, $args) use ($container) {
                 /** @var MatchCommandController $controller */
@@ -214,7 +213,7 @@ class RouteProvider
                 /** @var UserQueryController $controller */
                 $controller = $container[UserQueryController::class];
                 return $controller->getAuthenticatedUser();
-            })->add($basicAuth)->add($tokenAuth);
+            })->add($anyAuth);
 
             $app->put('/user/me/password', function ($request) use ($container) {
                 /** @var UserCommandController $controller */
@@ -226,7 +225,7 @@ class RouteProvider
                 /** @var UserCommandController $controller */
                 $controller = $container[UserCommandController::class];
                 return $controller->createUser($request);
-            })->add($basicAuth)->add($tokenAuth);
+            })->add($anyAuth);
         });
     }
 }

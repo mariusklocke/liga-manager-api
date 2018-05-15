@@ -3,20 +3,20 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Application\Security\Authenticator;
+use HexagonalPlayground\Domain\User;
 use Slim\Http\Response;
 
 class UserQueryController
 {
-    /** @var Authenticator */
-    private $authenticator;
+    /** @var User */
+    private $authenticatedUser;
 
     /**
-     * @param Authenticator $authenticator
+     * @param User $authenticatedUser
      */
-    public function __construct(Authenticator $authenticator)
+    public function __construct(User $authenticatedUser)
     {
-        $this->authenticator = $authenticator;
+        $this->authenticatedUser = $authenticatedUser;
     }
 
     /**
@@ -24,7 +24,7 @@ class UserQueryController
      */
     public function getAuthenticatedUser(): Response
     {
-        $user = $this->authenticator->getAuthenticatedUser();
+        $user = $this->authenticatedUser;
         return (new Response(200))->withJson([
             'id' => $user->getId(),
             'email' => $user->getEmail(),

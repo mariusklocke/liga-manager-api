@@ -35,6 +35,7 @@ use HexagonalPlayground\Application\Handler\UpdateTeamContactHandler;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepository;
 use HexagonalPlayground\Application\Security\Authenticator;
+use HexagonalPlayground\Application\Security\PermissionChecker;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\Pitch;
@@ -100,10 +101,12 @@ use Monolog\Handler\StreamHandler;
 use Slim\Http\Request;
 
 $container = new \Slim\Container([]);
-
 $container[MatchFactory::class] = function () use ($container) {
     return new MatchFactory();
 };
+$container[PermissionChecker::class] = $container->factory(function () use ($container) {
+    return new PermissionChecker($container[Authenticator::class]->getAuthenticatedUser());
+});
 $container[CreateTeamCommand::class] = function () use ($container) {
     return new CreateTeamHandler(
         $container['orm.repository.team']
@@ -139,7 +142,8 @@ $container[ScheduleMatchCommand::class] = function() use ($container) {
 $container[SubmitMatchResultCommand::class] = function () use ($container) {
     return new SubmitMatchResultHandler(
         $container['orm.repository.match'],
-        $container[Authenticator::class]
+        $container[Authenticator::class]->getAuthenticatedUser(),
+        $container[PermissionChecker::class]
     );
 };
 $container[LocateMatchCommand::class] = function () use ($container) {
@@ -178,13 +182,13 @@ $container[SetTournamentRoundCommand::class] = function () use ($container) {
     );
 };
 $container[ChangeUserPasswordCommand::class] = function () use ($container) {
-    return new ChangeUserPasswordHandler($container[Authenticator::class]);
+    return new ChangeUserPasswordHandler($container[Authenticator::class]->getAuthenticatedUser());
 };
 $container[CreateUserCommand::class] = function () use ($container) {
     return new CreateUserHandler(
         $container['orm.repository.user'],
         $container['orm.repository.team'],
-        $container[Authenticator::class]
+        $container[PermissionChecker::class]
     );
 };
 $container[CreatePitchCommand::class] = function () use ($container) {
@@ -290,7 +294,7 @@ $container[UserCommandController::class] = function () use ($container) {
     return new UserCommandController($container['commandBus']);
 };
 $container[UserQueryController::class] = function () use ($container) {
-    return new UserQueryController($container[Authenticator::class]);
+    return new UserQueryController($container[Authenticator::class]->getAuthenticatedUser());
 };
 $container['cli.command'] = [
     'app:load-fixtures' => function () use ($container) {

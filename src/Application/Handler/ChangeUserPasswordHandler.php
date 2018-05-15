@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
-use HexagonalPlayground\Application\Security\Authenticator;
+use HexagonalPlayground\Domain\User;
 
 class ChangeUserPasswordHandler
 {
-    /** @var Authenticator */
-    private $authenticator;
+    /** @var User */
+    private $user;
 
     /**
-     * @param Authenticator $authenticator
+     * @param User $user
      */
-    public function __construct(Authenticator $authenticator)
+    public function __construct(User $user)
     {
-        $this->authenticator = $authenticator;
+        $this->user = $user;
     }
 
     /**
@@ -24,7 +24,6 @@ class ChangeUserPasswordHandler
      */
     public function handle(ChangeUserPasswordCommand $command)
     {
-        $user = $this->authenticator->getAuthenticatedUser();
-        $user->changePassword($command->getNewPassword());
+        $this->user->changePassword($command->getNewPassword());
     }
 }

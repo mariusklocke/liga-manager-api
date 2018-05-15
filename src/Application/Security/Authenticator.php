@@ -13,9 +13,6 @@ class Authenticator
     /** @var User|null */
     private $authenticatedUser;
 
-    /** @var TokenInterface|null */
-    private $authenticatedToken;
-
     /** @var TokenFactoryInterface */
     private $tokenFactory;
 
@@ -31,7 +28,6 @@ class Authenticator
         $this->tokenFactory       = $tokenFactory;
         $this->userRepository     = $userRepository;
         $this->authenticatedUser  = null;
-        $this->authenticatedToken = null;
     }
 
     /**
@@ -99,15 +95,12 @@ class Authenticator
     /**
      * @return TokenInterface
      */
-    public function getAuthenticatedToken(): TokenInterface
+    public function createToken(): TokenInterface
     {
-        if (null === $this->authenticatedToken) {
-            $this->authenticatedToken = $this->tokenFactory->create(
-                $this->getAuthenticatedUser(),
-                new DateTimeImmutable('now + 1 year')
-            );
-        }
-        return $this->authenticatedToken;
+        return $this->tokenFactory->create(
+            $this->getAuthenticatedUser(),
+            new DateTimeImmutable('now + 1 year')
+        );
     }
 
     /**
