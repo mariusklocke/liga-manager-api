@@ -8,8 +8,6 @@ use DateTimeInterface;
 
 abstract class DomainEvent
 {
-    public const DATE_FORMAT = 'U';
-
     /** @var string */
     private $id;
 

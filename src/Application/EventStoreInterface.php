@@ -3,14 +3,26 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application;
 
-use DateTimeInterface;
 use HexagonalPlayground\Domain\DomainEvent;
 
 interface EventStoreInterface
 {
-    public function append(DomainEvent $event);
+    /**
+     * Append an event
+     *
+     * @param DomainEvent $event
+     */
+    public function append(DomainEvent $event): void;
 
-    public function findMany(string $eventType = null, DateTimeInterface $from = null, DateTimeInterface $to = null);
+    /**
+     * Find all events
+     *
+     * @return array
+     */
+    public function findAll(): array;
 
-    public function clear();
+    /**
+     * Clear all events
+     */
+    public function clear(): void;
 }

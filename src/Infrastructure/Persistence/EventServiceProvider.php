@@ -11,9 +11,10 @@ use HexagonalPlayground\Domain\EventPublisher;
 use HexagonalPlayground\Domain\MatchLocated;
 use HexagonalPlayground\Domain\MatchResultSubmitted;
 use HexagonalPlayground\Domain\MatchScheduled;
-use MongoDB\Client;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Redis;
+use RuntimeException;
 
 class EventServiceProvider implements ServiceProviderInterface
 {
@@ -35,9 +36,11 @@ class EventServiceProvider implements ServiceProviderInterface
             return $handlerResolver;
         });
         $container[EventStoreInterface::class] = function () use ($container) {
-            $client = new Client('mongodb://' . getenv('MONGO_HOST'));
-            $db = $client->{getenv('MONGO_DATABASE')};
-            return new MongoEventStore($db->events, $container[EventSerializer::class]);
+            $redis = new Redis();
+            if (false === $redis->connect(getenv('REDIS_HOST'))) {
+                throw new RuntimeException('Could not connect to redis');
+            }
+            return new RedisEventStore($redis, $container[EventSerializer::class]);
         };
         $container[EventSerializer::class] = function () {
             return new EventSerializer([

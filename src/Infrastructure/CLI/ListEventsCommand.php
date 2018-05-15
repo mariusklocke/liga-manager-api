@@ -29,7 +29,7 @@ class ListEventsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $events = $this->eventStore->findMany();
+        $events = $this->eventStore->findAll();
         if (empty($events)) {
             $output->writeln('No events found');
             return;

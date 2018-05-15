@@ -30,10 +30,10 @@ services:
     env_file:
       - .env
 
-  mongo:
-    image: mongo
+  redis:
+    image: redis:4-alpine
     ports:
-      - "27017:27017"
+      - "6379:6379"
 
   maildev:
     image: djfarrelly/maildev

@@ -34,9 +34,9 @@ RUN set -xe \
         mbstring
 
 RUN pecl install apcu
-RUN pecl install mongodb
+RUN pecl install redis
 RUN echo "extension=apcu.so" > /usr/local/etc/php/conf.d/apcu.ini
-RUN echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
+RUN echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
 RUN apk del .build-deps
 RUN rm -rf /tmp/* && rm -rf ${APP_HOME} && mkdir -p ${APP_HOME}
 RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar
@@ -47,17 +47,6 @@ RUN chmod +x /usr/local/bin/*
 ENV LOG_STREAM="/tmp/stdout"
 RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
 
-COPY bin ${APP_HOME}/bin
-COPY config ${APP_HOME}/config
-COPY migrations ${APP_HOME}/migrations
-COPY public ${APP_HOME}/public
-COPY src ${APP_HOME}/src
-COPY templates ${APP_HOME}/templates
-COPY tests ${APP_HOME}/tests
-COPY composer.json ${APP_HOME}/composer.json
-COPY composer.lock ${APP_HOME}/composer.lock
-COPY phpunit.xml ${APP_HOME}/phpunit.xml
-
 # Possible values for ext-name:
 # bcmath bz2 calendar ctype curl dba dom enchant exif fileinfo filter ftp gd gettext gmp hash iconv imap interbase intl
 # json ldap mbstring mcrypt mssql mysql mysqli oci8 odbc opcache pcntl pdo pdo_dblib pdo_firebird pdo_mysql pdo_oci
@@ -65,7 +54,17 @@ COPY phpunit.xml ${APP_HOME}/phpunit.xml
 # sockets spl standard sybase_ct sysvmsg sysvsem sysvshm tidy tokenizer wddx xml xmlreader xmlrpc xmlwriter xsl zip
 
 WORKDIR ${APP_HOME}
+COPY composer.json composer.json
+COPY composer.lock composer.lock
 RUN composer install --prefer-dist --no-dev --optimize-autoloader
 COPY docker/php/start.sh /usr/local/bin/start.sh
-RUN chmod +x ${APP_HOME}/bin/* /usr/local/bin/start.sh
+COPY bin bin
+COPY config config
+COPY migrations migrations
+COPY public public
+COPY src src
+COPY templates templates
+COPY tests tests
+COPY phpunit.xml phpunit.xml
+RUN chmod +x bin/* /usr/local/bin/start.sh
 CMD ["/bin/sh", "-c", "start.sh | tail -f $LOG_STREAM"]
