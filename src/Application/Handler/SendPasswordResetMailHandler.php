@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Application\Command\RequestPasswordResetCommand;
+use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
@@ -12,7 +12,7 @@ use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Domain\User;
 use Psr\Http\Message\UriInterface;
 
-class RequestPasswordResetHandler
+class SendPasswordResetMailHandler
 {
     /** @var TokenFactoryInterface */
     private $tokenFactory;
@@ -26,7 +26,21 @@ class RequestPasswordResetHandler
     /** @var MailerInterface */
     private $mailer;
 
-    public function handle(RequestPasswordResetCommand $command)
+    /**
+     * @param TokenFactoryInterface     $tokenFactory
+     * @param UserRepositoryInterface   $userRepository
+     * @param TemplateRendererInterface $templateRenderer
+     * @param MailerInterface           $mailer
+     */
+    public function __construct(TokenFactoryInterface $tokenFactory, UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
+    {
+        $this->tokenFactory     = $tokenFactory;
+        $this->userRepository   = $userRepository;
+        $this->templateRenderer = $templateRenderer;
+        $this->mailer           = $mailer;
+    }
+
+    public function handle(SendPasswordResetMailCommand $command)
     {
         /** @var User $user */
         $user  = $this->userRepository->findByEmail($command->getEmail());

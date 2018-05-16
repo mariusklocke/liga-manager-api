@@ -1125,22 +1125,26 @@
     },
     "/user/me/password/reset": {
       "post": {
-        "operationId": "requestPasswordReset",
-        "summary": "Request a password reset for the user with the given email address",
+        "operationId": "sendPasswordResetMail",
+        "summary": "Sends a password reset mail for the user with the given email address",
         "tags": ["user"],
         "parameters": [
           {
             "in": "body",
-            "name": "requestPasswordResetBody",
+            "name": "sendPasswordResetMailBody",
             "schema": {
               "type": "object",
               "properties": {
                 "email": {
                   "type": "string"
+                },
+                "target_path": {
+                  "type": "string"
                 }
               },
               "required": [
-                "email"
+                "email",
+                "target_path"
               ]
             }
           }

@@ -22,23 +22,12 @@ class LoggerProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container['logger'] = function() {
-            $stream = null;
-            if ($path = getenv('LOG_PATH')) {
-                if (strpos($path, '/') !== 0) {
-                    // Make path relative to application root
-                    $path = __DIR__ . '/../' . $path;
-                }
-                $stream = fopen($path, 'a');
-            }
-            if (!is_resource($stream)) {
-                $path = 'php://stdout';
-                if (php_sapi_name() !== 'cli') {
-                    $path = getenv('LOG_STREAM') ?: $path;
-                }
-                $stream = fopen($path, 'a');
+            $stream = 'php://stdout';
+            if (php_sapi_name() !== 'cli') {
+                $stream = getenv('LOG_STREAM') ?: $stream;
             }
             $level = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'warning');
-            $handler = new StreamHandler($stream, $level);
+            $handler = new StreamHandler(fopen($stream, 'a'), $level);
             return new Logger('logger', [$handler]);
         };
     }

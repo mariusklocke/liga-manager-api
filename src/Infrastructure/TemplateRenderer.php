@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure;
 
 use HexagonalPlayground\Application\TemplateRendererInterface;
+use InvalidArgumentException;
 
 class TemplateRenderer implements TemplateRendererInterface
 {
@@ -14,6 +15,9 @@ class TemplateRenderer implements TemplateRendererInterface
      */
     public function __construct($templatePath)
     {
+        if (!is_dir($templatePath)) {
+            throw new InvalidArgumentException('Template directory does not exist');
+        }
         $this->templatePath = $templatePath;
     }
 

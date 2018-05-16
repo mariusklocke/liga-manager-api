@@ -35,7 +35,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
         $container[EntityManager::class] = function() use ($container) {
             $isDevMode = (getenv('APP_ENVIRONMENT') === 'development');
             $config = Setup::createConfiguration($isDevMode);
-            $driver = new SimplifiedXmlDriver([__DIR__ . "/../../../../config/doctrine" => "HexagonalPlayground\\Domain"]);
+            $driver = new SimplifiedXmlDriver([getenv('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain"]);
             $driver->setGlobalBasename('global');
             $config->setMetadataDriverImpl($driver);
             $config->setSQLLogger($container['doctrine.queryLogger']);

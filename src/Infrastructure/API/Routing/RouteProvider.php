@@ -27,7 +27,7 @@ class RouteProvider
             $container = $app->getContainer();
             $anyAuth   = new AuthenticationMiddleware($container);
             $basicAuth = new AuthenticationMiddleware($container, true);
-            $validator = new JsonSchemaValidator(__DIR__ . '/../../../../public/swagger.json');
+            $validator = new JsonSchemaValidator(getenv('APP_HOME') . '/public/swagger.json');
 
             $app->get('/team', function () use ($container) {
                 /** @var TeamQueryController $controller */
@@ -226,6 +226,12 @@ class RouteProvider
                 $controller = $container[UserCommandController::class];
                 return $controller->createUser($request);
             })->add($anyAuth);
+
+            $app->post('/user/me/password/reset', function ($request) use ($container) {
+                /** @var UserCommandController $controller */
+                $controller = $container[UserCommandController::class];
+                return $controller->sendPasswordResetMail($request);
+            });
         });
     }
 }

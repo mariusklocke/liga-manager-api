@@ -21,12 +21,14 @@ use HexagonalPlayground\Application\Command\DeleteTeamCommand;
 use HexagonalPlayground\Application\Command\LoadFixturesCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
+use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
+use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Factory\MatchFactory;
 use HexagonalPlayground\Application\FixtureGenerator;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
@@ -44,6 +46,7 @@ use HexagonalPlayground\Application\Handler\DeleteTeamHandler;
 use HexagonalPlayground\Application\Handler\LoadFixturesHandler;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
+use HexagonalPlayground\Application\Handler\SendPasswordResetMailHandler;
 use HexagonalPlayground\Application\Handler\ScheduleMatchHandler;
 use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
 use HexagonalPlayground\Application\Handler\StartSeasonHandler;
@@ -53,6 +56,7 @@ use HexagonalPlayground\Application\Handler\UpdateTeamContactHandler;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Application\Security\PermissionChecker;
+use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -180,6 +184,14 @@ class ApplicationCommandProvider implements ServiceProviderInterface
                 $container['orm.repository.pitch'],
                 $container['orm.repository.user'],
                 new FixtureGenerator()
+            );
+        };
+        $container[SendPasswordResetMailCommand::class] = function () use ($container) {
+            return new SendPasswordResetMailHandler(
+                $container[TokenFactoryInterface::class],
+                $container['orm.repository.user'],
+                $container[TemplateRenderer::class],
+                $container[MailerInterface::class]
             );
         };
     }

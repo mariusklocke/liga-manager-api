@@ -298,7 +298,7 @@
                                 <tr>
                                     <td>
                                         <p>Hey <?php echo htmlentities($userName); ?>,</p>
-                                        <p>It seems you might have forgotten your password. If so, just click below to set a new password.</p>
+                                        <p>Es sieht so aus als h&auml;ttest du dein Passwort vergessen. Falls ja, klicke auf den Button weiter unten um ein neues Passwort zu setzen.</p>
                                         <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                                             <tbody>
                                             <tr>
@@ -306,7 +306,7 @@
                                                     <table border="0" cellpadding="0" cellspacing="0">
                                                         <tbody>
                                                         <tr>
-                                                            <td> <a href="<?php echo $targetLink; ?>" target="_blank">Set new password</a> </td>
+                                                            <td> <a href="<?php echo $targetLink; ?>" target="_blank">Neues Passwort setzen</a> </td>
                                                         </tr>
                                                         </tbody>
                                                     </table>
@@ -314,7 +314,7 @@
                                             </tr>
                                             </tbody>
                                         </table>
-                                        <p>If you did not forgot your password, you can safely ignore this email.</p>
+                                        <p>Wenn du dein Passwort nicht vergessen hast, kannst du diese Email bedenkenlos ignorieren.</p>
                                     </td>
                                 </tr>
                             </table>

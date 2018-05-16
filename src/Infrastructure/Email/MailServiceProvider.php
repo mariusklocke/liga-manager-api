@@ -33,7 +33,7 @@ class MailServiceProvider implements ServiceProviderInterface
             );
         };
         $container[TemplateRenderer::class] = function () use ($container) {
-            return new TemplateRenderer(__DIR__ . '/../templates');
+            return new TemplateRenderer(getenv('APP_HOME') . '/templates');
         };
     }
 }

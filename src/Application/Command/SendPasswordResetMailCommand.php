@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Application\Command;
 
 use Psr\Http\Message\UriInterface;
 
-class RequestPasswordResetCommand implements CommandInterface
+class SendPasswordResetMailCommand implements CommandInterface
 {
     /** @var string */
     private $email;
