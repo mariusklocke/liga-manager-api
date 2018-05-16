@@ -1,16 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure;
+namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\ReadDbAdapterInterface;
-use HexagonalPlayground\Application\Repository\MatchRepository;
-use HexagonalPlayground\Application\Repository\PitchRepository;
-use HexagonalPlayground\Application\Repository\RankingRepository;
-use HexagonalPlayground\Application\Repository\SeasonRepository;
-use HexagonalPlayground\Application\Repository\TeamRepository;
-use HexagonalPlayground\Application\Repository\TournamentRepository;
-use HexagonalPlayground\Infrastructure\Persistence\MysqliReadDbAdapter;
 use mysqli;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;

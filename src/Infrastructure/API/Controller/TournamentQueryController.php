@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Application\Repository\TournamentRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
 use Slim\Http\Response;
 
 class TournamentQueryController

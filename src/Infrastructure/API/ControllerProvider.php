@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalPlayground\Application\Repository\MatchRepository;
-use HexagonalPlayground\Application\Repository\PitchRepository;
-use HexagonalPlayground\Application\Repository\RankingRepository;
-use HexagonalPlayground\Application\Repository\SeasonRepository;
-use HexagonalPlayground\Application\Repository\TeamRepository;
-use HexagonalPlayground\Application\Repository\TournamentRepository;
-use HexagonalPlayground\Application\Security\Authenticator;
+use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\RankingRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchCommandController;
@@ -22,6 +21,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandControlle
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
+use HexagonalPlayground\Application\Security\Authenticator;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 

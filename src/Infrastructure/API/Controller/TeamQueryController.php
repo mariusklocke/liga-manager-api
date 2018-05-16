@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Application\Repository\TeamRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 use Slim\Http\Response;
 
 class TeamQueryController

@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Application\Repository\MatchRepository;
-use HexagonalPlayground\Application\Repository\RankingRepository;
-use HexagonalPlayground\Application\Repository\SeasonRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\RankingRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use Slim\Http\Response;
 
 class SeasonQueryController

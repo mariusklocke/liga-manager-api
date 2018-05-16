@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Application\Repository\MatchRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 use Slim\Http\Request;
 use Slim\Http\Response;
 

@@ -10,7 +10,7 @@ use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
-use HexagonalPlayground\Infrastructure\ReadRepositoryProvider;
+use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use HexagonalPlayground\Infrastructure\SecurityServiceProvider;
 use Slim\App as SlimApp;
 use Slim\Container;

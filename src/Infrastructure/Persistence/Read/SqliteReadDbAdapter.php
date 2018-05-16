@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Persistence;
+namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use DateTimeInterface;
-use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use Psr\Log\LoggerInterface;
 use SQLite3;
 use SQLite3Result;

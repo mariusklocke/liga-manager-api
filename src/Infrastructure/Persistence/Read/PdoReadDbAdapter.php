@@ -1,9 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Persistence;
+namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\ReadDbAdapterInterface;
 use PDO;
 use PDOStatement;
 use Psr\Log\LoggerInterface;

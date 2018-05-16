@@ -1,9 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Repository;
-
-use HexagonalPlayground\Application\ReadDbAdapterInterface;
+namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 class AbstractRepository
 {
