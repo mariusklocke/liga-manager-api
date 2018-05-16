@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
-use HexagonalPlayground\Application\Factory\MatchFactory;
 use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Domain\MatchFactory;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 

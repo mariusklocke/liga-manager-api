@@ -29,7 +29,6 @@ use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\Factory\MatchFactory;
 use HexagonalPlayground\Application\FixtureGenerator;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\CancelMatchHandler;
@@ -57,6 +56,7 @@ use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Application\Security\PermissionChecker;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Domain\MatchFactory;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 

@@ -1,15 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Factory;
+namespace HexagonalPlayground\Domain;
 
 use DateInterval;
 use DateTimeImmutable;
 use Generator;
-use HexagonalPlayground\Domain\Competition;
-use HexagonalPlayground\Domain\Match;
-use HexagonalPlayground\Domain\Season;
-use HexagonalPlayground\Domain\Team;
 use UnexpectedValueException;
 
 /**

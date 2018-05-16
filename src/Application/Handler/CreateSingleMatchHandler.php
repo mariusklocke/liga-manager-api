@@ -5,8 +5,8 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Factory\MatchFactory;
 use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Domain\MatchFactory;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 
