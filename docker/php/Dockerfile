@@ -1,4 +1,5 @@
 FROM php:7.2-fpm-alpine
+ARG ENABLE_XDEBUG
 
 # persistent / runtime deps
 ENV PHPIZE_DEPS \
@@ -34,9 +35,11 @@ RUN set -xe \
         mbstring
 
 RUN pecl install apcu
-RUN pecl install redis
 RUN echo "extension=apcu.so" > /usr/local/etc/php/conf.d/apcu.ini
+RUN pecl install redis
 RUN echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
+RUN if [ "x$ENABLE_XDEBUG" != "x" ]; then pecl install xdebug; fi
+RUN if [ "x$ENABLE_XDEBUG" != "x" ]; then echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini; fi
 RUN apk del .build-deps
 RUN rm -rf /tmp/* && rm -rf ${APP_HOME} && mkdir -p ${APP_HOME}
 RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar
