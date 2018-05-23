@@ -6,7 +6,6 @@ fi
 if [[ -z "${JWT_SECRET_PATH}" ]]; then
   JWT_SECRET_PATH="/etc/jwt"
 fi
-REPORT_PATH=$(mktemp -d)
 
 trap 'rc=$?' ERR
 docker run -d --name mariadb \
@@ -22,8 +21,6 @@ docker run --link mariadb --link redis --rm \
 docker run --link mariadb --link redis --rm \
     -e MYSQL_HOST=mariadb -e MYSQL_DATABASE=test -e MYSQL_USER=test -e MYSQL_PASSWORD=test \
     -e REDIS_HOST=redis \
-    -v ${REPORT_PATH}:/report \
     mklocke/liga-manager-api:${TAG}-xdebug sh -c "bin/generate-jwt-key.sh && bin/init-db.sh && bin/console.php orm:generate-proxies && phpunit"
-xdg-open file://${REPORT_PATH}/index.html > /dev/null 2>&1
 docker rm -f mariadb redis > /dev/null
 exit ${rc}
