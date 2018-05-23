@@ -10,7 +10,7 @@ install:
   - export BRANCH=`if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi`
   - export TAG=`if [ "$BRANCH" == "master" ]; then echo "latest"; else echo $BRANCH ; fi`
   - docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG .
-  - docker build -f docker/php-xdebug/Dockerfile -t $DOCKER_REPO:$TAG-xdebug --build-arg ENABLE_XDEBUG=1 .
+  - docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG-xdebug --build-arg ENABLE_XDEBUG=1 .
 script:
   - bash docker/run-tests.sh
 after_success:
