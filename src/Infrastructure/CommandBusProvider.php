@@ -60,7 +60,7 @@ use HexagonalPlayground\Domain\MatchFactory;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
-class ApplicationCommandProvider implements ServiceProviderInterface
+class CommandBusProvider implements ServiceProviderInterface
 {
 
     /**

@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
-use HexagonalPlayground\Infrastructure\ApplicationCommandProvider;
+use HexagonalPlayground\Infrastructure\CommandBusProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
@@ -41,7 +41,7 @@ class Bootstrap
         $container = new Container();
         (new CommandProvider())->register($container);
         (new MailServiceProvider())->register($container);
-        (new ApplicationCommandProvider())->register($container);
+        (new CommandBusProvider())->register($container);
         (new EventServiceProvider())->register($container);
         (new LoggerProvider())->register($container);
         (new DoctrineServiceProvider())->register($container);

@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Routing\RouteProvider;
-use HexagonalPlayground\Infrastructure\ApplicationCommandProvider;
+use HexagonalPlayground\Infrastructure\CommandBusProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
@@ -49,7 +49,7 @@ class Bootstrap
         unset($container['notAllowedHandler']);
         unset($container['notFoundHandler']);
 
-        (new ApplicationCommandProvider())->register($container);
+        (new CommandBusProvider())->register($container);
         (new LoggerProvider())->register($container);
         (new DoctrineServiceProvider())->register($container);
         (new ReadRepositoryProvider())->register($container);

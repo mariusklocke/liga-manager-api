@@ -45,7 +45,7 @@ class RouteProvider
                 /** @var TeamCommandController $controller */
                 $controller = $container[TeamCommandController::class];
                 return $controller->updateContact($args['id'], $request);
-            });
+            })->add($anyAuth);
 
             $app->get('/season/{id}/team', function ($request, $response, $args) use ($container) {
                 /** @var TeamQueryController $controller */
@@ -57,13 +57,13 @@ class RouteProvider
                 /** @var TeamCommandController $controller */
                 $controller = $container[TeamCommandController::class];
                 return $controller->create($request);
-            })->add($validator);
+            })->add($validator)->add($anyAuth);
 
             $app->delete('/team/{id}', function ($request, $response, $args) use ($container) {
                 /** @var TeamCommandController $controller */
                 $controller = $container[TeamCommandController::class];
                 return $controller->delete($args['id']);
-            });
+            })->add($anyAuth);
 
             $app->get('/season', function () use ($container) {
                 /** @var SeasonQueryController $controller */
@@ -111,43 +111,43 @@ class RouteProvider
                 /** @var PitchCommandController $controller */
                 $controller = $container[PitchCommandController::class];
                 return $controller->create($request);
-            });
+            })->add($anyAuth);
 
             $app->put('/pitch/{id}/contact', function ($request, $response, $args) use ($container) {
                 /** @var PitchCommandController $controller */
                 $controller = $container[PitchCommandController::class];
                 return $controller->updateContact($args['id'], $request);
-            });
+            })->add($anyAuth);
 
             $app->post('/season/{id}/start', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
                 return $controller->start($args['id']);
-            });
+            })->add($anyAuth);
 
             $app->delete('/season/{id}', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
                 return $controller->delete($args['id']);
-            });
+            })->add($anyAuth);
 
             $app->post('/season/{id}/matches', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
                 return $controller->createMatches($args['id'], $request);
-            })->add($validator);
+            })->add($validator)->add($anyAuth);
 
             $app->post('/match/{id}/kickoff', function ($request, $response, $args) use ($container) {
                 /** @var MatchCommandController $controller */
                 $controller = $container[MatchCommandController::class];
                 return $controller->schedule($args['id'], $request);
-            });
+            })->add($anyAuth);
 
             $app->post('/match/{id}/location', function ($request, $response, $args) use ($container) {
                 /** @var MatchCommandController $controller */
                 $controller = $container[MatchCommandController::class];
                 return $controller->locate($args['id'], $request);
-            });
+            })->add($anyAuth);
 
             $app->post('/match/{id}/result', function ($request, $response, $args) use ($container) {
                 /** @var MatchCommandController $controller */
@@ -159,37 +159,37 @@ class RouteProvider
                 /** @var MatchCommandController $controller */
                 $controller = $container[MatchCommandController::class];
                 return $controller->cancel($args['id']);
-            });
+            })->add($anyAuth);
 
             $app->put('/season/{season_id}/team/{team_id}', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
                 return $controller->addTeam($args['season_id'], $args['team_id']);
-            });
+            })->add($anyAuth);
 
             $app->delete('/season/{season_id}/team/{team_id}', function ($request, $response, $args) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
                 return $controller->removeTeam($args['season_id'], $args['team_id']);
-            });
+            })->add($anyAuth);
 
             $app->post('/season', function ($request) use ($container) {
                 /** @var SeasonCommandController $controller */
                 $controller = $container[SeasonCommandController::class];
                 return $controller->createSeason($request);
-            })->add($validator);
+            })->add($validator)->add($anyAuth);
 
             $app->post('/tournament', function ($request) use ($container) {
                 /** @var TournamentCommandController $controller */
                 $controller = $container[TournamentCommandController::class];
                 return $controller->create($request);
-            })->add($validator);
+            })->add($validator)->add($anyAuth);
 
             $app->put('/tournament/{id}/round/{round}', function ($request, $response, $args) use ($container) {
                 /** @var TournamentCommandController $controller */
                 $controller = $container[TournamentCommandController::class];
                 return $controller->setRound($args['id'], (int) $args['round'], $request);
-            })->add($validator);
+            })->add($validator)->add($anyAuth);
 
             $app->get('/tournament', function () use ($container) {
                 /** @var TournamentQueryController $controller */

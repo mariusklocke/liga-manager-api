@@ -43,6 +43,10 @@
     "/match/{id}/cancellation": {
       "post": {
         "operationId": "cancelMatch",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "match id",
@@ -66,6 +70,10 @@
     "/match/{id}/kickoff": {
       "post": {
         "operationId": "scheduleMatch",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "match id",
@@ -105,6 +113,10 @@
     "/match/{id}/location": {
       "post": {
         "operationId": "locateMatch",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "match id",
@@ -215,6 +227,10 @@
       },
       "post": {
         "operationId": "createPitch",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "in": "body",
@@ -266,6 +282,10 @@
     "/pitch/{id}": {
       "delete": {
         "operationId": "deletePitch",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "pitch id",
@@ -316,6 +336,10 @@
     "/pitch/{id}/contact": {
       "put": {
         "operationId": "updatePitchContact",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "ID of pitch",
@@ -368,6 +392,10 @@
       },
       "post": {
         "operationId": "createSeason",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "in": "body",
@@ -407,6 +435,10 @@
     "/season/{id}": {
       "delete": {
         "operationId": "deleteSeason",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "ID of season",
@@ -503,12 +535,16 @@
           }
         },
         "tags": [
-          "match"
+          "season"
         ],
         "summary": "Find matches"
       },
       "post": {
         "operationId": "createMatches",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "ID of season",
@@ -540,7 +576,7 @@
           }
         },
         "tags": [
-          "match"
+          "season"
         ],
         "summary": "Creates matches for a given season"
       }
@@ -566,7 +602,7 @@
           }
         },
         "tags": [
-          "ranking"
+          "season"
         ],
         "summary": "Returns the current season ranking"
       }
@@ -574,6 +610,10 @@
     "/season/{id}/start": {
       "post": {
         "operationId": "startSeason",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "ID of season",
@@ -624,7 +664,7 @@
           }
         },
         "tags": [
-          "team"
+          "season"
         ],
         "summary": "Find all teams related to a single season"
       }
@@ -632,6 +672,10 @@
     "/season/{season_id}/team/{team_id}": {
       "put": {
         "operationId": "addTeamToSeason",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "ID of season",
@@ -666,6 +710,10 @@
       },
       "delete": {
         "operationId": "removeTeamFromSeason",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "ID of season",
@@ -721,6 +769,10 @@
       },
       "post": {
         "operationId": "createTeam",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "in": "body",
@@ -760,6 +812,10 @@
     "/team/{id}": {
       "delete": {
         "operationId": "deleteTeam",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "ID of team",
@@ -807,6 +863,10 @@
     "/team/{id}/contact": {
       "put": {
         "operationId": "updateTeamContact",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "parameters": [
           {
             "description": "ID of team",
@@ -858,6 +918,10 @@
       },
       "post": {
         "operationId": "createTournament",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "tags": [
           "tournament"
         ],
@@ -924,6 +988,10 @@
     "/tournament/{id}/round/{round}": {
       "put": {
         "operationId": "setRound",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
         "tags": [
           "tournament"
         ],
@@ -1403,9 +1471,6 @@
     },
     {
       "name": "season"
-    },
-    {
-      "name": "ranking"
     },
     {
       "name": "match"

@@ -9,15 +9,29 @@ class BasicUseCaseTest extends TestCase
 {
     public function testSeasonCanBeCreated(): string
     {
+        $this->client->setBasicAuth('admin', 'admin');
         $response = $this->client->createSeason('bar');
         self::assertObjectHasAttribute('id', $response);
         self::assertGreaterThan(0, strlen($response->id));
         return $response->id;
     }
 
+    public function testSeasonCanBeDeleted()
+    {
+        $this->client->setBasicAuth('admin', 'admin');
+        $response = $this->client->createSeason('foo');
+        self::assertObjectHasAttribute('id', $response);
+        self::assertGreaterThan(0, strlen($response->id));
+        $seasonList = $this->client->getAllSeasons();
+
+        $this->client->deleteSeason($response->id);
+        self::assertEquals(count($seasonList) - 1, count($this->client->getAllSeasons()));
+    }
+
     public function testTeamsCanBeCreated(): array
     {
         $teamIds = [];
+        $this->client->setBasicAuth('admin', 'admin');
         for ($i = 1; $i <= 4; $i++) {
             $response = $this->client->createTeam('Team No. ' . $i);
             self::assertObjectHasAttribute('id', $response);
@@ -64,6 +78,7 @@ class BasicUseCaseTest extends TestCase
      */
     public function testTeamsCanBeAddedToSeason(array $teamIds, string $seasonId) : string
     {
+        $this->client->setBasicAuth('admin', 'admin');
         $previousTeams = $this->client->getTeamsInSeason($seasonId);
         foreach ($teamIds as $teamId) {
             $this->client->addTeamToSeason($seasonId, $teamId);
@@ -80,6 +95,7 @@ class BasicUseCaseTest extends TestCase
      */
     public function testMatchesCanBeCreated(string $seasonId) : string
     {
+        $this->client->setBasicAuth('admin', 'admin');
         $this->client->createMatches($seasonId, '2018-03-02');
         $season = $this->client->getSeason($seasonId);
         self::assertObjectHasAttribute('match_day_count', $season);
@@ -113,6 +129,7 @@ class BasicUseCaseTest extends TestCase
      */
     public function testSeasonCanBeStarted(string $seasonId) : string
     {
+        $this->client->setBasicAuth('admin', 'admin');
         $this->client->startSeason($seasonId);
         $season = $this->client->getSeason($seasonId);
         self::assertObjectHasAttribute('state', $season);
@@ -215,6 +232,7 @@ class BasicUseCaseTest extends TestCase
      */
     public function testTournamentCanBeCreated(): string
     {
+        $this->client->setBasicAuth('admin', 'admin');
         $response = $this->client->createTournament('Foo');
         self::assertObjectHasAttribute('id', $response);
         self::assertInternalType('string', $response->id);
@@ -231,6 +249,7 @@ class BasicUseCaseTest extends TestCase
      */
     public function testTournamentRoundsCanBeCreated(string $tournamentId, array $teamIds)
     {
+        $this->client->setBasicAuth('admin', 'admin');
         $firstRound = [
             ['home_team_id' => $teamIds[0], 'guest_team_id' => $teamIds[1]],
             ['home_team_id' => $teamIds[2], 'guest_team_id' => $teamIds[3]]
