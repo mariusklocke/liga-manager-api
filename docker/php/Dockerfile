@@ -1,7 +1,5 @@
 FROM php:7.2-fpm-alpine
-ARG ENABLE_XDEBUG
 
-# persistent / runtime deps
 ENV PHPIZE_DEPS \
     autoconf \
     cmake \
@@ -16,51 +14,39 @@ ENV PHPIZE_DEPS \
 ENV APP_HOME="/var/www/api"
 ENV JWT_SECRET_PATH="/etc/jwt"
 
-RUN apk add --no-cache --virtual .persistent-deps \
-    openssh-keygen
+# persistent / runtime deps
+RUN apk add --no-cache --virtual .persistent-deps openssh-keygen
 
+# Install PHP extensions
 RUN set -xe \
-    && apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
     && docker-php-ext-configure bcmath --enable-bcmath \
     && docker-php-ext-configure mysqli --with-mysqli \
     && docker-php-ext-configure pcntl --enable-pcntl \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql \
     && docker-php-ext-configure mbstring --enable-mbstring \
-    && docker-php-ext-install \
-        bcmath \
-        mysqli \
-        pcntl \
-        pdo_mysql \
-        mbstring
+    && docker-php-ext-install bcmath mysqli pcntl pdo_mysql mbstring \
+    && pecl install apcu \
+    && pecl install redis \
+    && pecl install xdebug \
+    && apk del .build-deps \
+    && rm -rf /tmp/*
 
-RUN pecl install apcu
-RUN echo "extension=apcu.so" > /usr/local/etc/php/conf.d/apcu.ini
-RUN pecl install redis
-RUN echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
-RUN if [ "x$ENABLE_XDEBUG" != "x" ]; then pecl install xdebug; fi
-RUN if [ "x$ENABLE_XDEBUG" != "x" ]; then echo "zend_extension=xdebug.so" > /usr/local/etc/php/conf.d/xdebug.ini; fi
-RUN apk del .build-deps
-RUN rm -rf /tmp/* && rm -rf ${APP_HOME} && mkdir -p ${APP_HOME}
-RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar
-RUN wget -O /usr/local/bin/composer https://getcomposer.org/download/1.6.3/composer.phar
-RUN chmod +x /usr/local/bin/*
+# Install PHAR tools
+RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar \
+    && wget -O /usr/local/bin/composer https://getcomposer.org/download/1.6.3/composer.phar \
+    && chmod +x /usr/local/bin/phpunit /usr/local/bin/composer
 
-# Workaround https://bugs.php.net/bug.php?id=71880
+# Workaround for writing logs to stdout
+# https://bugs.php.net/bug.php?id=71880
 ENV LOG_STREAM="/tmp/stdout"
 RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
 
-# Possible values for ext-name:
-# bcmath bz2 calendar ctype curl dba dom enchant exif fileinfo filter ftp gd gettext gmp hash iconv imap interbase intl
-# json ldap mbstring mcrypt mssql mysql mysqli oci8 odbc opcache pcntl pdo pdo_dblib pdo_firebird pdo_mysql pdo_oci
-# pdo_odbc pdo_pgsql pdo_sqlite pgsql phar posix pspell readline recode reflection session shmop simplexml snmp soap
-# sockets spl standard sybase_ct sysvmsg sysvsem sysvshm tidy tokenizer wddx xml xmlreader xmlrpc xmlwriter xsl zip
-
+# Install application sources
+RUN mkdir -p ${APP_HOME}
 WORKDIR ${APP_HOME}
-COPY composer.json composer.json
-COPY composer.lock composer.lock
+COPY composer.json composer.lock phpunit.xml ./
 RUN composer install --prefer-dist --no-dev --optimize-autoloader
-COPY docker/php/start.sh /usr/local/bin/start.sh
 COPY bin bin
 COPY config config
 COPY migrations migrations
@@ -68,6 +54,7 @@ COPY public public
 COPY src src
 COPY templates templates
 COPY tests tests
-COPY phpunit.xml phpunit.xml
-RUN chmod +x bin/* /usr/local/bin/start.sh
-CMD ["/bin/sh", "-c", "start.sh | tail -f $LOG_STREAM"]
+COPY docker/php/entrypoint.sh bin/entrypoint.sh
+RUN chmod +x bin/*
+ENTRYPOINT ["bin/entrypoint.sh"]
+CMD php bin/console.php orm:generate-proxies && php-fpm | tail -f $LOG_STREAM
