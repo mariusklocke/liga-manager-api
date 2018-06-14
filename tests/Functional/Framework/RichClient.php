@@ -164,6 +164,19 @@ class RichClient
         return $this->decodeBody($this->httpClient->post('/api/user', $properties, $this->headers));
     }
 
+    public function createPitch($label, $latitude, $longitude): stdClass
+    {
+        return $this->decodeBody($this->httpClient->post(
+            '/api/pitch',
+            [
+                'label' => $label,
+                'location_latitude' => $latitude,
+                'location_longitude' => $longitude
+            ],
+            $this->headers
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);

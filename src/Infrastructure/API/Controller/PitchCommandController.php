@@ -19,26 +19,14 @@ class PitchCommandController extends CommandController
      */
     public function create(Request $request) : Response
     {
-        $latitude = $request->getParsedBodyParam('location_latitude');
+        $latitude  = $request->getParsedBodyParam('location_latitude');
         $longitude = $request->getParsedBodyParam('location_longitude');
-        if (!is_float($latitude) && !is_int($latitude)) {
-            throw new BadRequestException(sprintf(
-                'Invalid parameter "location_latitude". Number expected. %s given',
-                gettype($latitude)
-            ));
-        }
-        if (!is_float($longitude) && !is_int($longitude)) {
-            throw new BadRequestException(sprintf(
-                'Invalid parameter "location_longitude". Number expected. %s given',
-                gettype($longitude)
-            ));
-        }
+        $label     = $request->getParsedBodyParam('label');
+        $this->assertTypeOneOf('location_latitude', $latitude, ['float', 'integer']);
+        $this->assertTypeOneOf('location_longitude', $longitude, ['float', 'integer']);
+        $this->assertTypeExact('label', $label, 'string');
 
-        $label = $request->getParsedBodyParam('label');
-        if (!is_string($label) || mb_strlen($label) < 1 || mb_strlen($label) > 255) {
-            throw new BadRequestException('Invalid label: Has to be a string between 1 and 255 chars');
-        }
-        $location = new GeographicLocation($longitude, $latitude);
+        $location = new GeographicLocation((float)$longitude, (float)$latitude);
         $command  = new CreatePitchCommand($label, $location);
         $id = $this->commandBus->execute($command);
 

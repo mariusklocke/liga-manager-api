@@ -7,12 +7,18 @@ use HexagonalPlayground\Tests\Functional\Framework\ApiException;
 
 class BasicUseCaseTest extends TestCase
 {
+    public function testPitchCanBeCreated()
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        self::assertValidIdResponse($this->client->createPitch('TestFloat', 89.99, 6.78));
+        self::assertValidIdResponse($this->client->createPitch('TestInt', 89, 6));
+    }
+
     public function testSeasonCanBeCreated(): string
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
         $response = $this->client->createSeason('bar');
-        self::assertObjectHasAttribute('id', $response);
-        self::assertGreaterThan(0, strlen($response->id));
+        self::assertValidIdResponse($response);
         return $response->id;
     }
 
@@ -292,5 +298,11 @@ class BasicUseCaseTest extends TestCase
             'teams' => []
         ]);
         self::assertObjectHasAttribute('id', $user);
+    }
+
+    private static function assertValidIdResponse($response)
+    {
+        self::assertObjectHasAttribute('id', $response);
+        self::assertGreaterThan(0, strlen($response->id));
     }
 }

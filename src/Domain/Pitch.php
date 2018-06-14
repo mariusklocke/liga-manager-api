@@ -19,6 +19,7 @@ class Pitch
 
     public function __construct(string $label, GeographicLocation $location)
     {
+        $this->validateLabel($label);
         $this->id = Uuid::create();
         $this->label = $label;
         $this->location = $location;
@@ -50,5 +51,20 @@ class Pitch
     private function __clone()
     {
         $this->id = null;
+    }
+
+    /**
+     * @param string $label
+     * @throws DomainException
+     */
+    private function validateLabel(string $label): void
+    {
+        $length = mb_strlen($label);
+        if ($length < 1) {
+            throw new DomainException('Pitch label must not be empty');
+        }
+        if ($length > 255) {
+            throw new DomainException('Pitch label exceeds maximum length of 255 characters');
+        }
     }
 }
