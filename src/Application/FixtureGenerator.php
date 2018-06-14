@@ -53,12 +53,12 @@ class FixtureGenerator
      */
     public function generateUsers()
     {
-        $admin = new User('admin', 'admin', 'admin', 'admin');
+        $admin = new User('admin', '123456', 'admin', 'admin');
         $admin->setRole(User::ROLE_ADMIN);
         yield $admin;
 
         for ($i = 1; $i <= 8; $i++) {
-            $teamManager = new User('user' . $i, 'user' . $i, 'admin', 'admin');
+            $teamManager = new User('user' . $i, '123456', 'user' . $i, 'user' . $i);
             $teamManager->setRole(User::ROLE_TEAM_MANAGER);
             yield $teamManager;
         }

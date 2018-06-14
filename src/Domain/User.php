@@ -48,6 +48,8 @@ class User
         string $firstName,
         string $lastName
     ) {
+        $this->validatePassword($password);
+
         $this->id = Uuid::create();
         $this->email = $email;
         $this->password = $this->hashPassword($password);
@@ -88,6 +90,8 @@ class User
      */
     public function changePassword(string $password): void
     {
+        $this->validatePassword($password);
+
         $this->password = $this->hashPassword($password);
         $this->lastPasswordChange = new DateTimeImmutable();
     }
@@ -201,5 +205,20 @@ class User
     public function getFullName(): string
     {
         return $this->firstName . ' ' . $this->lastName;
+    }
+
+    /**
+     * @param string $password
+     * @throws DomainException
+     */
+    private function validatePassword(string $password): void
+    {
+        $length = mb_strlen($password);
+        if ($length < 6) {
+            throw new DomainException('Password does not reach the minimum length of 6 characters');
+        }
+        if ($length > 255) {
+            throw new DomainException('Password exceeds maximum length of 255 characters');
+        }
     }
 }

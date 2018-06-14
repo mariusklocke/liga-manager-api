@@ -15,7 +15,6 @@ class UserCommandController extends CommandController
     public function changePassword(Request $request)
     {
         $newPassword = $request->getParsedBodyParam('new_password');
-        $this->validatePassword($newPassword);
 
         $this->commandBus->execute(new ChangeUserPasswordCommand($newPassword));
         return new Response(204);
@@ -31,7 +30,6 @@ class UserCommandController extends CommandController
             }
         }
 
-        $this->validatePassword($data['password']);
         $this->validateEmail($data['email']);
         $command = new CreateUserCommand(
             $data['email'],
@@ -57,16 +55,5 @@ class UserCommandController extends CommandController
 
         $this->commandBus->execute(new SendPasswordResetMailCommand($email, $targetUri));
         return new Response(204);
-    }
-
-    /**
-     * @param $password
-     * @throws BadRequestException
-     */
-    private function validatePassword($password)
-    {
-        if (!is_string($password) || mb_strlen($password) < 6 || mb_strlen($password) > 255) {
-            throw new BadRequestException('Passwords require a length between 6 and 255 characters');
-        }
     }
 }
