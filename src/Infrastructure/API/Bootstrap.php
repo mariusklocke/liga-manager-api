@@ -54,7 +54,6 @@ class Bootstrap
         (new DoctrineServiceProvider())->register($container);
         (new ReadRepositoryProvider())->register($container);
         (new SecurityServiceProvider())->register($container);
-        (new ControllerProvider())->register($container);
         (new MailServiceProvider())->register($container);
         (new EventServiceProvider())->register($container);
 
