@@ -29,8 +29,7 @@ class UserCommandController extends CommandController
                 throw new BadRequestException(sprintf("Invalid value for property '%s'", $property));
             }
         }
-
-        $this->validateEmail($data['email']);
+        
         $command = new CreateUserCommand(
             $data['email'],
             $data['password'],

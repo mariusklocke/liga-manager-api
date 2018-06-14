@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\Collection;
 
 class User
 {
+    use EmailValidation;
+
     const ROLE_TEAM_MANAGER = 'team_manager';
     const ROLE_ADMIN = 'admin';
 
@@ -49,6 +51,7 @@ class User
         string $lastName
     ) {
         $this->validatePassword($password);
+        $this->validateEmail($email);
 
         $this->id = Uuid::create();
         $this->email = $email;

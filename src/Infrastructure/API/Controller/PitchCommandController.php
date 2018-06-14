@@ -61,7 +61,6 @@ class PitchCommandController extends CommandController
         $this->assertTypeExact('last_name', $lastName, 'string');
         $this->assertTypeExact('phone', $phone, 'string');
         $this->assertTypeExact('email', $email, 'string');
-        $this->validateEmail($email);
 
         $this->commandBus->execute(new UpdatePitchContactCommand(
             $pitchId,

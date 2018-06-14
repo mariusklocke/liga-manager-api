@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Domain;
 
 class ContactPerson
 {
+    use EmailValidation;
+
     /** @var string */
     private $firstName;
 
@@ -25,6 +27,7 @@ class ContactPerson
      */
     public function __construct(string $firstName, string $lastName, string $phone, string $email)
     {
+        $this->validateEmail($email);
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->phone = $phone;

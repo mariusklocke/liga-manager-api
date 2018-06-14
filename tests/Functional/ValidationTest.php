@@ -9,7 +9,7 @@ class ValidationTest extends TestCase
 {
     public function testCreatingSeasonWithEmptyNameFails()
     {
-        $this->client->setBasicAuth('admin', '123456');
+        $this->client->setBasicAuth('admin@example.com', '123456');
         self::expectException(ApiException::class);
         self::expectExceptionCode(400);
         $this->client->createSeason('');
@@ -17,7 +17,7 @@ class ValidationTest extends TestCase
 
     public function testCreatingTeamWithEmptyNameFails()
     {
-        $this->client->setBasicAuth('admin', '123456');
+        $this->client->setBasicAuth('admin@example.com', '123456');
         self::expectException(ApiException::class);
         self::expectExceptionCode(400);
         $this->client->createTeam('');
@@ -25,7 +25,7 @@ class ValidationTest extends TestCase
 
     public function testCreatingTournamentWithTooLongNameFails()
     {
-        $this->client->setBasicAuth('admin', '123456');
+        $this->client->setBasicAuth('admin@example.com', '123456');
         self::expectException(ApiException::class);
         self::expectExceptionCode(400);
         $this->client->createTournament(str_repeat('A', 256));
@@ -33,7 +33,7 @@ class ValidationTest extends TestCase
 
     public function testCreatingMatchesWithInvalidStartDateFails()
     {
-        $this->client->setBasicAuth('admin', '123456');
+        $this->client->setBasicAuth('admin@example.com', '123456');
         $response = $this->client->createSeason('Foo');
         $seasonId = $response->id;
         self::expectException(ApiException::class);
@@ -43,7 +43,7 @@ class ValidationTest extends TestCase
 
     public function testSettingTournamentRoundWithInvalidPlanningDateFails()
     {
-        $this->client->setBasicAuth('admin', '123456');
+        $this->client->setBasicAuth('admin@example.com', '123456');
         $response = $this->client->createTournament('Bar');
         $tournamentId = $response->id;
         self::expectException(ApiException::class);
@@ -56,7 +56,7 @@ class ValidationTest extends TestCase
 
     public function testSettingTournamentRoundWithEmptyTeamPairsFails()
     {
-        $this->client->setBasicAuth('admin', '123456');
+        $this->client->setBasicAuth('admin@example.com', '123456');
         $response = $this->client->createTournament('Bar');
         $tournamentId = $response->id;
         self::expectException(ApiException::class);
@@ -66,7 +66,7 @@ class ValidationTest extends TestCase
 
     public function testSettingTournamentRoundWithTooManyTeamPairsFails()
     {
-        $this->client->setBasicAuth('admin', '123456');
+        $this->client->setBasicAuth('admin@example.com', '123456');
         $response = $this->client->createTournament('Bar');
         $tournamentId = $response->id;
         self::expectException(ApiException::class);
@@ -75,5 +75,20 @@ class ValidationTest extends TestCase
             'home_team_id' => '', 'guest_team_id' => ''
         ]);
         $this->client->setTournamentRound($tournamentId, 1, $teamPairs, '2018-04-01');
+    }
+
+    public function testCreatingUserWithInvalidEmailFails()
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        self::expectException(ApiException::class);
+        self::expectExceptionCode(400);
+        $this->client->createUser([
+            'email' => 'foo123bar',
+            'password' => 'secret',
+            'first_name' => 'My Name Is',
+            'last_name' => 'Nobody',
+            'role' => 'team_manager',
+            'teams' => []
+        ]);
     }
 }
