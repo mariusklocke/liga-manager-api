@@ -1,3 +1,4 @@
 .idea
 *.phar
 .env
+docker/_volumes

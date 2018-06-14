@@ -4,3 +4,4 @@ vendor
 phpda*
 .env
 docker-compose.yml
+docker/_volumes

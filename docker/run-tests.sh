@@ -16,8 +16,8 @@ docker run -d --name redis redis:4-alpine > /dev/null
 docker run --link redis --rm dadarek/wait-for-dependencies redis:6379
 docker run --link mariadb --rm dadarek/wait-for-dependencies mariadb:3306
 docker run --link mariadb --link redis --rm ${MYSQL_ENV_ARGS} -e REDIS_HOST=redis \
-    mklocke/liga-manager-api:${TAG} sh -c "bin/generate-jwt-key.sh && bin/init-db.sh && bin/console.php orm:generate-proxies && phpunit"
+    mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit"
 docker run --link mariadb --link redis --rm ${MYSQL_ENV_ARGS} -e REDIS_HOST=redis -e ENABLE_XDEBUG=1 \
-    mklocke/liga-manager-api:${TAG} sh -c "bin/generate-jwt-key.sh && bin/init-db.sh && bin/console.php orm:generate-proxies && phpunit"
+    mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit"
 docker rm -f mariadb redis > /dev/null
 exit ${rc}

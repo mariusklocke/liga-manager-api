@@ -14,20 +14,9 @@ Now you are ready to start the containers
 docker-compose up -d
 ```
 
-If you run the `php` container for the first time, you need to generate the secret for signing JSON Web Tokens (JWT) first
+If you run the `php` container for the first time, you need to run `bin/install.sh`
 ```bash
-docker-compose exec php bin/generate-jwt-key.sh
-```
-
-After creating the `mariadb` container you need to create the schema first:
-```bash
-docker-compose exec php php bin/console.php orm:schema-tool:create
-```
-
-Use this command to load data fixtures:
-```bash
-docker-compose exec php php bin/console.php app:load-fixtures
+docker-compose exec php bin/install.sh
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
-

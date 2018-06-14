@@ -54,7 +54,7 @@ COPY public public
 COPY src src
 COPY templates templates
 COPY tests tests
-COPY docker/php/entrypoint.sh bin/entrypoint.sh
-RUN chmod +x bin/*
-ENTRYPOINT ["bin/entrypoint.sh"]
+COPY docker/php/entrypoint.sh docker/php/entrypoint.sh
+RUN chmod +x bin/* docker/php/entrypoint.sh
+ENTRYPOINT ["docker/php/entrypoint.sh"]
 CMD php bin/console.php orm:generate-proxies && php-fpm | tail -f $LOG_STREAM
