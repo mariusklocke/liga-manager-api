@@ -41,8 +41,7 @@ class MatchResult
      */
     private function assertValidScoreValue(int $value)
     {
-        if ($value < 0 || $value > 99) {
-            throw new DomainException('Match scores have to be integer values between 0 and 99');
-        }
+        Assert::greaterOrEqualThan($value, 0, 'Match scores have to be greater or equal than 0');
+        Assert::lessOrEqualThan($value, 99, 'Match scores have to be less or equal than 99');
     }
 }

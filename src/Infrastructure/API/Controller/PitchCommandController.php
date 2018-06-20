@@ -22,9 +22,9 @@ class PitchCommandController extends CommandController
         $latitude  = $request->getParsedBodyParam('location_latitude');
         $longitude = $request->getParsedBodyParam('location_longitude');
         $label     = $request->getParsedBodyParam('label');
-        $this->assertTypeOneOf('location_latitude', $latitude, ['float', 'integer']);
-        $this->assertTypeOneOf('location_longitude', $longitude, ['float', 'integer']);
-        $this->assertTypeExact('label', $label, 'string');
+        $this->assertNumber('location_latitude', $latitude);
+        $this->assertNumber('location_longitude', $longitude);
+        $this->assertString('label', $label);
 
         $location = new GeographicLocation((float)$longitude, (float)$latitude);
         $command  = new CreatePitchCommand($label, $location);
@@ -45,10 +45,10 @@ class PitchCommandController extends CommandController
         $phone     = $request->getParsedBodyParam('phone');
         $email     = $request->getParsedBodyParam('email');
 
-        $this->assertTypeExact('first_name', $firstName, 'string');
-        $this->assertTypeExact('last_name', $lastName, 'string');
-        $this->assertTypeExact('phone', $phone, 'string');
-        $this->assertTypeExact('email', $email, 'string');
+        $this->assertString('first_name', $firstName);
+        $this->assertString('last_name', $lastName);
+        $this->assertString('phone', $phone);
+        $this->assertString('email', $email);
 
         $this->commandBus->execute(new UpdatePitchContactCommand(
             $pitchId,

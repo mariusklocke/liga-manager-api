@@ -28,6 +28,7 @@ class TeamCommandController extends CommandController
     public function create(Request $request) : Response
     {
         $name = $request->getParsedBodyParam('name');
+        $this->assertString('name', $name);
         $id   = $this->commandBus->execute(new CreateTeamCommand($name));
         return (new Response(200))->withJson(['id' => $id]);
     }
@@ -44,10 +45,10 @@ class TeamCommandController extends CommandController
         $phone     = $request->getParsedBodyParam('phone');
         $email     = $request->getParsedBodyParam('email');
 
-        $this->assertTypeExact('first_name', $firstName, 'string');
-        $this->assertTypeExact('last_name', $lastName, 'string');
-        $this->assertTypeExact('phone', $phone, 'string');
-        $this->assertTypeExact('email', $email, 'string');
+        $this->assertString('first_name', $firstName);
+        $this->assertString('last_name', $lastName);
+        $this->assertString('phone', $phone);
+        $this->assertString('email', $email);
 
         $this->commandBus->execute(new UpdateTeamContactCommand(
             $teamId,

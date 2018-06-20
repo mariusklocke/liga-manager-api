@@ -3,8 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure;
 
-use HexagonalPlayground\Application\Security\Authenticator;
-use HexagonalPlayground\Application\Security\PermissionChecker;
+use HexagonalPlayground\Infrastructure\API\Security\Authenticator;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebTokenFactory;
 use Pimple\Container;
@@ -23,9 +22,6 @@ class SecurityServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
-        $container[PermissionChecker::class] = $container->factory(function () use ($container) {
-            return new PermissionChecker($container[Authenticator::class]->getAuthenticatedUser());
-        });
         $container[TokenFactoryInterface::class] = function () {
             return new JsonWebTokenFactory();
         };

@@ -53,8 +53,6 @@ use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
 use HexagonalPlayground\Application\Handler\UpdatePitchContactHandler;
 use HexagonalPlayground\Application\Handler\UpdateTeamContactHandler;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
-use HexagonalPlayground\Application\Security\Authenticator;
-use HexagonalPlayground\Application\Security\PermissionChecker;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Domain\MatchFactory;
 use Pimple\Container;
@@ -116,9 +114,7 @@ class CommandBusProvider implements ServiceProviderInterface
         };
         $container[SubmitMatchResultCommand::class] = function () use ($container) {
             return new SubmitMatchResultHandler(
-                $container['orm.repository.match'],
-                $container[Authenticator::class]->getAuthenticatedUser(),
-                $container[PermissionChecker::class]
+                $container['orm.repository.match']
             );
         };
         $container[LocateMatchCommand::class] = function () use ($container) {
@@ -157,13 +153,12 @@ class CommandBusProvider implements ServiceProviderInterface
             );
         };
         $container[ChangeUserPasswordCommand::class] = function () use ($container) {
-            return new ChangeUserPasswordHandler($container[Authenticator::class]->getAuthenticatedUser());
+            return new ChangeUserPasswordHandler();
         };
         $container[CreateUserCommand::class] = function () use ($container) {
             return new CreateUserHandler(
                 $container['orm.repository.user'],
-                $container['orm.repository.team'],
-                $container[PermissionChecker::class]
+                $container['orm.repository.team']
             );
         };
         $container[CreatePitchCommand::class] = function () use ($container) {

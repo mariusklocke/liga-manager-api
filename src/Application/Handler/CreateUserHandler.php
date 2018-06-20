@@ -5,9 +5,9 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\PermissionException;
 use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Application\OrmRepositoryInterface;
-use HexagonalPlayground\Application\Security\PermissionChecker;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\User;
@@ -20,19 +20,14 @@ class CreateUserHandler
     /** @var OrmRepositoryInterface */
     private $teamRepository;
 
-    /** @var PermissionChecker */
-    private $permissionChecker;
-
     /**
      * @param UserRepositoryInterface $userRepository
      * @param OrmRepositoryInterface $teamRepository
-     * @param PermissionChecker $permissionChecker
      */
-    public function __construct(UserRepositoryInterface $userRepository, OrmRepositoryInterface $teamRepository, PermissionChecker $permissionChecker)
+    public function __construct(UserRepositoryInterface $userRepository, OrmRepositoryInterface $teamRepository)
     {
-        $this->userRepository    = $userRepository;
-        $this->teamRepository    = $teamRepository;
-        $this->permissionChecker = $permissionChecker;
+        $this->userRepository = $userRepository;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -41,7 +36,7 @@ class CreateUserHandler
      */
     public function handle(CreateUserCommand $command)
     {
-        $this->permissionChecker->assertCanCreateUser($command);
+        $this->checkPermission($command);
         $this->assertEmailDoesNotExist($command->getEmail());
         $user = new User($command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
         $user->setRole($command->getRole());
@@ -67,7 +62,37 @@ class CreateUserHandler
         }
 
         throw new UniquenessException(
-            sprintf("A user with email address '%s' already exists", $email)
+            sprintf("A user with email address %s already exists", $email)
         );
+    }
+
+    /**
+     * @param CreateUserCommand $command
+     * @throws PermissionException
+     */
+    private function checkPermission(CreateUserCommand $command): void
+    {
+        if ($command->getAuthenticatedUser()->hasRole(User::ROLE_ADMIN)) {
+            return;
+        }
+
+        if ($command->getAuthenticatedUser()->hasRole(User::ROLE_TEAM_MANAGER)) {
+            if ($command->getRole() !== User::ROLE_TEAM_MANAGER) {
+                throw new PermissionException($command->getAuthenticatedUser()->getEmail() . " can only create users with role 'team_manager'");
+            }
+
+            $permittedTeamIds = array_flip($command->getAuthenticatedUser()->getTeamIds());
+            foreach ($command->getTeamIds() as $teamId) {
+                if (!isset($permittedTeamIds[$teamId])) {
+                    throw new PermissionException(sprintf(
+                        $command->getAuthenticatedUser()->getEmail() . " is not permitted to create users for team '%s'",
+                        $teamId
+                    ));
+                }
+            }
+            return;
+        }
+
+        throw new PermissionException($command->getAuthenticatedUser()->getEmail() . ' is not permitted to create users');
     }
 }

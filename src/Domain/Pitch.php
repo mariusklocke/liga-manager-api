@@ -19,7 +19,8 @@ class Pitch
 
     public function __construct(string $label, GeographicLocation $location)
     {
-        $this->validateLabel($label);
+        Assert::minLength($label, 1, "A pitch's label cannot be blank");
+        Assert::maxLength($label, 255, "A pitch's label cannot exceed 255 characters");
         $this->id = Uuid::create();
         $this->label = $label;
         $this->location = $location;
@@ -51,20 +52,5 @@ class Pitch
     private function __clone()
     {
         $this->id = null;
-    }
-
-    /**
-     * @param string $label
-     * @throws DomainException
-     */
-    private function validateLabel(string $label): void
-    {
-        $length = mb_strlen($label);
-        if ($length < 1) {
-            throw new DomainException('Pitch label must not be empty');
-        }
-        if ($length > 255) {
-            throw new DomainException('Pitch label exceeds maximum length of 255 characters');
-        }
     }
 }

@@ -15,6 +15,8 @@ class Tournament extends Competition
      */
     public function __construct(string $name)
     {
+        Assert::minLength($name, 1, "A tournament's name cannot be blank");
+        Assert::maxLength($name, 255, "A tournament's name cannot exceed 255 characters");
         $this->id = Uuid::create();
         $this->name = $name;
         $this->matches = new ArrayCollection();

@@ -4,27 +4,19 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Domain\User;
+use Slim\Http\Request;
 use Slim\Http\Response;
 
 class UserQueryController
 {
-    /** @var User */
-    private $authenticatedUser;
-
     /**
-     * @param User $authenticatedUser
-     */
-    public function __construct(User $authenticatedUser)
-    {
-        $this->authenticatedUser = $authenticatedUser;
-    }
-
-    /**
+     * @param Request $request
      * @return Response
      */
-    public function getAuthenticatedUser(): Response
+    public function getAuthenticatedUser(Request $request): Response
     {
-        $user = $this->authenticatedUser;
+        /** @var User $user */
+        $user = $request->getAttribute('user');
         return (new Response(200))->withJson([
             'id' => $user->getId(),
             'email' => $user->getEmail(),

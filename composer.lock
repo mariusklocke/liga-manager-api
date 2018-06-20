@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "a2ae9ce96f01f029679307fe696be863",
+    "content-hash": "16674cec8ac69caa56d18632e7def6ec",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -753,66 +753,6 @@
             "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
             "homepage": "https://github.com/firebase/php-jwt",
             "time": "2017-06-27T22:17:23+00:00"
-        },
-        {
-            "name": "league/json-guard",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/thephpleague/json-guard.git",
-                "reference": "596059d2c013bcea1a8a1386bd0e60d32ef39eb9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/json-guard/zipball/596059d2c013bcea1a8a1386bd0e60d32ef39eb9",
-                "reference": "596059d2c013bcea1a8a1386bd0e60d32ef39eb9",
-                "shasum": ""
-            },
-            "require": {
-                "ext-bcmath": "*",
-                "php": ">=5.6.0",
-                "psr/container": "^1.0"
-            },
-            "require-dev": {
-                "ext-curl": "*",
-                "json-schema/json-schema-test-suite": "1.2.0",
-                "league/json-reference": "1.0.0",
-                "phpunit/phpunit": "4.*",
-                "scrutinizer/ocular": "~1.1",
-                "squizlabs/php_codesniffer": "~2.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "League\\JsonGuard\\": "src"
-                },
-                "files": [
-                    "src/functions.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Matthew Allan",
-                    "email": "matthew.james.allan@gmail.com",
-                    "homepage": "https://mattallan.org",
-                    "role": "Developer"
-                }
-            ],
-            "description": "A validator for JSON using json-schema.",
-            "homepage": "https://github.com/thephpleague/json-guard",
-            "keywords": [
-                "json",
-                "json-schema",
-                "json-schema.org",
-                "schema",
-                "validation"
-            ],
-            "abandoned": true,
-            "time": "2017-05-03T21:12:30+00:00"
         },
         {
             "name": "monolog/monolog",

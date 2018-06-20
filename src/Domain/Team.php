@@ -24,6 +24,8 @@ class Team
 
     public function __construct(string $name)
     {
+        Assert::minLength($name, 1, "A team's name cannot be blank");
+        Assert::maxLength($name, 255, "A team's name cannot exceed 255 characters");
         $this->id = Uuid::create();
         $this->name = $name;
         $this->previousNames = [];

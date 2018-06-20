@@ -9,8 +9,6 @@ use Doctrine\Common\Collections\Collection;
 
 class User
 {
-    use EmailValidation;
-
     const ROLE_TEAM_MANAGER = 'team_manager';
     const ROLE_ADMIN = 'admin';
 
@@ -51,7 +49,7 @@ class User
         string $lastName
     ) {
         $this->validatePassword($password);
-        $this->validateEmail($email);
+        Assert::emailAddress($email);
 
         $this->id = Uuid::create();
         $this->email = $email;
@@ -163,14 +161,7 @@ class User
      */
     private function assertValidRole(string $role): void
     {
-        $valid = [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER];
-        if (!in_array($role, $valid)) {
-            throw new DomainException(sprintf(
-                'Unexpected role value. Valid: [%s], Got: %s',
-                implode(',', $valid),
-                $role
-            ));
-        }
+        Assert::oneOf($role, [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER], 'Invalid role value. Valid: [%s], Got: %s');
     }
 
     public function getTeamIds(): array
@@ -216,12 +207,7 @@ class User
      */
     private function validatePassword(string $password): void
     {
-        $length = mb_strlen($password);
-        if ($length < 6) {
-            throw new DomainException('Password does not reach the minimum length of 6 characters');
-        }
-        if ($length > 255) {
-            throw new DomainException('Password exceeds maximum length of 255 characters');
-        }
+        Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
+        Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
     }
 }

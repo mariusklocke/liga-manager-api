@@ -23,10 +23,9 @@ class MatchCommandController extends CommandController
     {
         $homeScore = $request->getParsedBodyParam('home_score');
         $guestScore = $request->getParsedBodyParam('guest_score');
-        $this->assertTypeExact('home_score', $homeScore, 'integer');
-        $this->assertTypeExact('guest_score', $guestScore, 'integer');
-
-        $this->commandBus->execute(new SubmitMatchResultCommand($matchId, $homeScore, $guestScore));
+        $this->assertInteger('home_score', $homeScore);
+        $this->assertInteger('guest_score', $guestScore);
+        $this->commandBus->execute(new SubmitMatchResultCommand($matchId, $homeScore, $guestScore, $this->getUserFromRequest($request)));
 
         return new Response(204);
     }
@@ -63,7 +62,7 @@ class MatchCommandController extends CommandController
     public function locate(string $matchId, Request $request) : Response
     {
         $pitchId = $request->getParsedBodyParam('pitch_id');
-        $this->assertTypeExact('pitch_id', $pitchId, 'string');
+        $this->assertString('pitch_id', $pitchId);
 
         $this->commandBus->execute(new LocateMatchCommand($matchId, $pitchId));
 

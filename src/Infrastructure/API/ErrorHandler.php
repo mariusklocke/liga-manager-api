@@ -41,32 +41,40 @@ class ErrorHandler
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, Throwable $throwable) : Response
     {
+        $this->logger->notice('Handling uncaught Exception', [
+            'exception' => $throwable,
+            'request' => [
+                'method' => $request->getMethod(),
+                'uri' => $request->getUri()->__toString()
+            ]
+        ]);
+
         switch (true) {
             case ($throwable instanceof AuthenticationException):
-                $this->logger->notice((string)$throwable);
                 return $this->createResponse(401, 'Unauthorized', $throwable->getMessage());
             case ($throwable instanceof PermissionException):
-                $this->logger->notice((string)$throwable);
                 return $this->createResponse(403, 'Forbidden', $throwable->getMessage());
-            case ($throwable instanceof NotFoundException):
             case ($throwable instanceof RouteNotFoundException):
-                $this->logger->notice((string)$throwable);
+            case ($throwable instanceof NotFoundException):
                 return $this->createResponse(404, 'Not Found', $throwable->getMessage());
             case ($throwable instanceof DomainException):
             case ($throwable instanceof UniquenessException):
-                $this->logger->notice((string)$throwable);
                 return $this->createResponse(400, 'Bad Request', $throwable->getMessage());
             case ($throwable instanceof BadRequestException):
-                $this->logger->notice((string)$throwable);
                 return $this->createResponseFromHttpException($throwable);
             case ($throwable instanceof MethodNotAllowedException):
-                $this->logger->notice((string)$throwable);
                 $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);
                 $message = 'See Allow-Header for a list of allowed methods';
                 return $this->createResponse(405, 'Method not allowed', $message, $headers);
         }
 
-        $this->logger->error((string)$throwable);
+        $this->logger->error('Failed handling Exception. Internal Server Error', [
+            'exception' => $throwable,
+            'request' => [
+                'method' => $request->getMethod(),
+                'uri' => $request->getUri()->__toString()
+            ]
+        ]);
         return $this->createResponse(500, 'Internal Server Error', '');
     }
 

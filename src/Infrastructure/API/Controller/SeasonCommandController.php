@@ -23,6 +23,7 @@ class SeasonCommandController extends CommandController
     public function createSeason(Request $request) : Response
     {
         $name = $request->getParsedBodyParam('name');
+        $this->assertString('name', $name);
         $id   = $this->commandBus->execute(new CreateSeasonCommand($name));
         return (new Response(200))->withJson(['id' => $id]);
     }

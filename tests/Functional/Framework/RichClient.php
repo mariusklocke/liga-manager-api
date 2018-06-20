@@ -153,7 +153,7 @@ class RichClient
     public function changePassword(string $newPassword): void
     {
         $this->handleErrors($this->httpClient->put(
-            '/user/me/password',
+            '/api/user/me/password',
             ['new_password' => $newPassword],
             $this->headers
         ));

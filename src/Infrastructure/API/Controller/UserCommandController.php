@@ -6,29 +6,29 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
-use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class UserCommandController extends CommandController
 {
+    use TypeAssert;
+
     public function changePassword(Request $request)
     {
         $newPassword = $request->getParsedBodyParam('new_password');
-
-        $this->commandBus->execute(new ChangeUserPasswordCommand($newPassword));
+        $this->commandBus->execute(new ChangeUserPasswordCommand($newPassword, $this->getUserFromRequest($request)));
         return new Response(204);
     }
 
     public function createUser(Request $request)
     {
         $data = $request->getParsedBody();
-        $expected = ['email', 'password', 'first_name', 'last_name', 'role', 'teams'];
-        foreach ($expected as $property) {
-            if (!isset($data[$property]) || null === $data[$property]) {
-                throw new BadRequestException(sprintf("Invalid value for property '%s'", $property));
-            }
-        }
+        $this->assertString('email', $data['email']);
+        $this->assertString('password', $data['password']);
+        $this->assertString('first_name', $data['first_name']);
+        $this->assertString('last_name', $data['last_name']);
+        $this->assertString('role', $data['role']);
+        $this->assertArray('teams', $data['teams']);
         
         $command = new CreateUserCommand(
             $data['email'],
@@ -36,7 +36,8 @@ class UserCommandController extends CommandController
             $data['first_name'],
             $data['last_name'],
             $data['role'],
-            $data['teams']
+            $data['teams'],
+            $this->getUserFromRequest($request)
         );
 
         $id = $this->commandBus->execute($command);

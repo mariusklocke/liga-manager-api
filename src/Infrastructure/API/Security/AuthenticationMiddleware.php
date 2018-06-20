@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Security;
 
+use DateTimeImmutable;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
-use HexagonalPlayground\Application\Security\Authenticator;
+use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Domain\User;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class AuthenticationMiddleware
 {
@@ -36,21 +39,29 @@ class AuthenticationMiddleware
     }
 
     /**
-     * @param RequestInterface $request
+     * @return TokenFactoryInterface
+     */
+    private function getTokenFactory(): TokenFactoryInterface
+    {
+        return $this->container->get(TokenFactoryInterface::class);
+    }
+
+    /**
+     * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @param callable $next
      * @return ResponseInterface
      */
-    public function __invoke(RequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
         list($type, $secret) = $this->parseAuthHeader($request);
         switch (strtolower($type)) {
             case 'basic':
                 list($email, $password) = $this->parseCredentials($secret);
-                $this->getAuthenticator()->authenticateByCredentials($email, $password);
+                $user = $this->getAuthenticator()->authenticateByCredentials($email, $password);
 
                 /** @var ResponseInterface $response */
-                $response = $next($request, $response);
+                $response = $next($this->setUser($request, $user), $response);
 
                 /**
                  * Creating the token after the controller is important when changing a user password
@@ -60,17 +71,26 @@ class AuthenticationMiddleware
                  * @see Authenticator::authenticateByToken()
                  */
 
-                return $response->withHeader('X-Token', $this->getAuthenticator()->createToken()->encode());
+                $token = $this->getTokenFactory()->create(
+                    $user,
+                    new DateTimeImmutable('now + 1 year')
+                );
+                return $response->withHeader('X-Token', $token->encode());
 
             case 'bearer':
                 if ($this->credentialsRequired) {
                     throw new AuthenticationException('Bearer authentication is not allowed on this route');
                 }
-                $this->getAuthenticator()->authenticateByToken(JsonWebToken::decode($secret));
-                return $next($request, $response);
+                $user = $this->getAuthenticator()->authenticateByToken(JsonWebToken::decode($secret));
+                return $next($this->setUser($request, $user), $response);
         }
 
         throw new AuthenticationException('Unsupported authentication type');
+    }
+
+    private function setUser(ServerRequestInterface $request, User $user): ServerRequestInterface
+    {
+        return $request->withAttribute('user', $user);
     }
 
     /**

@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Routing;
 
-use HexagonalPlayground\Application\Security\Authenticator;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchCommandController;
@@ -17,7 +16,6 @@ use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
-use HexagonalPlayground\Infrastructure\API\Security\JsonSchemaValidator;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\RankingRepository;
@@ -34,7 +32,6 @@ class RouteProvider
             $container = $app->getContainer();
             $anyAuth   = new AuthenticationMiddleware($container);
             $basicAuth = new AuthenticationMiddleware($container, true);
-            $validator = new JsonSchemaValidator(getenv('APP_HOME') . '/public/swagger.json');
 
             $app->get('/team', function () use ($container) {
                 return (new TeamQueryController($container[TeamRepository::class]))->findAllTeams();
@@ -54,7 +51,7 @@ class RouteProvider
 
             $app->post('/team', function ($request) use ($container) {
                 return (new TeamCommandController($container['commandBus']))->create($request);
-            })->add($validator)->add($anyAuth);
+            })->add($anyAuth);
 
             $app->delete('/team/{id}', function ($request, $response, $args) use ($container) {
                 return (new TeamCommandController($container['commandBus']))->delete($args['id']);
@@ -125,7 +122,7 @@ class RouteProvider
 
             $app->post('/season/{id}/matches', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->createMatches($args['id'], $request);
-            })->add($validator)->add($anyAuth);
+            })->add($anyAuth);
 
             $app->post('/match/{id}/kickoff', function ($request, $response, $args) use ($container) {
                 return (new MatchCommandController($container['commandBus']))->schedule($args['id'], $request);
@@ -153,15 +150,15 @@ class RouteProvider
 
             $app->post('/season', function ($request) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->createSeason($request);
-            })->add($validator)->add($anyAuth);
+            })->add($anyAuth);
 
             $app->post('/tournament', function ($request) use ($container) {
                 return (new TournamentCommandController($container['commandBus']))->create($request);
-            })->add($validator)->add($anyAuth);
+            })->add($anyAuth);
 
             $app->put('/tournament/{id}/round/{round}', function ($request, $response, $args) use ($container) {
                 return (new TournamentCommandController($container['commandBus']))->setRound($args['id'], (int) $args['round'], $request);
-            })->add($validator)->add($anyAuth);
+            })->add($anyAuth);
 
             $app->get('/tournament', function () use ($container) {
                 return (new TournamentQueryController($container[TournamentRepository::class]))->findAllTournaments();
@@ -175,10 +172,8 @@ class RouteProvider
                 return (new MatchQueryController($container[MatchRepository::class]))->findMatchesInTournament($args['id']);
             });
 
-            $app->get('/user/me', function () use ($container) {
-                /** @var Authenticator $authenticator */
-                $authenticator = $container[Authenticator::class];
-                return (new UserQueryController($authenticator->getAuthenticatedUser()))->getAuthenticatedUser();
+            $app->get('/user/me', function ($request) use ($container) {
+                return (new UserQueryController())->getAuthenticatedUser($request);
             })->add($anyAuth);
 
             $app->put('/user/me/password', function ($request) use ($container) {

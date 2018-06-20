@@ -297,7 +297,22 @@ class BasicUseCaseTest extends TestCase
             'role' => 'team_manager',
             'teams' => []
         ]);
-        self::assertObjectHasAttribute('id', $user);
+        self::assertValidIdResponse($user);
+        $user = $this->client->getAuthenticatedUser();
+        self::assertValidIdResponse($user);
+    }
+
+    /**
+     * @depends testUserCanBeCreated
+     */
+    public function testUserCanChangePassword()
+    {
+        $this->client->setBasicAuth('nobody@example.com', 'secret');
+        $this->client->changePassword('even_more_secret');
+        $this->client->setBasicAuth('nobody@example.com', 'even_more_secret');
+        $user = $this->client->getAuthenticatedUser();
+        self::assertObjectHasAttribute('email', $user);
+        self::assertEquals('nobody@example.com', $user->email);
     }
 
     private static function assertValidIdResponse($response)

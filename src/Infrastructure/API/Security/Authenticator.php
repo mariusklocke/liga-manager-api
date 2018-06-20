@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Security;
+namespace HexagonalPlayground\Infrastructure\API\Security;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Application\Security\TokenInterface;
+use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Domain\User;
 
 class Authenticator
 {
-    /** @var User|null */
-    private $authenticatedUser;
-
     /** @var TokenFactoryInterface */
     private $tokenFactory;
 
@@ -27,7 +27,6 @@ class Authenticator
     {
         $this->tokenFactory       = $tokenFactory;
         $this->userRepository     = $userRepository;
-        $this->authenticatedUser  = null;
     }
 
     /**
@@ -35,9 +34,10 @@ class Authenticator
      *
      * @param string $email
      * @param string $password
+     * @return User
      * @throws AuthenticationException
      */
-    public function authenticateByCredentials(string $email, string $password): void
+    public function authenticateByCredentials(string $email, string $password): User
     {
         try {
             $user = $this->userRepository->findByEmail($email);
@@ -49,7 +49,7 @@ class Authenticator
             throw $this->createException();
         }
 
-        $this->authenticatedUser = $user;
+        return $user;
     }
 
     /**
@@ -58,9 +58,10 @@ class Authenticator
      * The token will be considered invalid if the user password has been changed after the token has been issued
      *
      * @param TokenInterface $token
+     * @return User
      * @throws AuthenticationException
      */
-    public function authenticateByToken(TokenInterface $token): void
+    public function authenticateByToken(TokenInterface $token): User
     {
         try {
             $user = $this->userRepository->findById($token->getUserId());
@@ -77,30 +78,7 @@ class Authenticator
             throw $this->createException('Password has changed after token has been issued.');
         }
 
-        $this->authenticatedUser = $user;
-    }
-
-    /**
-     * @return User
-     * @throws AuthenticationException
-     */
-    public function getAuthenticatedUser(): User
-    {
-        if (null === $this->authenticatedUser) {
-            throw $this->createException();
-        }
-        return $this->authenticatedUser;
-    }
-
-    /**
-     * @return TokenInterface
-     */
-    public function createToken(): TokenInterface
-    {
-        return $this->tokenFactory->create(
-            $this->getAuthenticatedUser(),
-            new DateTimeImmutable('now + 1 year')
-        );
+        return $user;
     }
 
     /**
