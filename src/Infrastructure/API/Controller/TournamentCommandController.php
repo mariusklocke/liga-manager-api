@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
-use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
+use HexagonalPlayground\Infrastructure\API\HttpException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -38,11 +38,11 @@ class TournamentCommandController extends CommandController
         $this->assertArray('team_pairs', $teamIdPairs);
 
         if (empty($teamIdPairs)) {
-            throw new BadRequestException('Team pairs cannot be empty');
+            throw HttpException::createBadRequest('Team pairs cannot be empty');
         }
 
         if (count($teamIdPairs) > 64) {
-            throw new BadRequestException('Request exceeds maximum amount of 64 team pairs.');
+            throw HttpException::createBadRequest('Request exceeds maximum amount of 64 team pairs.');
         }
 
         $command = new SetTournamentRoundCommand($tournamentId, $round, $plannedFor);

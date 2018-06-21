@@ -8,8 +8,6 @@ use HexagonalPlayground\Application\Exception\PermissionException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Domain\DomainException;
-use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
-use HexagonalPlayground\Infrastructure\API\Exception\HttpException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -50,6 +48,8 @@ class ErrorHandler
         ]);
 
         switch (true) {
+            case ($throwable instanceof HttpException):
+                return $this->createResponseFromHttpException($throwable);
             case ($throwable instanceof AuthenticationException):
                 return $this->createResponse(401, 'Unauthorized', $throwable->getMessage());
             case ($throwable instanceof PermissionException):
@@ -60,8 +60,6 @@ class ErrorHandler
             case ($throwable instanceof DomainException):
             case ($throwable instanceof UniquenessException):
                 return $this->createResponse(400, 'Bad Request', $throwable->getMessage());
-            case ($throwable instanceof BadRequestException):
-                return $this->createResponseFromHttpException($throwable);
             case ($throwable instanceof MethodNotAllowedException):
                 $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);
                 $message = 'See Allow-Header for a list of allowed methods';
@@ -99,6 +97,6 @@ class ErrorHandler
      */
     private function createResponseFromHttpException(HttpException $exception): Response
     {
-        return (new Response($exception->getStatusCode()))->withJson($exception);
+        return (new Response($exception->getCode()))->withJson($exception);
     }
 }

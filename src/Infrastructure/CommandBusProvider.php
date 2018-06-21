@@ -72,6 +72,7 @@ class CommandBusProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container[HandlerResolver::class] = function () use ($container) {
+            /** @var \Slim\Container $container */
             return new CommandHandlerResolver($container);
         };
         $container['commandBus'] = function() use ($container) {

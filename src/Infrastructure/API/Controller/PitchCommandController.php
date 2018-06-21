@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Domain\GeographicLocation;
-use HexagonalPlayground\Infrastructure\API\Exception\BadRequestException;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -15,7 +14,6 @@ class PitchCommandController extends CommandController
     /**
      * @param Request $request
      * @return Response
-     * @throws BadRequestException
      */
     public function create(Request $request) : Response
     {
