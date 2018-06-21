@@ -10,7 +10,7 @@ class ChangeUserPasswordHandler
     /**
      * @param ChangeUserPasswordCommand $command
      */
-    public function handle(ChangeUserPasswordCommand $command)
+    public function __invoke(ChangeUserPasswordCommand $command)
     {
         $command->getAuthenticatedUser()->changePassword($command->getNewPassword());
     }

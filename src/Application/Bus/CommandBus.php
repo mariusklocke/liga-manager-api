@@ -27,13 +27,14 @@ abstract class CommandBus
 
     /**
      * @param CommandInterface $command
-     * @return object
+     * @return callable
      * @throws UnexpectedValueException If the resolver does not return a valid handler for the given command
      */
-    protected function getHandler(CommandInterface $command)
+    protected function getHandler(CommandInterface $command): callable
     {
+        /** @var callable $handler */
         $handler = $this->resolver->resolve($command);
-        if (!is_object($handler) || !method_exists($handler, 'handle')) {
+        if (!is_callable($handler)) {
             throw new UnexpectedValueException('Command Handler for ' . get_class($command) . ' does not implement handle()');
         }
 

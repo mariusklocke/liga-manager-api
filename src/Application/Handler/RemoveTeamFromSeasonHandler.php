@@ -31,7 +31,7 @@ class RemoveTeamFromSeasonHandler
      * @param RemoveTeamFromSeasonCommand $command
      * @throws NotFoundException
      */
-    public function handle(RemoveTeamFromSeasonCommand $command)
+    public function __invoke(RemoveTeamFromSeasonCommand $command)
     {
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

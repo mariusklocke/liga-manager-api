@@ -21,7 +21,7 @@ class EndSeasonHandler
     }
 
 
-    public function handle(EndSeasonCommand $command)
+    public function __invoke(EndSeasonCommand $command)
     {
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

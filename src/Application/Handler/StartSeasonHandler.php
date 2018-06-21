@@ -23,7 +23,7 @@ class StartSeasonHandler
     /**
      * @param StartSeasonCommand $command
      */
-    public function handle(StartSeasonCommand $command)
+    public function __invoke(StartSeasonCommand $command)
     {
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

@@ -6,28 +6,6 @@ namespace HexagonalPlayground\Infrastructure;
 use HexagonalPlayground\Application\Bus\BatchCommandBus;
 use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\Bus\SingleCommandBus;
-use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
-use HexagonalPlayground\Application\Command\CancelMatchCommand;
-use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
-use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
-use HexagonalPlayground\Application\Command\CreatePitchCommand;
-use HexagonalPlayground\Application\Command\CreateSeasonCommand;
-use HexagonalPlayground\Application\Command\CreateSingleMatchCommand;
-use HexagonalPlayground\Application\Command\CreateTeamCommand;
-use HexagonalPlayground\Application\Command\CreateTournamentCommand;
-use HexagonalPlayground\Application\Command\CreateUserCommand;
-use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
-use HexagonalPlayground\Application\Command\DeleteTeamCommand;
-use HexagonalPlayground\Application\Command\LoadFixturesCommand;
-use HexagonalPlayground\Application\Command\LocateMatchCommand;
-use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
-use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
-use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
-use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
-use HexagonalPlayground\Application\Command\StartSeasonCommand;
-use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
-use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
-use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\FixtureGenerator;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
@@ -81,25 +59,25 @@ class CommandBusProvider implements ServiceProviderInterface
         $container['batchCommandBus'] = function () use ($container) {
             return new BatchCommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
         };
-        $container[CreateTeamCommand::class] = function () use ($container) {
+        $container[CreateTeamHandler::class] = function () use ($container) {
             return new CreateTeamHandler(
                 $container['orm.repository.team']
             );
         };
-        $container[DeleteTeamCommand::class] = function() use ($container) {
+        $container[DeleteTeamHandler::class] = function() use ($container) {
             return new DeleteTeamHandler($container['orm.repository.team']);
         };
-        $container[StartSeasonCommand::class] = function() use ($container) {
+        $container[StartSeasonHandler::class] = function() use ($container) {
             return new StartSeasonHandler($container['orm.repository.season']);
         };
-        $container[CreateMatchesForSeasonCommand::class] = function() use ($container) {
+        $container[CreateMatchesForSeasonHandler::class] = function() use ($container) {
             return new CreateMatchesForSeasonHandler(
                 new MatchFactory(),
                 $container['orm.repository.season'],
                 $container['orm.repository.match']
             );
         };
-        $container[CreateSingleMatchCommand::class] = function() use ($container) {
+        $container[CreateSingleMatchHandler::class] = function() use ($container) {
             return new CreateSingleMatchHandler(
                 new MatchFactory(),
                 $container['orm.repository.match'],
@@ -107,45 +85,45 @@ class CommandBusProvider implements ServiceProviderInterface
                 $container['orm.repository.season']
             );
         };
-        $container[DeleteSeasonCommand::class] = function() use ($container) {
+        $container[DeleteSeasonHandler::class] = function() use ($container) {
             return new DeleteSeasonHandler($container['orm.repository.season']);
         };
-        $container[ScheduleMatchCommand::class] = function() use ($container) {
+        $container[ScheduleMatchHandler::class] = function() use ($container) {
             return new ScheduleMatchHandler($container['orm.repository.match']);
         };
-        $container[SubmitMatchResultCommand::class] = function () use ($container) {
+        $container[SubmitMatchResultHandler::class] = function () use ($container) {
             return new SubmitMatchResultHandler(
                 $container['orm.repository.match']
             );
         };
-        $container[LocateMatchCommand::class] = function () use ($container) {
+        $container[LocateMatchHandler::class] = function () use ($container) {
             return new LocateMatchHandler(
                 $container['orm.repository.match'],
                 $container['orm.repository.pitch']
             );
         };
-        $container[CancelMatchCommand::class] = function () use ($container) {
+        $container[CancelMatchHandler::class] = function () use ($container) {
             return new CancelMatchHandler($container['orm.repository.match']);
         };
-        $container[AddTeamToSeasonCommand::class] = function () use ($container) {
+        $container[AddTeamToSeasonHandler::class] = function () use ($container) {
             return new AddTeamToSeasonHandler(
                 $container['orm.repository.season'],
                 $container['orm.repository.team']
             );
         };
-        $container[RemoveTeamFromSeasonCommand::class] = function () use ($container) {
+        $container[RemoveTeamFromSeasonHandler::class] = function () use ($container) {
             return new RemoveTeamFromSeasonHandler(
                 $container['orm.repository.season'],
                 $container['orm.repository.team']
             );
         };
-        $container[CreateSeasonCommand::class] = function () use ($container) {
+        $container[CreateSeasonHandler::class] = function () use ($container) {
             return new CreateSeasonHandler($container['orm.repository.season']);
         };
-        $container[CreateTournamentCommand::class] = function () use ($container) {
+        $container[CreateTournamentHandler::class] = function () use ($container) {
             return new CreateTournamentHandler($container['orm.repository.tournament']);
         };
-        $container[SetTournamentRoundCommand::class] = function () use ($container) {
+        $container[SetTournamentRoundHandler::class] = function () use ($container) {
             return new SetTournamentRoundHandler(
                 new MatchFactory(),
                 $container['orm.repository.tournament'],
@@ -153,27 +131,27 @@ class CommandBusProvider implements ServiceProviderInterface
                 $container['orm.repository.team']
             );
         };
-        $container[ChangeUserPasswordCommand::class] = function () use ($container) {
+        $container[ChangeUserPasswordHandler::class] = function () use ($container) {
             return new ChangeUserPasswordHandler();
         };
-        $container[CreateUserCommand::class] = function () use ($container) {
+        $container[CreateUserHandler::class] = function () use ($container) {
             return new CreateUserHandler(
                 $container['orm.repository.user'],
                 $container['orm.repository.team']
             );
         };
-        $container[CreatePitchCommand::class] = function () use ($container) {
+        $container[CreatePitchHandler::class] = function () use ($container) {
             return new CreatePitchHandler(
                 $container['orm.repository.pitch']
             );
         };
-        $container[UpdateTeamContactCommand::class] = function () use ($container) {
+        $container[UpdateTeamContactHandler::class] = function () use ($container) {
             return new UpdateTeamContactHandler($container['orm.repository.team']);
         };
-        $container[UpdatePitchContactCommand::class] = function () use ($container) {
+        $container[UpdatePitchContactHandler::class] = function () use ($container) {
             return new UpdatePitchContactHandler($container['orm.repository.pitch']);
         };
-        $container[LoadFixturesCommand::class] = function () use ($container) {
+        $container[LoadFixturesHandler::class] = function () use ($container) {
             return new LoadFixturesHandler(
                 $container['orm.repository.team'],
                 $container['orm.repository.season'],
@@ -182,7 +160,7 @@ class CommandBusProvider implements ServiceProviderInterface
                 new FixtureGenerator()
             );
         };
-        $container[SendPasswordResetMailCommand::class] = function () use ($container) {
+        $container[SendPasswordResetMailHandler::class] = function () use ($container) {
             return new SendPasswordResetMailHandler(
                 $container[TokenFactoryInterface::class],
                 $container['orm.repository.user'],

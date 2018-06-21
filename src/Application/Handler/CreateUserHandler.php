@@ -34,7 +34,7 @@ class CreateUserHandler
      * @param CreateUserCommand $command
      * @return string
      */
-    public function handle(CreateUserCommand $command)
+    public function __invoke(CreateUserCommand $command)
     {
         $this->checkPermission($command);
         $this->assertEmailDoesNotExist($command->getEmail());

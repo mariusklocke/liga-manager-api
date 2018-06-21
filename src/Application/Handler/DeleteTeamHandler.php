@@ -25,7 +25,7 @@ class DeleteTeamHandler
      * @param DeleteTeamCommand $command
      * @throws NotFoundException
      */
-    public function handle(DeleteTeamCommand $command)
+    public function __invoke(DeleteTeamCommand $command)
     {
         /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());

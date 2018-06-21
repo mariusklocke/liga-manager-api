@@ -22,10 +22,10 @@ class CommandHandlerResolver implements HandlerResolver
 
     /**
      * @param CommandInterface $command
-     * @return object
+     * @return callable
      */
-    public function resolve(CommandInterface $command)
+    public function resolve(CommandInterface $command): callable
     {
-        return $this->container->get(get_class($command));
+        return $this->container->get(str_replace('Command', 'Handler', get_class($command)));
     }
 }

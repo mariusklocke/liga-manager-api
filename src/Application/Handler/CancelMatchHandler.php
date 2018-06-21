@@ -25,7 +25,7 @@ class CancelMatchHandler
      * @param CancelMatchCommand $command
      * @throws NotFoundException
      */
-    public function handle(CancelMatchCommand $command)
+    public function __invoke(CancelMatchCommand $command)
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());

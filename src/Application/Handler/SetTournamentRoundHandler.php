@@ -40,7 +40,7 @@ class SetTournamentRoundHandler
     /**
      * @param SetTournamentRoundCommand $command
      */
-    public function handle(SetTournamentRoundCommand $command)
+    public function __invoke(SetTournamentRoundCommand $command)
     {
         /** @var Tournament $tournament */
         $tournament = $this->tournamentRepository->find($command->getTournamentId());

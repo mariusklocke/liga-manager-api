@@ -25,7 +25,7 @@ class ScheduleMatchHandler
      * @param ScheduleMatchCommand $command
      * @throws NotFoundException
      */
-    public function handle(ScheduleMatchCommand $command)
+    public function __invoke(ScheduleMatchCommand $command)
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());

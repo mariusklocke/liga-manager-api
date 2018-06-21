@@ -24,7 +24,7 @@ class UpdateTeamContactHandler
     /**
      * @param UpdateTeamContactCommand $command
      */
-    public function handle(UpdateTeamContactCommand $command)
+    public function __invoke(UpdateTeamContactCommand $command)
     {
         /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());

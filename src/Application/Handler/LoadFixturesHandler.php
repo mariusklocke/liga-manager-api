@@ -44,7 +44,7 @@ class LoadFixturesHandler
     /**
      * @param LoadFixturesCommand $command
      */
-    public function handle(LoadFixturesCommand $command)
+    public function __invoke(LoadFixturesCommand $command)
     {
         foreach ($this->generator->generatePitches() as $pitch) {
             $this->pitchRepository->save($pitch);

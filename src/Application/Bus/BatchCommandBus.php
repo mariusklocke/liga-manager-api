@@ -22,7 +22,8 @@ class BatchCommandBus extends CommandBus
     {
         return $this->transactionWrapper->transactional(function() {
             foreach ($this->scheduledCommands as $command) {
-                $this->getHandler($command)->handle($command);
+                $handler = $this->getHandler($command);
+                $handler($command);
             }
         });
     }

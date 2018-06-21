@@ -21,7 +21,7 @@ class DeleteSeasonHandler
         $this->seasonRepository = $seasonRepository;
     }
 
-    public function handle(DeleteSeasonCommand $command)
+    public function __invoke(DeleteSeasonCommand $command)
     {
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

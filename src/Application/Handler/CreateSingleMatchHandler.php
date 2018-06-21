@@ -42,7 +42,7 @@ class CreateSingleMatchHandler
      * @param CreateSingleMatchCommand $command
      * @throws NotFoundException
      */
-    public function handle(CreateSingleMatchCommand $command)
+    public function __invoke(CreateSingleMatchCommand $command)
     {
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

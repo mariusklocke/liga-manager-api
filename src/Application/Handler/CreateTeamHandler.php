@@ -24,7 +24,7 @@ class CreateTeamHandler
      * @param CreateTeamCommand $command
      * @return string Created team's ID
      */
-    public function handle(CreateTeamCommand $command)
+    public function __invoke(CreateTeamCommand $command)
     {
         $team = new Team($command->getTeamName());
         $this->teamRepository->save($team);

@@ -34,7 +34,7 @@ class CreateMatchesForSeasonHandler
      * @param CreateMatchesForSeasonCommand $command
      * @throws NotFoundException
      */
-    public function handle(CreateMatchesForSeasonCommand $command)
+    public function __invoke(CreateMatchesForSeasonCommand $command)
     {
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

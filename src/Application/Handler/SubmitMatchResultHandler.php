@@ -26,7 +26,7 @@ class SubmitMatchResultHandler
     /**
      * @param SubmitMatchResultCommand $command
      */
-    public function handle(SubmitMatchResultCommand $command)
+    public function __invoke(SubmitMatchResultCommand $command)
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());

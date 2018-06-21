@@ -24,7 +24,7 @@ class CreatePitchHandler
      * @param CreatePitchCommand $command
      * @return string
      */
-    public function handle(CreatePitchCommand $command)
+    public function __invoke(CreatePitchCommand $command)
     {
         $pitch = new Pitch($command->getLabel(), $command->getLocation());
         $this->pitchRepository->save($pitch);

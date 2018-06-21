@@ -40,7 +40,7 @@ class SendPasswordResetMailHandler
         $this->mailer           = $mailer;
     }
 
-    public function handle(SendPasswordResetMailCommand $command)
+    public function __invoke(SendPasswordResetMailCommand $command)
     {
         /** @var User $user */
         $user  = $this->userRepository->findByEmail($command->getEmail());

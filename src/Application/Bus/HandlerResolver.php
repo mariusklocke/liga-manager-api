@@ -11,7 +11,7 @@ interface HandlerResolver
      * Returns the appropriate command handler for the given command
      *
      * @param CommandInterface $command
-     * @return object
+     * @return callable
      */
-    public function resolve(CommandInterface $command);
+    public function resolve(CommandInterface $command): callable;
 }

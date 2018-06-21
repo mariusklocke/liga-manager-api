@@ -24,7 +24,7 @@ class CreateSeasonHandler
      * @param CreateSeasonCommand $command
      * @return string
      */
-    public function handle(CreateSeasonCommand $command)
+    public function __invoke(CreateSeasonCommand $command)
     {
         $season = new Season($command->getName());
         $this->seasonRepository->save($season);

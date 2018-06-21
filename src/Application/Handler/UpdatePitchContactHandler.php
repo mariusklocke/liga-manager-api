@@ -24,7 +24,7 @@ class UpdatePitchContactHandler
     /**
      * @param UpdatePitchContactCommand $command
      */
-    public function handle(UpdatePitchContactCommand $command)
+    public function __invoke(UpdatePitchContactCommand $command)
     {
         /** @var Pitch $pitch */
         $pitch = $this->pitchRepository->find($command->getPitchId());

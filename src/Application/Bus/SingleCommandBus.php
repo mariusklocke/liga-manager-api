@@ -15,7 +15,7 @@ class SingleCommandBus extends CommandBus
     {
         $handler = $this->getHandler($command);
         return $this->transactionWrapper->transactional(function() use ($handler, $command) {
-            return $handler->handle($command);
+            return $handler($command);
         });
     }
 }

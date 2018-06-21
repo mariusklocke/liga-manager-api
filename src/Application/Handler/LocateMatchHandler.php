@@ -26,7 +26,7 @@ class LocateMatchHandler
         $this->pitchRepository = $pitchRepository;
     }
 
-    public function handle(LocateMatchCommand $command)
+    public function __invoke(LocateMatchCommand $command)
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());

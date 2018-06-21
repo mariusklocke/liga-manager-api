@@ -31,7 +31,7 @@ class AddTeamToSeasonHandler
      * @param AddTeamToSeasonCommand $command
      * @throws NotFoundException
      */
-    public function handle(AddTeamToSeasonCommand $command)
+    public function __invoke(AddTeamToSeasonCommand $command)
     {
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
