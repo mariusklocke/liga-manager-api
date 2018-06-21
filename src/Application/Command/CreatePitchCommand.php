@@ -14,13 +14,14 @@ class CreatePitchCommand implements CommandInterface
     private $location;
 
     /**
-     * @param string             $label
-     * @param GeographicLocation $location
+     * @param string $label
+     * @param float $longitude
+     * @param float $latitude
      */
-    public function __construct(string $label, GeographicLocation $location)
+    public function __construct(string $label, float $longitude, float $latitude)
     {
         $this->label = $label;
-        $this->location = $location;
+        $this->location = new GeographicLocation($longitude, $latitude);
     }
 
     /**

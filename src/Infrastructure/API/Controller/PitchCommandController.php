@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
-use HexagonalPlayground\Domain\GeographicLocation;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -24,8 +23,7 @@ class PitchCommandController extends CommandController
         $this->assertNumber('location_longitude', $longitude);
         $this->assertString('label', $label);
 
-        $location = new GeographicLocation((float)$longitude, (float)$latitude);
-        $command  = new CreatePitchCommand($label, $location);
+        $command  = new CreatePitchCommand($label, (float)$longitude, (float)$latitude);
         $id = $this->commandBus->execute($command);
 
         return (new Response(200))->withJson(['id' => $id]);
