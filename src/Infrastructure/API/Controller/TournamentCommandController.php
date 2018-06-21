@@ -34,7 +34,10 @@ class TournamentCommandController extends CommandController
     public function setRound(string $tournamentId, int $round, Request $request)
     {
         $teamIdPairs = $request->getParsedBodyParam('team_pairs');
-        $plannedFor  = $this->parseDate($request->getParsedBodyParam('planned_for'));
+        $plannedFor  = $request->getParsedBodyParam('planned_for');
+        if (null !== $plannedFor) {
+            $plannedFor = $this->parseDate($plannedFor);
+        }
         $this->assertArray('team_pairs', $teamIdPairs);
 
         if (empty($teamIdPairs)) {
@@ -45,11 +48,7 @@ class TournamentCommandController extends CommandController
             throw HttpException::createBadRequest('Request exceeds maximum amount of 64 team pairs.');
         }
 
-        $command = new SetTournamentRoundCommand($tournamentId, $round, $plannedFor);
-        foreach ($teamIdPairs as $pair) {
-            $command->addPair($pair['home_team_id'], $pair['guest_team_id']);
-        }
-
+        $command = new SetTournamentRoundCommand($tournamentId, $round, $teamIdPairs, $plannedFor);
         $this->commandBus->execute($command);
         return new Response(204);
     }

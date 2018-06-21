@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Command;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\TeamIdPair;
 
 class SetTournamentRoundCommand implements CommandInterface
 {
@@ -13,31 +14,24 @@ class SetTournamentRoundCommand implements CommandInterface
     /** @var int */
     private $round;
 
-    /** @var array */
+    /** @var TeamIdPair[] */
     private $teamIdPairs;
 
     /** @var DateTimeImmutable|null */
     private $plannedFor;
 
-    public function __construct(string $tournamentId, int $round, DateTimeImmutable $plannedFor = null)
+    public function __construct(string $tournamentId, int $round, array $teamIdPairs, DateTimeImmutable $plannedFor = null)
     {
         $this->tournamentId = $tournamentId;
-        $this->round = $round;
-        $this->plannedFor = $plannedFor;
-        $this->teamIdPairs = [];
+        $this->round        = $round;
+        $this->plannedFor   = $plannedFor;
+        $this->teamIdPairs  = array_map(function(array $pair) {
+            return new TeamIdPair($pair['home_team_id'], $pair['guest_team_id']);
+        }, $teamIdPairs);
     }
 
     /**
-     * @param string $homeTeamId
-     * @param string $guestTeamId
-     */
-    public function addPair(string $homeTeamId, string $guestTeamId)
-    {
-        $this->teamIdPairs[] = [$homeTeamId, $guestTeamId];
-    }
-
-    /**
-     * @return array
+     * @return TeamIdPair[]
      */
     public function getTeamIdPairs(): array
     {

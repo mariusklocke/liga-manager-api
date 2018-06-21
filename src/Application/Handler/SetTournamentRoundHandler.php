@@ -47,9 +47,9 @@ class SetTournamentRoundHandler
         $tournament->clearMatchesForRound($command->getRound());
         foreach ($command->getTeamIdPairs() as $pair) {
             /** @var Team $homeTeam */
-            $homeTeam = $this->teamRepository->find($pair[0]);
+            $homeTeam = $this->teamRepository->find($pair->getHomeTeamId());
             /** @var Team $guestTeam */
-            $guestTeam = $this->teamRepository->find($pair[1]);
+            $guestTeam = $this->teamRepository->find($pair->getGuestTeamId());
 
             $match = $this->matchFactory->createMatch($tournament, $command->getRound(), $homeTeam, $guestTeam, $command->getPlannedFor());
             $this->matchRepository->save($match);
