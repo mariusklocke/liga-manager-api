@@ -24,7 +24,7 @@ class Assert
         }
     }
 
-    public static function greatherThan($value, $limit, string $message): void
+    public static function greaterThan($value, $limit, string $message): void
     {
         if ($value <= $limit) {
             throw new DomainException($message);
