@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\PermissionException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Domain\DomainException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -58,7 +57,6 @@ class ErrorHandler
             case ($throwable instanceof NotFoundException):
                 return $this->createResponse(404, 'Not Found', $throwable->getMessage());
             case ($throwable instanceof DomainException):
-            case ($throwable instanceof UniquenessException):
                 return $this->createResponse(400, 'Bad Request', $throwable->getMessage());
             case ($throwable instanceof MethodNotAllowedException):
                 $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);

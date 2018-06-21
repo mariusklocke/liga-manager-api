@@ -6,9 +6,9 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\PermissionException;
-use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
+use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\User;
 
@@ -51,7 +51,7 @@ class CreateUserHandler
 
     /**
      * @param string $email
-     * @throws UniquenessException
+     * @throws DomainException
      */
     private function assertEmailDoesNotExist(string $email)
     {
@@ -61,7 +61,7 @@ class CreateUserHandler
             return;
         }
 
-        throw new UniquenessException(
+        throw new DomainException(
             sprintf("A user with email address %s already exists", $email)
         );
     }
@@ -78,14 +78,14 @@ class CreateUserHandler
 
         if ($command->getAuthenticatedUser()->hasRole(User::ROLE_TEAM_MANAGER)) {
             if ($command->getRole() !== User::ROLE_TEAM_MANAGER) {
-                throw new PermissionException($command->getAuthenticatedUser()->getEmail() . " can only create users with role 'team_manager'");
+                throw new PermissionException("User can only create users with role 'team_manager'");
             }
 
             $permittedTeamIds = array_flip($command->getAuthenticatedUser()->getTeamIds());
             foreach ($command->getTeamIds() as $teamId) {
                 if (!isset($permittedTeamIds[$teamId])) {
                     throw new PermissionException(sprintf(
-                        $command->getAuthenticatedUser()->getEmail() . " is not permitted to create users for team '%s'",
+                        "User is not permitted to create users for team '%s'",
                         $teamId
                     ));
                 }
@@ -93,6 +93,6 @@ class CreateUserHandler
             return;
         }
 
-        throw new PermissionException($command->getAuthenticatedUser()->getEmail() . ' is not permitted to create users');
+        throw new PermissionException('User is not permitted to create users');
     }
 }
