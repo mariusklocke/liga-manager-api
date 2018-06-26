@@ -5,18 +5,17 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
-use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 
 class CancelMatchHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var MatchRepositoryInterface */
     private $matchRepository;
 
     /**
-     * @param OrmRepositoryInterface $matchRepository
+     * @param MatchRepositoryInterface $matchRepository
      */
-    public function __construct(OrmRepositoryInterface $matchRepository)
+    public function __construct(MatchRepositoryInterface $matchRepository)
     {
         $this->matchRepository = $matchRepository;
     }
@@ -27,7 +26,6 @@ class CancelMatchHandler
      */
     public function __invoke(CancelMatchCommand $command)
     {
-        /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());
         $match->cancel();
     }

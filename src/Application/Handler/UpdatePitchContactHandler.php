@@ -4,19 +4,19 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Domain\ContactPerson;
 use HexagonalPlayground\Domain\Pitch;
 
 class UpdatePitchContactHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var PitchRepositoryInterface */
     private $pitchRepository;
 
     /**
-     * @param OrmRepositoryInterface $pitchRepository
+     * @param PitchRepositoryInterface $pitchRepository
      */
-    public function __construct(OrmRepositoryInterface $pitchRepository)
+    public function __construct(PitchRepositoryInterface $pitchRepository)
     {
         $this->pitchRepository = $pitchRepository;
     }

@@ -4,26 +4,24 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
-use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 
 class DeleteSeasonHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var SeasonRepositoryInterface */
     private $seasonRepository;
 
     /**
      * DeleteSeasonHandler constructor.
-     * @param OrmRepositoryInterface $seasonRepository
+     * @param SeasonRepositoryInterface $seasonRepository
      */
-    public function __construct(OrmRepositoryInterface $seasonRepository)
+    public function __construct(SeasonRepositoryInterface $seasonRepository)
     {
         $this->seasonRepository = $seasonRepository;
     }
 
     public function __invoke(DeleteSeasonCommand $command)
     {
-        /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->clearMatches()->clearTeams();
         $this->seasonRepository->delete($season);

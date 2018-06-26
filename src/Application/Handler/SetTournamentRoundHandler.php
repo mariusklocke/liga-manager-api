@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Domain\MatchFactory;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
@@ -14,22 +16,22 @@ class SetTournamentRoundHandler
     /** @var MatchFactory */
     private $matchFactory;
 
-    /** @var OrmRepositoryInterface */
+    /** @var TournamentRepositoryInterface */
     private $tournamentRepository;
 
-    /** @var OrmRepositoryInterface */
+    /** @var MatchRepositoryInterface */
     private $matchRepository;
 
-    /** @var OrmRepositoryInterface */
+    /** @var TeamRepositoryInterface */
     private $teamRepository;
 
     /**
      * @param MatchFactory $matchFactory
-     * @param OrmRepositoryInterface $tournamentRepository
-     * @param OrmRepositoryInterface $matchRepository
-     * @param OrmRepositoryInterface $teamRepository
+     * @param TournamentRepositoryInterface $tournamentRepository
+     * @param MatchRepositoryInterface $matchRepository
+     * @param TeamRepositoryInterface $teamRepository
      */
-    public function __construct(MatchFactory $matchFactory, OrmRepositoryInterface $tournamentRepository, OrmRepositoryInterface $matchRepository, OrmRepositoryInterface $teamRepository)
+    public function __construct(MatchFactory $matchFactory, TournamentRepositoryInterface $tournamentRepository, MatchRepositoryInterface $matchRepository, TeamRepositoryInterface $teamRepository)
     {
         $this->matchFactory = $matchFactory;
         $this->tournamentRepository = $tournamentRepository;

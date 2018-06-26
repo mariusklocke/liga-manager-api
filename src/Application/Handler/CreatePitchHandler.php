@@ -4,18 +4,18 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Domain\Pitch;
 
 class CreatePitchHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var PitchRepositoryInterface */
     private $pitchRepository;
 
     /**
-     * @param OrmRepositoryInterface $pitchRepository
+     * @param PitchRepositoryInterface $pitchRepository
      */
-    public function __construct(OrmRepositoryInterface $pitchRepository)
+    public function __construct(PitchRepositoryInterface $pitchRepository)
     {
         $this->pitchRepository = $pitchRepository;
     }

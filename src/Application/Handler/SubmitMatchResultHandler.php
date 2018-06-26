@@ -5,20 +5,20 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Exception\PermissionException;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\MatchResult;
 use HexagonalPlayground\Domain\User;
 
 class SubmitMatchResultHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var MatchRepositoryInterface */
     private $matchRepository;
 
     /**
-     * @param OrmRepositoryInterface $matchRepository
+     * @param MatchRepositoryInterface $matchRepository
      */
-    public function __construct(OrmRepositoryInterface $matchRepository)
+    public function __construct(MatchRepositoryInterface $matchRepository)
     {
         $this->matchRepository = $matchRepository;
     }

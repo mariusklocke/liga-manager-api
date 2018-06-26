@@ -5,25 +5,25 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
+use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Domain\MatchFactory;
-use HexagonalPlayground\Domain\Season;
 
 class CreateMatchesForSeasonHandler
 {
     /** @var MatchFactory */
     private $matchFactory;
-    /** @var OrmRepositoryInterface */
+    /** @var SeasonRepositoryInterface */
     private $seasonRepository;
-    /** @var OrmRepositoryInterface */
+    /** @var MatchRepositoryInterface */
     private $matchRepository;
 
     /**
      * @param MatchFactory $matchFactory
-     * @param OrmRepositoryInterface $seasonRepository
-     * @param OrmRepositoryInterface $matchRepository
+     * @param SeasonRepositoryInterface $seasonRepository
+     * @param MatchRepositoryInterface $matchRepository
      */
-    public function __construct(MatchFactory $matchFactory, OrmRepositoryInterface $seasonRepository, OrmRepositoryInterface $matchRepository)
+    public function __construct(MatchFactory $matchFactory, SeasonRepositoryInterface $seasonRepository, MatchRepositoryInterface $matchRepository)
     {
         $this->matchFactory = $matchFactory;
         $this->seasonRepository = $seasonRepository;
@@ -36,7 +36,6 @@ class CreateMatchesForSeasonHandler
      */
     public function __invoke(CreateMatchesForSeasonCommand $command)
     {
-        /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->clearMatches();
         $matches = $this->matchFactory->createMatchesForSeason($season, $command->getStartAt());

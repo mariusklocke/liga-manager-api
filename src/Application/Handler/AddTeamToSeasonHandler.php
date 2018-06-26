@@ -5,23 +5,22 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
-use HexagonalPlayground\Domain\Season;
-use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 
 class AddTeamToSeasonHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var SeasonRepositoryInterface */
     private $seasonRepository;
 
-    /** @var OrmRepositoryInterface */
+    /** @var TeamRepositoryInterface */
     private $teamRepository;
 
     /**
-     * @param OrmRepositoryInterface $seasonRepository
-     * @param OrmRepositoryInterface $teamRepository
+     * @param SeasonRepositoryInterface $seasonRepository
+     * @param TeamRepositoryInterface $teamRepository
      */
-    public function __construct(OrmRepositoryInterface $seasonRepository, OrmRepositoryInterface $teamRepository)
+    public function __construct(SeasonRepositoryInterface $seasonRepository, TeamRepositoryInterface $teamRepository)
     {
         $this->seasonRepository = $seasonRepository;
         $this->teamRepository = $teamRepository;
@@ -33,9 +32,7 @@ class AddTeamToSeasonHandler
      */
     public function __invoke(AddTeamToSeasonCommand $command)
     {
-        /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
-        /** @var Team $team */
         $team   = $this->teamRepository->find($command->getTeamId());
 
         $season->addTeam($team);

@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\PermissionException;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Team;
@@ -17,14 +17,14 @@ class CreateUserHandler
     /** @var UserRepositoryInterface */
     private $userRepository;
 
-    /** @var OrmRepositoryInterface */
+    /** @var TeamRepositoryInterface */
     private $teamRepository;
 
     /**
      * @param UserRepositoryInterface $userRepository
-     * @param OrmRepositoryInterface $teamRepository
+     * @param TeamRepositoryInterface $teamRepository
      */
-    public function __construct(UserRepositoryInterface $userRepository, OrmRepositoryInterface $teamRepository)
+    public function __construct(UserRepositoryInterface $userRepository, TeamRepositoryInterface $teamRepository)
     {
         $this->userRepository = $userRepository;
         $this->teamRepository = $teamRepository;

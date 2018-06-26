@@ -4,26 +4,26 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\EndSeasonCommand;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
-use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 
 class EndSeasonHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var SeasonRepositoryInterface */
     private $seasonRepository;
 
     /**
-     * @param OrmRepositoryInterface $seasonRepository
+     * @param SeasonRepositoryInterface $seasonRepository
      */
-    public function __construct(OrmRepositoryInterface $seasonRepository)
+    public function __construct(SeasonRepositoryInterface $seasonRepository)
     {
         $this->seasonRepository = $seasonRepository;
     }
 
-
+    /**
+     * @param EndSeasonCommand $command
+     */
     public function __invoke(EndSeasonCommand $command)
     {
-        /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->end();
     }

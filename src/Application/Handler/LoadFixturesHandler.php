@@ -5,34 +5,37 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\LoadFixturesCommand;
 use HexagonalPlayground\Application\FixtureGenerator;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
+use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Domain\User;
 
 class LoadFixturesHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var TeamRepositoryInterface */
     private $teamRepository;
 
-    /** @var OrmRepositoryInterface */
+    /** @var SeasonRepositoryInterface */
     private $seasonRepository;
 
-    /** @var OrmRepositoryInterface */
+    /** @var PitchRepositoryInterface */
     private $pitchRepository;
 
-    /** @var OrmRepositoryInterface */
+    /** @var UserRepositoryInterface */
     private $userRepository;
 
     /** @var FixtureGenerator */
     private $generator;
 
     /**
-     * @param OrmRepositoryInterface $teamRepository
-     * @param OrmRepositoryInterface $seasonRepository
-     * @param OrmRepositoryInterface $pitchRepository
-     * @param OrmRepositoryInterface $userRepository
+     * @param TeamRepositoryInterface $teamRepository
+     * @param SeasonRepositoryInterface $seasonRepository
+     * @param PitchRepositoryInterface $pitchRepository
+     * @param UserRepositoryInterface $userRepository
      * @param FixtureGenerator $generator
      */
-    public function __construct(OrmRepositoryInterface $teamRepository, OrmRepositoryInterface $seasonRepository, OrmRepositoryInterface $pitchRepository, OrmRepositoryInterface $userRepository, FixtureGenerator $generator)
+    public function __construct(TeamRepositoryInterface $teamRepository, SeasonRepositoryInterface $seasonRepository, PitchRepositoryInterface $pitchRepository, UserRepositoryInterface $userRepository, FixtureGenerator $generator)
     {
         $this->teamRepository   = $teamRepository;
         $this->seasonRepository = $seasonRepository;

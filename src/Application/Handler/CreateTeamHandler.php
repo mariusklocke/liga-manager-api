@@ -4,18 +4,18 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
 
 class CreateTeamHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var TeamRepositoryInterface */
     private $teamRepository;
 
     /**
-     * @param OrmRepositoryInterface $teamRepository
+     * @param TeamRepositoryInterface $teamRepository
      */
-    public function __construct(OrmRepositoryInterface $teamRepository)
+    public function __construct(TeamRepositoryInterface $teamRepository)
     {
         $this->teamRepository = $teamRepository;
     }

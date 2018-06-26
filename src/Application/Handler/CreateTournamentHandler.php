@@ -4,18 +4,18 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Domain\Tournament;
 
 class CreateTournamentHandler
 {
-    /** @var OrmRepositoryInterface */
+    /** @var TournamentRepositoryInterface */
     private $tournamentRepository;
 
     /**
-     * @param OrmRepositoryInterface $tournamentRepository
+     * @param TournamentRepositoryInterface $tournamentRepository
      */
-    public function __construct(OrmRepositoryInterface $tournamentRepository)
+    public function __construct(TournamentRepositoryInterface $tournamentRepository)
     {
         $this->tournamentRepository = $tournamentRepository;
     }
