@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Security;
 
 use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\OrmRepositoryInterface;
 use HexagonalPlayground\Domain\User;
 
-interface UserRepositoryInterface extends OrmRepositoryInterface
+interface UserRepositoryInterface
 {
     /**
      * Finds a user by Id
@@ -26,4 +25,11 @@ interface UserRepositoryInterface extends OrmRepositoryInterface
      * @throws NotFoundException if user does not exists
      */
     public function findByEmail(string $email): User;
+
+    /**
+     * Schedule creation/update for an entity to persistence
+     *
+     * @param User $entity
+     */
+    public function save($entity): void;
 }
