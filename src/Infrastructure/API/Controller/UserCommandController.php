@@ -11,8 +11,6 @@ use Slim\Http\Response;
 
 class UserCommandController extends CommandController
 {
-    use TypeAssert;
-
     public function changePassword(Request $request)
     {
         $newPassword = $request->getParsedBodyParam('new_password');
