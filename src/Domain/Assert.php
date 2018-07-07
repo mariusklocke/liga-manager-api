@@ -61,7 +61,7 @@ class Assert
 
     public static function oneOf($value, array $whitelist, string $message)
     {
-        if (!in_array($value, $whitelist)) {
+        if (!in_array($value, $whitelist, true)) {
             throw new DomainException(sprintf(
                 $message,
                 implode(',', $whitelist),

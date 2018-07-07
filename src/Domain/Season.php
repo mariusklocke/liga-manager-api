@@ -228,4 +228,12 @@ class Season extends Competition
     {
         return false;
     }
+
+    /**
+     * @return Match[]
+     */
+    public function getMatches(): array
+    {
+        return $this->matches->toArray();
+    }
 }
