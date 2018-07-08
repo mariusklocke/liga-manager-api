@@ -61,7 +61,7 @@ class ErrorHandler
                 'uri' => $request->getUri()->__toString()
             ]
         ]);
-        return $this->createResponse(500, 'Internal Server Error', '');
+        return $this->createResponse(500, '');
     }
 
     /**
