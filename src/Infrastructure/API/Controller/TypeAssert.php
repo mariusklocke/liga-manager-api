@@ -3,14 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Infrastructure\API\HttpException;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
 
 trait TypeAssert
 {
     /**
      * @param string $key
      * @param mixed  $value
-     * @throws HttpException
+     * @throws InvalidInputException
      */
     protected function assertNumber(string $key, $value): void
     {
@@ -22,7 +22,7 @@ trait TypeAssert
     /**
      * @param string $key
      * @param mixed  $value
-     * @throws HttpException
+     * @throws InvalidInputException
      */
     protected function assertInteger(string $key, $value): void
     {
@@ -34,7 +34,7 @@ trait TypeAssert
     /**
      * @param string $key
      * @param mixed  $value
-     * @throws HttpException
+     * @throws InvalidInputException
      */
     protected function assertString(string $key, $value): void
     {
@@ -46,7 +46,7 @@ trait TypeAssert
     /**
      * @param string $key
      * @param mixed  $value
-     * @throws HttpException
+     * @throws InvalidInputException
      */
     protected function assertBoolean(string $key, $value): void
     {
@@ -58,7 +58,7 @@ trait TypeAssert
     /**
      * @param string $key
      * @param mixed  $value
-     * @throws HttpException
+     * @throws InvalidInputException
      */
     protected function assertArray(string $key, $value): void
     {
@@ -71,11 +71,11 @@ trait TypeAssert
      * @param string $key
      * @param mixed  $value
      * @param string $expectedType
-     * @throws HttpException
+     * @throws InvalidInputException
      */
     private function invalidType(string $key, $value, string $expectedType): void
     {
-        throw HttpException::createBadRequest(sprintf(
+        throw new InvalidInputException(sprintf(
             'Invalid request parameter type for %s. Expected: %s. Given: %s',
             $key,
             $expectedType,

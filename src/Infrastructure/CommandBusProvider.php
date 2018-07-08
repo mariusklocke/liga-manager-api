@@ -35,6 +35,7 @@ use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Domain\MatchFactory;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 
 class CommandBusProvider implements ServiceProviderInterface
 {
@@ -50,7 +51,7 @@ class CommandBusProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container[HandlerResolver::class] = function () use ($container) {
-            /** @var \Slim\Container $container */
+            /** @var ContainerInterface $container */
             return new CommandHandlerResolver($container);
         };
         $container['commandBus'] = function() use ($container) {

@@ -5,14 +5,13 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
-use HexagonalPlayground\Infrastructure\API\HttpException;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Application\InputParser;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class TournamentCommandController extends CommandController
 {
-    use DateParser;
-
     /**
      * @param Request $request
      * @return Response
@@ -36,16 +35,17 @@ class TournamentCommandController extends CommandController
         $teamIdPairs = $request->getParsedBodyParam('team_pairs');
         $plannedFor  = $request->getParsedBodyParam('planned_for');
         if (null !== $plannedFor) {
-            $plannedFor = $this->parseDate($plannedFor);
+            $this->assertString('planned_for', $plannedFor);
+            $plannedFor = InputParser::parseDateTime($plannedFor);
         }
         $this->assertArray('team_pairs', $teamIdPairs);
 
         if (empty($teamIdPairs)) {
-            throw HttpException::createBadRequest('Team pairs cannot be empty');
+            throw new InvalidInputException('Team pairs cannot be empty');
         }
 
         if (count($teamIdPairs) > 64) {
-            throw HttpException::createBadRequest('Request exceeds maximum amount of 64 team pairs.');
+            throw new InvalidInputException('Request exceeds maximum amount of 64 team pairs.');
         }
 
         $command = new SetTournamentRoundCommand($tournamentId, $round, $teamIdPairs, $plannedFor);

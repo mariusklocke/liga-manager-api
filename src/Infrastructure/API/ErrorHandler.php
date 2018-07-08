@@ -3,10 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalPlayground\Application\Exception\AuthenticationException;
-use HexagonalPlayground\Application\Exception\PermissionException;
-use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Domain\DomainException;
+use HexagonalPlayground\Domain\ExceptionInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -47,21 +44,14 @@ class ErrorHandler
         ]);
 
         switch (true) {
-            case ($throwable instanceof HttpException):
-                return $this->createResponseFromHttpException($throwable);
-            case ($throwable instanceof AuthenticationException):
-                return $this->createResponse(401, 'Unauthorized', $throwable->getMessage());
-            case ($throwable instanceof PermissionException):
-                return $this->createResponse(403, 'Forbidden', $throwable->getMessage());
+            case ($throwable instanceof ExceptionInterface):
+                return $this->createResponseFromException($throwable);
             case ($throwable instanceof RouteNotFoundException):
-            case ($throwable instanceof NotFoundException):
-                return $this->createResponse(404, 'Not Found', $throwable->getMessage());
-            case ($throwable instanceof DomainException):
-                return $this->createResponse(400, 'Bad Request', $throwable->getMessage());
+                return $this->createResponse(404, $throwable->getMessage());
             case ($throwable instanceof MethodNotAllowedException):
                 $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);
                 $message = 'See Allow-Header for a list of allowed methods';
-                return $this->createResponse(405, 'Method not allowed', $message, $headers);
+                return $this->createResponse(405, $message, $headers);
         }
 
         $this->logger->error('Failed handling Exception. Internal Server Error', [
@@ -76,25 +66,29 @@ class ErrorHandler
 
     /**
      * @param int $statusCode
-     * @param string $title
      * @param string $message
      * @param HeadersInterface|null $headers
      * @return Response
      */
-    private function createResponse(int $statusCode, string $title, string $message, HeadersInterface $headers = null): Response
+    private function createResponse(int $statusCode, string $message, HeadersInterface $headers = null): Response
     {
-        return (new Response($statusCode, $headers))->withJson([
-            'title'   => $title,
+        $response = new Response($statusCode, $headers);
+        return $response->withJson([
+            'title'   => $response->getReasonPhrase(),
             'message' => $message
         ]);
     }
 
     /**
-     * @param HttpException $exception
+     * @param ExceptionInterface $exception
      * @return Response
      */
-    private function createResponseFromHttpException(HttpException $exception): Response
+    private function createResponseFromException(ExceptionInterface $exception): Response
     {
-        return (new Response($exception->getCode()))->withJson($exception);
+        $response = new Response($exception->getHttpStatusCode());
+        return $response->withJson([
+            'title' => $response->getReasonPhrase(),
+            'message' => $exception->getMessage()
+        ]);
     }
 }

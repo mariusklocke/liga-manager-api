@@ -9,13 +9,12 @@ use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Application\InputParser;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class SeasonCommandController extends CommandController
 {
-    use DateParser;
-
     /**
      * @param Request $request
      * @return Response
@@ -35,8 +34,9 @@ class SeasonCommandController extends CommandController
      */
     public function createMatches(string $seasonId, Request $request) : Response
     {
-        $startAt = $this->parseDate($request->getParsedBodyParam('start_at'));
-        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, $startAt));
+        $startAt = $request->getParsedBodyParam('start_at');
+        $this->assertString('start_at', $startAt);
+        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, InputParser::parseDateTime($startAt)));
         return new Response(204);
     }
 

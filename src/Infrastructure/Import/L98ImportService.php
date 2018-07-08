@@ -34,7 +34,6 @@ class L98ImportService
      * @param MatchRepositoryInterface $matchRepository
      * @param TeamRepositoryInterface $teamRepository
      * @param SeasonRepositoryInterface $seasonRepository
-     * @param MatchFactory $matchFactory
      */
     public function __construct(
         MatchRepositoryInterface $matchRepository,

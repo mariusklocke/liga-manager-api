@@ -7,13 +7,12 @@ use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
+use HexagonalPlayground\Application\InputParser;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class MatchCommandController extends CommandController
 {
-    use DateParser;
-
     /**
      * @param string $matchId
      * @param Request $request
@@ -47,9 +46,10 @@ class MatchCommandController extends CommandController
      */
     public function schedule(string $matchId, Request $request) : Response
     {
-        $kickoff = $this->parseDate($request->getParsedBodyParam('kickoff'));
+        $kickoff = $request->getParsedBodyParam('kickoff');
+        $this->assertString('kickoff', $kickoff);
 
-        $this->commandBus->execute(new ScheduleMatchCommand($matchId, $kickoff));
+        $this->commandBus->execute(new ScheduleMatchCommand($matchId, InputParser::parseDateTime($kickoff)));
 
         return new Response(204);
     }

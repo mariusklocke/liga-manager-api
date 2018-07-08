@@ -3,14 +3,13 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
+use HexagonalPlayground\Application\InputParser;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class MatchQueryController
 {
-    use DateParser;
-
     /** @var MatchRepository */
     private $matchRepository;
 
@@ -49,9 +48,11 @@ class MatchQueryController
             ($from = $request->getQueryParam('from')) !== null &&
             ($to = $request->getQueryParam('to')) !== null
         ) {
-            $from = $this->parseDate($from);
-            $to   = $this->parseDate($to);
-            return (new Response(200))->withJson($this->matchRepository->findMatchesByDate($seasonId, $from, $to));
+            return (new Response(200))->withJson($this->matchRepository->findMatchesByDate(
+                $seasonId,
+                InputParser::parseDateTime($from),
+                InputParser::parseDateTime($to)
+            ));
         }
 
         return (new Response(400))->withJson('Missing query parameter');
