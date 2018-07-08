@@ -10,10 +10,10 @@ class Match
     /** @var string */
     private $id;
 
-    /** @var Season */
+    /** @var Season|null */
     private $season;
 
-    /** @var Tournament */
+    /** @var Tournament|null */
     private $tournament;
 
     /** @var int */
@@ -25,19 +25,19 @@ class Match
     /** @var Team */
     private $guestTeam;
 
-    /** @var MatchResult */
+    /** @var MatchResult|null */
     private $matchResult;
 
-    /** @var DateTimeImmutable */
+    /** @var DateTimeImmutable|null */
     private $kickoff;
 
-    /** @var DateTimeImmutable */
+    /** @var DateTimeImmutable|null */
     private $plannedFor;
 
-    /** @var Pitch */
+    /** @var Pitch|null */
     private $pitch;
 
-    /** @var DateTimeImmutable */
+    /** @var DateTimeImmutable|null */
     private $cancelledAt;
 
     /**

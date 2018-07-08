@@ -17,7 +17,7 @@ class L98MatchModel
     /** @var int */
     private $guestScore;
 
-    /** @var int */
+    /** @var int|null */
     private $kickoff;
 
     /** @var int */
@@ -28,15 +28,15 @@ class L98MatchModel
      * @param int $guestTeamId
      * @param int $homeScore
      * @param int $guestScore
-     * @param int $kickoff
+     * @param int|null $kickoff
      * @param int $matchDay
      */
-    public function __construct(int $homeTeamId, int $guestTeamId, int $homeScore, int $guestScore, int $kickoff, int $matchDay)
+    public function __construct(int $homeTeamId, int $guestTeamId, int $homeScore, int $guestScore, ?int $kickoff, int $matchDay)
     {
         $this->homeTeamId  = $homeTeamId;
         $this->guestTeamId = $guestTeamId;
-        $this->homeScore   = $homeScore;
-        $this->guestScore  = $guestScore;
+        $this->homeScore   = max($homeScore, 0);
+        $this->guestScore  = max($guestScore, 0);
         $this->kickoff     = $kickoff;
         $this->matchDay    = $matchDay;
     }
@@ -74,9 +74,9 @@ class L98MatchModel
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getKickoff(): int
+    public function getKickoff(): ?int
     {
         return $this->kickoff;
     }

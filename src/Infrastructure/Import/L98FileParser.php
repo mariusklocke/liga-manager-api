@@ -45,9 +45,10 @@ class L98FileParser
                     InputParser::parseInteger($round['TB' . $matchIndex]),
                     InputParser::parseInteger($round['GA' . $matchIndex]),
                     InputParser::parseInteger($round['GB' . $matchIndex]),
-                    InputParser::parseInteger($round['AT' . $matchIndex]),
+                    $round['AT' . $matchIndex] !== '' ? InputParser::parseInteger($round['AT' . $matchIndex]) : null,
                     $matchDay
                 );
+
                 $matchIndex++;
             }
             $matchDay++;
