@@ -7,7 +7,6 @@ use HexagonalPlayground\Application\Bus\BatchCommandBus;
 use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\Bus\SingleCommandBus;
 use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\FixtureGenerator;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\CancelMatchHandler;
 use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
@@ -32,7 +31,6 @@ use HexagonalPlayground\Application\Handler\UpdatePitchContactHandler;
 use HexagonalPlayground\Application\Handler\UpdateTeamContactHandler;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
-use HexagonalPlayground\Domain\MatchFactory;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Psr\Container\ContainerInterface;
@@ -73,14 +71,12 @@ class CommandBusProvider implements ServiceProviderInterface
         };
         $container[CreateMatchesForSeasonHandler::class] = function() use ($container) {
             return new CreateMatchesForSeasonHandler(
-                new MatchFactory(),
                 $container['orm.repository.season'],
                 $container['orm.repository.match']
             );
         };
         $container[CreateSingleMatchHandler::class] = function() use ($container) {
             return new CreateSingleMatchHandler(
-                new MatchFactory(),
                 $container['orm.repository.match'],
                 $container['orm.repository.team'],
                 $container['orm.repository.season']
@@ -126,7 +122,6 @@ class CommandBusProvider implements ServiceProviderInterface
         };
         $container[SetTournamentRoundHandler::class] = function () use ($container) {
             return new SetTournamentRoundHandler(
-                new MatchFactory(),
                 $container['orm.repository.tournament'],
                 $container['orm.repository.match'],
                 $container['orm.repository.team']
@@ -157,8 +152,7 @@ class CommandBusProvider implements ServiceProviderInterface
                 $container['orm.repository.team'],
                 $container['orm.repository.season'],
                 $container['orm.repository.pitch'],
-                $container['orm.repository.user'],
-                new FixtureGenerator()
+                $container['orm.repository.user']
             );
         };
         $container[SendPasswordResetMailHandler::class] = function () use ($container) {

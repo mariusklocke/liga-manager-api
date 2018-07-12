@@ -25,23 +25,18 @@ class LoadFixturesHandler
     /** @var UserRepositoryInterface */
     private $userRepository;
 
-    /** @var FixtureGenerator */
-    private $generator;
-
     /**
      * @param TeamRepositoryInterface $teamRepository
      * @param SeasonRepositoryInterface $seasonRepository
      * @param PitchRepositoryInterface $pitchRepository
      * @param UserRepositoryInterface $userRepository
-     * @param FixtureGenerator $generator
      */
-    public function __construct(TeamRepositoryInterface $teamRepository, SeasonRepositoryInterface $seasonRepository, PitchRepositoryInterface $pitchRepository, UserRepositoryInterface $userRepository, FixtureGenerator $generator)
+    public function __construct(TeamRepositoryInterface $teamRepository, SeasonRepositoryInterface $seasonRepository, PitchRepositoryInterface $pitchRepository, UserRepositoryInterface $userRepository)
     {
         $this->teamRepository   = $teamRepository;
         $this->seasonRepository = $seasonRepository;
         $this->pitchRepository  = $pitchRepository;
         $this->userRepository   = $userRepository;
-        $this->generator        = $generator;
     }
 
     /**
@@ -49,16 +44,17 @@ class LoadFixturesHandler
      */
     public function __invoke(LoadFixturesCommand $command)
     {
-        foreach ($this->generator->generatePitches() as $pitch) {
+        $generator = new FixtureGenerator();
+        foreach ($generator->generatePitches() as $pitch) {
             $this->pitchRepository->save($pitch);
         }
         $teams = [];
-        foreach ($this->generator->generateTeams() as $team) {
+        foreach ($generator->generateTeams() as $team) {
             $teams[] = $team;
             $this->teamRepository->save($team);
         }
         $i = 0;
-        foreach ($this->generator->generateUsers() as $user) {
+        foreach ($generator->generateUsers() as $user) {
             /** @var User $user */
             if ($user->hasRole(User::ROLE_TEAM_MANAGER)) {
                 $user->addTeam($teams[$i]);
@@ -66,7 +62,7 @@ class LoadFixturesHandler
             }
             $this->userRepository->save($user);
         }
-        foreach ($this->generator->generateSeasons() as $season) {
+        foreach ($generator->generateSeasons() as $season) {
             foreach ($teams as $team) {
                 $season->addTeam($team);
             }

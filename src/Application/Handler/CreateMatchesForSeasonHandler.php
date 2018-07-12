@@ -11,23 +11,19 @@ use HexagonalPlayground\Domain\MatchFactory;
 
 class CreateMatchesForSeasonHandler
 {
-    /** @var MatchFactory */
-    private $matchFactory;
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;
     /** @var MatchRepositoryInterface */
     private $matchRepository;
 
     /**
-     * @param MatchFactory $matchFactory
      * @param SeasonRepositoryInterface $seasonRepository
      * @param MatchRepositoryInterface $matchRepository
      */
-    public function __construct(MatchFactory $matchFactory, SeasonRepositoryInterface $seasonRepository, MatchRepositoryInterface $matchRepository)
+    public function __construct(SeasonRepositoryInterface $seasonRepository, MatchRepositoryInterface $matchRepository)
     {
-        $this->matchFactory = $matchFactory;
         $this->seasonRepository = $seasonRepository;
-        $this->matchRepository = $matchRepository;
+        $this->matchRepository  = $matchRepository;
     }
 
     /**
@@ -38,7 +34,7 @@ class CreateMatchesForSeasonHandler
     {
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->clearMatches();
-        $matches = $this->matchFactory->createMatchesForSeason($season, $command->getStartAt());
+        $matches = (new MatchFactory())->createMatchesForSeason($season, $command->getStartAt());
         foreach ($matches as $match) {
             $season->addMatch($match);
             $this->matchRepository->save($match);

@@ -13,9 +13,6 @@ use HexagonalPlayground\Domain\Tournament;
 
 class SetTournamentRoundHandler
 {
-    /** @var MatchFactory */
-    private $matchFactory;
-
     /** @var TournamentRepositoryInterface */
     private $tournamentRepository;
 
@@ -26,14 +23,12 @@ class SetTournamentRoundHandler
     private $teamRepository;
 
     /**
-     * @param MatchFactory $matchFactory
      * @param TournamentRepositoryInterface $tournamentRepository
      * @param MatchRepositoryInterface $matchRepository
      * @param TeamRepositoryInterface $teamRepository
      */
-    public function __construct(MatchFactory $matchFactory, TournamentRepositoryInterface $tournamentRepository, MatchRepositoryInterface $matchRepository, TeamRepositoryInterface $teamRepository)
+    public function __construct(TournamentRepositoryInterface $tournamentRepository, MatchRepositoryInterface $matchRepository, TeamRepositoryInterface $teamRepository)
     {
-        $this->matchFactory = $matchFactory;
         $this->tournamentRepository = $tournamentRepository;
         $this->matchRepository = $matchRepository;
         $this->teamRepository = $teamRepository;
@@ -47,13 +42,14 @@ class SetTournamentRoundHandler
         /** @var Tournament $tournament */
         $tournament = $this->tournamentRepository->find($command->getTournamentId());
         $tournament->clearMatchesForRound($command->getRound());
+        $matchFactory = new MatchFactory();
         foreach ($command->getTeamIdPairs() as $pair) {
             /** @var Team $homeTeam */
             $homeTeam = $this->teamRepository->find($pair->getHomeTeamId());
             /** @var Team $guestTeam */
             $guestTeam = $this->teamRepository->find($pair->getGuestTeamId());
 
-            $match = $this->matchFactory->createMatch($tournament, $command->getRound(), $homeTeam, $guestTeam, $command->getPlannedFor());
+            $match = $matchFactory->createMatch($tournament, $command->getRound(), $homeTeam, $guestTeam, $command->getPlannedFor());
             $this->matchRepository->save($match);
             $tournament->addMatch($match);
         }
