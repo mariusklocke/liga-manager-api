@@ -35,8 +35,8 @@ class L98MatchModel
     {
         $this->homeTeamId  = $homeTeamId;
         $this->guestTeamId = $guestTeamId;
-        $this->homeScore   = max($homeScore, 0);
-        $this->guestScore  = max($guestScore, 0);
+        $this->homeScore   = $homeScore;
+        $this->guestScore  = $guestScore;
         $this->kickoff     = $kickoff;
         $this->matchDay    = $matchDay;
     }

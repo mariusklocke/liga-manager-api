@@ -5,12 +5,14 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\Import\L98FileParser;
 use HexagonalPlayground\Infrastructure\Import\L98ImportService;
-use Symfony\Component\Console\Helper\QuestionHelper;
+use HexagonalPlayground\Infrastructure\Import\L98TeamModel;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class L98ImportCommand extends Command
 {
@@ -42,23 +44,45 @@ class L98ImportCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->importService->init($input->getArgument('filepath'));
-        $helper = new QuestionHelper();
-        foreach ($this->importService->getImportableTeams() as $importableTeam) {
-            $recommendedTeams = $this->importService->getTeamMappingRecommendations($importableTeam);
-            $output->writeln('Please choose how to map ' . $importableTeam->getName());
-            foreach ($recommendedTeams as $index => $recommendedTeam) {
-                $output->writeln(sprintf('[%d] %s', $index, $recommendedTeam->getName()));
-            }
-            $output->writeln('[*] Import as new');
-            $answer = $helper->ask($input, $output, new Question("Dude what's the right team?"));
-            if (trim($answer) !== '*' && is_numeric($answer)) {
-                $this->importService->addTeamMapping($importableTeam, $recommendedTeams[$answer]);
-            }
+        $outputDecorator = new SymfonyStyle($input, $output);
+        $parser = new L98FileParser($input->getArgument('filepath'));
+        foreach ($parser->getTeams() as $importableTeam) {
+            $this->mapTeam($outputDecorator, $importableTeam);
         }
-        $this->transactionWrapper->transactional(function () {
-            $this->importService->import(new User('import@example.com', '123456', 'bla', 'blubb'));
+        $this->transactionWrapper->transactional(function () use ($parser) {
+            $user = new User('import@example.com', '123456', 'bla', 'blubb');
+            $teams = iterator_to_array($parser->getTeams());
+            $matches = iterator_to_array($parser->getMatches());
+            $this->importService->import($parser->getSeason(), $teams, $matches, $user);
         });
+        $outputDecorator->success('Import completed successfully!');
     }
 
+    /**
+     * @param SymfonyStyle $outputDecorator
+     * @param L98TeamModel $importableTeam
+     */
+    private function mapTeam(SymfonyStyle $outputDecorator, L98TeamModel $importableTeam)
+    {
+        $recommendedTeams = $this->importService->getTeamMappingRecommendations($importableTeam);
+        if (empty($recommendedTeams)) {
+            return;
+        }
+
+        $choices = [];
+        foreach ($recommendedTeams as $index => $recommendedTeam) {
+            $choices[$index] = $recommendedTeam->getName();
+        }
+        $choices['*'] = '--- Import as a new team ---';
+        $choiceQuestion = new ChoiceQuestion('Please choose how to map ' . $importableTeam->getName(), $choices);
+        $answer = $outputDecorator->askQuestion($choiceQuestion);
+        if (isset($recommendedTeams[$answer])) {
+            $this->importService->addTeamMapping($importableTeam, $recommendedTeams[$answer]);
+        } else {
+            $selectedTeamIndex = array_search($answer, $choices);
+            if ($selectedTeamIndex !== false && isset($recommendedTeams[$selectedTeamIndex])) {
+                $this->importService->addTeamMapping($importableTeam, $recommendedTeams[$selectedTeamIndex]);
+            }
+        }
+    }
 }

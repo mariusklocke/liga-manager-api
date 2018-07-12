@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Import;
 
-use Generator;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
@@ -15,9 +14,6 @@ use HexagonalPlayground\Domain\User;
 
 class L98ImportService
 {
-    /** @var L98FileParser */
-    private $parser;
-
     /** @var MatchRepositoryInterface */
     private $matchRepository;
 
@@ -28,7 +24,7 @@ class L98ImportService
     private $seasonRepository;
 
     /** @var array */
-    private $identityMap;
+    private $teamIdentityMap;
 
     /**
      * @param MatchRepositoryInterface $matchRepository
@@ -43,20 +39,7 @@ class L98ImportService
         $this->matchRepository = $matchRepository;
         $this->teamRepository = $teamRepository;
         $this->seasonRepository = $seasonRepository;
-    }
-
-    public function init(string $filepath)
-    {
-        $this->parser = new L98FileParser($filepath);
-        $this->identityMap = [];
-    }
-
-    /**
-     * @return Generator|L98TeamModel[]
-     */
-    public function getImportableTeams(): Generator
-    {
-        return $this->parser->getTeams();
+        $this->teamIdentityMap = [];
     }
 
     /**
@@ -70,36 +53,73 @@ class L98ImportService
             return levenshtein($t1->getName(), $importableTeam->getName()) <=> levenshtein($t2->getName(), $importableTeam->getName());
         });
 
-        return $teams;
+        return array_slice($teams, 0, 5);
     }
 
-    public function addTeamMapping(L98TeamModel $importableTeam, Team $domainTeam)
+    public function addTeamMapping(L98TeamModel $importableTeam, Team $domainTeam): void
     {
-        $this->identityMap[$importableTeam->getId()] = $domainTeam->getId();
+        $this->teamIdentityMap[$importableTeam->getId()] = $domainTeam->getId();
     }
 
-    public function import(User $user)
+    /**
+     * @param L98SeasonModel $importableSeason
+     * @param L98TeamModel[] $importableTeams
+     * @param L98MatchModel[] $importableMatches
+     * @param User $user
+     */
+    public function import(L98SeasonModel $importableSeason, array $importableTeams, array $importableMatches, User $user): void
     {
-        $season = new Season($this->parser->getSeason()->getName());
+        $season = $this->importSeason($importableSeason);
+        $this->importTeams($season, $importableTeams);
+        $this->importMatches($season, $importableMatches, $user);
+    }
+
+    /**
+     * @param L98SeasonModel $importableSeason
+     * @return Season
+     */
+    private function importSeason(L98SeasonModel $importableSeason): Season
+    {
+        $season = new Season($importableSeason->getName());
         $this->seasonRepository->save($season);
 
-        $matchFactory = new MatchFactory();
-        foreach ($this->getImportableTeams() as $importableTeam) {
-            if (!isset($this->identityMap[$importableTeam->getId()])) {
+        return $season;
+    }
+
+    /**
+     * @param Season $season
+     * @param L98TeamModel[] $importableTeams
+     */
+    private function importTeams(Season $season, array $importableTeams)
+    {
+        foreach ($importableTeams as $importableTeam) {
+            if (!isset($this->teamIdentityMap[$importableTeam->getId()])) {
                 $domainTeam = new Team($importableTeam->getName());
                 $this->teamRepository->save($domainTeam);
-                $this->identityMap[$importableTeam->getId()] = $domainTeam->getId();
+                $this->teamIdentityMap[$importableTeam->getId()] = $domainTeam->getId();
             } else {
-                $domainTeam = $this->teamRepository->find($this->identityMap[$importableTeam->getId()]);
+                $domainTeam = $this->teamRepository->find($this->teamIdentityMap[$importableTeam->getId()]);
             }
             $season->addTeam($domainTeam);
         }
+    }
 
+    /**
+     * @param Season $season
+     * @param L98MatchModel[] $importableMatches
+     * @param User $user
+     */
+    private function importMatches(Season $season, array $importableMatches, User $user)
+    {
+        $matchFactory = new MatchFactory();
         /** @var L98MatchModel[] $matchMap */
         $matchMap = [];
-        foreach ($this->parser->getMatches() as $importableMatch) {
-            $homeTeam = $this->teamRepository->find($this->identityMap[$importableMatch->getHomeTeamId()]);
-            $guestTeam = $this->teamRepository->find($this->identityMap[$importableMatch->getGuestTeamId()]);
+        foreach ($importableMatches as $importableMatch) {
+            if (!isset($this->teamIdentityMap[$importableMatch->getHomeTeamId()]) || !isset($this->teamIdentityMap[$importableMatch->getGuestTeamId()])) {
+                continue;
+            }
+            $homeTeam = $this->teamRepository->find($this->teamIdentityMap[$importableMatch->getHomeTeamId()]);
+            $guestTeam = $this->teamRepository->find($this->teamIdentityMap[$importableMatch->getGuestTeamId()]);
             $match = $matchFactory->createMatch($season, $importableMatch->getMatchDay(), $homeTeam, $guestTeam);
             $this->matchRepository->save($match);
             $season->addMatch($match);
@@ -112,7 +132,9 @@ class L98ImportService
             if (null !== $importableMatch->getKickoff()) {
                 $match->schedule(new \DateTimeImmutable('@' . $importableMatch->getKickoff()));
             }
-            $match->submitResult(new MatchResult($importableMatch->getHomeScore(), $importableMatch->getGuestScore()), $user);
+            if ($importableMatch->getHomeScore() >= 0 && $importableMatch->getGuestScore() >= 0) {
+                $match->submitResult(new MatchResult($importableMatch->getHomeScore(), $importableMatch->getGuestScore()), $user);
+            }
         }
         $season->end();
     }

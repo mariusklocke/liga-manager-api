@@ -62,7 +62,9 @@ class L98FileParser
     {
         $i = 1;
         while ($name = $this->getValue('Teams', (string)$i)) {
-            yield new L98TeamModel($i, $name);
+            if ($name !== 'Freilos') {
+                yield new L98TeamModel($i, $name);
+            }
             $i++;
         }
     }
