@@ -3,13 +3,12 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Import;
 
-use Generator;
 use HexagonalPlayground\Application\InputParser;
 
 class L98FileParser
 {
     /** @var array */
-    private $data;
+    private $iniData;
 
     public function __construct(string $path)
     {
@@ -17,12 +16,12 @@ class L98FileParser
         if (!is_array($data)) {
             throw new \Exception('Cannot parse L98 file');
         }
-        $this->data = $data;
+        $this->iniData = $data;
     }
 
     private function getSection(string $key): ?array
     {
-        return isset($this->data[$key]) ? $this->data[$key] : null;
+        return isset($this->iniData[$key]) ? $this->iniData[$key] : null;
     }
 
     private function getValue(string $sectionKey, string $valueKey): ?string
@@ -32,15 +31,16 @@ class L98FileParser
     }
 
     /**
-     * @return Generator|L98MatchModel[]
+     * @return L98MatchModel[]
      */
-    public function getMatches(): Generator
+    public function getMatches(): array
     {
+        $result = [];
         $matchDay = 1;
         while ($round = $this->getSection(sprintf('Round%d', $matchDay))) {
             $matchIndex = 1;
             while (isset($round['TA' . $matchIndex])) {
-                yield new L98MatchModel(
+                $result[] = new L98MatchModel(
                     InputParser::parseInteger($round['TA' . $matchIndex]),
                     InputParser::parseInteger($round['TB' . $matchIndex]),
                     InputParser::parseInteger($round['GA' . $matchIndex]),
@@ -53,20 +53,23 @@ class L98FileParser
             }
             $matchDay++;
         }
+        return $result;
     }
 
     /**
-     * @return Generator
+     * @return L98TeamModel[]
      */
-    public function getTeams(): Generator
+    public function getTeams(): array
     {
+        $result = [];
         $i = 1;
         while ($name = $this->getValue('Teams', (string)$i)) {
             if ($name !== 'Freilos') {
-                yield new L98TeamModel($i, $name);
+                $result[] = new L98TeamModel($i, $name);
             }
             $i++;
         }
+        return $result;
     }
 
     public function getSeason(): L98SeasonModel

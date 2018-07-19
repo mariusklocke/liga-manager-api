@@ -23,12 +23,12 @@ class CsvFileReader implements Iterator
      */
     public function __construct(string $filePath)
     {
+        if (!file_exists($filePath)) {
+            throw new InvalidArgumentException(sprintf('File "%s" does not exist', $filePath));
+        }
         $file = fopen($filePath, 'r');
         if (!is_resource($file)) {
-            if (!file_exists($filePath)) {
-                throw new InvalidArgumentException(sprintf('File "%s" does not exist', $filePath));
-            }
-            throw new InvalidArgumentException(sprintf('Cannot read from file "%s"', $filePath));
+            throw new InvalidArgumentException(sprintf('Cannot open file "%s"', $filePath));
         }
 
         $this->rowCounter = 0;

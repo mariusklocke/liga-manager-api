@@ -51,9 +51,7 @@ class L98ImportCommand extends Command
         }
         $this->transactionWrapper->transactional(function () use ($parser) {
             $user = new User('import@example.com', '123456', 'bla', 'blubb');
-            $teams = iterator_to_array($parser->getTeams());
-            $matches = iterator_to_array($parser->getMatches());
-            $this->importService->import($parser->getSeason(), $teams, $matches, $user);
+            $this->importService->import($parser->getSeason(), $parser->getTeams(), $parser->getMatches(), $user);
         });
         $outputDecorator->success('Import completed successfully!');
     }
