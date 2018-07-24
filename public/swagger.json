@@ -1158,6 +1158,7 @@
       "put": {
         "summary": "Change the authenticated user's password",
         "security": [
+          {"JWT": []},
           {"basic-auth": []}
         ],
         "operationId": "changePassword",
