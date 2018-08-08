@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use HexagonalPlayground\Domain\Util\Assert;
+
 class ContactPerson
 {
     /** @var string */

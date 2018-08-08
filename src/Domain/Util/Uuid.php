@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Domain;
+namespace HexagonalPlayground\Domain\Util;
 
 use Ramsey\Uuid\Uuid as RamseyUuid;
 

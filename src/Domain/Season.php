@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Domain;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\Uuid;
 
 class Season extends Competition
 {

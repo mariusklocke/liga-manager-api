@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\Uuid;
+
 class Pitch
 {
     /** @var string */

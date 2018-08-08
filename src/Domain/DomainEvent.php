@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use HexagonalPlayground\Domain\Util\Uuid;
 
 abstract class DomainEvent
 {

@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Domain;
+namespace HexagonalPlayground\Domain\Util;
+
+use HexagonalPlayground\Domain\DomainException;
 
 class Assert
 {

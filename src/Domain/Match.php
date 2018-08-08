@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Util\Uuid;
 
 class Match
 {

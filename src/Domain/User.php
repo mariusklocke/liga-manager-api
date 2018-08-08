@@ -6,6 +6,8 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\Uuid;
 
 class User
 {

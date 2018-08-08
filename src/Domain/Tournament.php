@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\Uuid;
 
 class Tournament extends Competition
 {
