@@ -7,6 +7,11 @@ use Ramsey\Uuid\Uuid as RamseyUuid;
 
 class Uuid
 {
+    private function __construct()
+    {
+        // Cannot be instantiated - static methods only
+    }
+
     public static function create()
     {
         return RamseyUuid::uuid4()->toString();
