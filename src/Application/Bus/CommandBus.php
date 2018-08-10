@@ -35,7 +35,7 @@ abstract class CommandBus
         /** @var callable $handler */
         $handler = $this->resolver->resolve($command);
         if (!is_callable($handler)) {
-            throw new UnexpectedValueException('Command Handler for ' . get_class($command) . ' does not implement handle()');
+            throw new UnexpectedValueException('Command Handler for ' . get_class($command) . ' is not a callable');
         }
 
         return $handler;

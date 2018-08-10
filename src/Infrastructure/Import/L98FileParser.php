@@ -8,20 +8,25 @@ use HexagonalPlayground\Application\InputParser;
 class L98FileParser
 {
     /** @var array */
-    private $iniData;
+    private $data;
 
     public function __construct(string $path)
     {
-        $data = parse_ini_file($path, true);
+        // Add quotes around all values
+        $iniData = preg_replace('/^([A-Za-z0-9]+)=(.*)$/m', '${1}="${2}"', file_get_contents($path));
+        $data = parse_ini_string(
+            $iniData,
+            true
+        );
         if (!is_array($data)) {
             throw new \Exception('Cannot parse L98 file');
         }
-        $this->iniData = $data;
+        $this->data = $data;
     }
 
     private function getSection(string $key): ?array
     {
-        return isset($this->iniData[$key]) ? $this->iniData[$key] : null;
+        return isset($this->data[$key]) ? $this->data[$key] : null;
     }
 
     private function getValue(string $sectionKey, string $valueKey): ?string

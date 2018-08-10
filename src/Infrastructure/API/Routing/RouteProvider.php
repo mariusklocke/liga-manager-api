@@ -58,38 +58,33 @@ class RouteProvider
             })->add($auth);
 
             $app->get('/season', function () use ($container) {
-                return (
-                    new SeasonQueryController(
-                        $container[SeasonRepository::class],
-                        $container[RankingRepository::class],
-                        $container[MatchRepository::class]
-                    )
-                )->findAllSeasons();
+                return (new SeasonQueryController(
+                    $container[SeasonRepository::class],
+                    $container[RankingRepository::class],
+                    $container[MatchRepository::class]
+                ))->findAllSeasons();
             });
 
             $app->get('/season/{id}', function ($request, $response, $args) use ($container) {
-                return (
-                    new SeasonQueryController(
-                        $container[SeasonRepository::class],
-                        $container[RankingRepository::class],
-                        $container[MatchRepository::class]
-                    )
-                )->findSeasonById($args['id']);
+                return (new SeasonQueryController(
+                    $container[SeasonRepository::class],
+                    $container[RankingRepository::class],
+                    $container[MatchRepository::class]
+                ))->findSeasonById($args['id']);
             });
 
             $app->get('/season/{id}/ranking', function ($request, $response, $args) use ($container) {
-                return (
-                    new SeasonQueryController(
-                        $container[SeasonRepository::class],
-                        $container[RankingRepository::class],
-                        $container[MatchRepository::class]
-                    )
-                )->findRanking($args['id']);
+                return (new SeasonQueryController(
+                    $container[SeasonRepository::class],
+                    $container[RankingRepository::class],
+                    $container[MatchRepository::class]
+                ))->findRanking($args['id']);
             });
 
             $app->get('/season/{id}/matches', function ($request, $response, $args) use ($container) {
-                return (new MatchQueryController($container[MatchRepository::class]))
-                    ->findMatchesInSeason($args['id'], $request);
+                return (new MatchQueryController(
+                    $container[MatchRepository::class]
+                ))->findMatchesInSeason($args['id'], $request);
             });
 
             $app->get('/match/{id}', function ($request, $response, $args) use ($container) {

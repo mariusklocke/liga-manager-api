@@ -38,14 +38,32 @@ class L98ImportCommand extends Command
         $this
             ->setName('app:import-season')
             ->setDefinition([
-                new InputArgument('filepath', InputArgument::REQUIRED, 'Path to L98 season file')
+                new InputArgument('file-pattern', InputArgument::REQUIRED, 'Pattern matching a set of L98 season files')
             ]);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $outputDecorator = new SymfonyStyle($input, $output);
-        $parser = new L98FileParser($input->getArgument('filepath'));
+        $pattern = $input->getArgument('file-pattern');
+        $fileIterator = new \GlobIterator($pattern);
+        if (0 === $fileIterator->count()) {
+            $outputDecorator->error('Cannot find files matching pattern ' . $pattern);
+            return -1;
+        }
+        foreach ($fileIterator as $fileInfo) {
+            /** @var \SplFileInfo $fileInfo */
+            $outputDecorator->writeln('Start parsing ' . $fileInfo->getPathname());
+            $parser = new L98FileParser($fileInfo->getPathname());
+            $this->importFile($parser, $outputDecorator);
+            $outputDecorator->writeln('Finished importing ' . $fileInfo->getPathname());
+        }
+        $outputDecorator->success('Import completed successfully!');
+        return 0;
+    }
+
+    private function importFile(L98FileParser $parser, SymfonyStyle $outputDecorator)
+    {
         foreach ($parser->getTeams() as $importableTeam) {
             $this->mapTeam($outputDecorator, $importableTeam);
         }
@@ -53,7 +71,6 @@ class L98ImportCommand extends Command
             $user = new User('import@example.com', '123456', 'bla', 'blubb');
             $this->importService->import($parser->getSeason(), $parser->getTeams(), $parser->getMatches(), $user);
         });
-        $outputDecorator->success('Import completed successfully!');
     }
 
     /**

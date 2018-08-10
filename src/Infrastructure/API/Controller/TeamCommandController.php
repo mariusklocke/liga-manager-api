@@ -55,7 +55,8 @@ class TeamCommandController extends CommandController
             $firstName,
             $lastName,
             $phone,
-            $email
+            $email,
+            $this->getUserFromRequest($request)
         ));
 
         return new Response(204);
