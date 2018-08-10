@@ -29,7 +29,7 @@ class TeamCommandController extends CommandController
     {
         $name = $request->getParsedBodyParam('name');
         $this->assertString('name', $name);
-        $id   = $this->commandBus->execute(new CreateTeamCommand($name));
+        $id   = $this->commandBus->execute(new CreateTeamCommand($name, $this->getUserFromRequest($request)));
         return (new Response(200))->withJson(['id' => $id]);
     }
 
