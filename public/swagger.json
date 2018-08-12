@@ -7,7 +7,7 @@
     },
     "description": "RESTful API for managing Wilde Liga Bremen",
     "title": "Wilde Liga Bremen API",
-    "version": "0.3"
+    "version": "0.4"
   },
   "basePath": "/api",
   "paths": {
