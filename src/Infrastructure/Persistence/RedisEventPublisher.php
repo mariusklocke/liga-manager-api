@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use HexagonalPlayground\Application\EventSerializer;
-use HexagonalPlayground\Domain\DomainEvent;
-use HexagonalPlayground\Domain\EventSubscriber;
+use HexagonalPlayground\Domain\Event\Event;
+use HexagonalPlayground\Domain\Event\Subscriber;
 use Redis;
 
-class RedisEventPublisher implements EventSubscriber
+class RedisEventPublisher implements Subscriber
 {
     /** @var Redis */
     private $redis;
@@ -29,9 +29,9 @@ class RedisEventPublisher implements EventSubscriber
     /**
      * Handles a DomainEvent by publishing it on a redis channel
      *
-     * @param DomainEvent $event
+     * @param Event $event
      */
-    public function handle(DomainEvent $event): void
+    public function handle(Event $event): void
     {
         $this->redis->publish('events', json_encode($this->serializer->serialize($event)));
     }

@@ -3,16 +3,16 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application;
 
-use HexagonalPlayground\Domain\DomainEvent;
+use HexagonalPlayground\Domain\Event\Event;
 
 interface EventStoreInterface
 {
     /**
      * Append an event
      *
-     * @param DomainEvent $event
+     * @param Event $event
      */
-    public function append(DomainEvent $event): void;
+    public function append(Event $event): void;
 
     /**
      * Find all events

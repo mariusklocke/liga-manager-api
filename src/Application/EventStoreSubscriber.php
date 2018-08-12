@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application;
 
-use HexagonalPlayground\Domain\DomainEvent;
-use HexagonalPlayground\Domain\EventSubscriber;
+use HexagonalPlayground\Domain\Event\Event;
+use HexagonalPlayground\Domain\Event\Subscriber;
 
-class EventStoreSubscriber implements EventSubscriber
+class EventStoreSubscriber implements Subscriber
 {
     /** @var EventStoreInterface */
     private $store;
@@ -20,9 +20,9 @@ class EventStoreSubscriber implements EventSubscriber
     }
 
     /**
-     * @param DomainEvent $event
+     * @param Event $event
      */
-    public function handle(DomainEvent $event)
+    public function handle(Event $event)
     {
         $this->store->append($event);
     }

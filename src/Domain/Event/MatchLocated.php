@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Domain;
+namespace HexagonalPlayground\Domain\Event;
 
-class MatchLocated extends DomainEvent
+class MatchLocated extends Event
 {
     /**
      * @param string $matchId

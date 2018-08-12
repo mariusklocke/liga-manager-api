@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Domain;
+namespace HexagonalPlayground\Domain\Event;
 
 use DateTimeImmutable;
 use DateTimeInterface;
 use HexagonalPlayground\Domain\Util\Uuid;
 
-abstract class DomainEvent
+abstract class Event
 {
     /** @var string */
     private $id;

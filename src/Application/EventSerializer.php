@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Domain\DomainEvent;
+use HexagonalPlayground\Domain\Event\Event;
 
 class EventSerializer
 {
@@ -17,10 +17,10 @@ class EventSerializer
     }
 
     /**
-     * @param DomainEvent $event
-     * @return object
+     * @param Event $event
+     * @return \stdClass
      */
-    public function serialize(DomainEvent $event): object
+    public function serialize(Event $event): object
     {
         $object             = new \stdClass();
         $object->id         = $event->getId();
@@ -31,10 +31,10 @@ class EventSerializer
     }
 
     /**
-     * @param object $serialized
-     * @return DomainEvent
+     * @param \stdClass $serialized
+     * @return Event
      */
-    public function deserialize(object $serialized): DomainEvent
+    public function deserialize(\stdClass $serialized): Event
     {
         $factory    = $this->getFactory($serialized->type);
         $id         = (string) $serialized->id;

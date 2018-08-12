@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Domain;
+namespace HexagonalPlayground\Domain\Event;
 
 use DateTimeImmutable;
 
-class MatchScheduled extends DomainEvent
+class MatchScheduled extends Event
 {
     /**
      * @param string $matchId

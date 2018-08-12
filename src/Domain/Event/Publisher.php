@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Domain;
+namespace HexagonalPlayground\Domain\Event;
 
-final class EventPublisher
+final class Publisher
 {
-    /** @var EventSubscriber[] */
+    /** @var Subscriber[] */
     private $subscribers;
 
     /** @var static */
@@ -25,9 +25,9 @@ final class EventPublisher
     }
 
     /**
-     * @param DomainEvent $event
+     * @param Event $event
      */
-    public function publish(DomainEvent $event)
+    public function publish(Event $event)
     {
         foreach ($this->subscribers as $subscriber) {
             $subscriber->handle($event);
@@ -35,9 +35,9 @@ final class EventPublisher
     }
 
     /**
-     * @param EventSubscriber $subscriber
+     * @param Subscriber $subscriber
      */
-    public function addSubscriber(EventSubscriber $subscriber)
+    public function addSubscriber(Subscriber $subscriber)
     {
         $this->subscribers[] = $subscriber;
     }

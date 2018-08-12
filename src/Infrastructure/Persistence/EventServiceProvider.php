@@ -7,10 +7,10 @@ use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\EventSerializer;
 use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Application\EventStoreSubscriber;
-use HexagonalPlayground\Domain\EventPublisher;
-use HexagonalPlayground\Domain\MatchLocated;
-use HexagonalPlayground\Domain\MatchResultSubmitted;
-use HexagonalPlayground\Domain\MatchScheduled;
+use HexagonalPlayground\Domain\Event\Publisher;
+use HexagonalPlayground\Domain\Event\MatchLocated;
+use HexagonalPlayground\Domain\Event\MatchResultSubmitted;
+use HexagonalPlayground\Domain\Event\MatchScheduled;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Redis;
@@ -30,7 +30,7 @@ class EventServiceProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container->extend(HandlerResolver::class, function($handlerResolver) use ($container) {
-            EventPublisher::getInstance()->addSubscriber(
+            Publisher::getInstance()->addSubscriber(
                 new EventStoreSubscriber($container[EventStoreInterface::class])
             );
             return $handlerResolver;

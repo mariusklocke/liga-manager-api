@@ -4,6 +4,10 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Event\Publisher;
+use HexagonalPlayground\Domain\Event\MatchLocated;
+use HexagonalPlayground\Domain\Event\MatchResultSubmitted;
+use HexagonalPlayground\Domain\Event\MatchScheduled;
 use HexagonalPlayground\Domain\Util\Uuid;
 
 class Match
@@ -83,7 +87,7 @@ class Match
             $this->season->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         }
         $this->matchResult = $matchResult;
-        EventPublisher::getInstance()->publish(MatchResultSubmitted::create(
+        Publisher::getInstance()->publish(MatchResultSubmitted::create(
             $this->id,
             $matchResult->getHomeScore(),
             $matchResult->getGuestScore(),
@@ -99,7 +103,7 @@ class Match
     public function schedule(DateTimeImmutable $kickoff) : Match
     {
         $this->kickoff = $kickoff;
-        EventPublisher::getInstance()->publish(MatchScheduled::create($this->id, $kickoff));
+        Publisher::getInstance()->publish(MatchScheduled::create($this->id, $kickoff));
         return $this;
     }
 
@@ -123,7 +127,7 @@ class Match
     public function locate(Pitch $pitch) : Match
     {
         $this->pitch = $pitch;
-        EventPublisher::getInstance()->publish(MatchLocated::create($this->id, $pitch->getId()));
+        Publisher::getInstance()->publish(MatchLocated::create($this->id, $pitch->getId()));
         return $this;
     }
 

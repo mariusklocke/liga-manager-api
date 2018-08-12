@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use HexagonalPlayground\Application\EventSerializer;
 use HexagonalPlayground\Application\EventStoreInterface;
-use HexagonalPlayground\Domain\DomainEvent;
+use HexagonalPlayground\Domain\Event\Event;
 use Redis;
 
 class RedisEventStore implements EventStoreInterface
@@ -31,7 +31,7 @@ class RedisEventStore implements EventStoreInterface
     /**
      * {@inheritdoc}
      */
-    public function append(DomainEvent $event): void
+    public function append(Event $event): void
     {
         $this->redis->zAdd(self::SET_KEY, $event->getOccurredAt()->getTimestamp(), json_encode($this->serializer->serialize($event)));
     }
