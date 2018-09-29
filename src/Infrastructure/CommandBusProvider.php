@@ -13,7 +13,6 @@ use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
 use HexagonalPlayground\Application\Handler\CreateMatchesForSeasonHandler;
 use HexagonalPlayground\Application\Handler\CreatePitchHandler;
 use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
-use HexagonalPlayground\Application\Handler\CreateSingleMatchHandler;
 use HexagonalPlayground\Application\Handler\CreateTeamHandler;
 use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\CreateUserHandler;
@@ -71,14 +70,6 @@ class CommandBusProvider implements ServiceProviderInterface
         };
         $container[CreateMatchesForSeasonHandler::class] = function() use ($container) {
             return new CreateMatchesForSeasonHandler(
-                $container['orm.repository.season'],
-                $container['orm.repository.match']
-            );
-        };
-        $container[CreateSingleMatchHandler::class] = function() use ($container) {
-            return new CreateSingleMatchHandler(
-                $container['orm.repository.match'],
-                $container['orm.repository.team'],
                 $container['orm.repository.season']
             );
         };

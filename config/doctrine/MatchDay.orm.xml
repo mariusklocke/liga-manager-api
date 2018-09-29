@@ -1,0 +1,23 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                    http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="HexagonalPlayground\Domain\MatchDay" table="match_days">
+        <id name="id" type="string" />
+        <field name="number" type="integer" />
+        <field name="startDate" column="start_date" type="datetime_immutable" />
+        <field name="endDate" column="end_date" type="datetime_immutable" />
+        <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="match_day" orphan-removal="true">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </one-to-many>
+        <many-to-one field="season" target-entity="HexagonalPlayground\Domain\Season" inversed-by="match_days">
+            <join-column name="season_id" referenced-column-name="id" />
+        </many-to-one>
+        <many-to-one field="tournament" target-entity="HexagonalPlayground\Domain\Tournament" inversed-by="match_days">
+            <join-column name="tournament_id" referenced-column-name="id" />
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

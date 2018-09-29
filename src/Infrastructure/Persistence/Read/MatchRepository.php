@@ -14,7 +14,9 @@ class MatchRepository extends AbstractRepository
      */
     public function findMatchesByMatchDay(string $seasonId, int $matchDay) : array
     {
-        $query = 'SELECT * FROM `matches` WHERE `season_id` = ? AND `match_day` = ?';
+        $query = 'SELECT m.* FROM `matches` m
+                  JOIN `match_days` md ON md.id = m.match_day_id
+                  WHERE md.season_id = ? AND md.number = ?';
         return $this->getDb()->fetchAll($query, [$seasonId, $matchDay]);
     }
 
@@ -25,9 +27,9 @@ class MatchRepository extends AbstractRepository
      */
     public function findMatchesByTeam(string $seasonId, string $teamId) : array
     {
-        $query = <<<'SQL'
-  SELECT * FROM `matches` WHERE `season_id` = ? AND (`home_team_id` = ? OR `guest_team_id` = ?)
-SQL;
+        $query = 'SELECT m.* FROM `matches` m
+                  JOIN `match_days` md ON md.id = m.match_day_id
+                  WHERE md.season_id = ? AND (m.home_team_id = ? OR m.guest_team_id = ?)';
         return $this->getDb()->fetchAll($query, [$seasonId, $teamId, $teamId]);
     }
 
@@ -39,7 +41,9 @@ SQL;
      */
     public function findMatchesByDate(string $seasonId, DateTimeInterface $from, DateTimeInterface $to) : array
     {
-        $query = 'SELECT * FROM `matches` WHERE `season_id` = ? AND `kickoff` BETWEEN ? AND ?';
+        $query = 'SELECT m.* FROM `matches` m
+                  JOIN `match_days` md ON md.id = m.match_day_id
+                  WHERE md.season_id = ? AND m.kickoff BETWEEN ? AND ?';
         $params = [$seasonId, $from, $to];
         return $this->getDb()->fetchAll($query, $params);
     }
@@ -59,7 +63,9 @@ SQL;
      */
     public function findMatchesInTournament(string $tournamentId) : array
     {
-        $query = 'SELECT * FROM `matches` WHERE `tournament_id` = ?';
+        $query = 'SELECT m.* FROM `matches` m
+                  JOIN `match_days` md ON md.id = m.match_day_id
+                  WHERE md.tournament_id = ?';
         return $this->getDb()->fetchAll($query, [$tournamentId]);
     }
 }

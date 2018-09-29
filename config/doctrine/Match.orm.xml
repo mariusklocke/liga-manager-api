@@ -4,20 +4,13 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\Match" table="matches">
-        <indexes>
-            <index name="idx_season_match_day" columns="season_id,match_day"/>
-        </indexes>
         <id name="id" type="string" />
-        <field name="matchDay" type="integer" column="match_day" />
         <field name="kickoff" type="datetime_immutable" nullable="true" />
         <field name="plannedFor" column="planned_for" type="date_immutable" nullable="true" />
         <field name="cancelledAt" column="cancelled_at" type="datetime_immutable" nullable="true"/>
         <embedded name="matchResult" class="HexagonalPlayground\Domain\MatchResult" use-column-prefix="false" />
-        <many-to-one field="season" target-entity="HexagonalPlayground\Domain\Season" inversed-by="matches">
-            <join-column name="season_id" referenced-column-name="id" />
-        </many-to-one>
-        <many-to-one field="tournament" target-entity="HexagonalPlayground\Domain\Tournament" inversed-by="matches">
-            <join-column name="tournament_id" referenced-column-name="id" />
+        <many-to-one field="matchDay" target-entity="HexagonalPlayground\Domain\MatchDay" inversed-by="matches">
+            <join-column name="match_day_id" referenced-column-name="id" nullable="false" />
         </many-to-one>
         <many-to-one field="homeTeam" target-entity="HexagonalPlayground\Domain\Team">
             <join-column name="home_team_id" referenced-column-name="id" nullable="false" />

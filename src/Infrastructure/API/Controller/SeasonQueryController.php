@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\RankingRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use Slim\Http\Response;
@@ -14,14 +13,11 @@ class SeasonQueryController
     private $seasonRepository;
     /** @var RankingRepository */
     private $rankingRepository;
-    /** @var MatchRepository */
-    private $matchRepository;
 
-    public function __construct(SeasonRepository $seasonRepository, RankingRepository $rankingRepository, MatchRepository $matchRepository)
+    public function __construct(SeasonRepository $seasonRepository, RankingRepository $rankingRepository)
     {
         $this->seasonRepository = $seasonRepository;
         $this->rankingRepository = $rankingRepository;
-        $this->matchRepository = $matchRepository;
     }
 
     /**

@@ -21,19 +21,8 @@ class Tournament extends Competition
         Assert::maxLength($name, 255, "A tournament's name cannot exceed 255 characters");
         $this->id = Uuid::create();
         $this->name = $name;
-        $this->matches = new ArrayCollection();
+        $this->matchDays = new ArrayCollection();
         $this->updateRoundCount();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function addMatch(Match $match) : void
-    {
-        $this->matches[] = $match;
-        if ($match->getMatchDay() > $this->rounds) {
-            $this->rounds = $match->getMatchDay();
-        }
     }
 
     /**
@@ -43,12 +32,37 @@ class Tournament extends Competition
      */
     public function clearMatchesForRound(int $round) : void
     {
-        $toRemove = $this->matches->filter(function (Match $match) use ($round) {
-            return $match->getMatchDay() === $round;
+        /** @var MatchDay[] $toRemove */
+        $toRemove = $this->matchDays->filter(function (MatchDay $matchDay) use ($round) {
+            return $matchDay->getNumber() === $round;
         });
-        foreach ($toRemove->getKeys() as $key) {
-            $this->matches->remove($key);
+        foreach ($toRemove as $matchDays) {
+            $matchDays->clearMatches();
         }
+        $this->updateRoundCount();
+    }
+
+    /**
+     * @param int $round
+     * @param Match[] $matches
+     * @throws DomainException
+     */
+    public function setMatchesForRound(int $round, array $matches): void
+    {
+        if (!isset($this->matchDays[$round])) {
+            $this->matchDays[$round] = new MatchDay($this, $round, new \DateTimeImmutable(), new \DateTimeImmutable());
+        }
+
+        $this->matchDays[$round]->clearMatches();
+        foreach ($matches as $match) {
+            $this->matchDays[$round]->addMatch($match);
+        }
+        $this->updateRoundCount();
+    }
+
+    public function setMatchDay(MatchDay $matchDay): void
+    {
+        $this->matchDays[$matchDay->getNumber()] = $matchDay;
         $this->updateRoundCount();
     }
 
@@ -57,9 +71,6 @@ class Tournament extends Competition
      */
     private function updateRoundCount() : void
     {
-        $this->rounds = 0;
-        foreach ($this->matches as $match) {
-            $this->rounds = max($this->rounds, $match->getMatchDay());
-        }
+        $this->rounds = $this->matchDays->count();
     }
 }

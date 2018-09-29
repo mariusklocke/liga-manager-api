@@ -23,7 +23,8 @@ class DeleteSeasonHandler
     public function __invoke(DeleteSeasonCommand $command)
     {
         $season = $this->seasonRepository->find($command->getSeasonId());
-        $season->clearMatches()->clearTeams();
+        $season->clearMatchDays();
+        $season->clearTeams();
         $this->seasonRepository->delete($season);
     }
 }

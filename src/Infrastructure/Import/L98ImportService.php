@@ -111,6 +111,7 @@ class L98ImportService
      */
     private function importMatches(Season $season, array $importableMatches, User $user)
     {
+        // TODO: rework
         $matchFactory = new MatchFactory();
         /** @var L98MatchModel[] $matchMap */
         $matchMap = [];
@@ -127,6 +128,7 @@ class L98ImportService
         }
         $season->start();
 
+        // TODO: Fix method
         foreach ($season->getMatches() as $match) {
             $importableMatch = $matchMap[$match->getId()];
             if (null !== $importableMatch->getKickoff()) {

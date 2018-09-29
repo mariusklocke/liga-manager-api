@@ -3,20 +3,21 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\API\Security\UserAware;
 use Slim\Http\Request;
 use Slim\Http\Response;
 
 class UserQueryController
 {
+    use UserAware;
+
     /**
      * @param Request $request
      * @return Response
      */
     public function getAuthenticatedUser(Request $request): Response
     {
-        /** @var User $user */
-        $user = $request->getAttribute('user');
+        $user = $this->getUserFromRequest($request);
         return (new Response(200))->withJson([
             'id' => $user->getId(),
             'email' => $user->getEmail(),

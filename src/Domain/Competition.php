@@ -13,15 +13,8 @@ abstract class Competition
     /** @var string */
     protected $name;
 
-    /** @var Collection|Match[] */
-    protected $matches;
-
-    /**
-     * Adds a match to the competition
-     *
-     * @param Match $match
-     */
-    abstract public function addMatch(Match $match);
+    /** @var Collection|MatchDay[] */
+    protected $matchDays;
 
     /**
      * @return string

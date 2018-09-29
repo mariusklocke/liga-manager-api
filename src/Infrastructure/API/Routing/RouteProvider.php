@@ -60,24 +60,21 @@ class RouteProvider
             $app->get('/season', function () use ($container) {
                 return (new SeasonQueryController(
                     $container[SeasonRepository::class],
-                    $container[RankingRepository::class],
-                    $container[MatchRepository::class]
+                    $container[RankingRepository::class]
                 ))->findAllSeasons();
             });
 
             $app->get('/season/{id}', function ($request, $response, $args) use ($container) {
                 return (new SeasonQueryController(
                     $container[SeasonRepository::class],
-                    $container[RankingRepository::class],
-                    $container[MatchRepository::class]
+                    $container[RankingRepository::class]
                 ))->findSeasonById($args['id']);
             });
 
             $app->get('/season/{id}/ranking', function ($request, $response, $args) use ($container) {
                 return (new SeasonQueryController(
                     $container[SeasonRepository::class],
-                    $container[RankingRepository::class],
-                    $container[MatchRepository::class]
+                    $container[RankingRepository::class]
                 ))->findRanking($args['id']);
             });
 

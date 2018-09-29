@@ -7,7 +7,8 @@ use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
-use HexagonalPlayground\Domain\MatchFactory;
+use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\MatchDay;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 
@@ -42,16 +43,16 @@ class SetTournamentRoundHandler
         /** @var Tournament $tournament */
         $tournament = $this->tournamentRepository->find($command->getTournamentId());
         $tournament->clearMatchesForRound($command->getRound());
-        $matchFactory = new MatchFactory();
+        $round = new MatchDay($tournament, $command->getRound(), $command->getPlannedFor(), $command->getPlannedFor());
         foreach ($command->getTeamIdPairs() as $pair) {
             /** @var Team $homeTeam */
             $homeTeam = $this->teamRepository->find($pair->getHomeTeamId());
             /** @var Team $guestTeam */
             $guestTeam = $this->teamRepository->find($pair->getGuestTeamId());
 
-            $match = $matchFactory->createMatch($tournament, $command->getRound(), $homeTeam, $guestTeam, $command->getPlannedFor());
-            $this->matchRepository->save($match);
-            $tournament->addMatch($match);
+            $round->addMatch(new Match($round, $homeTeam, $guestTeam, $command->getPlannedFor()));
         }
+        $tournament->setMatchDay($round);
+        $this->tournamentRepository->save($tournament);
     }
 }

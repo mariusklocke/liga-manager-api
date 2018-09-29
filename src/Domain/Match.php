@@ -15,13 +15,7 @@ class Match
     /** @var string */
     private $id;
 
-    /** @var Season|null */
-    private $season;
-
-    /** @var Tournament|null */
-    private $tournament;
-
-    /** @var int */
+    /** @var MatchDay */
     private $matchDay;
 
     /** @var Team */
@@ -48,24 +42,18 @@ class Match
     /**
      * Create a new match
      *
-     * @param Competition $competition
-     * @param int $matchDay
+     * @param MatchDay $matchDay
      * @param Team $homeTeam
      * @param Team $guestTeam
      * @param DateTimeImmutable|null $plannedFor
      * @throws DomainException If $homeTeam and $guestTeam are equal
      */
-    public function __construct(Competition $competition, int $matchDay, Team $homeTeam, Team $guestTeam, DateTimeImmutable $plannedFor = null)
+    public function __construct(MatchDay $matchDay, Team $homeTeam, Team $guestTeam, DateTimeImmutable $plannedFor = null)
     {
         if ($homeTeam === $guestTeam) {
             throw new DomainException('A team cannot play against itself');
         }
 
-        if ($competition instanceof Season) {
-            $this->season = $competition;
-        } else {
-            $this->tournament = $competition;
-        }
         $this->id = Uuid::create();
         $this->matchDay = $matchDay;
         $this->homeTeam = $homeTeam;
@@ -80,11 +68,12 @@ class Match
      */
     public function submitResult(MatchResult $matchResult, User $user) : Match
     {
-        if ($this->season !== null) {
+        $competition = $this->matchDay->getCompetition();
+        if ($competition instanceof Season) {
             if ($this->matchResult !== null) {
-                $this->season->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+                $competition->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
             }
-            $this->season->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
+            $competition->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         }
         $this->matchResult = $matchResult;
         Publisher::getInstance()->publish(MatchResultSubmitted::create(
@@ -174,7 +163,7 @@ class Match
         $this->cancelledAt = null;
     }
 
-    public function rematch(int $matchDay) : Match
+    public function rematch(MatchDay $matchDay) : Match
     {
         $clone = clone $this;
         $clone->id = Uuid::create();
@@ -185,9 +174,9 @@ class Match
     }
 
     /**
-     * @return int
+     * @return MatchDay
      */
-    public function getMatchDay(): int
+    public function getMatchDay(): MatchDay
     {
         return $this->matchDay;
     }

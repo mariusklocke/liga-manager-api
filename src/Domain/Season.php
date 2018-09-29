@@ -39,10 +39,10 @@ class Season extends Competition
         $this->id = Uuid::create();
         $this->name = $name;
         $this->teams = new ArrayCollection();
-        $this->matches = new ArrayCollection();
+        $this->matchDays = new ArrayCollection();
         $this->state = self::STATE_PREPARATION;
-        $this->matchDayCount = 0;
         $this->teamCount = 0;
+        $this->matchDayCount = 0;
     }
 
     /**
@@ -102,38 +102,27 @@ class Season extends Competition
     }
 
     /**
-     * @param Match $match
-     * @return Season
-     * @throws DomainException
-     */
-    public function addMatch(Match $match) : Season
-    {
-        if ($this->hasStarted()) {
-            throw new DomainException('Cannot add matches to season which has already started');
-        }
-        $this->matches[] = $match;
-        $this->matchDayCount = max($this->matchDayCount, $match->getMatchDay());
-        return $this;
-    }
-
-    /**
      * @return Season
      */
-    public function clearMatches() : Season
+    public function clearMatchDays() : Season
     {
         if ($this->hasStarted()) {
             throw new DomainException('Cannot remove matches from a season which has already started');
         }
 
-        $this->matches->clear();
+        foreach ($this->matchDays as $matchDay) {
+            $matchDay->clearMatches();
+        }
+        $this->matchDays->clear();
         $this->matchDayCount = 0;
+
         return $this;
     }
 
     /**
      * @return bool
      */
-    public function hasStarted() : bool
+    private function hasStarted() : bool
     {
         return ($this->ranking !== null);
     }
@@ -157,9 +146,9 @@ class Season extends Competition
     /**
      * @return bool
      */
-    public function hasMatches() : bool
+    private function hasMatches() : bool
     {
-        return count($this->matches) > 0;
+        return $this->matchDays->count() > 0;
     }
 
     /**
@@ -224,18 +213,11 @@ class Season extends Competition
     }
 
     /**
-     * @return bool
+     * @param MatchDay $matchDay
      */
-    public function hasSecondHalf() : bool
+    public function addMatchDay(MatchDay $matchDay)
     {
-        return false;
-    }
-
-    /**
-     * @return Match[]
-     */
-    public function getMatches(): array
-    {
-        return $this->matches->toArray();
+        $this->matchDays[] = $matchDay;
+        $this->matchDayCount = $this->matchDays->count();
     }
 }

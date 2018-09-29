@@ -14,9 +14,12 @@
                 <cascade-all/>
             </cascade>
         </one-to-one>
-        <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="season" orphan-removal="true">
+        <one-to-many field="matchDays" target-entity="HexagonalPlayground\Domain\MatchDay" mapped-by="season" orphan-removal="true">
+            <cascade>
+                <cascade-all/>
+            </cascade>
             <order-by>
-                <order-by-field name="matchDay" direction="ASC" />
+                <order-by-field name="number" direction="ASC" />
             </order-by>
         </one-to-many>
         <many-to-many target-entity="HexagonalPlayground\Domain\Team" field="teams">

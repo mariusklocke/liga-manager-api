@@ -145,7 +145,7 @@ class BasicUseCaseTest extends TestCase
 
     /**
      * @param string $seasonId
-     *
+     * @return string
      * @depends testSeasonCanBeStarted
      */
     public function testRankingCanBeFound(string $seasonId)
@@ -177,6 +177,7 @@ class BasicUseCaseTest extends TestCase
             $count++;
         }
         self::assertEquals(4, $count);
+        return $seasonId;
     }
 
     /**
@@ -196,11 +197,12 @@ class BasicUseCaseTest extends TestCase
 
     /**
      * @param string[] $matchIds
+     * @param string   $seasonId
      * @return string
      * @depends testMatchesCanBeFound
      * @depends testRankingCanBeFound
      */
-    public function testMatchResultCanBeSubmitted(array $matchIds) : string
+    public function testMatchResultCanBeSubmitted(array $matchIds, string $seasonId) : string
     {
         $matchId = array_shift($matchIds);
         $this->client->setBasicAuth('admin@example.com', '123456');
@@ -214,7 +216,7 @@ class BasicUseCaseTest extends TestCase
         self::assertEquals(3, $match->home_score);
         self::assertEquals(1, $match->guest_score);
 
-        $ranking = $this->client->getSeasonRanking($match->season_id);
+        $ranking = $this->client->getSeasonRanking($seasonId);
         self::assertObjectHasAttribute('positions', $ranking);
         $positions = $ranking->positions;
         self::assertInternalType('array', $positions);
