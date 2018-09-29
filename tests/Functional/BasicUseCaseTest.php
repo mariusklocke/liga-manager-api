@@ -10,15 +10,15 @@ class BasicUseCaseTest extends TestCase
     public function testPitchCanBeCreated()
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
-        self::assertValidIdResponse($this->client->createPitch('TestFloat', 89.99, 6.78));
-        self::assertValidIdResponse($this->client->createPitch('TestInt', 89, 6));
+        self::assertResponseHasValidId($this->client->createPitch('TestFloat', 89.99, 6.78));
+        self::assertResponseHasValidId($this->client->createPitch('TestInt', 89, 6));
     }
 
     public function testSeasonCanBeCreated(): string
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
         $response = $this->client->createSeason('bar');
-        self::assertValidIdResponse($response);
+        self::assertResponseHasValidId($response);
         return $response->id;
     }
 
@@ -299,9 +299,9 @@ class BasicUseCaseTest extends TestCase
             'role' => 'team_manager',
             'teams' => []
         ]);
-        self::assertValidIdResponse($user);
+        self::assertResponseHasValidId($user);
         $user = $this->client->getAuthenticatedUser();
-        self::assertValidIdResponse($user);
+        self::assertResponseHasValidId($user);
     }
 
     /**
@@ -317,7 +317,7 @@ class BasicUseCaseTest extends TestCase
         self::assertEquals('nobody@example.com', $user->email);
     }
 
-    private static function assertValidIdResponse($response)
+    private static function assertResponseHasValidId($response)
     {
         self::assertObjectHasAttribute('id', $response);
         self::assertGreaterThan(0, strlen($response->id));
