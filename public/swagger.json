@@ -7,7 +7,7 @@
     },
     "description": "RESTful API for managing Wilde Liga Bremen",
     "title": "Wilde Liga Bremen API",
-    "version": "0.4"
+    "version": "0.5"
   },
   "basePath": "/api",
   "paths": {
@@ -1273,8 +1273,8 @@
           "type": "string",
           "format": "date-time"
         },
-        "match_day": {
-          "type": "integer"
+        "match_day_id": {
+          "type": "string"
         },
         "pitch_id": {
           "type": "string"
@@ -1282,9 +1282,6 @@
         "planned_for": {
           "type": "string",
           "format": "date"
-        },
-        "season_id": {
-          "type": "string"
         }
       },
       "type": "object"
