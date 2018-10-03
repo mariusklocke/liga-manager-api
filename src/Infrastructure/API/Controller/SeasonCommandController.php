@@ -34,9 +34,15 @@ class SeasonCommandController extends CommandController
      */
     public function createMatches(string $seasonId, Request $request) : Response
     {
-        $startAt = $request->getParsedBodyParam('start_at');
-        $this->assertString('start_at', $startAt);
-        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, InputParser::parseDateTime($startAt)));
+        $matchDays = $request->getParsedBodyParam('match_days');
+        $this->assertArray('match_days', $matchDays);
+
+        $matchDays = array_map(function ($matchDay) {
+            $this->assertArray('match_days[]', $matchDay);
+            return InputParser::parseDatePeriod($matchDay);
+        }, $matchDays);
+
+        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, $matchDays));
         return new Response(204);
     }
 

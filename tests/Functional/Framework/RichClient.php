@@ -80,11 +80,11 @@ class RichClient
         return $this->decodeBody($this->httpClient->post('/api/team', ['name' => $name], $this->headers));
     }
 
-    public function createMatches(string $seasonId, string $startAt): void
+    public function createMatches(string $seasonId, array $matchDays): void
     {
         $this->handleErrors($this->httpClient->post(
             '/api/season/' . $seasonId . '/matches',
-            ['start_at' => $startAt],
+            ['match_days' => $matchDays],
             $this->headers
         ));
     }
@@ -133,12 +133,12 @@ class RichClient
         return $this->decodeBody($this->httpClient->get('/api/tournament/' . $id));
     }
 
-    public function setTournamentRound(string $tournamentId, int $round, array $teamPairs, string $plannedFor): void
+    public function setTournamentRound(string $tournamentId, int $round, array $teamPairs, array $datePeriod): void
     {
         $this->handleErrors($this->httpClient->put(
             '/api/tournament/' . $tournamentId . '/round/' . $round,
             [
-                'planned_for' => $plannedFor,
+                'date_period' => $datePeriod,
                 'team_pairs'  => $teamPairs
             ],
             $this->headers

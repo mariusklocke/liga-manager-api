@@ -29,7 +29,7 @@ class CreateMatchesForSeasonHandler
     {
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->clearMatchDays();
-        $matchDays = (new MatchFactory())->createMatchDaysForSeason($season, $command->getStartAt());
+        $matchDays = (new MatchFactory())->createMatchDaysForSeason($season, $command->getMatchDaysDates());
         foreach ($matchDays as $matchDay) {
             $season->addMatchDay($matchDay);
         }

@@ -42,24 +42,6 @@ class Tournament extends Competition
         $this->updateRoundCount();
     }
 
-    /**
-     * @param int $round
-     * @param Match[] $matches
-     * @throws DomainException
-     */
-    public function setMatchesForRound(int $round, array $matches): void
-    {
-        if (!isset($this->matchDays[$round])) {
-            $this->matchDays[$round] = new MatchDay($this, $round, new \DateTimeImmutable(), new \DateTimeImmutable());
-        }
-
-        $this->matchDays[$round]->clearMatches();
-        foreach ($matches as $match) {
-            $this->matchDays[$round]->addMatch($match);
-        }
-        $this->updateRoundCount();
-    }
-
     public function setMatchDay(MatchDay $matchDay): void
     {
         $this->matchDays[$matchDay->getNumber()] = $matchDay;

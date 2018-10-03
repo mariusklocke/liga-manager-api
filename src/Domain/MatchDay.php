@@ -41,7 +41,7 @@ class MatchDay
     public function __construct(Competition $competition, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate)
     {
         if ($startDate > $endDate) {
-            throw new DomainException('Date range invalid: "from" has to be after "to"');
+            throw new DomainException('Invalid date range: Start date cannot be after end date');
         }
 
         $this->setCompetition($competition);

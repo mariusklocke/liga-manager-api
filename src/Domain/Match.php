@@ -45,10 +45,9 @@ class Match
      * @param MatchDay $matchDay
      * @param Team $homeTeam
      * @param Team $guestTeam
-     * @param DateTimeImmutable|null $plannedFor
      * @throws DomainException If $homeTeam and $guestTeam are equal
      */
-    public function __construct(MatchDay $matchDay, Team $homeTeam, Team $guestTeam, DateTimeImmutable $plannedFor = null)
+    public function __construct(MatchDay $matchDay, Team $homeTeam, Team $guestTeam)
     {
         if ($homeTeam === $guestTeam) {
             throw new DomainException('A team cannot play against itself');
@@ -58,7 +57,7 @@ class Match
         $this->matchDay = $matchDay;
         $this->homeTeam = $homeTeam;
         $this->guestTeam = $guestTeam;
-        $this->plannedFor = $plannedFor;
+        $this->plannedFor = null;
     }
 
     /**

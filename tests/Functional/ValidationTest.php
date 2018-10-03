@@ -31,14 +31,15 @@ class ValidationTest extends TestCase
         $this->client->createTournament(str_repeat('A', 256));
     }
 
-    public function testCreatingMatchesWithInvalidStartDateFails()
+    public function testCreatingMatchesWithInvalidDateFails()
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
         $response = $this->client->createSeason('Foo');
         $seasonId = $response->id;
         self::expectException(ApiException::class);
         self::expectExceptionCode(400);
-        $this->client->createMatches($seasonId, 'foobar');
+        $matchDays = [['from' => 'foo', 'to' => 'bar']];
+        $this->client->createMatches($seasonId, $matchDays);
     }
 
     public function testSettingTournamentRoundWithInvalidPlanningDateFails()
@@ -51,7 +52,7 @@ class ValidationTest extends TestCase
         $teamPairs = [
             'home_team_id' => '', 'guest_team_id' => ''
         ];
-        $this->client->setTournamentRound($tournamentId, 1, $teamPairs, 'no real date');
+        $this->client->setTournamentRound($tournamentId, 1, $teamPairs, ['from' => 'foo', 'to' => 'bar']);
     }
 
     public function testSettingTournamentRoundWithEmptyTeamPairsFails()
@@ -61,7 +62,7 @@ class ValidationTest extends TestCase
         $tournamentId = $response->id;
         self::expectException(ApiException::class);
         self::expectExceptionCode(400);
-        $this->client->setTournamentRound($tournamentId, 1, [], '2018-04-01');
+        $this->client->setTournamentRound($tournamentId, 1, [], ['from' => '2018-04-01', 'to' => '2018-04-01']);
     }
 
     public function testSettingTournamentRoundWithTooManyTeamPairsFails()
@@ -74,7 +75,7 @@ class ValidationTest extends TestCase
         $teamPairs = array_fill(0, 100, [
             'home_team_id' => '', 'guest_team_id' => ''
         ]);
-        $this->client->setTournamentRound($tournamentId, 1, $teamPairs, '2018-04-01');
+        $this->client->setTournamentRound($tournamentId, 1, $teamPairs, ['from' => '2018-04-01', 'to' => '2018-04-01']);
     }
 
     public function testCreatingUserWithInvalidEmailFails()

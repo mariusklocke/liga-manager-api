@@ -43,14 +43,14 @@ class SetTournamentRoundHandler
         /** @var Tournament $tournament */
         $tournament = $this->tournamentRepository->find($command->getTournamentId());
         $tournament->clearMatchesForRound($command->getRound());
-        $round = new MatchDay($tournament, $command->getRound(), $command->getPlannedFor(), $command->getPlannedFor());
+        $round = new MatchDay($tournament, $command->getRound(), $command->getDatePeriod()->getStartDate(), $command->getDatePeriod()->getEndDate());
         foreach ($command->getTeamIdPairs() as $pair) {
             /** @var Team $homeTeam */
             $homeTeam = $this->teamRepository->find($pair->getHomeTeamId());
             /** @var Team $guestTeam */
             $guestTeam = $this->teamRepository->find($pair->getGuestTeamId());
 
-            $round->addMatch(new Match($round, $homeTeam, $guestTeam, $command->getPlannedFor()));
+            $round->addMatch(new Match($round, $homeTeam, $guestTeam));
         }
         $tournament->setMatchDay($round);
         $this->tournamentRepository->save($tournament);

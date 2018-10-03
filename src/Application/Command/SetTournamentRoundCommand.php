@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use DateTimeImmutable;
-use HexagonalPlayground\Domain\TeamIdPair;
+use HexagonalPlayground\Application\Value\DatePeriod;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Application\Value\TeamIdPair;
 
 class SetTournamentRoundCommand implements CommandInterface
 {
@@ -17,17 +18,34 @@ class SetTournamentRoundCommand implements CommandInterface
     /** @var TeamIdPair[] */
     private $teamIdPairs;
 
-    /** @var DateTimeImmutable|null */
-    private $plannedFor;
+    /** @var DatePeriod */
+    private $datePeriod;
 
-    public function __construct(string $tournamentId, int $round, array $teamIdPairs, DateTimeImmutable $plannedFor = null)
+    public function __construct(string $tournamentId, int $round, array $teamIdPairs, DatePeriod $datePeriod)
     {
+        if (empty($teamIdPairs)) {
+            throw new InvalidInputException('Team pairs cannot be empty');
+        }
+
+        if (count($teamIdPairs) > 64) {
+            throw new InvalidInputException('Request exceeds maximum amount of 64 team pairs.');
+        }
+
         $this->tournamentId = $tournamentId;
         $this->round        = $round;
-        $this->plannedFor   = $plannedFor;
-        $this->teamIdPairs  = array_map(function(array $pair) {
-            return new TeamIdPair($pair['home_team_id'], $pair['guest_team_id']);
-        }, $teamIdPairs);
+        $this->datePeriod   = $datePeriod;
+        $this->teamIdPairs  = [];
+
+        foreach ($teamIdPairs as $pair) {
+            if (!($pair instanceof TeamIdPair)) {
+                throw new InvalidInputException(sprintf(
+                    'Invalid type for team pair. Expected: %s. Given: %s',
+                    TeamIdPair::class,
+                    get_class($pair)
+                ));
+            }
+            $this->teamIdPairs[] = $pair;
+        }
     }
 
     /**
@@ -55,10 +73,10 @@ class SetTournamentRoundCommand implements CommandInterface
     }
 
     /**
-     * @return DateTimeImmutable|null
+     * @return DatePeriod
      */
-    public function getPlannedFor()
+    public function getDatePeriod(): DatePeriod
     {
-        return $this->plannedFor;
+        return $this->datePeriod;
     }
 }

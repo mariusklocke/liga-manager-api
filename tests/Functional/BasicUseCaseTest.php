@@ -102,7 +102,7 @@ class BasicUseCaseTest extends TestCase
     public function testMatchesCanBeCreated(string $seasonId) : string
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
-        $this->client->createMatches($seasonId, '2018-03-02');
+        $this->client->createMatches($seasonId, self::createMatchDaysDates(3));
         $season = $this->client->getSeason($seasonId);
         self::assertObjectHasAttribute('match_day_count', $season);
         self::assertGreaterThan(0, $season->match_day_count);
@@ -262,7 +262,8 @@ class BasicUseCaseTest extends TestCase
             ['home_team_id' => $teamIds[0], 'guest_team_id' => $teamIds[1]],
             ['home_team_id' => $teamIds[2], 'guest_team_id' => $teamIds[3]]
         ];
-        $this->client->setTournamentRound($tournamentId, 1, $firstRound, '2018-03-01');
+        $datePeriod = ['from' => '2018-03-01', 'to' => '2018-03-02'];
+        $this->client->setTournamentRound($tournamentId, 1, $firstRound, $datePeriod);
         $tournament = $this->client->getTournament($tournamentId);
         self::assertObjectHasAttribute('rounds', $tournament);
         self::assertEquals(1, $tournament->rounds);
@@ -272,7 +273,7 @@ class BasicUseCaseTest extends TestCase
         $secondRound = [
             ['home_team_id' => $teamIds[1], 'guest_team_id' => $teamIds[2]]
         ];
-        $this->client->setTournamentRound($tournamentId, 2, $secondRound, '2018-03-08');
+        $this->client->setTournamentRound($tournamentId, 2, $secondRound, $datePeriod);
         $tournament = $this->client->getTournament($tournamentId);
         self::assertObjectHasAttribute('rounds', $tournament);
         self::assertEquals(2, $tournament->rounds);
@@ -321,5 +322,22 @@ class BasicUseCaseTest extends TestCase
     {
         self::assertObjectHasAttribute('id', $response);
         self::assertGreaterThan(0, strlen($response->id));
+    }
+
+    private static function createMatchDaysDates(int $count): array
+    {
+        $result = [];
+        $start  = new \DateTime('2018-09-29');
+        $end    = new \DateTime('2018-09-30');
+        for ($i = 0; $i < $count; $i++) {
+            $result[] = [
+                'from' => $start->format('Y-m-d'),
+                'to'   => $end->format('Y-m-d')
+            ];
+            $start->modify('+7 days');
+            $end->modify('+7 days');
+        }
+
+        return $result;
     }
 }

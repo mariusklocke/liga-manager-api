@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
-use DateInterval;
-use DateTimeImmutable;
-use Generator;
+use HexagonalPlayground\Application\Value\DatePeriod;
 use UnexpectedValueException;
 
 /**
@@ -14,13 +12,14 @@ use UnexpectedValueException;
 class MatchFactory
 {
     /**
-     * Create all matches for a given season (including rematches)
+     * Create all matches for a given season
      *
-     * @param Season            $season
-     * @param DateTimeImmutable $startAt
+     * @param Season $season
+     * @param array|DatePeriod[] $matchDayDates
      * @return MatchDay[]
+     * @throws DomainException
      */
-    public function createMatchDaysForSeason(Season $season, DateTimeImmutable $startAt) : array
+    public function createMatchDaysForSeason(Season $season, array $matchDayDates) : array
     {
         $teams = array_values($season->getTeams());
         if (count($teams) % 2 != 0) {
@@ -29,13 +28,21 @@ class MatchFactory
         shuffle($teams);
         $matchDaysPerHalf = count($teams) - 1;
 
+        if (count($matchDayDates) !== $matchDaysPerHalf) {
+            throw new DomainException(sprintf(
+                'Count of MatchDay dates does not match. Expected %d. Got %d',
+                $matchDaysPerHalf,
+                count($matchDayDates)
+            ));
+        }
+
         $matchDays = [];
-        $matchPlannedFor = $startAt;
-        for ($matchDayNumber = 1; $matchDayNumber <= $matchDaysPerHalf; $matchDayNumber++) {
-            $matchDay = new MatchDay($season, $matchDayNumber, $matchPlannedFor, $matchPlannedFor);
-            $this->generateMatchesForMatchDay($matchDay, $teams, $matchPlannedFor);
+        $matchDayNumber = 1;
+        foreach ($matchDayDates as $datePeriod) {
+            $matchDay = new MatchDay($season, $matchDayNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
+            $this->generateMatchesForMatchDay($matchDay, $teams);
             $matchDays[] = $matchDay;
-            $matchPlannedFor = $matchPlannedFor->add(new DateInterval('P1W'));
+            $matchDayNumber++;
         }
 
         return $matchDays;
@@ -49,9 +56,8 @@ class MatchFactory
      *
      * @param MatchDay $matchDay
      * @param array $teams 0-based array of teams
-     * @param DateTimeImmutable $plannedFor
      */
-    private function generateMatchesForMatchDay(MatchDay $matchDay, array $teams, DateTimeImmutable $plannedFor) : void
+    private function generateMatchesForMatchDay(MatchDay $matchDay, array $teams) : void
     {
         $matchDayCount = count($teams) - 1;
         $teamCount = count($teams);
@@ -62,7 +68,7 @@ class MatchFactory
                     $homeTeam = $sumIsEven ? $teams[$k-1] : $teams[$l-1];
                     $guestTeam = $sumIsEven ? $teams[$l-1] : $teams[$k-1];
                     if (null !== $homeTeam && null !== $guestTeam) {
-                        $matchDay->addMatch(new Match($matchDay, $homeTeam, $guestTeam, $plannedFor));
+                        $matchDay->addMatch(new Match($matchDay, $homeTeam, $guestTeam));
                     }
                     unset($teams[$k-1]);
                     unset($teams[$l-1]);
@@ -83,7 +89,7 @@ class MatchFactory
         $homeTeam = $l+1 > $matchDayCount/2 ? $teams[$k] : $teams[$l];
         $guestTeam = $l+1 > $matchDayCount/2 ? $teams[$l] : $teams[$k];
         if (null !== $homeTeam && null !== $guestTeam) {
-            $matchDay->addMatch(new Match($matchDay, $homeTeam, $guestTeam, $plannedFor));
+            $matchDay->addMatch(new Match($matchDay, $homeTeam, $guestTeam));
         }
     }
 }

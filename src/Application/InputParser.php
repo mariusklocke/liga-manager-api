@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application;
 
 use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Application\Value\DatePeriod;
 
 class InputParser
 {
@@ -67,5 +68,26 @@ class InputParser
         } catch (\Exception $e) {
             throw new InvalidInputException('Cannot parse date. Got: ' . $value);
         }
+    }
+
+    /**
+     * Parses a DatePeriod from a string tuple
+     *
+     * @param array $datePeriod
+     * @return DatePeriod
+     * @throws InvalidInputException
+     */
+    public static function parseDatePeriod(array $datePeriod): DatePeriod
+    {
+        $from = $datePeriod['from'] ?? null;
+        $to   = $datePeriod['to'] ?? null;
+        if (!is_string($from)) {
+            throw new InvalidInputException('Cannot parse date period. Missing or invalid property "from".');
+        }
+        if (!is_string($to)) {
+            throw new InvalidInputException('Cannot parse date period. Missing or invalid property "to".');
+        }
+
+        return new DatePeriod(self::parseDateTime($from), self::parseDateTime($to));
     }
 }

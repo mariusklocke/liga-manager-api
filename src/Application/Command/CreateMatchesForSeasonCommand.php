@@ -3,20 +3,32 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use DateTimeImmutable;
+use HexagonalPlayground\Application\Value\DatePeriod;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
 
 class CreateMatchesForSeasonCommand implements CommandInterface
 {
     /** @var string */
     private $seasonId;
 
-    /** @var DateTimeImmutable */
-    private $startAt;
+    /** @var array|DatePeriod[] */
+    private $matchDaysDates;
 
-    public function __construct(string $seasonId, DateTimeImmutable $startAt)
+    /**
+     * CreateMatchesForSeasonCommand constructor.
+     * @param string $seasonId
+     * @param iterable|DatePeriod[] $matchDaysDates
+     */
+    public function __construct(string $seasonId, iterable $matchDaysDates)
     {
         $this->seasonId = $seasonId;
-        $this->startAt  = $startAt;
+        $this->matchDaysDates = [];
+        foreach ($matchDaysDates as $matchDaysDate) {
+            if (!($matchDaysDate instanceof DatePeriod)) {
+                throw new InvalidInputException('MatchDay dates have to be instances of ' . DatePeriod::class);
+            }
+            $this->matchDaysDates[] = $matchDaysDate;
+        }
     }
 
     /**
@@ -28,10 +40,10 @@ class CreateMatchesForSeasonCommand implements CommandInterface
     }
 
     /**
-     * @return DateTimeImmutable
+     * @return array|DatePeriod[]
      */
-    public function getStartAt(): DateTimeImmutable
+    public function getMatchDaysDates(): array
     {
-        return $this->startAt;
+        return $this->matchDaysDates;
     }
 }

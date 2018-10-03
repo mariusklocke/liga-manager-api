@@ -6,8 +6,8 @@
     <entity name="HexagonalPlayground\Domain\MatchDay" table="match_days">
         <id name="id" type="string" />
         <field name="number" type="integer" />
-        <field name="startDate" column="start_date" type="datetime_immutable" />
-        <field name="endDate" column="end_date" type="datetime_immutable" />
+        <field name="startDate" column="start_date" type="date_immutable" />
+        <field name="endDate" column="end_date" type="date_immutable" />
         <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="match_day" orphan-removal="true">
             <cascade>
                 <cascade-all/>
