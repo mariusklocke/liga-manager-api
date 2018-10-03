@@ -99,12 +99,12 @@ class AuthenticationMiddleware
      */
     private function parseAuthHeader(RequestInterface $request): array
     {
-        list($authHeader) = $request->getHeader('Authorization');
-        if (!is_string($authHeader)) {
+        $headerValues = $request->getHeader('Authorization');
+        if (count($headerValues) === 0) {
             throw new AuthenticationException('Missing Authorization header');
         }
 
-        $parts  = explode(' ', $authHeader, 2);
+        $parts  = explode(' ', array_shift($headerValues), 2);
         $secret = count($parts) > 1 ? $parts[1] : $parts[0];
         $type   = count($parts) > 1 ? $parts[0]: 'bearer';
         if (!is_string($type) || !is_string($secret)) {
@@ -120,7 +120,9 @@ class AuthenticationMiddleware
      */
     private function parseCredentials(string $encoded): array
     {
-        list($email, $password) = explode(':', base64_decode($encoded), 2);
+        $parts    = explode(':', base64_decode($encoded), 2);
+        $email    = $parts[0] ?? null;
+        $password = $parts[1] ?? null;
         if (!is_string($email) || !is_string($password)) {
             throw new AuthenticationException('Malformed BasicAuth credentials');
         }
