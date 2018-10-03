@@ -14,6 +14,7 @@ class UserCommandController extends CommandController
     public function changePassword(Request $request)
     {
         $newPassword = $request->getParsedBodyParam('new_password');
+        $this->assertString('new_password', $newPassword);
         $this->commandBus->execute(new ChangeUserPasswordCommand($newPassword, $this->getUserFromRequest($request)));
         return new Response(204);
     }
@@ -48,9 +49,13 @@ class UserCommandController extends CommandController
      */
     public function sendPasswordResetMail(Request $request): Response
     {
-        $email     = $request->getParsedBodyParam('email');
-        $targetUri = $request->getUri()->withPath($request->getParsedBodyParam('target_path'));
+        $email      = $request->getParsedBodyParam('email');
+        $targetPath = $request->getParsedBodyParam('target_path');
 
+        $this->assertString('email', $email);
+        $this->assertString('target_path', $targetPath);
+
+        $targetUri = $request->getUri()->withPath($targetPath);
         $this->commandBus->execute(new SendPasswordResetMailCommand($email, $targetUri));
         return new Response(204);
     }
