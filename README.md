@@ -20,3 +20,18 @@ docker-compose exec php bin/install.sh
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
+
+## Conventions
+
+### Singular vs. Plural
+
+* PHP classes: Singular
+* REST resources: Plural (if resource can have multiple instances)
+* DB tables: Plural
+
+### CamelCase vs. snake_case
+
+* PHP classes: UpperCamelCase
+* PHP methods and properties: lowerCamelCase
+* JSON fields: snake_case
+* DB tables and columns: snake_case
