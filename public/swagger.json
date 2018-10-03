@@ -11,6 +11,52 @@
   },
   "basePath": "/api",
   "paths": {
+    "/match": {
+      "get": {
+        "operationId": "getMatches",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "season_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "tournament_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "team_id",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "match_day_id",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of matches",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/match"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "tags": [
+          "match"
+        ],
+        "summary": "Find matches by multiple filter criteria"
+      }
+    },
     "/match/{id}": {
       "get": {
         "operationId": "getMatch",
@@ -486,9 +532,9 @@
         "summary": "Finds a single season"
       }
     },
-    "/season/{id}/matches": {
+    "/season/{id}/match_days": {
       "get": {
-        "operationId": "getMatchesInSeason",
+        "operationId": "getMatchDaysInSeason",
         "parameters": [
           {
             "description": "ID of season",
@@ -496,39 +542,14 @@
             "name": "id",
             "required": true,
             "type": "string"
-          },
-          {
-            "description": "Number identifying the matchday",
-            "in": "query",
-            "name": "match_day",
-            "required": false,
-            "type": "integer"
-          },
-          {
-            "in": "query",
-            "name": "team_id",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "from",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "in": "query",
-            "name": "to",
-            "required": false,
-            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "Array of matches",
+            "description": "Array of matchdays",
             "schema": {
               "items": {
-                "$ref": "#/definitions/match"
+                "$ref": "#/definitions/match_day"
               },
               "type": "array"
             }
@@ -537,10 +558,10 @@
         "tags": [
           "season"
         ],
-        "summary": "Find matches"
+        "summary": "Find season matchdays"
       },
       "post": {
-        "operationId": "createMatches",
+        "operationId": "createMatchDays",
         "security": [
           {"JWT": []},
           {"basic-auth": []}
@@ -555,16 +576,18 @@
           },
           {
             "in": "body",
-            "name": "createMatchesBody",
+            "name": "createMatchDaysBody",
             "schema": {
               "properties": {
-                "start_at": {
-                  "type": "string",
-                  "format": "date"
+                "dates": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/date_period"
+                  }
                 }
               },
               "required": [
-                "start_at"
+                "dates"
               ],
               "type": "object"
             }
@@ -578,7 +601,7 @@
         "tags": [
           "season"
         ],
-        "summary": "Creates matches for a given season"
+        "summary": "Creates matchdays & matches for a given season"
       }
     },
     "/season/{id}/ranking": {
@@ -1032,9 +1055,8 @@
                   "minItems": 1,
                   "maxItems": 64
                 },
-                "planned_for": {
-                  "type": "string",
-                  "format": "date"
+                "date_period": {
+                  "$ref": "#/definitions/date_period"
                 }
               }
             }
@@ -1050,9 +1072,9 @@
         }
       }
     },
-    "/tournament/{id}/matches": {
+    "/tournament/{id}/rounds": {
       "get": {
-        "operationId": "getMatchesInTournament",
+        "operationId": "getRoundsInTournament",
         "tags": [
           "tournament"
         ],
@@ -1067,10 +1089,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Array of matches",
+            "description": "Array of rounds",
             "schema": {
               "items": {
-                "$ref": "#/definitions/match"
+                "$ref": "#/definitions/match_day"
               },
               "type": "array"
             }
@@ -1278,10 +1300,6 @@
         },
         "pitch_id": {
           "type": "string"
-        },
-        "planned_for": {
-          "type": "string",
-          "format": "date"
         }
       },
       "type": "object"
@@ -1378,8 +1396,11 @@
           ],
           "type": "string"
         },
-        "match_day_count": {
-          "type": "integer"
+        "match_days": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/match_day"
+          }
         },
         "team_count": {
           "type": "integer"
@@ -1395,8 +1416,11 @@
         "name": {
           "type": "string"
         },
-        "rounds": {
-          "type": "integer"
+        "match_days": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/match_day"
+          }
         }
       },
       "type": "object"
@@ -1459,6 +1483,36 @@
         },
         "email": {
           "type": "string"
+        }
+      }
+    },
+    "match_day": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "number": {
+          "type": "integer"
+        },
+        "start_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "date_period": {
+      "properties": {
+        "from": {
+          "type": "string",
+          "format": "date"
+        },
+        "to": {
+          "type": "string",
+          "format": "date"
         }
       }
     }
