@@ -926,6 +926,7 @@
         "tags": [
           "tournament"
         ],
+        "summary": "Finds all tournaments",
         "parameters": [],
         "responses": {
           "200": {
@@ -948,6 +949,7 @@
         "tags": [
           "tournament"
         ],
+        "summary": "Creates a new tournament",
         "parameters": [
           {
             "in": "body",
@@ -986,6 +988,7 @@
         "tags": [
           "tournament"
         ],
+        "summary": "Find a single tournament by id",
         "parameters": [
           {
             "description": "ID of tournament",
@@ -1018,6 +1021,7 @@
         "tags": [
           "tournament"
         ],
+        "summary": "Defines a set of team pairings as a tournament round",
         "parameters": [
           {
             "description": "ID of tournament",
@@ -1078,6 +1082,7 @@
         "tags": [
           "tournament"
         ],
+        "summary": "Finds all rounds for a tournament",
         "parameters": [
           {
             "description": "ID of tournament",
