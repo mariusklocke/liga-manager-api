@@ -83,7 +83,7 @@ class RichClient
     public function createMatches(string $seasonId, array $matchDays): void
     {
         $this->handleErrors($this->httpClient->post(
-            '/api/seasons/' . $seasonId . '/matches',
+            '/api/seasons/' . $seasonId . '/match_days',
             ['match_days' => $matchDays],
             $this->headers
         ));

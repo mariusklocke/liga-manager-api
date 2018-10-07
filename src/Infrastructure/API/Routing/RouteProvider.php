@@ -110,7 +110,7 @@ class RouteProvider
                 return (new SeasonCommandController($container['commandBus']))->delete($args['id']);
             })->add($auth);
 
-            $app->post('/seasons/{id}/matches', function ($request, $response, $args) use ($container) {
+            $app->post('/seasons/{id}/match_days', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->createMatches($args['id'], $request);
             })->add($auth);
 
