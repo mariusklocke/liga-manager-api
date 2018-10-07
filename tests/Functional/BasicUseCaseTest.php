@@ -124,8 +124,8 @@ class BasicUseCaseTest extends TestCase
      */
     public function testMatchesCanBeFound(string $seasonId) : array
     {
-        $matches = $this->client->findMatchesByMatchDay($seasonId, 1);
-        self::assertEquals(2, count($matches));
+        $matches = $this->client->getMatchesBySeasonId($seasonId);
+        self::assertEquals(6, count($matches));
         $matchIds = [];
         foreach ($matches as $match) {
             self::assertObjectHasAttribute('id', $match);

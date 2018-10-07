@@ -94,13 +94,17 @@ class RichClient
         return $this->decodeBody($this->httpClient->get('/api/matches/' . $matchId));
     }
 
-    public function findMatchesByMatchDay(string $seasonId, int $matchDay): array
+    public function getMatchesByMatchDayId(string $matchDayId): array
     {
-        $queryParams = [
-            'match_day' => $matchDay
-        ];
         return $this->decodeBody($this->httpClient->get(
-            '/api/seasons/' . $seasonId . '/matches?' . http_build_query($queryParams)
+            '/api/matches?' . http_build_query(['match_day_id' => $matchDayId])
+        ));
+    }
+
+    public function getMatchesBySeasonId(string $seasonId): array
+    {
+        return $this->decodeBody($this->httpClient->get(
+            '/api/matches?' . http_build_query(['season_id' => $seasonId])
         ));
     }
 
@@ -120,7 +124,9 @@ class RichClient
 
     public function getMatchesInTournament(string $tournamentId): array
     {
-        return $this->decodeBody($this->httpClient->get('/api/tournaments/' . $tournamentId . '/matches'));
+        return $this->decodeBody($this->httpClient->get(
+            '/api/matches?' . http_build_query(['tournament_id' => $tournamentId])
+        ));
     }
 
     public function getAllTournaments(): array

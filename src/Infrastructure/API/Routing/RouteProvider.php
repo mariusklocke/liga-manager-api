@@ -78,10 +78,8 @@ class RouteProvider
                 ))->findRanking($args['id']);
             });
 
-            $app->get('/seasons/{id}/matches', function ($request, $response, $args) use ($container) {
-                return (new MatchQueryController(
-                    $container[MatchRepository::class]
-                ))->findMatchesInSeason($args['id'], $request);
+            $app->get('/matches', function ($request) use ($container) {
+                return (new MatchQueryController($container[MatchRepository::class]))->findMatches($request);
             });
 
             $app->get('/matches/{id}', function ($request, $response, $args) use ($container) {
@@ -158,10 +156,6 @@ class RouteProvider
 
             $app->get('/tournaments/{id}', function ($request, $response, $args) use ($container) {
                 return (new TournamentQueryController($container[TournamentRepository::class]))->findTournamentById($args['id']);
-            });
-
-            $app->get('/tournaments/{id}/matches', function ($request, $response, $args) use ($container) {
-                return (new MatchQueryController($container[MatchRepository::class]))->findMatchesInTournament($args['id']);
             });
 
             $app->get('/users/me', function ($request) use ($container) {

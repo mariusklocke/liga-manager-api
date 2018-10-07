@@ -3,49 +3,52 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use DateTimeInterface;
+use HexagonalPlayground\Application\Filter\MatchFilter;
 
 class MatchRepository extends AbstractRepository
 {
-    /**
-     * @param string $seasonId
-     * @param int    $matchDay
-     * @return array
-     */
-    public function findMatchesByMatchDay(string $seasonId, int $matchDay) : array
+    public function findMatches(MatchFilter $filter): array
     {
-        $query = 'SELECT m.* FROM `matches` m
-                  JOIN `match_days` md ON md.id = m.match_day_id
-                  WHERE md.season_id = ? AND md.number = ?';
-        return $this->getDb()->fetchAll($query, [$seasonId, $matchDay]);
-    }
+        $query = 'SELECT m.* FROM `matches` m ';
 
-    /**
-     * @param string $seasonId
-     * @param string $teamId
-     * @return array
-     */
-    public function findMatchesByTeam(string $seasonId, string $teamId) : array
-    {
-        $query = 'SELECT m.* FROM `matches` m
-                  JOIN `match_days` md ON md.id = m.match_day_id
-                  WHERE md.season_id = ? AND (m.home_team_id = ? OR m.guest_team_id = ?)';
-        return $this->getDb()->fetchAll($query, [$seasonId, $teamId, $teamId]);
-    }
+        if ($filter->getSeasonId() !== null || $filter->getTournamentId() !== null) {
+            $query .= 'JOIN `match_days` md ON md.id = m.match_day_id ';
+        }
 
-    /**
-     * @param string $seasonId
-     * @param DateTimeInterface $from
-     * @param DateTimeInterface $to
-     * @return array
-     */
-    public function findMatchesByDate(string $seasonId, DateTimeInterface $from, DateTimeInterface $to) : array
-    {
-        $query = 'SELECT m.* FROM `matches` m
-                  JOIN `match_days` md ON md.id = m.match_day_id
-                  WHERE md.season_id = ? AND m.kickoff BETWEEN ? AND ?';
-        $params = [$seasonId, $from, $to];
+        list($conditionClause, $params) = $this->buildConditionClause($filter);
+        if (strlen($conditionClause) > 0 && count($params) > 0) {
+            $query .= 'WHERE ' . $conditionClause;
+        }
+
         return $this->getDb()->fetchAll($query, $params);
+    }
+
+    private function buildConditionClause(MatchFilter $filter)
+    {
+        $conditions = [];
+        $parameters = [];
+        if ($filter->getSeasonId() !== null) {
+            $conditions[] = "md.season_id = ?";
+            $parameters[] = $filter->getSeasonId();
+        }
+        if ($filter->getTournamentId() !== null) {
+            $conditions[] = "md.tournament_id = ?";
+            $parameters[] = $filter->getTournamentId();
+        }
+        if ($filter->getMatchDayId() !== null) {
+            $conditions[] = "m.match_day_id = ?";
+            $parameters[] = $filter->getMatchDayId();
+        }
+        if ($filter->getTeamId() !== null) {
+            $conditions[] = "(m.home_team_id = ? OR m.guest_team_id = ?)";
+            $parameters[] = $filter->getTeamId();
+            $parameters[] = $filter->getTeamId();
+        }
+
+        return [
+            implode(' AND ', $conditions),
+            $parameters
+        ];
     }
 
     /**
@@ -55,17 +58,5 @@ class MatchRepository extends AbstractRepository
     public function findMatchById(string $matchId)
     {
         return $this->getDb()->fetchFirstRow('SELECT * FROM `matches` WHERE `id` = ?', [$matchId]);
-    }
-
-    /**
-     * @param string $tournamentId
-     * @return array
-     */
-    public function findMatchesInTournament(string $tournamentId) : array
-    {
-        $query = 'SELECT m.* FROM `matches` m
-                  JOIN `match_days` md ON md.id = m.match_day_id
-                  WHERE md.tournament_id = ?';
-        return $this->getDb()->fetchAll($query, [$tournamentId]);
     }
 }
