@@ -54,17 +54,14 @@ class MatchDay
 
     public function addMatch(Match $match): void
     {
-        // TODO: Set inverse association
-        if (!$this->hasMatch($match)) {
-            $this->matches[] = $match;
-        }
+        $this->matches[] = $match;
     }
 
     /**
      * @param Match $match
      * @return bool
      */
-    private function hasMatch(Match $match): bool
+    public function hasMatch(Match $match): bool
     {
         return $this->matches->contains($match);
     }
