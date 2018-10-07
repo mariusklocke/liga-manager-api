@@ -244,6 +244,7 @@ class BasicUseCaseTest extends TestCase
 
     /**
      * @param string[] $matchIds
+     * @param string[] $pitchIds
      * @depends testMatchesCanBeFound
      * @depends testPitchCanBeCreated
      */
