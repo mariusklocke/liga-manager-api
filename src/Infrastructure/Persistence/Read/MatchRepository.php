@@ -9,16 +9,14 @@ class MatchRepository extends AbstractRepository
 {
     public function findMatches(MatchFilter $filter): array
     {
-        $query = 'SELECT m.* FROM `matches` m ';
-
-        if ($filter->getSeasonId() !== null || $filter->getTournamentId() !== null) {
-            $query .= 'JOIN `match_days` md ON md.id = m.match_day_id ';
-        }
+        $query = 'SELECT m.* FROM `matches` m JOIN `match_days` md ON md.id = m.match_day_id ';
 
         list($conditionClause, $params) = $this->buildConditionClause($filter);
         if (strlen($conditionClause) > 0 && count($params) > 0) {
             $query .= 'WHERE ' . $conditionClause;
         }
+
+        $query .= ' ORDER BY md.number ASC';
 
         return $this->getDb()->fetchAll($query, $params);
     }
