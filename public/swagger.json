@@ -1401,12 +1401,6 @@
           ],
           "type": "string"
         },
-        "match_days": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/match_day"
-          }
-        },
         "team_count": {
           "type": "integer"
         }
@@ -1420,12 +1414,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "match_days": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/match_day"
-          }
         }
       },
       "type": "object"
