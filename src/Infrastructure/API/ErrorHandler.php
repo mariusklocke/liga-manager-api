@@ -47,7 +47,7 @@ class ErrorHandler
             case ($throwable instanceof ExceptionInterface):
                 return $this->createResponseFromException($throwable);
             case ($throwable instanceof RouteNotFoundException):
-                return $this->createResponse(404, $throwable->getMessage());
+                return $this->createResponse(404, 'Route not found');
             case ($throwable instanceof MethodNotAllowedException):
                 $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);
                 $message = 'See Allow-Header for a list of allowed methods';
