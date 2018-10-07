@@ -33,150 +33,150 @@ class RouteProvider
             $container = $app->getContainer();
             $auth      = new AuthenticationMiddleware($container);
 
-            $app->get('/team', function () use ($container) {
+            $app->get('/teams', function () use ($container) {
                 return (new TeamQueryController($container[TeamRepository::class]))->findAllTeams();
             });
 
-            $app->get('/team/{id}', function ($request, $response, $args) use ($container) {
+            $app->get('/teams/{id}', function ($request, $response, $args) use ($container) {
                 return (new TeamQueryController($container[TeamRepository::class]))->findTeamById($args['id']);
             });
 
-            $app->put('/team/{id}/contact', function ($request, $response, $args) use ($container) {
+            $app->put('/teams/{id}/contact', function ($request, $response, $args) use ($container) {
                 return (new TeamCommandController($container['commandBus']))->updateContact($args['id'], $request);
             })->add($auth);
 
-            $app->get('/season/{id}/team', function ($request, $response, $args) use ($container) {
+            $app->get('/seasons/{id}/teams', function ($request, $response, $args) use ($container) {
                 return (new TeamQueryController($container[TeamRepository::class]))->findTeamsBySeasonId($args['id']);
             });
 
-            $app->post('/team', function ($request) use ($container) {
+            $app->post('/teams', function ($request) use ($container) {
                 return (new TeamCommandController($container['commandBus']))->create($request);
             })->add($auth);
 
-            $app->delete('/team/{id}', function ($request, $response, $args) use ($container) {
+            $app->delete('/teams/{id}', function ($request, $response, $args) use ($container) {
                 return (new TeamCommandController($container['commandBus']))->delete($args['id']);
             })->add($auth);
 
-            $app->get('/season', function () use ($container) {
+            $app->get('/seasons', function () use ($container) {
                 return (new SeasonQueryController(
                     $container[SeasonRepository::class],
                     $container[RankingRepository::class]
                 ))->findAllSeasons();
             });
 
-            $app->get('/season/{id}', function ($request, $response, $args) use ($container) {
+            $app->get('/seasons/{id}', function ($request, $response, $args) use ($container) {
                 return (new SeasonQueryController(
                     $container[SeasonRepository::class],
                     $container[RankingRepository::class]
                 ))->findSeasonById($args['id']);
             });
 
-            $app->get('/season/{id}/ranking', function ($request, $response, $args) use ($container) {
+            $app->get('/seasons/{id}/ranking', function ($request, $response, $args) use ($container) {
                 return (new SeasonQueryController(
                     $container[SeasonRepository::class],
                     $container[RankingRepository::class]
                 ))->findRanking($args['id']);
             });
 
-            $app->get('/season/{id}/matches', function ($request, $response, $args) use ($container) {
+            $app->get('/seasons/{id}/matches', function ($request, $response, $args) use ($container) {
                 return (new MatchQueryController(
                     $container[MatchRepository::class]
                 ))->findMatchesInSeason($args['id'], $request);
             });
 
-            $app->get('/match/{id}', function ($request, $response, $args) use ($container) {
+            $app->get('/matches/{id}', function ($request, $response, $args) use ($container) {
                 return (new MatchQueryController($container[MatchRepository::class]))->findMatchById($args['id']);
             });
 
-            $app->get('/pitch', function () use ($container) {
+            $app->get('/pitches', function () use ($container) {
                 return (new PitchQueryController($container[PitchRepository::class]))->findAllPitches();
             });
 
-            $app->get('/pitch/{id}', function ($request, $response, $args) use ($container) {
+            $app->get('/pitches/{id}', function ($request, $response, $args) use ($container) {
                 return (new PitchQueryController($container[PitchRepository::class]))->findPitchById($args['id']);
             });
 
-            $app->post('/pitch', function ($request) use ($container) {
+            $app->post('/pitches', function ($request) use ($container) {
                 return (new PitchCommandController($container['commandBus']))->create($request);
             })->add($auth);
 
-            $app->put('/pitch/{id}/contact', function ($request, $response, $args) use ($container) {
+            $app->put('/pitches/{id}/contact', function ($request, $response, $args) use ($container) {
                 return (new PitchCommandController($container['commandBus']))->updateContact($args['id'], $request);
             })->add($auth);
 
-            $app->post('/season/{id}/start', function ($request, $response, $args) use ($container) {
+            $app->post('/seasons/{id}/start', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->start($args['id']);
             })->add($auth);
 
-            $app->delete('/season/{id}', function ($request, $response, $args) use ($container) {
+            $app->delete('/seasons/{id}', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->delete($args['id']);
             })->add($auth);
 
-            $app->post('/season/{id}/matches', function ($request, $response, $args) use ($container) {
+            $app->post('/seasons/{id}/matches', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->createMatches($args['id'], $request);
             })->add($auth);
 
-            $app->post('/match/{id}/kickoff', function ($request, $response, $args) use ($container) {
+            $app->post('/matches/{id}/kickoff', function ($request, $response, $args) use ($container) {
                 return (new MatchCommandController($container['commandBus']))->schedule($args['id'], $request);
             })->add($auth);
 
-            $app->post('/match/{id}/location', function ($request, $response, $args) use ($container) {
+            $app->post('/matches/{id}/location', function ($request, $response, $args) use ($container) {
                 return (new MatchCommandController($container['commandBus']))->locate($args['id'], $request);
             })->add($auth);
 
-            $app->post('/match/{id}/result', function ($request, $response, $args) use ($container) {
+            $app->post('/matches/{id}/result', function ($request, $response, $args) use ($container) {
                 return (new MatchCommandController($container['commandBus']))->submitResult($args['id'], $request);
             })->add($auth);
 
-            $app->post('/match/{id}/cancellation', function ($request, $response, $args) use ($container) {
+            $app->post('/matches/{id}/cancellation', function ($request, $response, $args) use ($container) {
                 return (new MatchCommandController($container['commandBus']))->cancel($args['id']);
             })->add($auth);
 
-            $app->put('/season/{season_id}/team/{team_id}', function ($request, $response, $args) use ($container) {
+            $app->put('/seasons/{season_id}/teams/{team_id}', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->addTeam($args['season_id'], $args['team_id']);
             })->add($auth);
 
-            $app->delete('/season/{season_id}/team/{team_id}', function ($request, $response, $args) use ($container) {
+            $app->delete('/seasons/{season_id}/teams/{team_id}', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->removeTeam($args['season_id'], $args['team_id']);
             })->add($auth);
 
-            $app->post('/season', function ($request) use ($container) {
+            $app->post('/seasons', function ($request) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->createSeason($request);
             })->add($auth);
 
-            $app->post('/tournament', function ($request) use ($container) {
+            $app->post('/tournaments', function ($request) use ($container) {
                 return (new TournamentCommandController($container['commandBus']))->create($request);
             })->add($auth);
 
-            $app->put('/tournament/{id}/round/{round}', function ($request, $response, $args) use ($container) {
+            $app->put('/tournaments/{id}/rounds/{round}', function ($request, $response, $args) use ($container) {
                 return (new TournamentCommandController($container['commandBus']))->setRound($args['id'], (int) $args['round'], $request);
             })->add($auth);
 
-            $app->get('/tournament', function () use ($container) {
+            $app->get('/tournaments', function () use ($container) {
                 return (new TournamentQueryController($container[TournamentRepository::class]))->findAllTournaments();
             });
 
-            $app->get('/tournament/{id}', function ($request, $response, $args) use ($container) {
+            $app->get('/tournaments/{id}', function ($request, $response, $args) use ($container) {
                 return (new TournamentQueryController($container[TournamentRepository::class]))->findTournamentById($args['id']);
             });
 
-            $app->get('/tournament/{id}/matches', function ($request, $response, $args) use ($container) {
+            $app->get('/tournaments/{id}/matches', function ($request, $response, $args) use ($container) {
                 return (new MatchQueryController($container[MatchRepository::class]))->findMatchesInTournament($args['id']);
             });
 
-            $app->get('/user/me', function ($request) use ($container) {
+            $app->get('/users/me', function ($request) use ($container) {
                 return (new UserQueryController())->getAuthenticatedUser($request);
             })->add($auth);
 
-            $app->put('/user/me/password', function ($request) use ($container) {
+            $app->put('/users/me/password', function ($request) use ($container) {
                 return (new UserCommandController($container['commandBus']))->changePassword($request);
             })->add($auth);
 
-            $app->post('/user', function ($request) use ($container) {
+            $app->post('/users', function ($request) use ($container) {
                 return (new UserCommandController($container['commandBus']))->createUser($request);
             })->add($auth);
 
-            $app->post('/user/me/password/reset', function ($request) use ($container) {
+            $app->post('/users/me/password/reset', function ($request) use ($container) {
                 return (new UserCommandController($container['commandBus']))->sendPasswordResetMail($request);
             });
         });

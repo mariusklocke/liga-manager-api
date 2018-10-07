@@ -11,7 +11,7 @@
   },
   "basePath": "/api",
   "paths": {
-    "/match": {
+    "/matches": {
       "get": {
         "operationId": "getMatches",
         "parameters": [
@@ -57,7 +57,7 @@
         "summary": "Find matches by multiple filter criteria"
       }
     },
-    "/match/{id}": {
+    "/matches/{id}": {
       "get": {
         "operationId": "getMatch",
         "parameters": [
@@ -86,7 +86,7 @@
         "summary": "Find a single match by id"
       }
     },
-    "/match/{id}/cancellation": {
+    "/matches/{id}/cancellation": {
       "post": {
         "operationId": "cancelMatch",
         "security": [
@@ -113,7 +113,7 @@
         "summary": "Cancel a match"
       }
     },
-    "/match/{id}/kickoff": {
+    "/matches/{id}/kickoff": {
       "post": {
         "operationId": "scheduleMatch",
         "security": [
@@ -156,7 +156,7 @@
         "summary": "Schedule a match"
       }
     },
-    "/match/{id}/location": {
+    "/matches/{id}/location": {
       "post": {
         "operationId": "locateMatch",
         "security": [
@@ -198,7 +198,7 @@
         "summary": "Locate a match on a pitch"
       }
     },
-    "/match/{id}/result": {
+    "/matches/{id}/result": {
       "post": {
         "operationId": "submitMatchResult",
         "security": [
@@ -251,7 +251,7 @@
         "summary": "Submit a matches result"
       }
     },
-    "/pitch": {
+    "/pitches": {
       "get": {
         "operationId": "getAllPitches",
         "parameters": [],
@@ -325,7 +325,7 @@
         "summary": "Creates a new pitch"
       }
     },
-    "/pitch/{id}": {
+    "/pitches/{id}": {
       "delete": {
         "operationId": "deletePitch",
         "security": [
@@ -379,7 +379,7 @@
         "summary": "Find a single pitch by id"
       }
     },
-    "/pitch/{id}/contact": {
+    "/pitches/{id}/contact": {
       "put": {
         "operationId": "updatePitchContact",
         "security": [
@@ -416,7 +416,7 @@
         "summary": "Updates the contact person of a pitch"
       }
     },
-    "/season": {
+    "/seasons": {
       "get": {
         "operationId": "getAllSeasons",
         "parameters": [],
@@ -478,7 +478,7 @@
         "summary": "Create a new season"
       }
     },
-    "/season/{id}": {
+    "/seasons/{id}": {
       "delete": {
         "operationId": "deleteSeason",
         "security": [
@@ -532,7 +532,7 @@
         "summary": "Finds a single season"
       }
     },
-    "/season/{id}/match_days": {
+    "/seasons/{id}/match_days": {
       "get": {
         "operationId": "getMatchDaysInSeason",
         "parameters": [
@@ -604,7 +604,7 @@
         "summary": "Creates matchdays & matches for a given season"
       }
     },
-    "/season/{id}/ranking": {
+    "/seasons/{id}/ranking": {
       "get": {
         "operationId": "getRanking",
         "parameters": [
@@ -630,7 +630,7 @@
         "summary": "Returns the current season ranking"
       }
     },
-    "/season/{id}/start": {
+    "/seasons/{id}/start": {
       "post": {
         "operationId": "startSeason",
         "security": [
@@ -663,7 +663,7 @@
         "summary": "Starts a season"
       }
     },
-    "/season/{id}/team": {
+    "/seasons/{id}/teams": {
       "get": {
         "operationId": "getTeamsInSeason",
         "parameters": [
@@ -692,7 +692,7 @@
         "summary": "Find all teams related to a single season"
       }
     },
-    "/season/{season_id}/team/{team_id}": {
+    "/seasons/{season_id}/teams/{team_id}": {
       "put": {
         "operationId": "addTeamToSeason",
         "security": [
@@ -770,7 +770,7 @@
         "summary": "Remove a team from a season"
       }
     },
-    "/team": {
+    "/teams": {
       "get": {
         "operationId": "getAllTeams",
         "parameters": [],
@@ -832,7 +832,7 @@
         "summary": "Creates a new team"
       }
     },
-    "/team/{id}": {
+    "/teams/{id}": {
       "delete": {
         "operationId": "deleteTeam",
         "security": [
@@ -883,7 +883,7 @@
         "summary": "Finds a single team by id"
       }
     },
-    "/team/{id}/contact": {
+    "/teams/{id}/contact": {
       "put": {
         "operationId": "updateTeamContact",
         "security": [
@@ -920,7 +920,7 @@
         "summary": "Updates the contact person of team"
       }
     },
-    "/tournament": {
+    "/tournaments": {
       "get": {
         "operationId": "getAllTournaments",
         "tags": [
@@ -982,7 +982,7 @@
         }
       }
     },
-    "/tournament/{id}": {
+    "/tournaments/{id}": {
       "get": {
         "operationId": "getTournament",
         "tags": [
@@ -1011,7 +1011,7 @@
         }
       }
     },
-    "/tournament/{id}/round/{round}": {
+    "/tournaments/{id}/rounds/{round}": {
       "put": {
         "operationId": "setRound",
         "security": [
@@ -1076,7 +1076,7 @@
         }
       }
     },
-    "/tournament/{id}/rounds": {
+    "/tournaments/{id}/rounds": {
       "get": {
         "operationId": "getRoundsInTournament",
         "tags": [
@@ -1105,7 +1105,7 @@
         }
       }
     },
-    "/user": {
+    "/users": {
       "post": {
         "summary": "Create a user",
         "security": [
@@ -1159,7 +1159,7 @@
         }
       }
     },
-    "/user/me": {
+    "/users/me": {
       "get": {
         "summary": "Retrieve the authenticated user",
         "security": [
@@ -1181,7 +1181,7 @@
         }
       }
     },
-    "/user/me/password": {
+    "/users/me/password": {
       "put": {
         "summary": "Change the authenticated user's password",
         "security": [
@@ -1219,7 +1219,7 @@
         }
       }
     },
-    "/user/me/password/reset": {
+    "/users/me/password/reset": {
       "post": {
         "operationId": "sendPasswordResetMail",
         "summary": "Sends a password reset mail for the user with the given email address",

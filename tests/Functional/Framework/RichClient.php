@@ -32,58 +32,58 @@ class RichClient
 
     public function createSeason(string $name): stdClass
     {
-        return $this->decodeBody($this->httpClient->post('/api/season', ['name' => $name], $this->headers));
+        return $this->decodeBody($this->httpClient->post('/api/seasons', ['name' => $name], $this->headers));
     }
 
     public function getAllSeasons(): array
     {
-        return $this->decodeBody($this->httpClient->get('/api/season'));
+        return $this->decodeBody($this->httpClient->get('/api/seasons'));
     }
 
     public function getSeason(string $id): stdClass
     {
-        return $this->decodeBody($this->httpClient->get('/api/season/' . $id));
+        return $this->decodeBody($this->httpClient->get('/api/seasons/' . $id));
     }
 
     public function getTeamsInSeason(string $seasonId): array
     {
-        return $this->decodeBody($this->httpClient->get('/api/season/' . $seasonId . '/team'));
+        return $this->decodeBody($this->httpClient->get('/api/seasons/' . $seasonId . '/teams'));
     }
 
     public function deleteSeason(string $id): void
     {
-        $this->handleErrors($this->httpClient->delete('/api/season/' . $id, $this->headers));
+        $this->handleErrors($this->httpClient->delete('/api/seasons/' . $id, $this->headers));
     }
 
     public function startSeason(string $id): void
     {
-        $this->handleErrors($this->httpClient->post('/api/season/' . $id . '/start', [], $this->headers));
+        $this->handleErrors($this->httpClient->post('/api/seasons/' . $id . '/start', [], $this->headers));
     }
 
     public function addTeamToSeason(string $seasonId, string $teamId): void
     {
-        $this->handleErrors($this->httpClient->put('/api/season/' . $seasonId . '/team/' . $teamId, [], $this->headers));
+        $this->handleErrors($this->httpClient->put('/api/seasons/' . $seasonId . '/teams/' . $teamId, [], $this->headers));
     }
 
     public function removeTeamFromSeason(string $seasonId, string $teamId): void
     {
-        $this->handleErrors($this->httpClient->delete('/api/season/' . $seasonId . '/team/' . $teamId));
+        $this->handleErrors($this->httpClient->delete('/api/seasons/' . $seasonId . '/teams/' . $teamId));
     }
 
     public function getSeasonRanking(string $seasonId): stdClass
     {
-        return $this->decodeBody($this->httpClient->get('/api/season/' . $seasonId . '/ranking'));
+        return $this->decodeBody($this->httpClient->get('/api/seasons/' . $seasonId . '/ranking'));
     }
 
     public function createTeam(string $name): stdClass
     {
-        return $this->decodeBody($this->httpClient->post('/api/team', ['name' => $name], $this->headers));
+        return $this->decodeBody($this->httpClient->post('/api/teams', ['name' => $name], $this->headers));
     }
 
     public function createMatches(string $seasonId, array $matchDays): void
     {
         $this->handleErrors($this->httpClient->post(
-            '/api/season/' . $seasonId . '/matches',
+            '/api/seasons/' . $seasonId . '/matches',
             ['match_days' => $matchDays],
             $this->headers
         ));
@@ -91,7 +91,7 @@ class RichClient
 
     public function getMatch(string $matchId): stdClass
     {
-        return $this->decodeBody($this->httpClient->get('/api/match/' . $matchId));
+        return $this->decodeBody($this->httpClient->get('/api/matches/' . $matchId));
     }
 
     public function findMatchesByMatchDay(string $seasonId, int $matchDay): array
@@ -100,14 +100,14 @@ class RichClient
             'match_day' => $matchDay
         ];
         return $this->decodeBody($this->httpClient->get(
-            '/api/season/' . $seasonId . '/matches?' . http_build_query($queryParams)
+            '/api/seasons/' . $seasonId . '/matches?' . http_build_query($queryParams)
         ));
     }
 
     public function submitMatchResult(string $matchId, int $homeScore, int $guestScore): void
     {
         $this->handleErrors($this->httpClient->post(
-            '/api/match/' . $matchId . '/result',
+            '/api/matches/' . $matchId . '/result',
             ['home_score' => $homeScore, 'guest_score' => $guestScore],
             $this->headers
         ));
@@ -115,28 +115,28 @@ class RichClient
 
     public function createTournament(string $name): stdClass
     {
-        return $this->decodeBody($this->httpClient->post('/api/tournament', ['name' => $name], $this->headers));
+        return $this->decodeBody($this->httpClient->post('/api/tournaments', ['name' => $name], $this->headers));
     }
 
     public function getMatchesInTournament(string $tournamentId): array
     {
-        return $this->decodeBody($this->httpClient->get('/api/tournament/' . $tournamentId . '/matches'));
+        return $this->decodeBody($this->httpClient->get('/api/tournaments/' . $tournamentId . '/matches'));
     }
 
     public function getAllTournaments(): array
     {
-        return $this->decodeBody($this->httpClient->get('/api/tournament'));
+        return $this->decodeBody($this->httpClient->get('/api/tournaments'));
     }
 
     public function getTournament(string $id): stdClass
     {
-        return $this->decodeBody($this->httpClient->get('/api/tournament/' . $id));
+        return $this->decodeBody($this->httpClient->get('/api/tournaments/' . $id));
     }
 
     public function setTournamentRound(string $tournamentId, int $round, array $teamPairs, array $datePeriod): void
     {
         $this->handleErrors($this->httpClient->put(
-            '/api/tournament/' . $tournamentId . '/round/' . $round,
+            '/api/tournaments/' . $tournamentId . '/rounds/' . $round,
             [
                 'date_period' => $datePeriod,
                 'team_pairs'  => $teamPairs
@@ -147,13 +147,13 @@ class RichClient
 
     public function getAuthenticatedUser(): stdClass
     {
-        return $this->decodeBody($this->httpClient->get('/api/user/me', $this->headers));
+        return $this->decodeBody($this->httpClient->get('/api/users/me', $this->headers));
     }
 
     public function changePassword(string $newPassword): void
     {
         $this->handleErrors($this->httpClient->put(
-            '/api/user/me/password',
+            '/api/users/me/password',
             ['new_password' => $newPassword],
             $this->headers
         ));
@@ -161,13 +161,13 @@ class RichClient
 
     public function createUser(array $properties): stdClass
     {
-        return $this->decodeBody($this->httpClient->post('/api/user', $properties, $this->headers));
+        return $this->decodeBody($this->httpClient->post('/api/users', $properties, $this->headers));
     }
 
     public function createPitch($label, $latitude, $longitude): stdClass
     {
         return $this->decodeBody($this->httpClient->post(
-            '/api/pitch',
+            '/api/pitches',
             [
                 'label' => $label,
                 'location_latitude' => $latitude,
@@ -180,7 +180,7 @@ class RichClient
     public function locateMatch(string $matchId, string $pitchId)
     {
         $this->handleErrors($this->httpClient->post(
-            '/api/match/' . $matchId . '/location',
+            '/api/matches/' . $matchId . '/location',
             [
                 'pitch_id' => $pitchId
             ],
@@ -191,7 +191,7 @@ class RichClient
     public function scheduleMatch(string $matchId, string $kickoffDate)
     {
         $this->handleErrors($this->httpClient->post(
-            '/api/match/' . $matchId . '/kickoff',
+            '/api/matches/' . $matchId . '/kickoff',
             [
                 'kickoff' => $kickoffDate
             ],
@@ -202,7 +202,7 @@ class RichClient
     public function updateTeamContact(string $teamId, array $contact)
     {
         $this->handleErrors($this->httpClient->put(
-            '/api/team/' . $teamId . '/contact',
+            '/api/teams/' . $teamId . '/contact',
             $contact,
             $this->headers
         ));
@@ -211,7 +211,7 @@ class RichClient
     public function updatePitchContact(string $pitchId, array $contact)
     {
         $this->handleErrors($this->httpClient->put(
-            '/api/pitch/' . $pitchId . '/contact',
+            '/api/pitches/' . $pitchId . '/contact',
             $contact,
             $this->headers
         ));
@@ -220,14 +220,14 @@ class RichClient
     public function getTeam(string $teamId)
     {
         return $this->decodeBody($this->httpClient->get(
-            '/api/team/' . $teamId
+            '/api/teams/' . $teamId
         ));
     }
 
     public function getPitch(string $pitchId)
     {
         return $this->decodeBody($this->httpClient->get(
-            '/api/pitch/' . $pitchId
+            '/api/pitches/' . $pitchId
         ));
     }
 
