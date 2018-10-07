@@ -39,4 +39,13 @@ class TournamentQueryController
         }
         return (new Response(200))->withJson($tournament);
     }
+
+    /**
+     * @param string $tournamentId
+     * @return Response
+     */
+    public function findRounds(string $tournamentId): Response
+    {
+        return (new Response(200))->withJson($this->repository->findRounds($tournamentId));
+    }
 }

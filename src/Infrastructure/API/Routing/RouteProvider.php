@@ -110,6 +110,13 @@ class RouteProvider
                 return (new SeasonCommandController($container['commandBus']))->delete($args['id']);
             })->add($auth);
 
+            $app->get('/seasons/{id}/match_days', function ($request, $response, $args) use ($container) {
+                return (new SeasonQueryController(
+                    $container[SeasonRepository::class],
+                    $container[RankingRepository::class]
+                ))->findMatchDays($args['id']);
+            });
+
             $app->post('/seasons/{id}/match_days', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->createMatches($args['id'], $request);
             })->add($auth);
@@ -145,6 +152,11 @@ class RouteProvider
             $app->post('/tournaments', function ($request) use ($container) {
                 return (new TournamentCommandController($container['commandBus']))->create($request);
             })->add($auth);
+
+            $app->get('/tournaments/{id}/rounds', function ($request, $response, $args) use ($container) {
+                return (new TournamentQueryController($container[TournamentRepository::class]))
+                    ->findRounds($args['id']);
+            });
 
             $app->put('/tournaments/{id}/rounds/{round}', function ($request, $response, $args) use ($container) {
                 return (new TournamentCommandController($container['commandBus']))->setRound($args['id'], (int) $args['round'], $request);

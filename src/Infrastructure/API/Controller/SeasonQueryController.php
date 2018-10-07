@@ -55,4 +55,9 @@ class SeasonQueryController
         $ranking['positions'] = $this->rankingRepository->findRankingPositions($seasonId);
         return (new Response(200))->withJson($ranking);
     }
+
+    public function findMatchDays(string $seasonId): Response
+    {
+        return (new Response())->withJson($this->seasonRepository->findMatchDays($seasonId));
+    }
 }

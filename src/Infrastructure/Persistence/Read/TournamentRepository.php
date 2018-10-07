@@ -21,4 +21,13 @@ class TournamentRepository extends AbstractRepository
     {
         return $this->getDb()->fetchFirstRow('SELECT * FROM tournaments WHERE id = ?', [$id]);
     }
+
+    /**
+     * @param string $tournamentId
+     * @return array
+     */
+    public function findRounds(string $tournamentId)
+    {
+        return $this->getDb()->fetchAll('SELECT * FROM `match_days` WHERE tournament_id = ?', [$tournamentId]);
+    }
 }
