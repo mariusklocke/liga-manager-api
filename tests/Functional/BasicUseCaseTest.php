@@ -7,11 +7,18 @@ use HexagonalPlayground\Tests\Functional\Framework\ApiException;
 
 class BasicUseCaseTest extends TestCase
 {
-    public function testPitchCanBeCreated()
+    public function testPitchCanBeCreated(): array
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
-        self::assertResponseHasValidId($this->client->createPitch('TestFloat', 89.99, 6.78));
-        self::assertResponseHasValidId($this->client->createPitch('TestInt', 89, 6));
+        $pitchIds = [];
+        $response = $this->client->createPitch('TestFloat', 89.99, 6.78);
+        self::assertResponseHasValidId($response);
+        $pitchIds[] = $response->id;
+        $response = $this->client->createPitch('TestInt', 89, 6);
+        self::assertResponseHasValidId($response);
+        $pitchIds[] = $response->id;
+
+        return $pitchIds;
     }
 
     public function testSeasonCanBeCreated(): string
@@ -236,6 +243,76 @@ class BasicUseCaseTest extends TestCase
     }
 
     /**
+     * @param string[] $matchIds
+     * @depends testMatchesCanBeFound
+     * @depends testPitchCanBeCreated
+     */
+    public function testMatchCanBeLocated(array $matchIds, array $pitchIds)
+    {
+        $matchId = array_shift($matchIds);
+        $pitchId = array_shift($pitchIds);
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $this->client->locateMatch($matchId, $pitchId);
+
+        $match = $this->client->getMatch($matchId);
+        self::assertEquals($pitchId, $match->pitch_id);
+    }
+
+    /**
+     * @param string[] $matchIds
+     * @depends testMatchesCanBeFound
+     */
+    public function testMatchCanBeScheduled(array $matchIds)
+    {
+        $matchId = array_shift($matchIds);
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $this->client->scheduleMatch($matchId, '2018-10-06');
+
+        $match = $this->client->getMatch($matchId);
+        self::assertEquals('2018-10-06 00:00:00', $match->kickoff);
+    }
+
+    /**
+     * @param string[] $teamIds
+     * @depends testTeamsCanBeCreated
+     */
+    public function testTeamContactCanBeUpdated(array $teamIds)
+    {
+        $teamId = array_shift($teamIds);
+        $contact = [
+            'first_name' => 'Homer',
+            'last_name'  => 'Simpson',
+            'phone'      => '012345',
+            'email'      => 'homer.simpson@example.com'
+        ];
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $this->client->updateTeamContact($teamId, $contact);
+
+        $team = $this->client->getTeam($teamId);
+        self::assertEquals($contact, (array)$team->contact);
+    }
+
+    /**
+     * @param string[] $pitchIds
+     * @depends testPitchCanBeCreated
+     */
+    public function testPitchContactCanBeUpdated(array $pitchIds)
+    {
+        $pitchId = array_shift($pitchIds);
+        $contact = [
+            'first_name' => 'Lisa',
+            'last_name'  => 'Simpson',
+            'phone'      => '012345',
+            'email'      => 'lisa.simpson@example.com'
+        ];
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $this->client->updatePitchContact($pitchId, $contact);
+
+        $pitch = $this->client->getPitch($pitchId);
+        self::assertEquals($contact, (array)$pitch->contact);
+    }
+
+    /**
      * @return string
      */
     public function testTournamentCanBeCreated(): string
@@ -312,6 +389,13 @@ class BasicUseCaseTest extends TestCase
     {
         $this->client->setBasicAuth('nobody@example.com', 'secret');
         $this->client->changePassword('even_more_secret');
+        try {
+            $this->client->getAuthenticatedUser();
+        } catch (ApiException $exception) {
+            // nothing
+        }
+        self::assertNotNull($exception);
+
         $this->client->setBasicAuth('nobody@example.com', 'even_more_secret');
         $user = $this->client->getAuthenticatedUser();
         self::assertObjectHasAttribute('email', $user);

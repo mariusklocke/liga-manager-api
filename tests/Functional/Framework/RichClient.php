@@ -177,6 +177,60 @@ class RichClient
         ));
     }
 
+    public function locateMatch(string $matchId, string $pitchId)
+    {
+        $this->handleErrors($this->httpClient->post(
+            '/api/match/' . $matchId . '/location',
+            [
+                'pitch_id' => $pitchId
+            ],
+            $this->headers
+        ));
+    }
+
+    public function scheduleMatch(string $matchId, string $kickoffDate)
+    {
+        $this->handleErrors($this->httpClient->post(
+            '/api/match/' . $matchId . '/kickoff',
+            [
+                'kickoff' => $kickoffDate
+            ],
+            $this->headers
+        ));
+    }
+
+    public function updateTeamContact(string $teamId, array $contact)
+    {
+        $this->handleErrors($this->httpClient->put(
+            '/api/team/' . $teamId . '/contact',
+            $contact,
+            $this->headers
+        ));
+    }
+
+    public function updatePitchContact(string $pitchId, array $contact)
+    {
+        $this->handleErrors($this->httpClient->put(
+            '/api/pitch/' . $pitchId . '/contact',
+            $contact,
+            $this->headers
+        ));
+    }
+
+    public function getTeam(string $teamId)
+    {
+        return $this->decodeBody($this->httpClient->get(
+            '/api/team/' . $teamId
+        ));
+    }
+
+    public function getPitch(string $pitchId)
+    {
+        return $this->decodeBody($this->httpClient->get(
+            '/api/pitch/' . $pitchId
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);
