@@ -38,9 +38,6 @@ class ReadRepositoryProvider implements ServiceProviderInterface
         $container[SeasonRepository::class] = function() use ($container) {
             return new SeasonRepository($container[ReadDbAdapterInterface::class]);
         };
-        $container[RankingRepository::class] = function() use ($container) {
-            return new RankingRepository($container[ReadDbAdapterInterface::class]);
-        };
         $container[PitchRepository::class] = function() use ($container) {
             return new PitchRepository($container[ReadDbAdapterInterface::class]);
         };

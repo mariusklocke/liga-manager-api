@@ -20,7 +20,6 @@ use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
-use HexagonalPlayground\Infrastructure\Persistence\Read\RankingRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
@@ -59,24 +58,15 @@ class RouteProvider
             })->add($auth);
 
             $app->get('/seasons', function () use ($container) {
-                return (new SeasonQueryController(
-                    $container[SeasonRepository::class],
-                    $container[RankingRepository::class]
-                ))->findAllSeasons();
+                return (new SeasonQueryController($container[SeasonRepository::class]))->findAllSeasons();
             });
 
             $app->get('/seasons/{id}', function ($request, $response, $args) use ($container) {
-                return (new SeasonQueryController(
-                    $container[SeasonRepository::class],
-                    $container[RankingRepository::class]
-                ))->findSeasonById($args['id']);
+                return (new SeasonQueryController($container[SeasonRepository::class]))->findSeasonById($args['id']);
             });
 
             $app->get('/seasons/{id}/ranking', function ($request, $response, $args) use ($container) {
-                return (new SeasonQueryController(
-                    $container[SeasonRepository::class],
-                    $container[RankingRepository::class]
-                ))->findRanking($args['id']);
+                return (new SeasonQueryController($container[SeasonRepository::class]))->findRanking($args['id']);
             });
 
             $app->get('/matches', function ($request) use ($container) {
@@ -112,10 +102,7 @@ class RouteProvider
             })->add($auth);
 
             $app->get('/seasons/{id}/match_days', function ($request, $response, $args) use ($container) {
-                return (new SeasonQueryController(
-                    $container[SeasonRepository::class],
-                    $container[RankingRepository::class]
-                ))->findMatchDays($args['id']);
+                return (new SeasonQueryController($container[SeasonRepository::class]))->findMatchDays($args['id']);
             });
 
             $app->post('/seasons/{id}/match_days', function ($request, $response, $args) use ($container) {

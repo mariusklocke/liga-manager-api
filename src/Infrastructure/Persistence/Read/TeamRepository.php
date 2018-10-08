@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Application\Exception\NotFoundException;
+
 class TeamRepository extends AbstractRepository
 {
     /**
@@ -17,13 +19,13 @@ class TeamRepository extends AbstractRepository
 
     /**
      * @param string $id
-     * @return array|null
+     * @return array
      */
-    public function findTeamById(string $id)
+    public function findTeamById(string $id): array
     {
         $team = $this->getDb()->fetchFirstRow('SELECT * FROM `teams` WHERE `id` = ?', [$id]);
         if (null === $team) {
-            return null;
+            throw new NotFoundException('Cannot find team');
         }
 
         return $this->reconstructEmbeddedObject($team, 'contact');

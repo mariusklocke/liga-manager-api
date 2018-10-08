@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
-use HexagonalPlayground\Infrastructure\Persistence\Read\RankingRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use Slim\Http\Response;
 
@@ -11,13 +10,10 @@ class SeasonQueryController
 {
     /** @var SeasonRepository */
     private $seasonRepository;
-    /** @var RankingRepository */
-    private $rankingRepository;
 
-    public function __construct(SeasonRepository $seasonRepository, RankingRepository $rankingRepository)
+    public function __construct(SeasonRepository $seasonRepository)
     {
         $this->seasonRepository = $seasonRepository;
-        $this->rankingRepository = $rankingRepository;
     }
 
     /**
@@ -34,11 +30,7 @@ class SeasonQueryController
      */
     public function findSeasonById(string $seasonId) : Response
     {
-        $season = $this->seasonRepository->findSeasonById($seasonId);
-        if (null === $season) {
-            return new Response(404);
-        }
-        return (new Response(200))->withJson($season);
+        return (new Response(200))->withJson($this->seasonRepository->findSeasonById($seasonId));
     }
 
     /**
@@ -47,12 +39,8 @@ class SeasonQueryController
      */
     public function findRanking(string $seasonId) : Response
     {
-        $ranking = $this->rankingRepository->findRanking($seasonId);
-        if (null === $ranking) {
-            return new Response(404);
-        }
-
-        $ranking['positions'] = $this->rankingRepository->findRankingPositions($seasonId);
+        $ranking = $this->seasonRepository->findRanking($seasonId);
+        $ranking['positions'] = $this->seasonRepository->findRankingPositions($seasonId);
         return (new Response(200))->withJson($ranking);
     }
 

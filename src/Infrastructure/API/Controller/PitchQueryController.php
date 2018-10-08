@@ -22,12 +22,7 @@ class PitchQueryController
      */
     public function findPitchById(string $pitchId) : Response
     {
-        $pitch = $this->pitchRepository->findPitchById($pitchId);
-        if (null === $pitch) {
-            return new Response(404);
-        }
-
-        return (new Response(200))->withJson($pitch);
+        return (new Response(200))->withJson($this->pitchRepository->findPitchById($pitchId));
     }
 
     /**

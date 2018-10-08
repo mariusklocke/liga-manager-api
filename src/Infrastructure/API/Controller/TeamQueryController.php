@@ -30,11 +30,7 @@ class TeamQueryController
      */
     public function findTeamById(string $teamId) : Response
     {
-        $team = $this->repository->findTeamById($teamId);
-        if (null === $team) {
-            return new Response(404);
-        }
-        return (new Response(200))->withJson($team);
+        return (new Response(200))->withJson($this->repository->findTeamById($teamId));
     }
 
     /**

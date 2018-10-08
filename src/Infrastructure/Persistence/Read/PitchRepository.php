@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Application\Exception\NotFoundException;
+
 class PitchRepository extends AbstractRepository
 {
     /**
@@ -17,13 +19,13 @@ class PitchRepository extends AbstractRepository
 
     /**
      * @param string $id
-     * @return array|null
+     * @return array
      */
-    public function findPitchById(string $id)
+    public function findPitchById(string $id): array
     {
         $pitch = $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = ?', [$id]);
         if (null === $pitch) {
-            return null;
+            throw new NotFoundException('Cannot find pitch');
         }
 
         return $this->reconstructEmbeddedObject($pitch, 'contact');

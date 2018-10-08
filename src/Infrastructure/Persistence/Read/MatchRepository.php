@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Filter\MatchFilter;
 
 class MatchRepository extends AbstractRepository
@@ -51,10 +52,15 @@ class MatchRepository extends AbstractRepository
 
     /**
      * @param string $matchId
-     * @return array|null
+     * @return array
      */
-    public function findMatchById(string $matchId)
+    public function findMatchById(string $matchId): array
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM `matches` WHERE `id` = ?', [$matchId]);
+        $match = $this->getDb()->fetchFirstRow('SELECT * FROM `matches` WHERE `id` = ?', [$matchId]);
+        if (null === $match) {
+            throw new NotFoundException('Cannot find match');
+        }
+
+        return $match;
     }
 }

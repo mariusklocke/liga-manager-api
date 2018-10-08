@@ -25,11 +25,7 @@ class MatchQueryController
      */
     public function findMatchById(string $matchId) : Response
     {
-        $match = $this->matchRepository->findMatchById($matchId);
-        if ($match === null) {
-            return new Response(404);
-        }
-        return (new Response(200))->withJson($match);
+        return (new Response(200))->withJson($this->matchRepository->findMatchById($matchId));
     }
 
     /**
