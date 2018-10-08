@@ -33,8 +33,8 @@ RUN set -xe \
     && rm -rf /tmp/*
 
 # Install PHAR tools
-RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-7.0.2.phar \
-    && wget -O /usr/local/bin/composer https://getcomposer.org/download/1.6.3/composer.phar \
+RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar \
+    && wget -O /usr/local/bin/composer https://getcomposer.org/composer.phar \
     && chmod +x /usr/local/bin/phpunit /usr/local/bin/composer
 
 # Workaround for writing logs to stdout
