@@ -78,6 +78,19 @@ class HttpClient
     }
 
     /**
+     * Send a PATCH Request
+     *
+     * @param string $uri
+     * @param array $bodyData
+     * @param array $headers
+     * @return ResponseInterface
+     */
+    public function patch(string $uri, array $bodyData = [], array $headers = []): ResponseInterface
+    {
+        return $this->processRequest($this->createRequest('PATCH', $uri, $bodyData, $headers));
+    }
+
+    /**
      * Parse the response body data
      *
      * @param StreamInterface $body

@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\ORM\EntityRepository;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
@@ -16,7 +17,8 @@ class BaseRepository extends EntityRepository implements
     TeamRepositoryInterface,
     SeasonRepositoryInterface,
     PitchRepositoryInterface,
-    TournamentRepositoryInterface
+    TournamentRepositoryInterface,
+    MatchDayRepositoryInterface
 {
     /**
      * {@inheritdoc}

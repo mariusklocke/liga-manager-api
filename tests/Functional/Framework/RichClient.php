@@ -223,17 +223,33 @@ class RichClient
         ));
     }
 
-    public function getTeam(string $teamId)
+    public function getTeam(string $teamId): stdClass
     {
         return $this->decodeBody($this->httpClient->get(
             '/api/teams/' . $teamId
         ));
     }
 
-    public function getPitch(string $pitchId)
+    public function getPitch(string $pitchId): stdClass
     {
         return $this->decodeBody($this->httpClient->get(
             '/api/pitches/' . $pitchId
+        ));
+    }
+
+    public function rescheduleMatchDay(string $matchDayId, array $datePeriod): void
+    {
+        $this->handleErrors($this->httpClient->patch(
+            '/api/match_days/' . $matchDayId,
+            ['date_period' => $datePeriod],
+            $this->headers
+        ));
+    }
+
+    public function getMatchDaysForSeason(string $seasonId): array
+    {
+        return $this->decodeBody($this->httpClient->get(
+            '/api/seasons/' . $seasonId. '/match_days'
         ));
     }
 

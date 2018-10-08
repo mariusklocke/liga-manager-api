@@ -251,6 +251,46 @@
         "summary": "Submit a matches result"
       }
     },
+    "/match_days/{id}": {
+      "patch": {
+        "operationId": "rescheduleMatchDay",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
+        "parameters": [
+          {
+            "description": "matchday id",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "scheduleMatchDayBody",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "date_period": {
+                  "$ref": "#/definitions/date_period"
+                }
+              },
+              "required": ["date_period"]
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        },
+        "tags": [
+          "match_day"
+        ],
+        "summary": "Reschedules a matchday"
+      }
+    },
     "/pitches": {
       "get": {
         "operationId": "getAllPitches",

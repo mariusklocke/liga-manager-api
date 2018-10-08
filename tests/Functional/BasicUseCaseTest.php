@@ -403,6 +403,29 @@ class BasicUseCaseTest extends TestCase
         self::assertEquals('nobody@example.com', $user->email);
     }
 
+    /**
+     * @param string $seasonId
+     * @depends testMatchesCanBeCreated
+     */
+    public function testMatchDayCanBeRescheduled(string $seasonId)
+    {
+        $matchDays = $this->client->getMatchDaysForSeason($seasonId);
+        self::assertGreaterThan(0, count($matchDays));
+        $matchDay = array_shift($matchDays);
+        self::assertResponseHasValidId($matchDay);
+        $matchDayId = $matchDay->id;
+        $this->client->rescheduleMatchDay($matchDay->id, ['from' => '2018-10-05', 'to' => '2018-10-07']);
+
+        $matchDays = array_filter($this->client->getMatchDaysForSeason($seasonId), function ($matchDay) use ($matchDayId) {
+            return $matchDay->id === $matchDayId;
+        });
+        self::assertEquals(1, count($matchDays));
+        $matchDay = array_shift($matchDays);
+
+        self::assertEquals('2018-10-05', $matchDay->start_date);
+        self::assertEquals('2018-10-07', $matchDay->end_date);
+    }
+
     private static function assertResponseHasValidId($response)
     {
         self::assertObjectHasAttribute('id', $response);

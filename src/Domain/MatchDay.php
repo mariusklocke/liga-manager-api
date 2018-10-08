@@ -99,6 +99,16 @@ class MatchDay
     }
 
     /**
+     * @param DateTimeImmutable $startDate
+     * @param DateTimeImmutable $endDate
+     */
+    public function reschedule(DateTimeImmutable $startDate, DateTimeImmutable $endDate): void
+    {
+        $this->startDate = $startDate;
+        $this->endDate   = $endDate;
+    }
+
+    /**
      * @param Competition $competition
      * @throws DomainException if $competition is an instance of unsupported type
      */

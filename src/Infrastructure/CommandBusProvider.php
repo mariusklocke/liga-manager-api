@@ -21,6 +21,7 @@ use HexagonalPlayground\Application\Handler\DeleteTeamHandler;
 use HexagonalPlayground\Application\Handler\LoadFixturesHandler;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
+use HexagonalPlayground\Application\Handler\RescheduleMatchDayHandler;
 use HexagonalPlayground\Application\Handler\SendPasswordResetMailHandler;
 use HexagonalPlayground\Application\Handler\ScheduleMatchHandler;
 use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
@@ -153,6 +154,9 @@ class CommandBusProvider implements ServiceProviderInterface
                 $container[TemplateRenderer::class],
                 $container[MailerInterface::class]
             );
+        };
+        $container[RescheduleMatchDayHandler::class] = function () use ($container) {
+            return new RescheduleMatchDayHandler($container['orm.repository.matchDay']);
         };
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Routing;
 
 use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
+use HexagonalPlayground\Infrastructure\API\Controller\MatchDayCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\PitchQueryController;
@@ -184,6 +185,13 @@ class RouteProvider
 
             $app->post('/users/me/password/reset', function ($request) use ($container) {
                 return (new UserCommandController($container['commandBus']))->sendPasswordResetMail($request);
+            });
+
+            $app->patch('/match_days/{id}', function ($request, $response, $args) use ($container) {
+                return (new MatchDayCommandController($container['commandBus']))->rescheduleMatchDay(
+                    $args['id'],
+                    $request
+                );
             });
         });
     }

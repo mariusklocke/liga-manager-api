@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\MatchDay;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
@@ -77,6 +78,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
         };
         $container['orm.repository.pitch'] = function () use ($container) {
             return $container[EntityManager::class]->getRepository(Pitch::class);
+        };
+        $container['orm.repository.matchDay'] = function () use ($container) {
+            return $container[EntityManager::class]->getRepository(MatchDay::class);
         };
     }
 }
