@@ -8,15 +8,15 @@
         <field name="number" type="integer" />
         <field name="startDate" column="start_date" type="date_immutable" />
         <field name="endDate" column="end_date" type="date_immutable" />
-        <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="match_day" orphan-removal="true">
+        <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="matchDay" orphan-removal="true">
             <cascade>
                 <cascade-all/>
             </cascade>
         </one-to-many>
-        <many-to-one field="season" target-entity="HexagonalPlayground\Domain\Season" inversed-by="match_days">
+        <many-to-one field="season" target-entity="HexagonalPlayground\Domain\Season" inversed-by="matchDays">
             <join-column name="season_id" referenced-column-name="id" />
         </many-to-one>
-        <many-to-one field="tournament" target-entity="HexagonalPlayground\Domain\Tournament" inversed-by="match_days">
+        <many-to-one field="tournament" target-entity="HexagonalPlayground\Domain\Tournament" inversed-by="matchDays">
             <join-column name="tournament_id" referenced-column-name="id" />
         </many-to-one>
     </entity>
