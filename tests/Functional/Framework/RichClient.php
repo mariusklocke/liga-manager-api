@@ -84,7 +84,7 @@ class RichClient
     {
         $this->handleErrors($this->httpClient->post(
             '/api/seasons/' . $seasonId . '/match_days',
-            ['match_days' => $matchDays],
+            ['dates' => $matchDays],
             $this->headers
         ));
     }

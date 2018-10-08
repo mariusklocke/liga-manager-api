@@ -34,11 +34,11 @@ class SeasonCommandController extends CommandController
      */
     public function createMatches(string $seasonId, Request $request) : Response
     {
-        $matchDays = $request->getParsedBodyParam('match_days');
-        $this->assertArray('match_days', $matchDays);
+        $matchDays = $request->getParsedBodyParam('dates');
+        $this->assertArray('dates', $matchDays);
 
         $matchDays = array_map(function ($matchDay) {
-            $this->assertArray('match_days[]', $matchDay);
+            $this->assertArray('dates[]', $matchDay);
             return InputParser::parseDatePeriod($matchDay);
         }, $matchDays);
 
