@@ -28,6 +28,9 @@ class TournamentRepository extends AbstractRepository
      */
     public function findRounds(string $tournamentId)
     {
-        return $this->getDb()->fetchAll('SELECT * FROM `match_days` WHERE tournament_id = ?', [$tournamentId]);
+        return $this->getDb()->fetchAll(
+            'SELECT * FROM `match_days` WHERE tournament_id = ? ORDER BY number ASC',
+            [$tournamentId]
+        );
     }
 }

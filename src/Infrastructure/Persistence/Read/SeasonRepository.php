@@ -28,6 +28,9 @@ class SeasonRepository extends AbstractRepository
      */
     public function findMatchDays(string $seasonId)
     {
-        return $this->getDb()->fetchAll('SELECT * FROM `match_days` WHERE season_id = ?', [$seasonId]);
+        return $this->getDb()->fetchAll(
+            'SELECT * FROM `match_days` WHERE season_id = ? ORDER BY number ASC',
+            [$seasonId]
+        );
     }
 }
