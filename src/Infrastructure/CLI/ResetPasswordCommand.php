@@ -52,5 +52,7 @@ class ResetPasswordCommand extends Command
         $message->setBody($content, 'text/html');
 
         $this->mailer->send($message);
+
+        return parent::execute($input, $output);
     }
 }

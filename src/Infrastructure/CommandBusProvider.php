@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure;
 
-use HexagonalPlayground\Application\Bus\BatchCommandBus;
 use HexagonalPlayground\Application\Bus\HandlerResolver;
-use HexagonalPlayground\Application\Bus\SingleCommandBus;
+use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\CancelMatchHandler;
@@ -18,7 +17,6 @@ use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
 use HexagonalPlayground\Application\Handler\CreateUserHandler;
 use HexagonalPlayground\Application\Handler\DeleteSeasonHandler;
 use HexagonalPlayground\Application\Handler\DeleteTeamHandler;
-use HexagonalPlayground\Application\Handler\LoadFixturesHandler;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Application\Handler\RescheduleMatchDayHandler;
@@ -53,10 +51,7 @@ class CommandBusProvider implements ServiceProviderInterface
             return new CommandHandlerResolver($container);
         };
         $container['commandBus'] = function() use ($container) {
-            return new SingleCommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
-        };
-        $container['batchCommandBus'] = function () use ($container) {
-            return new BatchCommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
+            return new CommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
         };
         $container[CreateTeamHandler::class] = function () use ($container) {
             return new CreateTeamHandler(
@@ -138,14 +133,6 @@ class CommandBusProvider implements ServiceProviderInterface
         };
         $container[UpdatePitchContactHandler::class] = function () use ($container) {
             return new UpdatePitchContactHandler($container['orm.repository.pitch']);
-        };
-        $container[LoadFixturesHandler::class] = function () use ($container) {
-            return new LoadFixturesHandler(
-                $container['orm.repository.team'],
-                $container['orm.repository.season'],
-                $container['orm.repository.pitch'],
-                $container['orm.repository.user']
-            );
         };
         $container[SendPasswordResetMailHandler::class] = function () use ($container) {
             return new SendPasswordResetMailHandler(

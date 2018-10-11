@@ -32,11 +32,13 @@ class ListEventsCommand extends Command
         $events = $this->eventStore->findAll();
         if (empty($events)) {
             $output->writeln('No events found');
-            return;
+            return -1;
         }
 
         foreach ($events as $event) {
             $output->writeln(print_r($event, true));
         }
+
+        return parent::execute($input, $output);
     }
 }

@@ -59,7 +59,7 @@ class L98ImportCommand extends Command
             $outputDecorator->writeln('Finished importing ' . $fileInfo->getPathname());
         }
         $outputDecorator->success('Import completed successfully!');
-        return 0;
+        return parent::execute($input, $output);
     }
 
     private function importFile(L98FileParser $parser, SymfonyStyle $outputDecorator)

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Application\Bus\SingleCommandBus;
+use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CreateUserCommand as CreateUserApplicationCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,10 +11,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateUserCommand extends Command
 {
-    /** @var SingleCommandBus */
+    /** @var CommandBus */
     private $commandBus;
 
-    public function __construct(SingleCommandBus $commandBus)
+    public function __construct(CommandBus $commandBus)
     {
         $this->commandBus = $commandBus;
         parent::__construct();
@@ -39,14 +39,15 @@ class CreateUserCommand extends Command
             $input->getArgument('first_name'),
             $input->getArgument('last_name'),
             $input->getArgument('role'),
-            []
+            [],
+            $this->getCliUser()
         );
         $userId = $this->commandBus->execute($command);
-        if (is_string($userId)) {
-            $output->writeln('User successfully created. ID: ' . $userId);
-            return;
+        if (!is_string($userId)) {
+            throw new \Exception('Command Bus did not return a valid user id');
         }
 
-        throw new \Exception('Command Bus did not return a valid user id');
+        $output->writeln('User successfully created. ID: ' . $userId);
+        return parent::execute($input, $output);
     }
 }

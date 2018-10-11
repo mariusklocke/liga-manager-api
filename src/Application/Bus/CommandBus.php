@@ -5,15 +5,14 @@ namespace HexagonalPlayground\Application\Bus;
 
 use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
-use UnexpectedValueException;
 
-abstract class CommandBus
+class CommandBus
 {
     /** @var HandlerResolver */
     private $resolver;
 
     /** @var OrmTransactionWrapperInterface */
-    protected $transactionWrapper;
+    private $transactionWrapper;
 
     /**
      * @param HandlerResolver $resolver
@@ -27,17 +26,13 @@ abstract class CommandBus
 
     /**
      * @param CommandInterface $command
-     * @return callable
-     * @throws UnexpectedValueException If the resolver does not return a valid handler for the given command
+     * @return mixed
      */
-    protected function getHandler(CommandInterface $command): callable
+    public function execute(CommandInterface $command)
     {
-        /** @var callable $handler */
         $handler = $this->resolver->resolve($command);
-        if (!is_callable($handler)) {
-            throw new UnexpectedValueException('Command Handler for ' . get_class($command) . ' is not a callable');
-        }
-
-        return $handler;
+        return $this->transactionWrapper->transactional(function() use ($handler, $command) {
+            return $handler($command);
+        });
     }
 }

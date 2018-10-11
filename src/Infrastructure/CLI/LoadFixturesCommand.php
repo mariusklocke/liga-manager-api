@@ -3,20 +3,28 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Application\Bus\SingleCommandBus;
-use HexagonalPlayground\Application\Command\LoadFixturesCommand as LoadFixturesApplicationCommand;
+use HexagonalPlayground\Application\Bus\CommandBus;
+use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
+use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
+use HexagonalPlayground\Application\Command\CreatePitchCommand;
+use HexagonalPlayground\Application\Command\CreateSeasonCommand;
+use HexagonalPlayground\Application\Command\CreateTeamCommand;
+use HexagonalPlayground\Application\Command\CreateUserCommand;
+use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Application\Value\DatePeriod;
+use HexagonalPlayground\Domain\User;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class LoadFixturesCommand extends Command
 {
-    /** @var SingleCommandBus */
+    /** @var CommandBus */
     private $commandBus;
 
     /**
-     * @param SingleCommandBus $commandBus
+     * @param CommandBus $commandBus
      */
-    public function __construct(SingleCommandBus $commandBus)
+    public function __construct(CommandBus $commandBus)
     {
         $this->commandBus = $commandBus;
         parent::__construct();
@@ -29,7 +37,104 @@ class LoadFixturesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->commandBus->execute(new LoadFixturesApplicationCommand());
+        $this->createAdmin();
+        $seasonIds = $this->createSeasons();
+        $teamIds   = $this->createTeams();
+        $this->createTeamManagers($teamIds);
+        $this->createPitches();
+        $this->linkTeamsWithSeasons($teamIds, $seasonIds);
+        $this->startSeason(array_shift($seasonIds), count($teamIds));
         $output->writeln('Fixtures successfully loaded');
+        return parent::execute($input, $output);
+    }
+
+    private function createSeasons(): array
+    {
+        $years = ['17/18', '18/19', '19/20'];
+        $ids   = [];
+        foreach ($years as $year) {
+            $ids[] = $this->commandBus->execute(new CreateSeasonCommand('Season ' . $year));
+        }
+
+        return $ids;
+    }
+
+    private function createPitches(): void
+    {
+        $colors = ['Red', 'Blue'];
+        foreach ($colors as $color) {
+            $this->commandBus->execute(new CreatePitchCommand(
+                'Pitch ' . $color, 12.34, 23.45
+            ));
+        }
+    }
+
+    private function createTeams(): array
+    {
+        $ids = [];
+        for ($i = 1; $i <= 8; $i++) {
+            $teamName = sprintf('Team No. %02d', $i);
+            $ids[] = $this->commandBus->execute(new CreateTeamCommand($teamName, $this->getCliUser()));
+        }
+
+        return $ids;
+    }
+
+    private function createAdmin(): void
+    {
+        $this->commandBus->execute(new CreateUserCommand(
+            'admin@example.com',
+            '123456',
+            'admin',
+            'admin',
+            User::ROLE_ADMIN,
+            [],
+            $this->getCliUser()
+        ));
+    }
+
+    private function createTeamManagers(array $teamIds): void
+    {
+        for ($i = 1; $i <= 8; $i++) {
+            $this->commandBus->execute(new CreateUserCommand(
+                'user' . $i . "@example.com",
+                '123456',
+                'user' . $i,
+                'admin' . $i,
+                User::ROLE_TEAM_MANAGER,
+                [array_shift($teamIds)],
+                $this->getCliUser()
+            ));
+        }
+    }
+
+    private function linkTeamsWithSeasons(array $teamIds, array $seasonIds): void
+    {
+        foreach ($seasonIds as $seasonId) {
+            foreach ($teamIds as $teamId) {
+                $this->commandBus->execute(new AddTeamToSeasonCommand($seasonId, $teamId));
+            }
+        }
+    }
+
+    private function startSeason(string $seasonId, int $teamCount): void
+    {
+        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, $this->generateMatchDayDates($teamCount)));
+        $this->commandBus->execute(new StartSeasonCommand($seasonId));
+    }
+
+    private function generateMatchDayDates(int $teamCount): array
+    {
+        $start = new \DateTimeImmutable();
+        $end   = new \DateTimeImmutable();
+        $result = [];
+        $n = $teamCount - 1;
+        for ($i = 0; $i < $n; $i++) {
+            $start = $start->modify('next saturday');
+            $end   = $end->modify('next sunday');
+            $result[] = new DatePeriod($start, $end);
+        }
+
+        return $result;
     }
 }
