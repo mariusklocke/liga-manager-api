@@ -46,6 +46,6 @@ class UpdateTeamContactHandler
             return;
         }
 
-        throw new PermissionException('User is permitted to change contact of this team');
+        throw new PermissionException('User is not permitted to change contact of this team');
     }
 }
