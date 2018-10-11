@@ -46,7 +46,7 @@ RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
 RUN mkdir -p ${APP_HOME}
 WORKDIR ${APP_HOME}
 COPY composer.json composer.lock phpunit.xml ./
-RUN composer install --prefer-dist --no-dev --optimize-autoloader
+RUN composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
 COPY bin bin
 COPY config config
 COPY migrations migrations
