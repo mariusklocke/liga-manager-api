@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
+use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\InputParser;
 use HexagonalPlayground\Application\Value\TeamIdPair;
@@ -22,6 +23,16 @@ class TournamentCommandController extends CommandController
         $this->assertString('name', $name);
         $id   = $this->commandBus->execute(new CreateTournamentCommand($name));
         return (new Response(200))->withJson(['id' => $id]);
+    }
+
+    /**
+     * @param string $id
+     * @return Response
+     */
+    public function delete(string $id)
+    {
+        $this->commandBus->execute(new DeleteTournamentCommand($id));
+        return new Response(204);
     }
 
     /**

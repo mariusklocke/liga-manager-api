@@ -1049,6 +1049,34 @@
             "description": "Tournament not found"
           }
         }
+      },
+      "delete": {
+        "operationId": "deleteTournament",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
+        "tags": [
+          "tournament"
+        ],
+        "summary": "Delete a single tournament by id",
+        "parameters": [
+          {
+            "description": "ID of tournament",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "404": {
+            "description": "Tournament not found"
+          }
+        }
       }
     },
     "/tournaments/{id}/rounds/{round}": {

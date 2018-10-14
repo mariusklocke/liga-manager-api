@@ -253,6 +253,14 @@ class RichClient
         ));
     }
 
+    public function deleteTournament(string $tournamentId): void
+    {
+        $this->handleErrors($this->httpClient->delete(
+            '/api/tournaments/' . $tournamentId,
+            $this->headers
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);

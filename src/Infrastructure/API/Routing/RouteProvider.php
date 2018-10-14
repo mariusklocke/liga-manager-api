@@ -158,6 +158,10 @@ class RouteProvider
                 return (new TournamentQueryController($container[TournamentRepository::class]))->findTournamentById($args['id']);
             });
 
+            $app->delete('/tournaments/{id}', function ($request, $response, $args) use ($container) {
+                return (new TournamentCommandController($container['commandBus']))->delete($args['id']);
+            })->add($auth);
+
             $app->get('/users/me', function ($request) use ($container) {
                 return (new UserQueryController())->getAuthenticatedUser($request);
             })->add($auth);
@@ -179,7 +183,7 @@ class RouteProvider
                     $args['id'],
                     $request
                 );
-            });
+            })->add($auth);
         });
     }
 }

@@ -329,9 +329,10 @@ class BasicUseCaseTest extends TestCase
 
     /**
      * @param string $tournamentId
-     * @param array  $teamIds
+     * @param array $teamIds
      * @depends testTournamentCanBeCreated
      * @depends testTeamsCanBeCreated
+     * @return string
      */
     public function testTournamentRoundsCanBeCreated(string $tournamentId, array $teamIds)
     {
@@ -357,6 +358,8 @@ class BasicUseCaseTest extends TestCase
         self::assertEquals(2, $tournament->rounds);
         $matches = $this->client->getMatchesInTournament($tournamentId);
         self::assertEquals(3, count($matches));
+
+        return $tournamentId;
     }
 
     public function testUserCanBeAuthenticated()
@@ -409,6 +412,7 @@ class BasicUseCaseTest extends TestCase
      */
     public function testMatchDayCanBeRescheduled(string $seasonId)
     {
+        $this->client->setBasicAuth('admin@example.com', '123456');
         $matchDays = $this->client->getMatchDaysForSeason($seasonId);
         self::assertGreaterThan(0, count($matchDays));
         $matchDay = array_shift($matchDays);
@@ -424,6 +428,41 @@ class BasicUseCaseTest extends TestCase
 
         self::assertEquals('2018-10-05', $matchDay->start_date);
         self::assertEquals('2018-10-07', $matchDay->end_date);
+    }
+
+    /**
+     * @param string $tournamentId
+     * @depends testTournamentRoundsCanBeCreated
+     */
+    public function testTournamentCanBeDeleted(string $tournamentId)
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $matches = $this->client->getMatchesInTournament($tournamentId);
+        self::assertNotEmpty($matches);
+
+        $this->client->deleteTournament($tournamentId);
+
+        $exception = null;
+        try {
+            $this->client->getTournament($tournamentId);
+        } catch (ApiException $e) {
+            $exception = $e;
+        }
+
+        self::assertInstanceOf(ApiException::class, $exception);
+        self::assertEquals(404, $exception->getCode());
+
+        foreach ($matches as $match) {
+            $exception = null;
+            try {
+                $this->client->getMatch($match->id);
+            } catch (ApiException $e) {
+                $exception = $e;
+            }
+
+            self::assertInstanceOf(ApiException::class, $exception);
+            self::assertEquals(404, $exception->getCode());
+        }
     }
 
     private static function assertResponseHasValidId($response)

@@ -19,4 +19,9 @@ interface TournamentRepositoryInterface
      * @param Tournament $tournament
      */
     public function save($tournament): void;
+
+    /**
+     * @param Tournament $tournament
+     */
+    public function delete($tournament): void;
 }
