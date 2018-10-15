@@ -74,7 +74,8 @@ class LoadFixturesCommand extends Command
         $ids = [];
         for ($i = 1; $i <= 8; $i++) {
             $teamName = sprintf('Team No. %02d', $i);
-            $ids[] = $this->commandBus->execute(new CreateTeamCommand($teamName, $this->getCliUser()));
+            $command  = new CreateTeamCommand($teamName);
+            $ids[] = $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
         }
 
         return $ids;
@@ -82,29 +83,30 @@ class LoadFixturesCommand extends Command
 
     private function createAdmin(): void
     {
-        $this->commandBus->execute(new CreateUserCommand(
+        $command = new CreateUserCommand(
             'admin@example.com',
             '123456',
             'admin',
             'admin',
             User::ROLE_ADMIN,
-            [],
-            $this->getCliUser()
-        ));
+            []
+        );
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
     }
 
     private function createTeamManagers(array $teamIds): void
     {
         for ($i = 1; $i <= 8; $i++) {
-            $this->commandBus->execute(new CreateUserCommand(
+            $command = new CreateUserCommand(
                 'user' . $i . "@example.com",
                 '123456',
                 'user' . $i,
                 'admin' . $i,
                 User::ROLE_TEAM_MANAGER,
-                [array_shift($teamIds)],
-                $this->getCliUser()
-            ));
+                [array_shift($teamIds)]
+            );
+
+            $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
         }
     }
 

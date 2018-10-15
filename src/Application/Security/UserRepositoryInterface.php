@@ -32,4 +32,9 @@ interface UserRepositoryInterface
      * @param User $entity
      */
     public function save($entity): void;
+
+    /**
+     * @param User $entity
+     */
+    public function delete($entity): void;
 }

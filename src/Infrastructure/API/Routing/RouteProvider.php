@@ -174,6 +174,10 @@ class RouteProvider
                 return (new UserCommandController($container['commandBus']))->createUser($request);
             })->add($auth);
 
+            $app->delete('/users/{id}', function ($request, $response, $args) use ($container) {
+                return (new UserCommandController($container['commandBus']))->deleteUser($request, $args['id']);
+            })->add($auth);
+
             $app->post('/users/me/password/reset', function ($request) use ($container) {
                 return (new UserCommandController($container['commandBus']))->sendPasswordResetMail($request);
             });

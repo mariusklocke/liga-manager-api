@@ -261,6 +261,14 @@ class RichClient
         ));
     }
 
+    public function deleteUser(string $userId): void
+    {
+        $this->handleErrors($this->httpClient->delete(
+            '/api/users/' . $userId,
+            $this->headers
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);

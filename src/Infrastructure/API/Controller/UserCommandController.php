@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
+use HexagonalPlayground\Application\Command\DeleteUserCommand;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use Slim\Http\Request;
 use Slim\Http\Response;
@@ -15,7 +16,9 @@ class UserCommandController extends CommandController
     {
         $newPassword = $request->getParsedBodyParam('new_password');
         $this->assertString('new_password', $newPassword);
-        $this->commandBus->execute(new ChangeUserPasswordCommand($newPassword, $this->getUserFromRequest($request)));
+
+        $command = new ChangeUserPasswordCommand($newPassword);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return new Response(204);
     }
 
@@ -35,12 +38,18 @@ class UserCommandController extends CommandController
             $data['first_name'],
             $data['last_name'],
             $data['role'],
-            $data['teams'],
-            $this->getUserFromRequest($request)
+            $data['teams']
         );
 
-        $id = $this->commandBus->execute($command);
+        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return (new Response(200))->withJson(['id' => $id]);
+    }
+
+    public function deleteUser(Request $request, string $id): Response
+    {
+        $command = new DeleteUserCommand($id);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+        return new Response(204);
     }
 
     /**

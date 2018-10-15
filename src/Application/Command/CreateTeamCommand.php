@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Domain\User;
-
 class CreateTeamCommand implements CommandInterface
 {
     use AuthenticationAware;
@@ -12,10 +10,9 @@ class CreateTeamCommand implements CommandInterface
     /** @var string */
     private $teamName;
 
-    public function __construct(string $teamName, User $user)
+    public function __construct(string $teamName)
     {
         $this->teamName = $teamName;
-        $this->authenticatedUser = $user;
     }
 
     public function getTeamName() : string

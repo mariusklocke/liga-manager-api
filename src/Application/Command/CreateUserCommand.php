@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Domain\User;
-
 class CreateUserCommand implements CommandInterface
 {
     use AuthenticationAware;
@@ -34,9 +32,8 @@ class CreateUserCommand implements CommandInterface
      * @param string $lastName
      * @param string $role
      * @param string[] $teamIds
-     * @param User $authenticatedUser
      */
-    public function __construct(string $email, string $password, string $firstName, string $lastName, string $role, array $teamIds, User $authenticatedUser)
+    public function __construct(string $email, string $password, string $firstName, string $lastName, string $role, array $teamIds)
     {
         $this->email = $email;
         $this->password = $password;
@@ -44,7 +41,6 @@ class CreateUserCommand implements CommandInterface
         $this->lastName = $lastName;
         $this->role = $role;
         $this->teamIds = $teamIds;
-        $this->authenticatedUser = $authenticatedUser;
     }
 
     /**

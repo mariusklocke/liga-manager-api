@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Domain\User;
-
 class UpdateTeamContactCommand extends UpdateContactCommand
 {
     use AuthenticationAware;
@@ -19,14 +17,13 @@ class UpdateTeamContactCommand extends UpdateContactCommand
      * @param string $phone
      * @param string $email
      */
-    public function __construct(string $teamId, string $firstName, string $lastName, string $phone, string $email, User $user)
+    public function __construct(string $teamId, string $firstName, string $lastName, string $phone, string $email)
     {
         $this->teamId = $teamId;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->phone = $phone;
         $this->email = $email;
-        $this->authenticatedUser = $user;
     }
 
     /**

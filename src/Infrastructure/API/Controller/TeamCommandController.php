@@ -29,7 +29,9 @@ class TeamCommandController extends CommandController
     {
         $name = $request->getParsedBodyParam('name');
         $this->assertString('name', $name);
-        $id   = $this->commandBus->execute(new CreateTeamCommand($name, $this->getUserFromRequest($request)));
+
+        $command = new CreateTeamCommand($name);
+        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return (new Response(200))->withJson(['id' => $id]);
     }
 
@@ -50,14 +52,8 @@ class TeamCommandController extends CommandController
         $this->assertString('phone', $phone);
         $this->assertString('email', $email);
 
-        $this->commandBus->execute(new UpdateTeamContactCommand(
-            $teamId,
-            $firstName,
-            $lastName,
-            $phone,
-            $email,
-            $this->getUserFromRequest($request)
-        ));
+        $command = new UpdateTeamContactCommand($teamId, $firstName, $lastName, $phone, $email);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return new Response(204);
     }

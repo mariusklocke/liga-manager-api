@@ -39,10 +39,9 @@ class CreateUserCommand extends Command
             $input->getArgument('first_name'),
             $input->getArgument('last_name'),
             $input->getArgument('role'),
-            [],
-            $this->getCliUser()
+            []
         );
-        $userId = $this->commandBus->execute($command);
+        $userId = $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
         if (!is_string($userId)) {
             throw new \Exception('Command Bus did not return a valid user id');
         }

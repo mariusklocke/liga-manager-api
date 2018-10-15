@@ -370,6 +370,9 @@ class BasicUseCaseTest extends TestCase
         self::assertEquals('admin@example.com', $user->email);
     }
 
+    /**
+     * @return string
+     */
     public function testUserCanBeCreated()
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
@@ -384,6 +387,8 @@ class BasicUseCaseTest extends TestCase
         self::assertResponseHasValidId($user);
         $user = $this->client->getAuthenticatedUser();
         self::assertResponseHasValidId($user);
+
+        return $user->id;
     }
 
     /**
@@ -404,6 +409,29 @@ class BasicUseCaseTest extends TestCase
         $user = $this->client->getAuthenticatedUser();
         self::assertObjectHasAttribute('email', $user);
         self::assertEquals('nobody@example.com', $user->email);
+    }
+
+    public function testUserCanBeDeleted()
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $user = $this->client->createUser([
+            'email' => 'anybody@example.com',
+            'password' => 'secret',
+            'first_name' => 'My Name Is',
+            'last_name' => 'Anybody',
+            'role' => 'team_manager',
+            'teams' => []
+        ]);
+        self::assertResponseHasValidId($user);
+
+        $exception = null;
+        try {
+            $this->client->deleteUser($user->id);
+        } catch (ApiException $e) {
+            $exception = $e;
+        }
+
+        self::assertNull($exception);
     }
 
     /**

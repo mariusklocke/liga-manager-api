@@ -17,4 +17,16 @@ trait AuthenticationAware
     {
         return $this->authenticatedUser;
     }
+
+    /**
+     * @param User $user
+     * @return AuthenticationAware
+     */
+    public function withAuthenticatedUser(User $user): self
+    {
+        $clone = clone $this;
+        $clone->authenticatedUser = $user;
+
+        return $clone;
+    }
 }

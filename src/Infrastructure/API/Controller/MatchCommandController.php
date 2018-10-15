@@ -24,7 +24,9 @@ class MatchCommandController extends CommandController
         $guestScore = $request->getParsedBodyParam('guest_score');
         $this->assertInteger('home_score', $homeScore);
         $this->assertInteger('guest_score', $guestScore);
-        $this->commandBus->execute(new SubmitMatchResultCommand($matchId, $homeScore, $guestScore, $this->getUserFromRequest($request)));
+
+        $command = new SubmitMatchResultCommand($matchId, $homeScore, $guestScore);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return new Response(204);
     }

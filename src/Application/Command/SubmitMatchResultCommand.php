@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Domain\User;
-
 class SubmitMatchResultCommand implements CommandInterface
 {
     use AuthenticationAware;
@@ -16,12 +14,11 @@ class SubmitMatchResultCommand implements CommandInterface
     /** @var int */
     private $guestScore;
 
-    public function __construct(string $matchId, int $homeScore, int $guestScore, User $authenticatedUser)
+    public function __construct(string $matchId, int $homeScore, int $guestScore)
     {
         $this->matchId = $matchId;
         $this->homeScore = $homeScore;
         $this->guestScore = $guestScore;
-        $this->authenticatedUser = $authenticatedUser;
     }
 
     /**
