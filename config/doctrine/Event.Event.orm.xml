@@ -1,0 +1,17 @@
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                    http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
+
+    <entity name="HexagonalPlayground\Domain\Event\Event" table="events" inheritance-type="SINGLE_TABLE">
+        <id name="id" type="string" />
+        <discriminator-column name="type" type="string" />
+        <discriminator-map>
+            <discriminator-mapping value="match:located" class="MatchLocated"/>
+            <discriminator-mapping value="match:result:submitted" class="MatchResultSubmitted"/>
+            <discriminator-mapping value="match:scheduled" class="MatchScheduled"/>
+        </discriminator-map>
+        <field name="occurredAt" column="occurred_at" type="date_immutable" />
+        <field name="payload" type="array" />
+    </entity>
+</doctrine-mapping>
