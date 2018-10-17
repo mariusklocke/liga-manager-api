@@ -57,4 +57,4 @@ COPY tests tests
 COPY docker/php/entrypoint.sh docker/php/entrypoint.sh
 RUN chmod +x bin/* docker/php/entrypoint.sh
 ENTRYPOINT ["docker/php/entrypoint.sh"]
-CMD php bin/console.php orm:generate-proxies && php-fpm | tail -f $LOG_STREAM
+CMD php-fpm | tail -f $LOG_STREAM

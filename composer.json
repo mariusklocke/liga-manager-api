@@ -13,6 +13,7 @@
     "require": {
         "php" : "^7.2",
         "ext-ctype": "*",
+        "ext-json": "*",
         "ext-mbstring": "*",
         "ext-mysqli": "*",
         "ext-pdo": "*",

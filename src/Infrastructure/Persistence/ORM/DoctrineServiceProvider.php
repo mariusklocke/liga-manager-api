@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
+use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
@@ -35,11 +36,14 @@ class DoctrineServiceProvider implements ServiceProviderInterface
     {
         $container[EntityManager::class] = function() use ($container) {
             $config = Setup::createConfiguration(false);
-            $driver = new SimplifiedXmlDriver([getenv('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain"]);
+            $driver = new SimplifiedXmlDriver([
+                getenv('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain"
+            ]);
             $driver->setGlobalBasename('global');
             $config->setMetadataDriverImpl($driver);
             $config->setSQLLogger($container['doctrine.queryLogger']);
             $config->setDefaultRepositoryClassName(BaseRepository::class);
+            $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
             $pdo = new PDO(
                 'mysql:host=' . getenv('MYSQL_HOST') . ';dbname=' . getenv('MYSQL_DATABASE'),
                 getenv('MYSQL_USER'),
