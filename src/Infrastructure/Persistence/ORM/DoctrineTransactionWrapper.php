@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\ORM\EntityManagerInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
+use Throwable;
 
 class DoctrineTransactionWrapper implements OrmTransactionWrapperInterface
 {
@@ -21,6 +22,20 @@ class DoctrineTransactionWrapper implements OrmTransactionWrapperInterface
      */
     public function transactional(callable $callable)
     {
-        return $this->entityManager->transactional($callable);
+        $this->entityManager->beginTransaction();
+
+        try {
+            $return = call_user_func($callable);
+
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+
+            return $return;
+        } catch (Throwable $e) {
+            $this->entityManager->clear();
+            $this->entityManager->rollback();
+
+            throw $e;
+        }
     }
 }
