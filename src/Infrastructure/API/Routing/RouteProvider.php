@@ -23,6 +23,7 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\UserRepository;
 use Slim\App;
 
 class RouteProvider
@@ -163,7 +164,11 @@ class RouteProvider
             })->add($auth);
 
             $app->get('/users/me', function ($request) use ($container) {
-                return (new UserQueryController())->getAuthenticatedUser($request);
+                return (new UserQueryController($container[UserRepository::class]))->getAuthenticatedUser($request);
+            })->add($auth);
+
+            $app->get('/users', function ($request) use ($container) {
+                return (new UserQueryController($container[UserRepository::class]))->findAllUsers($request);
             })->add($auth);
 
             $app->put('/users/me/password', function ($request) use ($container) {

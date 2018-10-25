@@ -47,5 +47,8 @@ class ReadRepositoryProvider implements ServiceProviderInterface
         $container[TournamentRepository::class] = function () use ($container) {
             return new TournamentRepository($container[ReadDbAdapterInterface::class]);
         };
+        $container[UserRepository::class] = function () use ($container) {
+            return new UserRepository($container[ReadDbAdapterInterface::class]);
+        };
     }
 }

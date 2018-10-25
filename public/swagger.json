@@ -1174,6 +1174,21 @@
       }
     },
     "/users": {
+      "get": {
+        "summary": "Find all users",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
+        "operationId": "getAllUsers",
+        "tags": ["user"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Array of users"
+          }
+        }
+      },
       "post": {
         "summary": "Create a user",
         "security": [
