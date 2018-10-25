@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
-use HexagonalPlayground\Application\Exception\PermissionException;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
-use HexagonalPlayground\Domain\User;
 
 class CreateTeamHandler
 {
@@ -28,18 +27,9 @@ class CreateTeamHandler
      */
     public function __invoke(CreateTeamCommand $command)
     {
-        $this->checkPermissions($command->getAuthenticatedUser());
+        IsAdmin::check($command->getAuthenticatedUser());
         $team = new Team($command->getTeamName());
         $this->teamRepository->save($team);
         return $team->getId();
-    }
-
-    private function checkPermissions(User $user)
-    {
-        if ($user->hasRole(User::ROLE_ADMIN)) {
-            return;
-        }
-
-        throw new PermissionException('User is not permitted to create teams');
     }
 }
