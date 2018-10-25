@@ -493,6 +493,24 @@ class BasicUseCaseTest extends TestCase
         }
     }
 
+    public function testListingUserRequiresAdminPermissions()
+    {
+        $this->client->setBasicAuth('user1@example.com', '123456');
+        $exception = null;
+        try {
+            $this->client->getAllUsers();
+        } catch (ApiException $e) {
+            $exception = $e;
+        }
+
+        self::assertInstanceOf(ApiException::class, $exception);
+        self::assertEquals(403, $exception->getCode());
+
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $users = $this->client->getAllUsers();
+        self::assertNotEmpty($users);
+    }
+
     private static function assertResponseHasValidId($response)
     {
         self::assertObjectHasAttribute('id', $response);

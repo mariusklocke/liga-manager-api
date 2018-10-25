@@ -269,6 +269,14 @@ class RichClient
         ));
     }
 
+    public function getAllUsers(): array
+    {
+        return $this->decodeBody($this->httpClient->get(
+            '/api/users',
+            $this->headers
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);
