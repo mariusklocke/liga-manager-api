@@ -36,7 +36,7 @@ class ErrorHandler
     public function __invoke(RequestInterface $request, ResponseInterface $response, Throwable $throwable) : Response
     {
         $this->logger->notice('Handling uncaught Exception', [
-            'exception' => $throwable,
+            'exception' => $this->getExceptionContext($throwable),
             'request' => [
                 'method' => $request->getMethod(),
                 'uri' => $request->getUri()->__toString()
@@ -55,7 +55,7 @@ class ErrorHandler
         }
 
         $this->logger->error('Failed handling Exception. Internal Server Error', [
-            'exception' => $throwable,
+            'exception' => $this->getExceptionContext($throwable, true),
             'request' => [
                 'method' => $request->getMethod(),
                 'uri' => $request->getUri()->__toString()
@@ -90,5 +90,26 @@ class ErrorHandler
             'title' => $response->getReasonPhrase(),
             'message' => $exception->getMessage()
         ]);
+    }
+
+    /**
+     * @param Throwable $throwable
+     * @param bool $includeTrace
+     * @return array
+     */
+    private function getExceptionContext(Throwable $throwable, bool $includeTrace = false): array
+    {
+        $context = [
+            'class'   => get_class($throwable),
+            'message' => $throwable->getMessage(),
+            'code'    => $throwable->getCode(),
+            'file'    => $throwable->getFile(),
+            'line'    => $throwable->getLine()
+        ];
+        if ($includeTrace) {
+            $context['trace'] = $throwable->getTraceAsString();
+        }
+
+        return $context;
     }
 }
