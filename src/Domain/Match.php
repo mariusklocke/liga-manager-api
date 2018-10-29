@@ -30,9 +30,6 @@ class Match
     /** @var DateTimeImmutable|null */
     private $kickoff;
 
-    /** @var DateTimeImmutable|null */
-    private $plannedFor;
-
     /** @var Pitch|null */
     private $pitch;
 
@@ -57,7 +54,6 @@ class Match
         $this->matchDay = $matchDay;
         $this->homeTeam = $homeTeam;
         $this->guestTeam = $guestTeam;
-        $this->plannedFor = null;
     }
 
     /**
@@ -157,7 +153,6 @@ class Match
         $this->matchDay = null;
         $this->matchResult = null;
         $this->kickoff = null;
-        $this->plannedFor = null;
         $this->pitch = null;
         $this->cancelledAt = null;
     }
