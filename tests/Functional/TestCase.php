@@ -16,4 +16,10 @@ class TestCase extends \PHPUnit\Framework\TestCase
     {
         $this->client = new RichClient(new SlimClient(Bootstrap::bootstrap()));
     }
+
+    protected static function assertResponseHasValidId($response)
+    {
+        self::assertObjectHasAttribute('id', $response);
+        self::assertGreaterThan(0, strlen($response->id));
+    }
 }

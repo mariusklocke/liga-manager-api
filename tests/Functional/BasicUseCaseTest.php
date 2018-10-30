@@ -362,78 +362,6 @@ class BasicUseCaseTest extends TestCase
         return $tournamentId;
     }
 
-    public function testUserCanBeAuthenticated()
-    {
-        $this->client->setBasicAuth('admin@example.com', '123456');
-        $user = $this->client->getAuthenticatedUser();
-        self::assertObjectHasAttribute('email', $user);
-        self::assertEquals('admin@example.com', $user->email);
-    }
-
-    /**
-     * @return string
-     */
-    public function testUserCanBeCreated()
-    {
-        $this->client->setBasicAuth('admin@example.com', '123456');
-        $user = $this->client->createUser([
-            'email' => 'nobody@example.com',
-            'password' => 'secret',
-            'first_name' => 'My Name Is',
-            'last_name' => 'Nobody',
-            'role' => 'team_manager',
-            'teams' => []
-        ]);
-        self::assertResponseHasValidId($user);
-        $user = $this->client->getAuthenticatedUser();
-        self::assertResponseHasValidId($user);
-
-        return $user->id;
-    }
-
-    /**
-     * @depends testUserCanBeCreated
-     */
-    public function testUserCanChangePassword()
-    {
-        $this->client->setBasicAuth('nobody@example.com', 'secret');
-        $this->client->changePassword('even_more_secret');
-        try {
-            $this->client->getAuthenticatedUser();
-        } catch (ApiException $exception) {
-            // nothing
-        }
-        self::assertNotNull($exception);
-
-        $this->client->setBasicAuth('nobody@example.com', 'even_more_secret');
-        $user = $this->client->getAuthenticatedUser();
-        self::assertObjectHasAttribute('email', $user);
-        self::assertEquals('nobody@example.com', $user->email);
-    }
-
-    public function testUserCanBeDeleted()
-    {
-        $this->client->setBasicAuth('admin@example.com', '123456');
-        $user = $this->client->createUser([
-            'email' => 'anybody@example.com',
-            'password' => 'secret',
-            'first_name' => 'My Name Is',
-            'last_name' => 'Anybody',
-            'role' => 'team_manager',
-            'teams' => []
-        ]);
-        self::assertResponseHasValidId($user);
-
-        $exception = null;
-        try {
-            $this->client->deleteUser($user->id);
-        } catch (ApiException $e) {
-            $exception = $e;
-        }
-
-        self::assertNull($exception);
-    }
-
     /**
      * @param string $seasonId
      * @depends testMatchesCanBeCreated
@@ -491,30 +419,6 @@ class BasicUseCaseTest extends TestCase
             self::assertInstanceOf(ApiException::class, $exception);
             self::assertEquals(404, $exception->getCode());
         }
-    }
-
-    public function testListingUserRequiresAdminPermissions()
-    {
-        $this->client->setBasicAuth('user1@example.com', '123456');
-        $exception = null;
-        try {
-            $this->client->getAllUsers();
-        } catch (ApiException $e) {
-            $exception = $e;
-        }
-
-        self::assertInstanceOf(ApiException::class, $exception);
-        self::assertEquals(403, $exception->getCode());
-
-        $this->client->setBasicAuth('admin@example.com', '123456');
-        $users = $this->client->getAllUsers();
-        self::assertNotEmpty($users);
-    }
-
-    private static function assertResponseHasValidId($response)
-    {
-        self::assertObjectHasAttribute('id', $response);
-        self::assertGreaterThan(0, strlen($response->id));
     }
 
     private static function createMatchDaysDates(int $count): array
