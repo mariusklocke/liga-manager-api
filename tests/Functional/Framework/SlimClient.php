@@ -14,7 +14,7 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Uri;
 
-class HttpClient
+class SlimClient
 {
     /** @var App */
     private $app;
