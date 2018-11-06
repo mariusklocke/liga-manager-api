@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Domain\MatchFactory;
 
@@ -27,6 +28,7 @@ class CreateMatchesForSeasonHandler
      */
     public function __invoke(CreateMatchesForSeasonCommand $command)
     {
+        IsAdmin::check($command->getAuthenticatedUser());
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->clearMatchDays();
         $matchDays = (new MatchFactory())->createMatchDaysForSeason($season, $command->getMatchDaysDates());

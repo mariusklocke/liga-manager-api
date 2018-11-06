@@ -123,11 +123,11 @@ class RouteProvider
             })->add($auth);
 
             $app->post('/matches/{id}/cancellation', function ($request, $response, $args) use ($container) {
-                return (new MatchCommandController($container['commandBus']))->cancel($args['id']);
+                return (new MatchCommandController($container['commandBus']))->cancel($request, $args['id']);
             })->add($auth);
 
             $app->put('/seasons/{season_id}/teams/{team_id}', function ($request, $response, $args) use ($container) {
-                return (new SeasonCommandController($container['commandBus']))->addTeam($args['season_id'], $args['team_id']);
+                return (new SeasonCommandController($container['commandBus']))->addTeam($request, $args['season_id'], $args['team_id']);
             })->add($auth);
 
             $app->delete('/seasons/{season_id}/teams/{team_id}', function ($request, $response, $args) use ($container) {

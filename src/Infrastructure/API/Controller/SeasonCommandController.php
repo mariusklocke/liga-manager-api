@@ -42,7 +42,8 @@ class SeasonCommandController extends CommandController
             return InputParser::parseDatePeriod($matchDay);
         }, $matchDays);
 
-        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, $matchDays));
+        $command = new CreateMatchesForSeasonCommand($seasonId, $matchDays);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return new Response(204);
     }
 
@@ -67,13 +68,15 @@ class SeasonCommandController extends CommandController
     }
 
     /**
+     * @param Request $request
      * @param string $seasonId
      * @param string $teamId
      * @return Response
      */
-    public function addTeam(string $seasonId, string $teamId) : Response
+    public function addTeam(Request $request, string $seasonId, string $teamId) : Response
     {
-        $this->commandBus->execute(new AddTeamToSeasonCommand($seasonId, $teamId));
+        $command = new AddTeamToSeasonCommand($seasonId, $teamId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return new Response(204);
     }
 

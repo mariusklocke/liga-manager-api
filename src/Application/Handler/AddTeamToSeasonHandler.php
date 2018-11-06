@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 
@@ -32,6 +33,7 @@ class AddTeamToSeasonHandler
      */
     public function __invoke(AddTeamToSeasonCommand $command)
     {
+        IsAdmin::check($command->getAuthenticatedUser());
         $season = $this->seasonRepository->find($command->getSeasonId());
         $team   = $this->teamRepository->find($command->getTeamId());
 

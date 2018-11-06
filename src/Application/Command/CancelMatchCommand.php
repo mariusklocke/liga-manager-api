@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Application\Command;
 
 class CancelMatchCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $matchId;
 

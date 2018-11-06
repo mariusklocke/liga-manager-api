@@ -32,12 +32,14 @@ class MatchCommandController extends CommandController
     }
 
     /**
+     * @param Request $request
      * @param string $matchId
      * @return Response
      */
-    public function cancel(string $matchId) : Response
+    public function cancel(Request $request, string $matchId) : Response
     {
-        $this->commandBus->execute(new CancelMatchCommand($matchId));
+        $command = new CancelMatchCommand($matchId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return new Response(204);
     }
 

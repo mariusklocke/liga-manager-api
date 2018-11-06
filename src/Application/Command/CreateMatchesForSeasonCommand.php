@@ -8,6 +8,8 @@ use HexagonalPlayground\Application\Exception\InvalidInputException;
 
 class CreateMatchesForSeasonCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $seasonId;
 

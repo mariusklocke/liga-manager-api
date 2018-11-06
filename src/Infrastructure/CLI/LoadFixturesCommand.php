@@ -114,14 +114,16 @@ class LoadFixturesCommand extends Command
     {
         foreach ($seasonIds as $seasonId) {
             foreach ($teamIds as $teamId) {
-                $this->commandBus->execute(new AddTeamToSeasonCommand($seasonId, $teamId));
+                $command = new AddTeamToSeasonCommand($seasonId, $teamId);
+                $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
             }
         }
     }
 
     private function startSeason(string $seasonId, int $teamCount): void
     {
-        $this->commandBus->execute(new CreateMatchesForSeasonCommand($seasonId, $this->generateMatchDayDates($teamCount)));
+        $command = new CreateMatchesForSeasonCommand($seasonId, $this->generateMatchDayDates($teamCount));
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
         $this->commandBus->execute(new StartSeasonCommand($seasonId));
     }
 
