@@ -10,6 +10,8 @@
             <discriminator-mapping value="match:located" class="MatchLocated"/>
             <discriminator-mapping value="match:result:submitted" class="MatchResultSubmitted"/>
             <discriminator-mapping value="match:scheduled" class="MatchScheduled"/>
+            <discriminator-mapping value="ranking:penalty:added" class="RankingPenaltyAdded"/>
+            <discriminator-mapping value="ranking:penalty:removed" class="RankingPenaltyRemoved"/>
         </discriminator-map>
         <field name="occurredAt" column="occurred_at" type="date_immutable" />
         <field name="payload" type="array" />

@@ -105,6 +105,16 @@ class RankingPosition
         $this->draws--;
     }
 
+    public function subtractPoints(int $points): void
+    {
+        $this->points -= $points;
+    }
+
+    public function addPoints(int $points): void
+    {
+        $this->points += $points;
+    }
+
     /**
      * @param RankingPosition $other
      * @return int

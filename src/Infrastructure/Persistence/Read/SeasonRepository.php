@@ -54,6 +54,8 @@ class SeasonRepository extends AbstractRepository
             throw new NotFoundException('Cannot find ranking');
         }
 
+        $ranking['positions'] = $this->findRankingPositions($seasonId);
+        $ranking['penalties'] = $this->findRankingPenalties($seasonId);
         return $ranking;
     }
 
@@ -61,10 +63,22 @@ class SeasonRepository extends AbstractRepository
      * @param string $seasonId
      * @return array
      */
-    public function findRankingPositions(string $seasonId): array
+    private function findRankingPositions(string $seasonId): array
     {
         return $this->getDb()->fetchAll(
             'SELECT * FROM ranking_positions WHERE season_id = ? ORDER BY sort_index ASC',
+            [$seasonId]
+        );
+    }
+
+    /**
+     * @param string $seasonId
+     * @return array
+     */
+    private function findRankingPenalties(string $seasonId): array
+    {
+        return $this->getDb()->fetchAll(
+            'SELECT * FROM ranking_penalties WHERE season_id = ? ORDER BY created_at ASC',
             [$seasonId]
         );
     }

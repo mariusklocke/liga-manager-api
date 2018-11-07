@@ -70,6 +70,16 @@ class RouteProvider
                 return (new SeasonQueryController($container[SeasonRepository::class]))->findRanking($args['id']);
             });
 
+            $app->post('/seasons/{season_id}/ranking/penalties', function ($request, $response, $args) use ($container) {
+                return (new SeasonCommandController($container['commandBus']))
+                    ->addRankingPenalty($request, $args['season_id']);
+            })->add($auth);
+
+            $app->delete('/seasons/{season_id}/ranking/penalties/{penalty_id}', function ($request, $response, $args) use ($container) {
+                return (new SeasonCommandController($container['commandBus']))
+                    ->removeRankingPenalty($request, $args['season_id'], $args['penalty_id']);
+            })->add($auth);
+
             $app->get('/matches', function ($request) use ($container) {
                 return (new MatchQueryController($container[MatchRepository::class]))->findMatches($request);
             });
