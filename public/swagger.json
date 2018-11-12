@@ -703,6 +703,39 @@
         "summary": "Starts a season"
       }
     },
+    "/seasons/{id}/end": {
+      "post": {
+        "operationId": "endSeason",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
+        "parameters": [
+          {
+            "description": "ID of season",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "400": {
+            "description": "Season cannot be ended due to an invalid state"
+          },
+          "404": {
+            "description": "Season could not be found"
+          }
+        },
+        "tags": [
+          "season"
+        ],
+        "summary": "Ends a season"
+      }
+    },
     "/seasons/{id}/teams": {
       "get": {
         "operationId": "getTeamsInSeason",

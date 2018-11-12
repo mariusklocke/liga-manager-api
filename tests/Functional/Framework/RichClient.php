@@ -285,6 +285,15 @@ class RichClient
         ));
     }
 
+    public function endSeason(string $seasonId): void
+    {
+        $this->handleErrors($this->slimClient->post(
+            '/api/seasons/' . $seasonId . '/end',
+            [],
+            $this->headers
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);

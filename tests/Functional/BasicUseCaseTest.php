@@ -243,6 +243,27 @@ class BasicUseCaseTest extends TestCase
     }
 
     /**
+     * @param string $matchId
+     * @param string $seasonId
+     * @depends testMatchResultCanBeSubmitted
+     * @depends testRankingCanBeFound
+     */
+    public function testEndedSeasonsRankingCannotBeChanged(string $matchId, string $seasonId): void
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $this->client->endSeason($seasonId);
+
+        try {
+            $this->client->submitMatchResult($matchId, 4, 3);
+        } catch (ApiException $exception) {
+
+        }
+
+        self::assertInstanceOf(ApiException::class, $exception);
+        self::assertEquals(400, $exception->getCode());
+    }
+
+    /**
      * @param string[] $matchIds
      * @param string[] $pitchIds
      * @depends testMatchesCanBeFound
