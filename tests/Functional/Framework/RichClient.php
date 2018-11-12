@@ -277,7 +277,7 @@ class RichClient
         ));
     }
 
-    public function sendPasswortResetMail(string $email, string $targetPath): void
+    public function sendPasswordResetMail(string $email, string $targetPath): void
     {
         $this->handleErrors($this->slimClient->post(
             '/api/users/me/password/reset',
