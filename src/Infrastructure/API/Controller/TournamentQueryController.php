@@ -33,11 +33,7 @@ class TournamentQueryController
      */
     public function findTournamentById(string $id) : Response
     {
-        $tournament = $this->repository->findTournamentById($id);
-        if (null === $tournament) {
-            return new Response(404);
-        }
-        return (new Response(200))->withJson($tournament);
+        return (new Response(200))->withJson($this->repository->findTournamentById($id));
     }
 
     /**
