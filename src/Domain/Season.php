@@ -220,4 +220,17 @@ class Season extends Competition
         $this->matchDays[] = $matchDay;
         $this->matchDayCount = $this->matchDays->count();
     }
+
+    /**
+     * @return Match[]
+     */
+    public function getMatches(): array
+    {
+        $matches = [];
+        foreach ($this->matchDays as $matchDay) {
+            /** @var MatchDay $matchDay */
+            $matches = array_merge($matches, $matchDay->getMatches());
+        }
+        return $matches;
+    }
 }

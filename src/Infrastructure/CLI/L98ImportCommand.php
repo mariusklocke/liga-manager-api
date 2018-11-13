@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
-use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\Import\L98FileParser;
 use HexagonalPlayground\Infrastructure\Import\L98ImportService;
 use HexagonalPlayground\Infrastructure\Import\L98TeamModel;
@@ -68,8 +67,12 @@ class L98ImportCommand extends Command
             $this->mapTeam($outputDecorator, $importableTeam);
         }
         $this->transactionWrapper->transactional(function () use ($parser) {
-            $user = new User('import@example.com', '123456', 'bla', 'blubb');
-            $this->importService->import($parser->getSeason(), $parser->getTeams(), $parser->getMatches(), $user);
+            $this->importService->import(
+                $parser->getSeason(),
+                $parser->getTeams(),
+                $parser->getMatches(),
+                $this->getCliUser()
+            );
         });
     }
 

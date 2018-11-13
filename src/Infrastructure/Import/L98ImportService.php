@@ -6,7 +6,8 @@ namespace HexagonalPlayground\Infrastructure\Import;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
-use HexagonalPlayground\Domain\MatchFactory;
+use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\MatchDay;
 use HexagonalPlayground\Domain\MatchResult;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
@@ -111,24 +112,52 @@ class L98ImportService
      */
     private function importMatches(Season $season, array $importableMatches, User $user)
     {
-        // TODO: rework
-        $matchFactory = new MatchFactory();
         /** @var L98MatchModel[] $matchMap */
-        $matchMap = [];
-        foreach ($importableMatches as $importableMatch) {
-            if (!isset($this->teamIdentityMap[$importableMatch->getHomeTeamId()]) || !isset($this->teamIdentityMap[$importableMatch->getGuestTeamId()])) {
-                continue;
-            }
-            $homeTeam = $this->teamRepository->find($this->teamIdentityMap[$importableMatch->getHomeTeamId()]);
-            $guestTeam = $this->teamRepository->find($this->teamIdentityMap[$importableMatch->getGuestTeamId()]);
-            $match = $matchFactory->createMatch($season, $importableMatch->getMatchDay(), $homeTeam, $guestTeam);
-            $this->matchRepository->save($match);
-            $season->addMatch($match);
-            $matchMap[$match->getId()] = $importableMatch;
-        }
+        $matchMap = $this->createMatches($season, $importableMatches);
         $season->start();
+        $this->updateMatchDetails($season, $matchMap, $user);
+        $season->end();
+    }
 
-        // TODO: Fix method
+    /**
+     * @param Season $season
+     * @param array $importableMatches
+     * @return array
+     */
+    private function createMatches(Season $season, array $importableMatches): array
+    {
+        $matchMap = [];
+
+        foreach ($this->groupMatchesByMatchDay($importableMatches) as $matchDayNumber => $matches) {
+            $matchDay = new MatchDay($season, $matchDayNumber, new \DateTimeImmutable(), new \DateTimeImmutable());
+            foreach ($matches as $importableMatch) {
+                /** @var L98MatchModel $importableMatch */
+                $internalHomeTeamId  = $this->teamIdentityMap[$importableMatch->getHomeTeamId()] ?? null;
+                $internalGuestTeamId = $this->teamIdentityMap[$importableMatch->getGuestTeamId()] ?? null;
+                if (null === $internalHomeTeamId || null === $internalGuestTeamId) {
+                    continue;
+                }
+
+                $homeTeam  = $this->teamRepository->find($internalHomeTeamId);
+                $guestTeam = $this->teamRepository->find($internalGuestTeamId);
+                $match = new Match($matchDay, $homeTeam, $guestTeam);
+                $this->matchRepository->save($match);
+                $matchDay->addMatch($match);
+                $matchMap[$match->getId()] = $importableMatch;
+            }
+            $season->addMatchDay($matchDay);
+        }
+
+        return $matchMap;
+    }
+
+    /**
+     * @param Season $season
+     * @param array $matchMap
+     * @param User $user
+     */
+    private function updateMatchDetails(Season $season, array $matchMap, User $user)
+    {
         foreach ($season->getMatches() as $match) {
             $importableMatch = $matchMap[$match->getId()];
             if (null !== $importableMatch->getKickoff()) {
@@ -138,6 +167,22 @@ class L98ImportService
                 $match->submitResult(new MatchResult($importableMatch->getHomeScore(), $importableMatch->getGuestScore()), $user);
             }
         }
-        $season->end();
+    }
+
+    /**
+     * @param L98MatchModel[] $importableMatches
+     * @return array
+     */
+    private function groupMatchesByMatchDay(array $importableMatches)
+    {
+        $result = [];
+        foreach ($importableMatches as $match) {
+            if (!isset($result[$match->getMatchDay()])) {
+                $result[$match->getMatchDay()] = [];
+            }
+
+            $result[$match->getMatchDay()][] = $match;
+        }
+        return $result;
     }
 }
