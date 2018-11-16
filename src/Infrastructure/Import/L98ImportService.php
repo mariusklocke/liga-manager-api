@@ -65,14 +65,14 @@ class L98ImportService
     /**
      * @param L98SeasonModel $importableSeason
      * @param L98TeamModel[] $importableTeams
-     * @param L98MatchModel[] $importableMatches
+     * @param L98MatchDayModel[] $importableMatchDays
      * @param User $user
      */
-    public function import(L98SeasonModel $importableSeason, array $importableTeams, array $importableMatches, User $user): void
+    public function import(L98SeasonModel $importableSeason, array $importableTeams, array $importableMatchDays, User $user): void
     {
         $season = $this->importSeason($importableSeason);
         $this->importTeams($season, $importableTeams);
-        $this->importMatches($season, $importableMatches, $user);
+        $this->importMatches($season, $importableMatchDays, $user);
     }
 
     /**
@@ -107,13 +107,13 @@ class L98ImportService
 
     /**
      * @param Season $season
-     * @param L98MatchModel[] $importableMatches
+     * @param L98MatchDayModel[] $matchDays
      * @param User $user
      */
-    private function importMatches(Season $season, array $importableMatches, User $user)
+    private function importMatches(Season $season, array $matchDays, User $user)
     {
         /** @var L98MatchModel[] $matchMap */
-        $matchMap = $this->createMatches($season, $importableMatches);
+        $matchMap = $this->createMatches($season, $matchDays);
         $season->start();
         $this->updateMatchDetails($season, $matchMap, $user);
         $season->end();
@@ -121,16 +121,22 @@ class L98ImportService
 
     /**
      * @param Season $season
-     * @param array $importableMatches
+     * @param L98MatchDayModel[] $importableMatchDays
      * @return array
      */
-    private function createMatches(Season $season, array $importableMatches): array
+    private function createMatches(Season $season, array $importableMatchDays): array
     {
         $matchMap = [];
 
-        foreach ($this->groupMatchesByMatchDay($importableMatches) as $matchDayNumber => $matches) {
-            $matchDay = new MatchDay($season, $matchDayNumber, new \DateTimeImmutable(), new \DateTimeImmutable());
-            foreach ($matches as $importableMatch) {
+        foreach ($importableMatchDays as $importableMatchDay) {
+            $matchDay = new MatchDay(
+                $season,
+                $importableMatchDay->getNumber(),
+                $importableMatchDay->getStartDate(),
+                $importableMatchDay->getEndDate()
+            );
+
+            foreach ($importableMatchDay->getMatches() as $importableMatch) {
                 /** @var L98MatchModel $importableMatch */
                 $internalHomeTeamId  = $this->teamIdentityMap[$importableMatch->getHomeTeamId()] ?? null;
                 $internalGuestTeamId = $this->teamIdentityMap[$importableMatch->getGuestTeamId()] ?? null;
@@ -145,6 +151,7 @@ class L98ImportService
                 $matchDay->addMatch($match);
                 $matchMap[$match->getId()] = $importableMatch;
             }
+
             $season->addMatchDay($matchDay);
         }
 
@@ -169,20 +176,4 @@ class L98ImportService
         }
     }
 
-    /**
-     * @param L98MatchModel[] $importableMatches
-     * @return array
-     */
-    private function groupMatchesByMatchDay(array $importableMatches)
-    {
-        $result = [];
-        foreach ($importableMatches as $match) {
-            if (!isset($result[$match->getMatchDay()])) {
-                $result[$match->getMatchDay()] = [];
-            }
-
-            $result[$match->getMatchDay()][] = $match;
-        }
-        return $result;
-    }
 }

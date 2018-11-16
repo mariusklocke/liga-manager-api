@@ -36,27 +36,34 @@ class L98FileParser
     }
 
     /**
-     * @return L98MatchModel[]
+     * @return L98MatchDayModel[]
      */
     public function getMatches(): array
     {
         $result = [];
-        $matchDay = 1;
-        while ($round = $this->getSection(sprintf('Round%d', $matchDay))) {
+        $matchDayIndex = 1;
+        while ($round = $this->getSection(sprintf('Round%d', $matchDayIndex))) {
+            $matchDay = new L98MatchDayModel(
+                $matchDayIndex,
+                InputParser::parseDateTime($round['D1']),
+                InputParser::parseDateTime($round['D2'])
+            );
+
             $matchIndex = 1;
             while (isset($round['TA' . $matchIndex])) {
-                $result[] = new L98MatchModel(
+                $match = new L98MatchModel(
                     InputParser::parseInteger($round['TA' . $matchIndex]),
                     InputParser::parseInteger($round['TB' . $matchIndex]),
                     InputParser::parseInteger($round['GA' . $matchIndex]),
                     InputParser::parseInteger($round['GB' . $matchIndex]),
                     $round['AT' . $matchIndex] !== '' ? InputParser::parseInteger($round['AT' . $matchIndex]) : null,
-                    $matchDay
+                    $matchDayIndex
                 );
-
+                $matchDay->addMatch($match);
                 $matchIndex++;
             }
-            $matchDay++;
+            $result[] = $matchDay;
+            $matchDayIndex++;
         }
         return $result;
     }
