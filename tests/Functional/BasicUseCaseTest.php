@@ -243,6 +243,33 @@ class BasicUseCaseTest extends TestCase
     }
 
     /**
+     * @param string $seasonId
+     * @depends testRankingCanBeFound
+     * @depends testMatchResultCanBeSubmitted
+     */
+    public function testPenaltiesAffectRanking(string $seasonId)
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+
+        $ranking = $this->client->getSeasonRanking($seasonId);
+        $topRank = $ranking->positions[0];
+        $leaderTeamId = $topRank->team_id;
+        $previousPoints = $topRank->points;
+        self::assertGreaterThan(0, $previousPoints);
+
+        $penalty = $this->client->addRankingPenalty($seasonId, $leaderTeamId, 'For testing', 5);
+
+        $ranking = $this->client->getSeasonRanking($seasonId);
+        $topRank = $ranking->positions[0];
+        self::assertNotEquals($leaderTeamId, $topRank->team_id);
+
+        $this->client->removeRankingPenalty($seasonId, $penalty->id);
+        $ranking = $this->client->getSeasonRanking($seasonId);
+        $topRank = $ranking->positions[0];
+        self::assertEquals($leaderTeamId, $topRank->team_id);
+    }
+
+    /**
      * @param string $matchId
      * @param string $seasonId
      * @depends testMatchResultCanBeSubmitted
