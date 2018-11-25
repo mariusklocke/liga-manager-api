@@ -1,0 +1,32 @@
+<?php
+declare(strict_types=1);
+
+namespace HexagonalPlayground\Application\Import;
+
+use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
+use HexagonalPlayground\Domain\Season;
+
+class SeasonMapper
+{
+    /** @var SeasonRepositoryInterface */
+    private $repository;
+
+    /**
+     * @param SeasonRepositoryInterface $repository
+     */
+    public function __construct(SeasonRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
+
+    /**
+     * @param L98SeasonModel $l98Season
+     * @return Season
+     */
+    public function create(L98SeasonModel $l98Season): Season
+    {
+        $season = new Season($l98Season->getName());
+        $this->repository->save($season);
+        return $season;
+    }
+}

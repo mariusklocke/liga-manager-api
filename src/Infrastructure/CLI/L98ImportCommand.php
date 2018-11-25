@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
-use HexagonalPlayground\Infrastructure\Import\L98FileParser;
-use HexagonalPlayground\Infrastructure\Import\L98ImportService;
-use HexagonalPlayground\Infrastructure\Import\L98TeamModel;
+use HexagonalPlayground\Application\Import\Importer;
+use HexagonalPlayground\Application\Import\L98FileParser;
+use HexagonalPlayground\Application\Import\L98TeamModel;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,18 +18,18 @@ class L98ImportCommand extends Command
     /** @var OrmTransactionWrapperInterface */
     private $transactionWrapper;
 
-    /** @var L98ImportService */
-    private $importService;
+    /** @var Importer */
+    private $importer;
 
     /**
      * @param OrmTransactionWrapperInterface $transactionWrapper
-     * @param L98ImportService $importService
+     * @param Importer $importer
      */
-    public function __construct(OrmTransactionWrapperInterface $transactionWrapper, L98ImportService $importService)
+    public function __construct(OrmTransactionWrapperInterface $transactionWrapper, Importer $importer)
     {
         parent::__construct();
         $this->transactionWrapper = $transactionWrapper;
-        $this->importService = $importService;
+        $this->importer = $importer;
     }
 
     protected function configure()
@@ -74,16 +74,12 @@ class L98ImportCommand extends Command
      */
     private function importFile(L98FileParser $parser, SymfonyStyle $outputDecorator)
     {
-        foreach ($parser->getTeams() as $importableTeam) {
+        $season = $parser->parse();
+        foreach ($season->getTeams() as $importableTeam) {
             $this->mapTeam($outputDecorator, $importableTeam);
         }
-        $this->transactionWrapper->transactional(function () use ($parser) {
-            $this->importService->import(
-                $parser->getSeason(),
-                $parser->getTeams(),
-                $parser->getMatches(),
-                $this->getCliUser()
-            );
+        $this->transactionWrapper->transactional(function () use ($season) {
+            $this->importer->import($season, $this->getCliUser());
         });
     }
 
@@ -93,7 +89,7 @@ class L98ImportCommand extends Command
      */
     private function mapTeam(SymfonyStyle $outputDecorator, L98TeamModel $importableTeam)
     {
-        $recommendedTeams = $this->importService->getTeamMappingRecommendations($importableTeam);
+        $recommendedTeams = $this->importer->getTeamMapper()->getRecommendations($importableTeam);
         if (empty($recommendedTeams)) {
             return;
         }
@@ -106,11 +102,11 @@ class L98ImportCommand extends Command
         $choiceQuestion = new ChoiceQuestion('Please choose how to map ' . $importableTeam->getName(), $choices);
         $answer = $outputDecorator->askQuestion($choiceQuestion);
         if (isset($recommendedTeams[$answer])) {
-            $this->importService->addTeamMapping($importableTeam, $recommendedTeams[$answer]);
+            $this->importer->getTeamMapper()->map($importableTeam, $recommendedTeams[$answer]);
         } else {
             $selectedTeamIndex = array_search($answer, $choices);
             if ($selectedTeamIndex !== false && isset($recommendedTeams[$selectedTeamIndex])) {
-                $this->importService->addTeamMapping($importableTeam, $recommendedTeams[$selectedTeamIndex]);
+                $this->importer->getTeamMapper()->map($importableTeam, $recommendedTeams[$selectedTeamIndex]);
             }
         }
     }

@@ -5,9 +5,9 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use HexagonalPlayground\Application\Import\L98ImportProvider;
 use HexagonalPlayground\Infrastructure\CommandBusProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
-use HexagonalPlayground\Infrastructure\Import\L98ImportProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Import;
+namespace HexagonalPlayground\Application\Import;
 
 use HexagonalPlayground\Application\InputParser;
 
@@ -36,9 +36,10 @@ class L98FileParser
     }
 
     /**
+     * @param array $teams
      * @return L98MatchDayModel[]
      */
-    public function getMatches(): array
+    private function getMatchDays(array $teams): array
     {
         $result = [];
         $matchDayIndex = 1;
@@ -51,15 +52,19 @@ class L98FileParser
 
             $matchIndex = 1;
             while (isset($round['TA' . $matchIndex])) {
-                $match = new L98MatchModel(
-                    InputParser::parseInteger($round['TA' . $matchIndex]),
-                    InputParser::parseInteger($round['TB' . $matchIndex]),
-                    InputParser::parseInteger($round['GA' . $matchIndex]),
-                    InputParser::parseInteger($round['GB' . $matchIndex]),
-                    $round['AT' . $matchIndex] !== '' ? InputParser::parseInteger($round['AT' . $matchIndex]) : null,
-                    $matchDayIndex
-                );
-                $matchDay->addMatch($match);
+                $homeTeam  = $teams[InputParser::parseInteger($round['TA' . $matchIndex])] ?? null;
+                $guestTeam = $teams[InputParser::parseInteger($round['TB' . $matchIndex])] ?? null;
+                if (null !== $homeTeam && null !== $guestTeam) {
+                    $match = new L98MatchModel(
+                        $homeTeam,
+                        $guestTeam,
+                        InputParser::parseInteger($round['GA' . $matchIndex]),
+                        InputParser::parseInteger($round['GB' . $matchIndex]),
+                        $round['AT' . $matchIndex] !== '' ? InputParser::parseInteger($round['AT' . $matchIndex]) : null,
+                        $matchDayIndex
+                    );
+                    $matchDay->addMatch($match);
+                }
                 $matchIndex++;
             }
             $result[] = $matchDay;
@@ -71,7 +76,7 @@ class L98FileParser
     /**
      * @return L98TeamModel[]
      */
-    public function getTeams(): array
+    private function getTeams(): array
     {
         $result = [];
         $i = 1;
@@ -84,9 +89,36 @@ class L98FileParser
         return $result;
     }
 
-    public function getSeason(): L98SeasonModel
+    private function getSeason(): L98SeasonModel
     {
         $name = $this->getValue('Options', 'Name');
         return new L98SeasonModel($name);
+    }
+
+    public function parse(): L98SeasonModel
+    {
+        $season = $this->getSeason();
+        foreach ($this->getTeams() as $team) {
+            $season->addTeam($team);
+        }
+        foreach ($this->getMatchDays($this->indexById($season->getTeams())) as $matchDay) {
+            $season->addMatchDay($matchDay);
+        }
+
+        return $season;
+    }
+
+    /**
+     * @param L98TeamModel[] $teams
+     * @return array
+     */
+    private function indexById(array $teams)
+    {
+        $result = [];
+        foreach ($teams as $team) {
+            $result[$team->getId()] = $team;
+        }
+
+        return $result;
     }
 }
