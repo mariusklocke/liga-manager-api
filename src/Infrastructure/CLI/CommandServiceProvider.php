@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
-use HexagonalPlayground\Infrastructure\Import\L98ImportService;
+use HexagonalPlayground\Application\Import\Importer;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -45,7 +45,7 @@ class CommandServiceProvider implements ServiceProviderInterface
                 'app:import-season' => function () use ($container) {
                     return new L98ImportCommand(
                         $container[OrmTransactionWrapperInterface::class],
-                        $container[L98ImportService::class]
+                        $container[Importer::class]
                     );
                 }
             ]);

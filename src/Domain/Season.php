@@ -204,4 +204,17 @@ class Season extends Competition
         }
         return $this->ranking;
     }
+
+    /**
+     * @return Match[]
+     */
+    public function getMatches(): array
+    {
+        $matches = [];
+        foreach ($this->matchDays as $matchDay) {
+            /** @var MatchDay $matchDay */
+            $matches = array_merge($matches, $matchDay->getMatches());
+        }
+        return $matches;
+    }
 }

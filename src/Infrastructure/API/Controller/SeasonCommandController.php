@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
+use HexagonalPlayground\Application\Command\EndSeasonCommand;
 use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
@@ -56,6 +57,18 @@ class SeasonCommandController extends CommandController
     public function start(string $seasonId) : Response
     {
         $this->commandBus->execute(new StartSeasonCommand($seasonId));
+        return new Response(204);
+    }
+
+    /**
+     * @param Request $request
+     * @param string $seasonId
+     * @return Response
+     */
+    public function end(Request $request, string $seasonId): Response
+    {
+        $command = new EndSeasonCommand($seasonId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return new Response(204);
     }
 

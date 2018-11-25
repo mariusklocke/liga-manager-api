@@ -4,10 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
-use HexagonalPlayground\Domain\User;
-use HexagonalPlayground\Infrastructure\Import\L98FileParser;
-use HexagonalPlayground\Infrastructure\Import\L98ImportService;
-use HexagonalPlayground\Infrastructure\Import\L98TeamModel;
+use HexagonalPlayground\Application\Import\Importer;
+use HexagonalPlayground\Application\Import\L98FileParser;
+use HexagonalPlayground\Application\Import\L98TeamModel;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,18 +18,18 @@ class L98ImportCommand extends Command
     /** @var OrmTransactionWrapperInterface */
     private $transactionWrapper;
 
-    /** @var L98ImportService */
-    private $importService;
+    /** @var Importer */
+    private $importer;
 
     /**
      * @param OrmTransactionWrapperInterface $transactionWrapper
-     * @param L98ImportService $importService
+     * @param Importer $importer
      */
-    public function __construct(OrmTransactionWrapperInterface $transactionWrapper, L98ImportService $importService)
+    public function __construct(OrmTransactionWrapperInterface $transactionWrapper, Importer $importer)
     {
         parent::__construct();
         $this->transactionWrapper = $transactionWrapper;
-        $this->importService = $importService;
+        $this->importer = $importer;
     }
 
     protected function configure()
@@ -45,31 +44,42 @@ class L98ImportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $outputDecorator = new SymfonyStyle($input, $output);
-        $pattern = $input->getArgument('file-pattern');
-        $fileIterator = new \GlobIterator($pattern);
-        if (0 === $fileIterator->count()) {
-            $outputDecorator->error('Cannot find files matching pattern ' . $pattern);
-            return -1;
-        }
-        foreach ($fileIterator as $fileInfo) {
+        foreach ($this->getImportFiles($input->getArgument('file-pattern')) as $fileInfo) {
             /** @var \SplFileInfo $fileInfo */
             $outputDecorator->writeln('Start parsing ' . $fileInfo->getPathname());
-            $parser = new L98FileParser($fileInfo->getPathname());
-            $this->importFile($parser, $outputDecorator);
+            $this->importFile(new L98FileParser($fileInfo->getPathname()), $outputDecorator);
             $outputDecorator->writeln('Finished importing ' . $fileInfo->getPathname());
         }
         $outputDecorator->success('Import completed successfully!');
         return parent::execute($input, $output);
     }
 
+    /**
+     * @param string $pattern
+     * @return \Iterator
+     */
+    private function getImportFiles(string $pattern): \Iterator
+    {
+        $fileIterator = new \GlobIterator($pattern);
+        if (0 === $fileIterator->count()) {
+            throw new \RuntimeException('Cannot find files matching pattern ' . $pattern);
+        }
+
+        return $fileIterator;
+    }
+
+    /**
+     * @param L98FileParser $parser
+     * @param SymfonyStyle $outputDecorator
+     */
     private function importFile(L98FileParser $parser, SymfonyStyle $outputDecorator)
     {
-        foreach ($parser->getTeams() as $importableTeam) {
+        $season = $parser->parse();
+        foreach ($season->getTeams() as $importableTeam) {
             $this->mapTeam($outputDecorator, $importableTeam);
         }
-        $this->transactionWrapper->transactional(function () use ($parser) {
-            $user = new User('import@example.com', '123456', 'bla', 'blubb');
-            $this->importService->import($parser->getSeason(), $parser->getTeams(), $parser->getMatches(), $user);
+        $this->transactionWrapper->transactional(function () use ($season) {
+            $this->importer->import($season, $this->getCliUser());
         });
     }
 
@@ -79,7 +89,7 @@ class L98ImportCommand extends Command
      */
     private function mapTeam(SymfonyStyle $outputDecorator, L98TeamModel $importableTeam)
     {
-        $recommendedTeams = $this->importService->getTeamMappingRecommendations($importableTeam);
+        $recommendedTeams = $this->importer->getTeamMapper()->getRecommendations($importableTeam);
         if (empty($recommendedTeams)) {
             return;
         }
@@ -92,11 +102,11 @@ class L98ImportCommand extends Command
         $choiceQuestion = new ChoiceQuestion('Please choose how to map ' . $importableTeam->getName(), $choices);
         $answer = $outputDecorator->askQuestion($choiceQuestion);
         if (isset($recommendedTeams[$answer])) {
-            $this->importService->addTeamMapping($importableTeam, $recommendedTeams[$answer]);
+            $this->importer->getTeamMapper()->map($importableTeam, $recommendedTeams[$answer]);
         } else {
             $selectedTeamIndex = array_search($answer, $choices);
             if ($selectedTeamIndex !== false && isset($recommendedTeams[$selectedTeamIndex])) {
-                $this->importService->addTeamMapping($importableTeam, $recommendedTeams[$selectedTeamIndex]);
+                $this->importer->getTeamMapper()->map($importableTeam, $recommendedTeams[$selectedTeamIndex]);
             }
         }
     }

@@ -1,15 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Import;
+namespace HexagonalPlayground\Application\Import;
 
 class L98MatchModel
 {
-    /** @var int */
-    private $homeTeamId;
+    /** @var L98TeamModel */
+    private $homeTeam;
 
-    /** @var int */
-    private $guestTeamId;
+    /** @var L98TeamModel */
+    private $guestTeam;
 
     /** @var int */
     private $homeScore;
@@ -24,17 +24,17 @@ class L98MatchModel
     private $matchDay;
 
     /**
-     * @param int $homeTeamId
-     * @param int $guestTeamId
+     * @param L98TeamModel $homeTeam
+     * @param L98TeamModel $guestTeam
      * @param int $homeScore
      * @param int $guestScore
      * @param int|null $kickoff
      * @param int $matchDay
      */
-    public function __construct(int $homeTeamId, int $guestTeamId, int $homeScore, int $guestScore, ?int $kickoff, int $matchDay)
+    public function __construct(L98TeamModel $homeTeam, L98TeamModel $guestTeam, int $homeScore, int $guestScore, ?int $kickoff, int $matchDay)
     {
-        $this->homeTeamId  = $homeTeamId;
-        $this->guestTeamId = $guestTeamId;
+        $this->homeTeam    = $homeTeam;
+        $this->guestTeam   = $guestTeam;
         $this->homeScore   = $homeScore;
         $this->guestScore  = $guestScore;
         $this->kickoff     = $kickoff;
@@ -42,11 +42,27 @@ class L98MatchModel
     }
 
     /**
+     * @return L98TeamModel
+     */
+    public function getHomeTeam(): L98TeamModel
+    {
+        return $this->homeTeam;
+    }
+
+    /**
+     * @return L98TeamModel
+     */
+    public function getGuestTeam(): L98TeamModel
+    {
+        return $this->guestTeam;
+    }
+
+    /**
      * @return int
      */
     public function getHomeTeamId(): int
     {
-        return $this->homeTeamId;
+        return $this->homeTeam->getId();
     }
 
     /**
@@ -54,7 +70,7 @@ class L98MatchModel
      */
     public function getGuestTeamId(): int
     {
-        return $this->guestTeamId;
+        return $this->guestTeam->getId();
     }
 
     /**

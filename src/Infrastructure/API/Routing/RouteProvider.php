@@ -108,6 +108,10 @@ class RouteProvider
                 return (new SeasonCommandController($container['commandBus']))->start($args['id']);
             })->add($auth);
 
+            $app->post('/seasons/{id}/end', function ($request, $response, $args) use ($container) {
+                return (new SeasonCommandController($container['commandBus']))->end($request, $args['id']);
+            })->add($auth);
+
             $app->delete('/seasons/{id}', function ($request, $response, $args) use ($container) {
                 return (new SeasonCommandController($container['commandBus']))->delete($args['id']);
             })->add($auth);

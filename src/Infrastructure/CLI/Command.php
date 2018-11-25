@@ -45,7 +45,7 @@ class Command extends SymfonyCommand
                 'cli@example.com',
                 '123456',
                 'CLI',
-                'CLI'
+                $this->getName()
             );
             $this->user->setRole(User::ROLE_ADMIN);
         }
