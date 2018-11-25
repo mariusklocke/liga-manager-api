@@ -184,6 +184,11 @@ class BasicUseCaseTest extends TestCase
             $count++;
         }
         self::assertEquals(4, $count);
+
+        self::assertObjectHasAttribute('penalties', $ranking);
+        self::assertInternalType('array', $ranking->penalties);
+        self::assertCount(0, $ranking->penalties);
+
         return $seasonId;
     }
 
@@ -261,6 +266,7 @@ class BasicUseCaseTest extends TestCase
 
         $ranking = $this->client->getSeasonRanking($seasonId);
         $topRank = $ranking->positions[0];
+        self::assertCount(1, $ranking->penalties);
         self::assertNotEquals($leaderTeamId, $topRank->team_id);
 
         $this->client->removeRankingPenalty($seasonId, $penalty->id);
