@@ -66,9 +66,9 @@ class Match
         $competition = $this->matchDay->getCompetition();
         if ($competition instanceof Season) {
             if ($this->matchResult !== null) {
-                $competition->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+                $competition->getRanking()->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
             }
-            $competition->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
+            $competition->getRanking()->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         }
         $this->matchResult = $matchResult;
         Publisher::getInstance()->publish(MatchResultSubmitted::create(

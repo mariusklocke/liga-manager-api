@@ -294,6 +294,23 @@ class RichClient
         ));
     }
 
+    public function addRankingPenalty(string $seasonId, string $teamId, string $reason, int $points): stdClass
+    {
+        return $this->decodeBody($this->slimClient->post(
+            '/api/seasons/' . $seasonId . '/ranking/penalties',
+            ['team_id' => $teamId, 'reason' => $reason, 'points' => $points],
+            $this->headers
+        ));
+    }
+
+    public function removeRankingPenalty(string $seasonId, string $penaltyId): void
+    {
+        $this->handleErrors($this->slimClient->delete(
+            '/api/seasons/' . $seasonId . '/ranking/penalties/' . $penaltyId,
+            $this->headers
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);

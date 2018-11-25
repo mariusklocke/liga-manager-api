@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
+use HexagonalPlayground\Application\Command\AddRankingPenaltyCommand;
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
 use HexagonalPlayground\Application\Command\EndSeasonCommand;
+use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
 use HexagonalPlayground\Application\InputParser;
@@ -101,6 +103,39 @@ class SeasonCommandController extends CommandController
     public function removeTeam(string $seasonId, string $teamId) : Response
     {
         $this->commandBus->execute(new RemoveTeamFromSeasonCommand($seasonId, $teamId));
+        return new Response(204);
+    }
+
+    /**
+     * @param Request $request
+     * @param string $seasonId
+     * @return Response
+     */
+    public function addRankingPenalty(Request $request, string $seasonId): Response
+    {
+        $teamId = $request->getParsedBodyParam('team_id');
+        $reason = $request->getParsedBodyParam('reason');
+        $points = $request->getParsedBodyParam('points');
+        $this->assertString('team_id', $teamId);
+        $this->assertString('reason', $reason);
+        $this->assertInteger('points', $points);
+        $command = new AddRankingPenaltyCommand($seasonId, $teamId, $reason, $points);
+        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+
+        return (new Response(200))->withJson(['id' => $id]);
+    }
+
+    /**
+     * @param Request $request
+     * @param string $seasonId
+     * @param string $rankingPenaltyId
+     * @return Response
+     */
+    public function removeRankingPenalty(Request $request, string $seasonId, string $rankingPenaltyId): Response
+    {
+        $command = new RemoveRankingPenaltyCommand($rankingPenaltyId, $seasonId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+
         return new Response(204);
     }
 }

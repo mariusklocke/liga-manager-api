@@ -184,6 +184,11 @@ class BasicUseCaseTest extends TestCase
             $count++;
         }
         self::assertEquals(4, $count);
+
+        self::assertObjectHasAttribute('penalties', $ranking);
+        self::assertInternalType('array', $ranking->penalties);
+        self::assertCount(0, $ranking->penalties);
+
         return $seasonId;
     }
 
@@ -240,6 +245,34 @@ class BasicUseCaseTest extends TestCase
         self::assertEquals(4, $count);
 
         return $matchId;
+    }
+
+    /**
+     * @param string $seasonId
+     * @depends testRankingCanBeFound
+     * @depends testMatchResultCanBeSubmitted
+     */
+    public function testPenaltiesAffectRanking(string $seasonId)
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+
+        $ranking = $this->client->getSeasonRanking($seasonId);
+        $topRank = $ranking->positions[0];
+        $leaderTeamId = $topRank->team_id;
+        $previousPoints = $topRank->points;
+        self::assertGreaterThan(0, $previousPoints);
+
+        $penalty = $this->client->addRankingPenalty($seasonId, $leaderTeamId, 'For testing', 5);
+
+        $ranking = $this->client->getSeasonRanking($seasonId);
+        $topRank = $ranking->positions[0];
+        self::assertCount(1, $ranking->penalties);
+        self::assertNotEquals($leaderTeamId, $topRank->team_id);
+
+        $this->client->removeRankingPenalty($seasonId, $penalty->id);
+        $ranking = $this->client->getSeasonRanking($seasonId);
+        $topRank = $ranking->positions[0];
+        self::assertEquals($leaderTeamId, $topRank->team_id);
     }
 
     /**

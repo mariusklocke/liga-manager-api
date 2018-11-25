@@ -178,38 +178,10 @@ class Season extends Competition
     public function end() : Season
     {
         if (!$this->hasStarted()) {
-            throw new DomainException("Cannot end a season which hasn't even started");
+            throw new DomainException("Cannot end a season which hasn't started");
         }
         $this->state = self::STATE_ENDED;
         return $this;
-    }
-
-    /**
-     * @param string $homeTeamId
-     * @param string $guestTeamId
-     * @param MatchResult $result
-     * @throws DomainException
-     */
-    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $result)
-    {
-        if (!$this->isInProgress()) {
-            throw new DomainException('Cannot add a result to a season which is not in progress');
-        }
-        $this->ranking->addResult($homeTeamId, $guestTeamId, $result);
-    }
-
-    /**
-     * @param string $homeTeamId
-     * @param string $guestTeamId
-     * @param MatchResult $result
-     * @throws DomainException
-     */
-    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $result)
-    {
-        if (!$this->isInProgress()) {
-            throw new DomainException('Cannot revert a result from a season which is not in progress');
-        }
-        $this->ranking->revertResult($homeTeamId, $guestTeamId, $result);
     }
 
     /**
@@ -219,6 +191,18 @@ class Season extends Competition
     {
         $this->matchDays[] = $matchDay;
         $this->matchDayCount = $this->matchDays->count();
+    }
+
+    /**
+     * @return Ranking
+     * @throws DomainException
+     */
+    public function getRanking(): Ranking
+    {
+        if ($this->ranking === null) {
+            throw new DomainException("Cannot access ranking for a season which hasn't started");
+        }
+        return $this->ranking;
     }
 
     /**

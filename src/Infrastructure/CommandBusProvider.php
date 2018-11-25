@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure;
 use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Handler\AddRankingPenaltyHandler;
 use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
 use HexagonalPlayground\Application\Handler\CancelMatchHandler;
 use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
@@ -21,6 +22,7 @@ use HexagonalPlayground\Application\Handler\DeleteTournamentHandler;
 use HexagonalPlayground\Application\Handler\DeleteUserHandler;
 use HexagonalPlayground\Application\Handler\EndSeasonHandler;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
+use HexagonalPlayground\Application\Handler\RemoveRankingPenaltyHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
 use HexagonalPlayground\Application\Handler\RescheduleMatchDayHandler;
 use HexagonalPlayground\Application\Handler\SendPasswordResetMailHandler;
@@ -156,6 +158,12 @@ class CommandBusProvider implements ServiceProviderInterface
         };
         $container[EndSeasonHandler::class] = function () use ($container) {
             return new EndSeasonHandler($container['orm.repository.season']);
+        };
+        $container[AddRankingPenaltyHandler::class] = function () use ($container) {
+            return new AddRankingPenaltyHandler($container['orm.repository.season'], $container['orm.repository.team']);
+        };
+        $container[RemoveRankingPenaltyHandler::class] = function () use ($container) {
+            return new RemoveRankingPenaltyHandler($container['orm.repository.season']);
         };
     }
 }
