@@ -4,13 +4,15 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Filter\MatchFilter;
-use HexagonalPlayground\Application\InputParser;
+use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
-use Slim\Http\Response;
 
 class MatchQueryController
 {
+    use ResponseFactoryTrait;
+
     /** @var MatchRepository */
     private $matchRepository;
 
@@ -21,27 +23,24 @@ class MatchQueryController
 
     /**
      * @param string $matchId
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findMatchById(string $matchId) : Response
+    public function findMatchById(string $matchId): ResponseInterface
     {
-        return (new Response(200))->withJson($this->matchRepository->findMatchById($matchId));
+        return $this->createResponse(200, $this->matchRepository->findMatchById($matchId));
     }
 
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findMatches(Request $request): Response
+    public function findMatches(Request $request): ResponseInterface
     {
-        $filter = new MatchFilter(
+        return $this->createResponse(200, $this->matchRepository->findMatches(new MatchFilter(
             $request->getQueryParam('season_id'),
             $request->getQueryParam('tournament_id'),
             $request->getQueryParam('match_day_id'),
             $request->getQueryParam('team_id')
-        );
-        return (new Response(200))->withJson(
-            $this->matchRepository->findMatches($filter)
-        );
+        )));
     }
 }

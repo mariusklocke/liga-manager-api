@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
+use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class TeamQueryController
 {
+    use ResponseFactoryTrait;
+
     /** @var TeamRepository */
     private $repository;
 
@@ -17,28 +20,28 @@ class TeamQueryController
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findAllTeams() : Response
+    public function findAllTeams(): ResponseInterface
     {
-        return (new Response(200))->withJson($this->repository->findAllTeams());
+        return $this->createResponse(200, $this->repository->findAllTeams());
     }
 
     /**
      * @param string $teamId
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findTeamById(string $teamId) : Response
+    public function findTeamById(string $teamId): ResponseInterface
     {
-        return (new Response(200))->withJson($this->repository->findTeamById($teamId));
+        return $this->createResponse(200, $this->repository->findTeamById($teamId));
     }
 
     /**
      * @param string $seasonId
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findTeamsBySeasonId(string $seasonId) : Response
+    public function findTeamsBySeasonId(string $seasonId): ResponseInterface
     {
-        return (new Response(200))->withJson($this->repository->findTeamsBySeasonId($seasonId));
+        return $this->createResponse(200, $this->repository->findTeamsBySeasonId($seasonId));
     }
 }

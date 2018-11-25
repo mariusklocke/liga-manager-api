@@ -8,40 +8,40 @@ use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\InputParser;
 use HexagonalPlayground\Application\Value\TeamIdPair;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
-use Slim\Http\Response;
 
 class TournamentCommandController extends CommandController
 {
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function create(Request $request) : Response
+    public function create(Request $request): ResponseInterface
     {
         $name = $request->getParsedBodyParam('name');
         $this->assertString('name', $name);
         $id   = $this->commandBus->execute(new CreateTournamentCommand($name));
-        return (new Response(200))->withJson(['id' => $id]);
+        return $this->createResponse(200, ['id' => $id]);
     }
 
     /**
      * @param string $id
-     * @return Response
+     * @return ResponseInterface
      */
-    public function delete(string $id)
+    public function delete(string $id): ResponseInterface
     {
         $this->commandBus->execute(new DeleteTournamentCommand($id));
-        return new Response(204);
+        return $this->createResponse(204);
     }
 
     /**
      * @param string $tournamentId
      * @param int $round
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function setRound(string $tournamentId, int $round, Request $request)
+    public function setRound(string $tournamentId, int $round, Request $request): ResponseInterface
     {
         $teamIdPairs = $request->getParsedBodyParam('team_pairs');
         $datePeriod  = $request->getParsedBodyParam('date_period');
@@ -57,6 +57,6 @@ class TournamentCommandController extends CommandController
 
         $command = new SetTournamentRoundCommand($tournamentId, $round, $teamIdPairs, $datePeriod);
         $this->commandBus->execute($command);
-        return new Response(204);
+        return $this->createResponse(204);
     }
 }

@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
+use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class TournamentQueryController
 {
+    use ResponseFactoryTrait;
+
     /** @var TournamentRepository */
     private $repository;
 
@@ -20,28 +23,28 @@ class TournamentQueryController
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findAllTournaments() : Response
+    public function findAllTournaments(): ResponseInterface
     {
-        return (new Response(200))->withJson($this->repository->findAllTournaments());
+        return $this->createResponse(200, $this->repository->findAllTournaments());
     }
 
     /**
      * @param string $id
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findTournamentById(string $id) : Response
+    public function findTournamentById(string $id): ResponseInterface
     {
-        return (new Response(200))->withJson($this->repository->findTournamentById($id));
+        return $this->createResponse(200, $this->repository->findTournamentById($id));
     }
 
     /**
      * @param string $tournamentId
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findRounds(string $tournamentId): Response
+    public function findRounds(string $tournamentId): ResponseInterface
     {
-        return (new Response(200))->withJson($this->repository->findRounds($tournamentId));
+        return $this->createResponse(200, $this->repository->findRounds($tournamentId));
     }
 }

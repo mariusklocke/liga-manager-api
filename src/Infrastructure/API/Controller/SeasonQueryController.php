@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
+use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class SeasonQueryController
 {
+    use ResponseFactoryTrait;
+
     /** @var SeasonRepository */
     private $seasonRepository;
 
@@ -17,37 +20,37 @@ class SeasonQueryController
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findAllSeasons() : Response
+    public function findAllSeasons(): ResponseInterface
     {
-        return (new Response(200))->withJson($this->seasonRepository->findAllSeasons());
+        return $this->createResponse(200, $this->seasonRepository->findAllSeasons());
     }
 
     /**
      * @param string $seasonId
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findSeasonById(string $seasonId) : Response
+    public function findSeasonById(string $seasonId): ResponseInterface
     {
-        return (new Response(200))->withJson($this->seasonRepository->findSeasonById($seasonId));
+        return $this->createResponse(200, $this->seasonRepository->findSeasonById($seasonId));
     }
 
     /**
      * @param string $seasonId
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findRanking(string $seasonId) : Response
+    public function findRanking(string $seasonId): ResponseInterface
     {
-        return (new Response(200))->withJson($this->seasonRepository->findRanking($seasonId));
+        return $this->createResponse(200, $this->seasonRepository->findRanking($seasonId));
     }
 
     /**
      * @param string $seasonId
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findMatchDays(string $seasonId): Response
+    public function findMatchDays(string $seasonId): ResponseInterface
     {
-        return (new Response())->withJson($this->seasonRepository->findMatchDays($seasonId));
+        return $this->createResponse(200, $this->seasonRepository->findMatchDays($seasonId));
     }
 }

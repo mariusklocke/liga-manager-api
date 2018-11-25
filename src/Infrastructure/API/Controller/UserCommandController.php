@@ -7,22 +7,22 @@ use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Command\DeleteUserCommand;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
-use Slim\Http\Response;
 
 class UserCommandController extends CommandController
 {
-    public function changePassword(Request $request)
+    public function changePassword(Request $request): ResponseInterface
     {
         $newPassword = $request->getParsedBodyParam('new_password');
         $this->assertString('new_password', $newPassword);
 
         $command = new ChangeUserPasswordCommand($newPassword);
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
-        return new Response(204);
+        return $this->createResponse(204);
     }
 
-    public function createUser(Request $request)
+    public function createUser(Request $request): ResponseInterface
     {
         $data = $request->getParsedBody();
         $this->assertString('email', $data['email']);
@@ -42,21 +42,21 @@ class UserCommandController extends CommandController
         );
 
         $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
-        return (new Response(200))->withJson(['id' => $id]);
+        return $this->createResponse(200, ['id' => $id]);
     }
 
-    public function deleteUser(Request $request, string $id): Response
+    public function deleteUser(Request $request, string $id): ResponseInterface
     {
         $command = new DeleteUserCommand($id);
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
-        return new Response(204);
+        return $this->createResponse(204);
     }
 
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function sendPasswordResetMail(Request $request): Response
+    public function sendPasswordResetMail(Request $request): ResponseInterface
     {
         $email      = $request->getParsedBodyParam('email');
         $targetPath = $request->getParsedBodyParam('target_path');
@@ -66,6 +66,6 @@ class UserCommandController extends CommandController
 
         $targetUri = $request->getUri()->withPath($targetPath);
         $this->commandBus->execute(new SendPasswordResetMailCommand($email, $targetUri));
-        return new Response(204);
+        return $this->createResponse(204);
     }
 }

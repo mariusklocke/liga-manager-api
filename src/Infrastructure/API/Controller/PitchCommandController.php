@@ -5,16 +5,16 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
-use Slim\Http\Response;
 
 class PitchCommandController extends CommandController
 {
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function create(Request $request) : Response
+    public function create(Request $request): ResponseInterface
     {
         $latitude  = $request->getParsedBodyParam('location_latitude');
         $longitude = $request->getParsedBodyParam('location_longitude');
@@ -26,15 +26,15 @@ class PitchCommandController extends CommandController
         $command  = new CreatePitchCommand($label, (float)$longitude, (float)$latitude);
         $id = $this->commandBus->execute($command);
 
-        return (new Response(200))->withJson(['id' => $id]);
+        return $this->createResponse(200, ['id' => $id]);
     }
 
     /**
      * @param string $pitchId
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function updateContact(string $pitchId, Request $request): Response
+    public function updateContact(string $pitchId, Request $request): ResponseInterface
     {
         $firstName = $request->getParsedBodyParam('first_name');
         $lastName  = $request->getParsedBodyParam('last_name');
@@ -54,6 +54,6 @@ class PitchCommandController extends CommandController
             $email
         ));
 
-        return new Response(204);
+        return $this->createResponse(204);
     }
 }

@@ -4,14 +4,16 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Permission\IsAdmin;
+use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
 use HexagonalPlayground\Infrastructure\Persistence\Read\UserRepository;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
-use Slim\Http\Response;
 
 class UserQueryController
 {
     use UserAware;
+    use ResponseFactoryTrait;
 
     /** @var UserRepository */
     private $userRepository;
@@ -28,24 +30,24 @@ class UserQueryController
      * Finds all registered users
      *
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findAllUsers(Request $request): Response
+    public function findAllUsers(Request $request): ResponseInterface
     {
         $user = $this->getUserFromRequest($request);
         IsAdmin::check($user);
 
-        return (new Response(200))->withJson($this->userRepository->findAllUsers());
+        return $this->createResponse(200, $this->userRepository->findAllUsers());
     }
 
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function getAuthenticatedUser(Request $request): Response
+    public function getAuthenticatedUser(Request $request): ResponseInterface
     {
         $user = $this->getUserFromRequest($request);
-        return (new Response(200))->withJson([
+        return $this->createResponse(200, [
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'teams' => $user->getTeamIds(),

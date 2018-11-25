@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Controller;
 
+use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class PitchQueryController
 {
+    use ResponseFactoryTrait;
+
     /** @var PitchRepository */
     private $pitchRepository;
 
@@ -18,18 +21,18 @@ class PitchQueryController
 
     /**
      * @param string $pitchId
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findPitchById(string $pitchId) : Response
+    public function findPitchById(string $pitchId): ResponseInterface
     {
-        return (new Response(200))->withJson($this->pitchRepository->findPitchById($pitchId));
+        return $this->createResponse(200, $this->pitchRepository->findPitchById($pitchId));
     }
 
     /**
-     * @return Response
+     * @return ResponseInterface
      */
-    public function findAllPitches() : Response
+    public function findAllPitches(): ResponseInterface
     {
-        return (new Response(200))->withJson($this->pitchRepository->findAllPitches());
+        return $this->createResponse(200, $this->pitchRepository->findAllPitches());
     }
 }
