@@ -55,7 +55,7 @@ class RouteProvider
             })->add($auth);
 
             $app->delete('/teams/{id}', function ($request, $response, $args) use ($container) {
-                return (new TeamCommandController($container['commandBus']))->delete($args['id']);
+                return (new TeamCommandController($container['commandBus']))->delete($request, $args['id']);
             })->add($auth);
 
             $app->get('/seasons', function () use ($container) {
@@ -105,7 +105,7 @@ class RouteProvider
             })->add($auth);
 
             $app->post('/seasons/{id}/start', function ($request, $response, $args) use ($container) {
-                return (new SeasonCommandController($container['commandBus']))->start($args['id']);
+                return (new SeasonCommandController($container['commandBus']))->start($request, $args['id']);
             })->add($auth);
 
             $app->post('/seasons/{id}/end', function ($request, $response, $args) use ($container) {
@@ -113,7 +113,7 @@ class RouteProvider
             })->add($auth);
 
             $app->delete('/seasons/{id}', function ($request, $response, $args) use ($container) {
-                return (new SeasonCommandController($container['commandBus']))->delete($args['id']);
+                return (new SeasonCommandController($container['commandBus']))->delete($request, $args['id']);
             })->add($auth);
 
             $app->get('/seasons/{id}/match_days', function ($request, $response, $args) use ($container) {
@@ -145,7 +145,7 @@ class RouteProvider
             })->add($auth);
 
             $app->delete('/seasons/{season_id}/teams/{team_id}', function ($request, $response, $args) use ($container) {
-                return (new SeasonCommandController($container['commandBus']))->removeTeam($args['season_id'], $args['team_id']);
+                return (new SeasonCommandController($container['commandBus']))->removeTeam($request, $args['season_id'], $args['team_id']);
             })->add($auth);
 
             $app->post('/seasons', function ($request) use ($container) {

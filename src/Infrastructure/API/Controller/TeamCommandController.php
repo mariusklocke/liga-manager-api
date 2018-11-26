@@ -12,12 +12,14 @@ use Slim\Http\Request;
 class TeamCommandController extends CommandController
 {
     /**
+     * @param Request $request
      * @param string $teamId
      * @return ResponseInterface
      */
-    public function delete(string $teamId): ResponseInterface
+    public function delete(Request $request, string $teamId): ResponseInterface
     {
-        $this->commandBus->execute(new DeleteTeamCommand($teamId));
+        $command = new DeleteTeamCommand($teamId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
 

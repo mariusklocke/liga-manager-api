@@ -53,7 +53,8 @@ class LoadFixturesCommand extends Command
         $years = ['17/18', '18/19', '19/20'];
         $ids   = [];
         foreach ($years as $year) {
-            $ids[] = $this->commandBus->execute(new CreateSeasonCommand('Season ' . $year));
+            $command = new CreateSeasonCommand('Season ' . $year);
+            $ids[] = $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
         }
 
         return $ids;
@@ -124,7 +125,8 @@ class LoadFixturesCommand extends Command
     {
         $command = new CreateMatchesForSeasonCommand($seasonId, $this->generateMatchDayDates($teamCount));
         $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
-        $this->commandBus->execute(new StartSeasonCommand($seasonId));
+        $command = new StartSeasonCommand($seasonId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
     }
 
     private function generateMatchDayDates(int $teamCount): array

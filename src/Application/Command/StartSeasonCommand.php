@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Application\Command;
 
 class StartSeasonCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $seasonId;
 

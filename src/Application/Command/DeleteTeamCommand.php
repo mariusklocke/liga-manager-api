@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Application\Command;
 
 class DeleteTeamCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $teamId;
 

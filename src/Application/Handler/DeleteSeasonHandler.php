@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 
 class DeleteSeasonHandler
@@ -22,6 +23,7 @@ class DeleteSeasonHandler
 
     public function __invoke(DeleteSeasonCommand $command)
     {
+        IsAdmin::check($command->getAuthenticatedUser());
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->clearMatchDays();
         $season->clearTeams();

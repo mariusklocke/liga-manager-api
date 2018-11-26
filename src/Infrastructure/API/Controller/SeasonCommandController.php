@@ -26,7 +26,8 @@ class SeasonCommandController extends CommandController
     {
         $name = $request->getParsedBodyParam('name');
         $this->assertString('name', $name);
-        $id   = $this->commandBus->execute(new CreateSeasonCommand($name));
+        $command = new CreateSeasonCommand($name);
+        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(200, ['id' => $id]);
     }
 
@@ -51,12 +52,14 @@ class SeasonCommandController extends CommandController
     }
 
     /**
+     * @param Request $request
      * @param string $seasonId
      * @return ResponseInterface
      */
-    public function start(string $seasonId): ResponseInterface
+    public function start(Request $request, string $seasonId): ResponseInterface
     {
-        $this->commandBus->execute(new StartSeasonCommand($seasonId));
+        $command = new StartSeasonCommand($seasonId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
 
@@ -73,12 +76,14 @@ class SeasonCommandController extends CommandController
     }
 
     /**
+     * @param Request $request
      * @param string $seasonId
      * @return ResponseInterface
      */
-    public function delete(string $seasonId) : ResponseInterface
+    public function delete(Request $request, string $seasonId) : ResponseInterface
     {
-        $this->commandBus->execute(new DeleteSeasonCommand($seasonId));
+        $command = new DeleteSeasonCommand($seasonId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
 
@@ -96,13 +101,15 @@ class SeasonCommandController extends CommandController
     }
 
     /**
+     * @param Request $request
      * @param string $seasonId
      * @param string $teamId
      * @return ResponseInterface
      */
-    public function removeTeam(string $seasonId, string $teamId): ResponseInterface
+    public function removeTeam(Request $request, string $seasonId, string $teamId): ResponseInterface
     {
-        $this->commandBus->execute(new RemoveTeamFromSeasonCommand($seasonId, $teamId));
+        $command = new RemoveTeamFromSeasonCommand($seasonId, $teamId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
 

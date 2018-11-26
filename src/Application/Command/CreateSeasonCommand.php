@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Application\Command;
 
 class CreateSeasonCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $name;
 
