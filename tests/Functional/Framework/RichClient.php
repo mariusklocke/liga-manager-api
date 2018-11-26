@@ -311,6 +311,15 @@ class RichClient
         ));
     }
 
+    public function cancelMatch(string $matchId): void
+    {
+        $this->handleErrors($this->slimClient->post(
+            '/api/matches/' . $matchId . '/cancellation',
+            [],
+            $this->headers
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);

@@ -63,14 +63,7 @@ class Match
      */
     public function submitResult(MatchResult $matchResult, User $user) : Match
     {
-        $competition = $this->matchDay->getCompetition();
-        if ($competition instanceof Season) {
-            if ($this->matchResult !== null) {
-                $competition->getRanking()->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
-            }
-            $competition->getRanking()->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
-        }
-        $this->matchResult = $matchResult;
+        $this->setResult($matchResult);
         Publisher::getInstance()->publish(MatchResultSubmitted::create(
             $this->id,
             $matchResult->getHomeScore(),
@@ -93,13 +86,10 @@ class Match
 
     /**
      * @return Match
-     * @throws DomainException
      */
     public function cancel() : Match
     {
-        if ($this->matchResult !== null) {
-            throw new DomainException('Cannot cancel a match with a submitted result');
-        }
+        $this->setResult(null);
         $this->cancelledAt = new DateTimeImmutable();
         return $this;
     }
@@ -145,6 +135,20 @@ class Match
     public function toString() : string
     {
         return sprintf('%s - %s', $this->homeTeam->getName(), $this->guestTeam->getName());
+    }
+
+    private function setResult(?MatchResult $matchResult): void
+    {
+        $competition = $this->matchDay->getCompetition();
+        if ($competition instanceof Season) {
+            if ($this->matchResult !== null) {
+                $competition->getRanking()->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+            }
+            if ($matchResult !== null) {
+                $competition->getRanking()->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
+            }
+        }
+        $this->matchResult = $matchResult;
     }
 
     private function __clone()

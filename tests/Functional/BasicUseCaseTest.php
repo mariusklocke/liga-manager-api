@@ -249,10 +249,12 @@ class BasicUseCaseTest extends TestCase
 
     /**
      * @param string $seasonId
+     * @param string $matchId
+     * @return string
      * @depends testRankingCanBeFound
      * @depends testMatchResultCanBeSubmitted
      */
-    public function testPenaltiesAffectRanking(string $seasonId)
+    public function testPenaltiesAffectRanking(string $seasonId, string $matchId)
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
 
@@ -273,6 +275,32 @@ class BasicUseCaseTest extends TestCase
         $ranking = $this->client->getSeasonRanking($seasonId);
         $topRank = $ranking->positions[0];
         self::assertEquals($leaderTeamId, $topRank->team_id);
+
+        return $matchId;
+    }
+
+    /**
+     * @param string $matchId
+     * @depends testPenaltiesAffectRanking
+     */
+    public function testMatchCanBeCancelled(string $matchId)
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+
+        $match = $this->client->getMatch($matchId);
+        self::assertObjectHasAttribute('cancelled_at', $match);
+        self::assertNull($match->cancelled_at);
+        self::assertNotNull($match->home_score);
+        self::assertNotNull($match->guest_score);
+
+        $this->client->cancelMatch($matchId);
+        $match = $this->client->getMatch($matchId);
+
+        self::assertObjectHasAttribute('cancelled_at', $match);
+        self::assertNotNull($match->cancelled_at);
+        self::assertLessThan(5, time() - strtotime($match->cancelled_at));
+        self::assertNull($match->home_score);
+        self::assertNull($match->guest_score);
     }
 
     /**
