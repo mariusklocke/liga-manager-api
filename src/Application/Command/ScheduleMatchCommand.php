@@ -7,6 +7,8 @@ use DateTimeImmutable;
 
 class ScheduleMatchCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $matchId;
     /** @var DateTimeImmutable */

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
+use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 
@@ -29,7 +30,7 @@ class LocateMatchHandler
     {
         $match = $this->matchRepository->find($command->getMatchId());
         $pitch = $this->pitchRepository->find($command->getPitchId());
-
+        CanChangeMatch::check($command->getAuthenticatedUser(), $match);
         $match->locate($pitch);
     }
 }

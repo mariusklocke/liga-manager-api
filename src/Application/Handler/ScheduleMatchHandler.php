@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 
 class ScheduleMatchHandler
@@ -27,6 +28,7 @@ class ScheduleMatchHandler
     public function __invoke(ScheduleMatchCommand $command)
     {
         $match = $this->matchRepository->find($command->getMatchId());
+        CanChangeMatch::check($command->getAuthenticatedUser(), $match);
         $match->schedule($command->getKickoff());
     }
 }
