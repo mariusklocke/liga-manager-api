@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Domain\Pitch;
 
@@ -26,6 +27,7 @@ class CreatePitchHandler
      */
     public function __invoke(CreatePitchCommand $command)
     {
+        IsAdmin::check($command->getAuthenticatedUser());
         $pitch = new Pitch($command->getLabel(), $command->getLocation());
         $this->pitchRepository->save($pitch);
         return $pitch->getId();

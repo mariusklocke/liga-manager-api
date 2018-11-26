@@ -174,7 +174,7 @@ class RouteProvider
             });
 
             $app->delete('/tournaments/{id}', function ($request, $response, $args) use ($container) {
-                return (new TournamentCommandController($container['commandBus']))->delete($args['id']);
+                return (new TournamentCommandController($container['commandBus']))->delete($request, $args['id']);
             })->add($auth);
 
             $app->get('/users/me', function ($request) use ($container) {

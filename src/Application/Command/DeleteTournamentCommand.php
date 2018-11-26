@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Application\Command;
 
 class DeleteTournamentCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $tournamentId;
 

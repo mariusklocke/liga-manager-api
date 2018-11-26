@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Domain\ContactPerson;
 use HexagonalPlayground\Domain\Pitch;
@@ -26,6 +27,7 @@ class UpdatePitchContactHandler
      */
     public function __invoke(UpdatePitchContactCommand $command)
     {
+        IsAdmin::check($command->getAuthenticatedUser());
         /** @var Pitch $pitch */
         $pitch = $this->pitchRepository->find($command->getPitchId());
         $contact = new ContactPerson(

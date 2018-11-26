@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
@@ -40,6 +41,8 @@ class SetTournamentRoundHandler
      */
     public function __invoke(SetTournamentRoundCommand $command)
     {
+        IsAdmin::check($command->getAuthenticatedUser());
+
         /** @var Tournament $tournament */
         $tournament = $this->tournamentRepository->find($command->getTournamentId());
         $tournament->clearMatchesForRound($command->getRound());

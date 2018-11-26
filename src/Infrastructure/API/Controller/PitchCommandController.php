@@ -23,8 +23,8 @@ class PitchCommandController extends CommandController
         $this->assertNumber('location_longitude', $longitude);
         $this->assertString('label', $label);
 
-        $command  = new CreatePitchCommand($label, (float)$longitude, (float)$latitude);
-        $id = $this->commandBus->execute($command);
+        $command = new CreatePitchCommand($label, (float)$longitude, (float)$latitude);
+        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(200, ['id' => $id]);
     }
@@ -46,13 +46,8 @@ class PitchCommandController extends CommandController
         $this->assertString('phone', $phone);
         $this->assertString('email', $email);
 
-        $this->commandBus->execute(new UpdatePitchContactCommand(
-            $pitchId,
-            $firstName,
-            $lastName,
-            $phone,
-            $email
-        ));
+        $command = new UpdatePitchContactCommand($pitchId, $firstName, $lastName, $phone, $email);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);
     }

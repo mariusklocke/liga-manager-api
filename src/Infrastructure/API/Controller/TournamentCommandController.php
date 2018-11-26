@@ -21,17 +21,20 @@ class TournamentCommandController extends CommandController
     {
         $name = $request->getParsedBodyParam('name');
         $this->assertString('name', $name);
-        $id   = $this->commandBus->execute(new CreateTournamentCommand($name));
+        $command = new CreateTournamentCommand($name);
+        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(200, ['id' => $id]);
     }
 
     /**
+     * @param Request $request
      * @param string $id
      * @return ResponseInterface
      */
-    public function delete(string $id): ResponseInterface
+    public function delete(Request $request, string $id): ResponseInterface
     {
-        $this->commandBus->execute(new DeleteTournamentCommand($id));
+        $command = new DeleteTournamentCommand($id);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
 
@@ -56,7 +59,7 @@ class TournamentCommandController extends CommandController
         $datePeriod = InputParser::parseDatePeriod($datePeriod);
 
         $command = new SetTournamentRoundCommand($tournamentId, $round, $teamIdPairs, $datePeriod);
-        $this->commandBus->execute($command);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
 }

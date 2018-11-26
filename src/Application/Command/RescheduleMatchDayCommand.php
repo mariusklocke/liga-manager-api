@@ -7,6 +7,8 @@ use HexagonalPlayground\Application\Value\DatePeriod;
 
 class RescheduleMatchDayCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $matchDayId;
 

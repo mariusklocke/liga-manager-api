@@ -64,9 +64,8 @@ class LoadFixturesCommand extends Command
     {
         $colors = ['Red', 'Blue'];
         foreach ($colors as $color) {
-            $this->commandBus->execute(new CreatePitchCommand(
-                'Pitch ' . $color, 12.34, 23.45
-            ));
+            $command = new CreatePitchCommand('Pitch ' . $color, 12.34, 23.45);
+            $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
         }
     }
 

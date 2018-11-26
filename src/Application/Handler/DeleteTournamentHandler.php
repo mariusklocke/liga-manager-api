@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 
 class DeleteTournamentHandler
@@ -24,6 +25,7 @@ class DeleteTournamentHandler
      */
     public function __invoke(DeleteTournamentCommand $command)
     {
+        IsAdmin::check($command->getAuthenticatedUser());
         $tournament = $this->repository->find($command->getTournamentId());
         $this->repository->delete($tournament);
     }

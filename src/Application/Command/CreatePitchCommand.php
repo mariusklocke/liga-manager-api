@@ -7,6 +7,8 @@ use HexagonalPlayground\Domain\GeographicLocation;
 
 class CreatePitchCommand implements CommandInterface
 {
+    use AuthenticationAware;
+
     /** @var string */
     private $label;
 

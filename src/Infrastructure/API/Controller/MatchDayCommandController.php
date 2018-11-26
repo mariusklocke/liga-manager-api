@@ -16,7 +16,7 @@ class MatchDayCommandController extends CommandController
         $this->assertArray('date_period', $datePeriod);
 
         $command = new RescheduleMatchDayCommand($matchDayId, InputParser::parseDatePeriod($datePeriod));
-        $this->commandBus->execute($command);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);
     }
