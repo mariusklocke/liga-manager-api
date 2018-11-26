@@ -53,7 +53,8 @@ class MatchCommandController extends CommandController
         $kickoff = $request->getParsedBodyParam('kickoff');
         $this->assertString('kickoff', $kickoff);
 
-        $this->commandBus->execute(new ScheduleMatchCommand($matchId, InputParser::parseDateTime($kickoff)));
+        $command = new ScheduleMatchCommand($matchId, InputParser::parseDateTime($kickoff));
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);
     }
@@ -68,7 +69,8 @@ class MatchCommandController extends CommandController
         $pitchId = $request->getParsedBodyParam('pitch_id');
         $this->assertString('pitch_id', $pitchId);
 
-        $this->commandBus->execute(new LocateMatchCommand($matchId, $pitchId));
+        $command = new LocateMatchCommand($matchId, $pitchId);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);
     }
