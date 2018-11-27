@@ -46,6 +46,10 @@ class RouteProvider
                 return (new TeamCommandController($container['commandBus']))->updateContact($args['id'], $request);
             })->add($auth);
 
+            $app->put('/teams/{id}/name', function ($request, $response, $args) use ($container) {
+                return (new TeamCommandController($container['commandBus']))->rename($args['id'], $request);
+            })->add($auth);
+
             $app->get('/seasons/{id}/teams', function ($request, $response, $args) use ($container) {
                 return (new TeamQueryController($container[TeamRepository::class]))->findTeamsBySeasonId($args['id']);
             });

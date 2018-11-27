@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Event\Publisher;
+use HexagonalPlayground\Domain\Event\TeamRenamed;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\Uuid;
 
@@ -15,9 +17,6 @@ class Team
     /** @var string */
     private $name;
 
-    /** @var string[] */
-    private $previousNames;
-
     /** @var DateTimeImmutable */
     private $createdAt;
 
@@ -26,11 +25,8 @@ class Team
 
     public function __construct(string $name)
     {
-        Assert::minLength($name, 1, "A team's name cannot be blank");
-        Assert::maxLength($name, 255, "A team's name cannot exceed 255 characters");
         $this->id = Uuid::create();
-        $this->name = $name;
-        $this->previousNames = [];
+        $this->setName($name);
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -52,13 +48,14 @@ class Team
 
     /**
      * @param string $newName
-     * @return Team
      */
-    public function rename(string $newName) : Team
+    public function rename(string $newName)
     {
-        $this->previousNames[] = $this->name;
-        $this->name = $newName;
-        return $this;
+        $oldName = $this->name;
+        if ($newName !== $oldName) {
+            $this->setName($newName);
+            Publisher::getInstance()->publish(TeamRenamed::create($this->id, $oldName, $newName));
+        }
     }
 
     /**
@@ -76,5 +73,16 @@ class Team
     public function setContact(ContactPerson $person): void
     {
         $this->contact = $person;
+    }
+
+    /**
+     * @param string $name
+     * @throws DomainException
+     */
+    private function setName(string $name): void
+    {
+        Assert::minLength($name, 1, "A team's name cannot be blank");
+        Assert::maxLength($name, 255, "A team's name cannot exceed 255 characters");
+        $this->name = $name;
     }
 }

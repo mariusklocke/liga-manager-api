@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Command\DeleteTeamCommand;
+use HexagonalPlayground\Application\Command\RenameTeamCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
@@ -55,6 +56,22 @@ class TeamCommandController extends CommandController
         $this->assertString('email', $email);
 
         $command = new UpdateTeamContactCommand($teamId, $firstName, $lastName, $phone, $email);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+
+        return $this->createResponse(204);
+    }
+
+    /**
+     * @param string $teamId
+     * @param Request $request
+     * @return ResponseInterface
+     */
+    public function rename(string $teamId, Request $request): ResponseInterface
+    {
+        $name = $request->getParsedBodyParam('name');
+        $this->assertString('name', $name);
+
+        $command = new RenameTeamCommand($teamId, $name);
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);

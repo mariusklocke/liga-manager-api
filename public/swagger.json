@@ -1060,6 +1060,51 @@
         "summary": "Finds a single team by id"
       }
     },
+    "/teams/{id}/name": {
+      "put": {
+        "operationId": "renameTeam",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
+        "parameters": [
+          {
+            "description": "ID of team",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "renameTeamBody",
+            "schema": {
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 255
+                }
+              },
+              "required": ["name"],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          },
+          "404": {
+            "description": "Team could not be found"
+          }
+        },
+        "tags": [
+          "team"
+        ],
+        "summary": "Renames a team"
+      }
+    },
     "/teams/{id}/contact": {
       "put": {
         "operationId": "updateTeamContact",
