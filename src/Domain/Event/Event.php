@@ -6,8 +6,10 @@ namespace HexagonalPlayground\Domain\Event;
 use DateTimeImmutable;
 use DateTimeInterface;
 use HexagonalPlayground\Domain\Util\Uuid;
+use JsonSerializable;
+use stdClass;
 
-abstract class Event
+abstract class Event implements JsonSerializable
 {
     /** @var string */
     private $id;
@@ -18,7 +20,7 @@ abstract class Event
     /** @var array */
     protected $payload;
 
-    public function __construct(string $id, DateTimeImmutable $occurredAt, array $payload)
+    private function __construct(string $id, DateTimeImmutable $occurredAt, array $payload)
     {
         $this->id         = $id;
         $this->occurredAt = $occurredAt;
@@ -58,4 +60,17 @@ abstract class Event
      * @return string
      */
     abstract public function getName(): string;
+
+    /**
+     * @return stdClass
+     */
+    public function jsonSerialize()
+    {
+        $object             = new stdClass();
+        $object->id         = $this->id;
+        $object->occurredAt = $this->occurredAt->getTimestamp();
+        $object->payload    = $this->payload;
+        $object->type       = $this->getName();
+        return $object;
+    }
 }

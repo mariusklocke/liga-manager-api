@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
-use HexagonalPlayground\Application\EventSerializer;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Subscriber;
 use Redis;
@@ -13,17 +12,12 @@ class RedisEventPublisher implements Subscriber
     /** @var Redis */
     private $redis;
 
-    /** @var EventSerializer */
-    private $serializer;
-
     /**
      * @param Redis $redis
-     * @param EventSerializer $serializer
      */
-    public function __construct(Redis $redis, EventSerializer $serializer)
+    public function __construct(Redis $redis)
     {
         $this->redis = $redis;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -33,7 +27,7 @@ class RedisEventPublisher implements Subscriber
      */
     public function handle(Event $event): void
     {
-        $json = json_encode($this->serializer->serialize($event));
+        $json = json_encode($event);
         if ($json === false) {
             throw new \RuntimeException(json_last_error_msg(), json_last_error());
         }

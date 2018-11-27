@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Event\MatchCancelled;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Event\MatchLocated;
 use HexagonalPlayground\Domain\Event\MatchResultSubmitted;
@@ -96,9 +97,15 @@ class Match
     public function cancel(string $reason): void
     {
         Assert::maxLength($reason, 255, 'Cancellation reason exceeds maximum length of 255');
+        $previousResult = $this->matchResult;
         $this->setResult(null);
         $this->cancelledAt = new DateTimeImmutable();
         $this->cancellationReason = $reason;
+        Publisher::getInstance()->publish(MatchCancelled::create(
+            $this->id,
+            $this->cancellationReason,
+            $previousResult
+        ));
     }
 
     /**

@@ -5,13 +5,9 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use Doctrine\ORM\EntityManager;
 use HexagonalPlayground\Application\Bus\HandlerResolver;
-use HexagonalPlayground\Application\EventSerializer;
 use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Application\EventStoreSubscriber;
 use HexagonalPlayground\Domain\Event\Publisher;
-use HexagonalPlayground\Domain\Event\MatchLocated;
-use HexagonalPlayground\Domain\Event\MatchResultSubmitted;
-use HexagonalPlayground\Domain\Event\MatchScheduled;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineEventStore;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -36,7 +32,7 @@ class EventServiceProvider implements ServiceProviderInterface
                 new EventStoreSubscriber($container[EventStoreInterface::class])
             );
             Publisher::getInstance()->addSubscriber(
-                new RedisEventPublisher($container[Redis::class], $container[EventSerializer::class])
+                new RedisEventPublisher($container[Redis::class])
             );
 
             return $handlerResolver;
@@ -51,19 +47,6 @@ class EventServiceProvider implements ServiceProviderInterface
         };
         $container[EventStoreInterface::class] = function () use ($container) {
             return new DoctrineEventStore($container[EntityManager::class]);
-        };
-        $container[EventSerializer::class] = function () {
-            return new EventSerializer([
-                'match:result:submitted' => function ($id, $occurredAt, $payload) {
-                    return new MatchResultSubmitted($id, $occurredAt, $payload);
-                },
-                'match:located' => function ($id, $occurredAt, $payload) {
-                    return new MatchLocated($id, $occurredAt, $payload);
-                },
-                'match:scheduled' => function ($id, $occurredAt, $payload) {
-                    return new MatchScheduled($id, $occurredAt, $payload);
-                }
-            ]);
         };
     }
 }
