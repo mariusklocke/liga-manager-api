@@ -1501,6 +1501,9 @@
           "format": "date-time",
           "type": "string"
         },
+        "cancellation_reason": {
+          "type": "string"
+        },
         "guest_score": {
           "type": "integer"
         },
