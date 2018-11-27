@@ -290,15 +290,20 @@ class BasicUseCaseTest extends TestCase
         $match = $this->client->getMatch($matchId);
         self::assertObjectHasAttribute('cancelled_at', $match);
         self::assertNull($match->cancelled_at);
+        self::assertObjectHasAttribute('cancellation_reason', $match);
+        self::assertNull($match->cancellation_reason);
         self::assertNotNull($match->home_score);
         self::assertNotNull($match->guest_score);
 
-        $this->client->cancelMatch($matchId);
+        $reason = 'Team did not show up';
+        $this->client->cancelMatch($matchId, $reason);
         $match = $this->client->getMatch($matchId);
 
         self::assertObjectHasAttribute('cancelled_at', $match);
-        self::assertNotNull($match->cancelled_at);
-        self::assertLessThan(5, time() - strtotime($match->cancelled_at));
+        $cancelledAt = new \DateTimeImmutable($match->cancelled_at);
+        self::assertLessThan(5, time() - $cancelledAt->getTimestamp());
+        self::assertObjectHasAttribute('cancellation_reason', $match);
+        self::assertEquals($reason, $match->cancellation_reason);
         self::assertNull($match->home_score);
         self::assertNull($match->guest_score);
     }

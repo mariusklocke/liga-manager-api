@@ -311,11 +311,11 @@ class RichClient
         ));
     }
 
-    public function cancelMatch(string $matchId): void
+    public function cancelMatch(string $matchId, string $reason): void
     {
         $this->handleErrors($this->slimClient->post(
             '/api/matches/' . $matchId . '/cancellation',
-            [],
+            ['reason' => $reason],
             $this->headers
         ));
     }

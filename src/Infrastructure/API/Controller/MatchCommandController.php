@@ -38,7 +38,10 @@ class MatchCommandController extends CommandController
      */
     public function cancel(Request $request, string $matchId): ResponseInterface
     {
-        $command = new CancelMatchCommand($matchId);
+        $reason = $request->getParsedBodyParam('reason');
+        $this->assertString('reason', $reason);
+
+        $command = new CancelMatchCommand($matchId, $reason);
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }

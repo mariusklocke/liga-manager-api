@@ -10,9 +10,13 @@ class CancelMatchCommand implements CommandInterface
     /** @var string */
     private $matchId;
 
-    public function __construct(string $matchId)
+    /** @var string */
+    private $reason;
+
+    public function __construct(string $matchId, string $reason)
     {
         $this->matchId = $matchId;
+        $this->reason  = $reason;
     }
 
     /**
@@ -21,5 +25,13 @@ class CancelMatchCommand implements CommandInterface
     public function getMatchId(): string
     {
         return $this->matchId;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReason(): string
+    {
+        return $this->reason;
     }
 }

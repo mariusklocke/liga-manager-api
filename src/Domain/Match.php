@@ -8,6 +8,7 @@ use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Event\MatchLocated;
 use HexagonalPlayground\Domain\Event\MatchResultSubmitted;
 use HexagonalPlayground\Domain\Event\MatchScheduled;
+use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\Uuid;
 
 class Match
@@ -35,6 +36,9 @@ class Match
 
     /** @var DateTimeImmutable|null */
     private $cancelledAt;
+
+    /** @var string|null */
+    private $cancellationReason;
 
     /**
      * Create a new match
@@ -64,6 +68,8 @@ class Match
     public function submitResult(MatchResult $matchResult, User $user) : Match
     {
         $this->setResult($matchResult);
+        $this->cancelledAt = null;
+        $this->cancellationReason = null;
         Publisher::getInstance()->publish(MatchResultSubmitted::create(
             $this->id,
             $matchResult->getHomeScore(),
@@ -85,13 +91,14 @@ class Match
     }
 
     /**
-     * @return Match
+     * @param string $reason
      */
-    public function cancel() : Match
+    public function cancel(string $reason): void
     {
+        Assert::maxLength($reason, 255, 'Cancellation reason exceeds maximum length of 255');
         $this->setResult(null);
         $this->cancelledAt = new DateTimeImmutable();
-        return $this;
+        $this->cancellationReason = $reason;
     }
 
     /**

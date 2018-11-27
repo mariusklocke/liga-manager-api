@@ -29,6 +29,6 @@ class CancelMatchHandler
     {
         $match = $this->matchRepository->find($command->getMatchId());
         CanChangeMatch::check($command->getAuthenticatedUser(), $match);
-        $match->cancel();
+        $match->cancel($command->getReason());
     }
 }
