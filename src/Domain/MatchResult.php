@@ -38,6 +38,15 @@ class MatchResult
     }
 
     /**
+     * @param MatchResult $other
+     * @return bool
+     */
+    public function equals(MatchResult $other): bool
+    {
+        return $this->getHomeScore() === $other->getHomeScore() && $this->getGuestScore() === $other->getGuestScore();
+    }
+
+    /**
      * @param int $value
      * @throws DomainException
      */

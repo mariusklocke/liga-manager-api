@@ -64,10 +64,13 @@ class Match
     /**
      * @param MatchResult $matchResult
      * @param User $user
-     * @return Match
      */
-    public function submitResult(MatchResult $matchResult, User $user) : Match
+    public function submitResult(MatchResult $matchResult, User $user)
     {
+        if (null !== $this->matchResult && $this->matchResult->equals($matchResult)) {
+            return;
+        }
+
         $this->setResult($matchResult);
         $this->cancelledAt = null;
         $this->cancellationReason = null;
@@ -77,7 +80,6 @@ class Match
             $matchResult->getGuestScore(),
             $user->getId()
         ));
-        return $this;
     }
 
     /**
