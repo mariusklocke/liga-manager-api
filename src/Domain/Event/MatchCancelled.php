@@ -15,13 +15,13 @@ class MatchCancelled extends Event
         return 'match:cancelled';
     }
 
-    public static function create(string $matchId, string $reason, MatchResult $previousResult)
+    public static function create(string $matchId, string $reason, ?MatchResult $previousResult)
     {
         return self::createFromPayload([
             'matchId' => $matchId,
             'reason'  => $reason,
-            'homeScore' => $previousResult->getHomeScore(),
-            'guestScore' => $previousResult->getGuestScore()
+            'homeScore' => null !== $previousResult ? $previousResult->getHomeScore() : null,
+            'guestScore' => null !== $previousResult ? $previousResult->getGuestScore() : null
         ]);
     }
 }
