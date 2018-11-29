@@ -25,9 +25,16 @@ docker run --link mariadb --rm dadarek/wait-for-dependencies mariadb:3306
 docker run --link mariadb --link redis --link maildev --rm ${MYSQL_ENV_ARGS} ${EMAIL_ENV_ARGS} -e REDIS_HOST=redis \
     mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit"
 
-docker run --link mariadb --link redis --link maildev --rm ${MYSQL_ENV_ARGS} ${EMAIL_ENV_ARGS} -e REDIS_HOST=redis \
-    -e ENABLE_XDEBUG=1 \
-    mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit"
+if  [[ $1 = "-c" ]]; then
+    # Run tests with coverage
+    docker run --link mariadb --link redis --link maildev --rm ${MYSQL_ENV_ARGS} ${EMAIL_ENV_ARGS} -e REDIS_HOST=redis \
+        -e ENABLE_XDEBUG=1 -v $PWD/coverage:/coverage \
+        mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit --coverage-clover /coverage/clover.xml"
+
+    # Upload coverage data
+    docker run --rm -v $PWD:/var/www/api -e TRAVIS -e TRAVIS_JOB_ID \
+        kielabokkie/coveralls-phpcov sh -c "cd /var/www/api && php-coveralls -v -x coverage/clover.xml -o coverage/coveralls.json"
+fi
 
 # Cleanup
 docker rm -f mariadb redis maildev > /dev/null
