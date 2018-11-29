@@ -11,6 +11,69 @@
   },
   "basePath": "/api",
   "paths": {
+    "/events": {
+      "get": {
+        "operationId": "getLatestEvents",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "start_date",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "in": "query",
+            "name": "end_date",
+            "required": false,
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of events",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/event"
+              },
+              "type": "array"
+            }
+          }
+        },
+        "tags": ["event"],
+        "summary": "Returns a list of latest events"
+      }
+    },
+    "/events/{id}": {
+      "get": {
+        "operationId": "getEvent",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An event object",
+            "schema": {
+              "$ref": "#/definitions/event"
+            }
+          }
+        },
+        "tags": ["event"],
+        "summary": "Returns a single event"
+      }
+    },
     "/matches": {
       "get": {
         "operationId": "getMatches",
@@ -1804,6 +1867,32 @@
         "to": {
           "type": "string",
           "format": "date"
+        }
+      }
+    },
+    "event": {
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "occurred_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "payload": {
+          "type": "object"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "match:located",
+            "match:result:submitted",
+            "match:scheduled",
+            "match:cancelled",
+            "ranking:penalty:added",
+            "ranking:penalty:removed",
+            "team:renamed"
+          ]
         }
       }
     }

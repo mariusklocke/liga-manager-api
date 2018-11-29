@@ -50,5 +50,8 @@ class ReadRepositoryProvider implements ServiceProviderInterface
         $container[UserRepository::class] = function () use ($container) {
             return new UserRepository($container[ReadDbAdapterInterface::class]);
         };
+        $container[EventRepository::class] = function () use ($container) {
+            return new EventRepository($container[ReadDbAdapterInterface::class]);
+        };
     }
 }

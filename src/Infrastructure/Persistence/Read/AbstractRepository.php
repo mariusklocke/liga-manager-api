@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 class AbstractRepository
 {
+    const MYSQL_DATE_FORMAT = 'Y-m-d H:i:s';
+
     /** @var ReadDbAdapterInterface */
     private $db;
 
@@ -13,7 +15,10 @@ class AbstractRepository
         $this->db = $readDbAdapter;
     }
 
-    protected function getDb()
+    /**
+     * @return ReadDbAdapterInterface
+     */
+    protected function getDb(): ReadDbAdapterInterface
     {
         return $this->db;
     }

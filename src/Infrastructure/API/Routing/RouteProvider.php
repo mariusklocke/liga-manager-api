@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Routing;
 
+use HexagonalPlayground\Infrastructure\API\Controller\EventQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchDayCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
@@ -18,6 +19,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
+use HexagonalPlayground\Infrastructure\Persistence\Read\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
@@ -211,6 +213,14 @@ class RouteProvider
                     $request
                 );
             })->add($auth);
+
+            $app->get('/events', function ($request, $response, $args) use ($container) {
+                return (new EventQueryController($container[EventRepository::class]))->findLatestEvents($request);
+            });
+
+            $app->get('/events/{id}', function ($request, $response, $args) use ($container) {
+                return (new EventQueryController($container[EventRepository::class]))->findEventById($args['id']);
+            });
         });
     }
 }
