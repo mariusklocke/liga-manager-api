@@ -15,7 +15,7 @@ class Ranking
     /** @var Season */
     private $season;
 
-    /** @var DateTimeImmutable */
+    /** @var DateTimeImmutable|null */
     private $updatedAt;
 
     /** @var Collection|RankingPosition[] */
