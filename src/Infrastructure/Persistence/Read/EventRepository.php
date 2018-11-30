@@ -14,7 +14,8 @@ class EventRepository extends AbstractRepository
      */
     public function findEventById(string $id): array
     {
-        $row = $this->getDb()->fetchFirstRow('SELECT * FROM events WHERE id = ?', [$id]);
+        $query = $this->getBaseQuery() . ' WHERE id = ?';
+        $row   = $this->getDb()->fetchFirstRow($query, [$id]);
         if (null === $row) {
             throw new NotFoundException('Cannot find event');
         }
@@ -27,7 +28,7 @@ class EventRepository extends AbstractRepository
      */
     public function findLatestEvents(EventFilter $filter): array
     {
-        $query = 'SELECT * FROM events';
+        $query = $this->getBaseQuery();
         list($conditions, $params) = $this->buildConditions($filter);
         if (strlen($conditions) > 0 && count($params) > 0) {
             $query .= ' WHERE ' . $conditions;
@@ -62,6 +63,15 @@ class EventRepository extends AbstractRepository
             implode(' AND ', $conditions),
             $parameters
         ];
+    }
+
+    /**
+     * @return string
+     */
+    private function getBaseQuery(): string
+    {
+        $occurredAt = $this->getDateFormat('occurred_at');
+        return "SELECT id, $occurredAt, payload, type FROM events";
     }
 
     /**

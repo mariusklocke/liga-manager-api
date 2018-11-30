@@ -14,7 +14,7 @@ class TeamRepository extends AbstractRepository
     {
         return array_map(function($row) {
             return $this->reconstructEmbeddedObject($row, 'contact');
-        }, $this->getDb()->fetchAll('SELECT * FROM `teams`'));
+        }, $this->getDb()->fetchAll($this->getBaseQuery()));
     }
 
     /**
@@ -23,7 +23,8 @@ class TeamRepository extends AbstractRepository
      */
     public function findTeamById(string $id): array
     {
-        $team = $this->getDb()->fetchFirstRow('SELECT * FROM `teams` WHERE `id` = ?', [$id]);
+        $query = $this->getBaseQuery() . ' WHERE id = ?';
+        $team  = $this->getDb()->fetchFirstRow($query, [$id]);
         if (null === $team) {
             throw new NotFoundException('Cannot find team');
         }
@@ -37,12 +38,21 @@ class TeamRepository extends AbstractRepository
      */
     public function findTeamsBySeasonId(string $seasonId)
     {
-        $query = <<<'SQL'
-  SELECT t.* FROM seasons_teams_link st JOIN `teams` t ON t.id = st.team_id WHERE st.season_id = ?
-SQL;
-
+        $query = $this->getBaseQuery() . ' JOIN seasons_teams_link ON id = team_id WHERE season_id = ?';
         return array_map(function ($row) {
             return $this->reconstructEmbeddedObject($row, 'contact');
         }, $this->getDb()->fetchAll($query, [$seasonId]));
+    }
+
+    /**
+     * @return string
+     */
+    private function getBaseQuery(): string
+    {
+        $createdAt = $this->getDateFormat('created_at');
+        $query = <<<SQL
+  SELECT id, name, $createdAt, contact_email, contact_first_name, contact_last_name, contact_phone FROM teams
+SQL;
+        return $query;
     }
 }

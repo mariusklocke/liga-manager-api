@@ -46,4 +46,17 @@ class AbstractRepository
         }
         return $subject;
     }
+
+    /**
+     * @param string $field
+     * @param string|null $alias
+     * @return string
+     */
+    protected function getDateFormat(string $field, string $alias = null): string
+    {
+        if (null === $alias) {
+            $alias = $field;
+        }
+        return "DATE_FORMAT($field, '%Y-%m-%dT%TZ') as $alias";
+    }
 }

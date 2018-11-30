@@ -8,20 +8,26 @@ use HexagonalPlayground\Application\Filter\MatchFilter;
 
 class MatchRepository extends AbstractRepository
 {
+    /**
+     * @param MatchFilter $filter
+     * @return array
+     */
     public function findMatches(MatchFilter $filter): array
     {
-        $query = 'SELECT m.* FROM `matches` m JOIN `match_days` md ON md.id = m.match_day_id ';
-
+        $query = $this->getBaseQuery() . ' JOIN match_days md ON md.id = m.match_day_id';
         list($conditionClause, $params) = $this->buildConditionClause($filter);
         if (strlen($conditionClause) > 0 && count($params) > 0) {
-            $query .= 'WHERE ' . $conditionClause;
+            $query .= ' WHERE ' . $conditionClause;
         }
-
         $query .= ' ORDER BY md.number ASC';
 
         return $this->getDb()->fetchAll($query, $params);
     }
 
+    /**
+     * @param MatchFilter $filter
+     * @return array
+     */
     private function buildConditionClause(MatchFilter $filter)
     {
         $conditions = [];
@@ -56,11 +62,27 @@ class MatchRepository extends AbstractRepository
      */
     public function findMatchById(string $matchId): array
     {
-        $match = $this->getDb()->fetchFirstRow('SELECT * FROM `matches` WHERE `id` = ?', [$matchId]);
+        $query = $this->getBaseQuery() . ' WHERE m.id = ?';
+        $match = $this->getDb()->fetchFirstRow($query, [$matchId]);
         if (null === $match) {
             throw new NotFoundException('Cannot find match');
         }
 
         return $match;
+    }
+
+    /**
+     * @return string
+     */
+    private function getBaseQuery(): string
+    {
+        $kickoff     = $this->getDateFormat('m.kickoff','kickoff');
+        $cancelledAt = $this->getDateFormat('m.cancelled_at', 'cancelled_at');
+
+        return <<<SQL
+  SELECT m.id, m.match_day_id, m.home_team_id, m.guest_team_id, m.pitch_id, $kickoff, $cancelledAt,
+         m.cancellation_reason, m.home_score, m.guest_score
+  FROM matches m
+SQL;
     }
 }

@@ -46,8 +46,9 @@ class SeasonRepository extends AbstractRepository
      */
     public function findRanking(string $seasonId): array
     {
-        $ranking = $this->getDb()->fetchFirstRow(
-            'SELECT * FROM rankings WHERE season_id = ?',
+        $updatedAt = $this->getDateFormat('updated_at');
+        $ranking   = $this->getDb()->fetchFirstRow(
+            "SELECT season_id, $updatedAt FROM rankings WHERE season_id = ?",
             [$seasonId]
         );
         if (null === $ranking) {
@@ -77,9 +78,14 @@ class SeasonRepository extends AbstractRepository
      */
     private function findRankingPenalties(string $seasonId): array
     {
-        return $this->getDb()->fetchAll(
-            'SELECT * FROM ranking_penalties WHERE season_id = ? ORDER BY created_at ASC',
-            [$seasonId]
-        );
+        $createdAt = $this->getDateFormat('created_at');
+        $query     = <<<SQL
+  SELECT id, season_id, team_id, reason, points, $createdAt
+  FROM ranking_penalties
+  WHERE season_id = ?
+  ORDER BY created_at ASC
+SQL;
+
+        return $this->getDb()->fetchAll($query, [$seasonId]);
     }
 }
