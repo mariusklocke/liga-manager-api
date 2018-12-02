@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\Uuid;
 
-class User
+class User implements \JsonSerializable
 {
     const ROLE_TEAM_MANAGER = 'team_manager';
     const ROLE_ADMIN = 'admin';
@@ -166,11 +166,6 @@ class User
         Assert::oneOf($role, [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER], 'Invalid role value. Valid: [%s], Got: %s');
     }
 
-    public function getTeamIds(): array
-    {
-        return $this->teams->getKeys();
-    }
-
     /**
      * @return string
      */
@@ -211,5 +206,20 @@ class User
     {
         Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
         Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'teams' => $this->teams->getKeys(),
+            'role' => $this->role,
+            'first_name' => $this->firstName,
+            'last_name' => $this->lastName
+        ];
     }
 }

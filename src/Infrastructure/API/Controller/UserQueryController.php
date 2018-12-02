@@ -46,14 +46,6 @@ class UserQueryController
      */
     public function getAuthenticatedUser(Request $request): ResponseInterface
     {
-        $user = $this->getUserFromRequest($request);
-        return $this->createResponse(200, [
-            'id' => $user->getId(),
-            'email' => $user->getEmail(),
-            'teams' => $user->getTeamIds(),
-            'role' => $user->getRole(),
-            'first_name' => $user->getFirstName(),
-            'last_name' => $user->getLastName()
-        ]);
+        return $this->createResponse(200, $this->getUserFromRequest($request));
     }
 }
