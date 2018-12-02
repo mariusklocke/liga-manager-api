@@ -357,7 +357,7 @@ class BasicUseCaseTest extends TestCase
         $this->client->scheduleMatch($matchId, '2018-10-06');
 
         $match = $this->client->getMatch($matchId);
-        self::assertEquals('2018-10-06T00:00:00Z', $match->kickoff);
+        self::assertEquals('2018-10-06 00:00:00', $match->kickoff);
     }
 
     /**

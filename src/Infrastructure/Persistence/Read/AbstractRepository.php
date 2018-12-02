@@ -57,6 +57,6 @@ class AbstractRepository
         if (null === $alias) {
             $alias = $field;
         }
-        return "DATE_FORMAT($field, '%Y-%m-%dT%TZ') as $alias";
+        return "DATE_FORMAT($field, '%Y-%m-%d %T') as $alias";
     }
 }
