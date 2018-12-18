@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Application\EventStoreSubscriber;
 use HexagonalPlayground\Domain\Event\Publisher;
+use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineEventStore;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -39,7 +40,7 @@ class EventServiceProvider implements ServiceProviderInterface
         });
         $container[Redis::class] = function () {
             $redis = new Redis();
-            if (false === $redis->connect(getenv('REDIS_HOST'))) {
+            if (false === $redis->connect(Environment::get('REDIS_HOST'))) {
                 throw new RuntimeException('Could not connect to redis');
             }
 

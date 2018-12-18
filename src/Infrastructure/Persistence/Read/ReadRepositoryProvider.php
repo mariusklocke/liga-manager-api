@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Environment;
 use mysqli;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -22,10 +23,10 @@ class ReadRepositoryProvider implements ServiceProviderInterface
     {
         $container[ReadDbAdapterInterface::class] = function() use ($container) {
             $mysqli = new mysqli(
-                getenv('MYSQL_HOST'),
-                getenv('MYSQL_USER'),
-                getenv('MYSQL_PASSWORD'),
-                getenv('MYSQL_DATABASE')
+                Environment::get('MYSQL_HOST'),
+                Environment::get('MYSQL_USER'),
+                Environment::get('MYSQL_PASSWORD'),
+                Environment::get('MYSQL_DATABASE')
             );
             $mysqli->set_charset('utf8');
             $db = new MysqliReadDbAdapter($mysqli);

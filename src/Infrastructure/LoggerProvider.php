@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure;
 
-use Monolog\Handler\StreamHandler;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -22,12 +23,12 @@ class LoggerProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container['logger'] = function() {
-            $stream = 'php://stdout';
-            if (php_sapi_name() !== 'cli') {
-                $stream = getenv('LOG_STREAM') ?: $stream;
-            }
-            $level = Logger::toMonologLevel(getenv('LOG_LEVEL') ?: 'warning');
-            $handler = new StreamHandler(fopen($stream, 'a'), $level);
+            $level    = Logger::toMonologLevel(Environment::get('LOG_LEVEL'));
+            $filename = Environment::get('LOG_PATH') . '/app.log';
+            $handler  = new RotatingFileHandler($filename, 0, $level);
+            $handler->setFormatter(new LineFormatter(
+                "[%datetime%] %channel%.%level_name%: %message% %context%\n"
+            ));
             return new Logger('logger', [$handler]);
         };
     }

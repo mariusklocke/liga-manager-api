@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Email;
 
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -24,8 +25,8 @@ class MailServiceProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container[MailerInterface::class] = function () use ($container) {
-            $transport = new Swift_SmtpTransport(getenv('SMTP_HOST'), getenv('SMTP_PORT'));
-            list($senderAddress, $senderName) = explode(';', getenv('EMAIL_SENDER'));
+            $transport = new Swift_SmtpTransport(Environment::get('SMTP_HOST'), Environment::get('SMTP_PORT'));
+            list($senderAddress, $senderName) = explode(';', Environment::get('EMAIL_SENDER'));
             return new SwiftMailer(
                 new Swift_Mailer($transport),
                 $senderAddress,
@@ -33,7 +34,7 @@ class MailServiceProvider implements ServiceProviderInterface
             );
         };
         $container[TemplateRenderer::class] = function () use ($container) {
-            return new TemplateRenderer(getenv('APP_HOME') . '/templates');
+            return new TemplateRenderer(Environment::get('APP_HOME') . '/templates');
         };
     }
 }

@@ -13,6 +13,8 @@ ENV PHPIZE_DEPS \
     re2c
 ENV APP_HOME="/var/www/api"
 ENV JWT_SECRET_PATH="/etc/jwt"
+ENV LOG_PATH="/var/log"
+RUN chmod 777 /var/log
 
 # persistent / runtime deps
 RUN apk add --no-cache --virtual .persistent-deps openssh-keygen
@@ -37,11 +39,6 @@ RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar \
     && wget -O /usr/local/bin/composer https://getcomposer.org/composer.phar \
     && chmod +x /usr/local/bin/phpunit /usr/local/bin/composer
 
-# Workaround for writing logs to stdout
-# https://bugs.php.net/bug.php?id=71880
-ENV LOG_STREAM="/tmp/stdout"
-RUN mkfifo $LOG_STREAM && chmod 777 $LOG_STREAM
-
 # Install application sources
 RUN mkdir -p ${APP_HOME}
 WORKDIR ${APP_HOME}
@@ -57,4 +54,4 @@ COPY tests tests
 COPY docker/php/entrypoint.sh docker/php/entrypoint.sh
 RUN chmod +x bin/* docker/php/entrypoint.sh
 ENTRYPOINT ["docker/php/entrypoint.sh"]
-CMD php-fpm | tail -f $LOG_STREAM
+CMD php-fpm

@@ -17,6 +17,7 @@ use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\Environment;
 use PDO;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -37,7 +38,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
         $container[EntityManager::class] = function() use ($container) {
             $config = Setup::createConfiguration(false);
             $driver = new SimplifiedXmlDriver([
-                getenv('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain"
+                Environment::get('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain"
             ]);
             $driver->setGlobalBasename('global');
             $config->setMetadataDriverImpl($driver);
@@ -45,9 +46,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             $config->setDefaultRepositoryClassName(BaseRepository::class);
             $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
             $pdo = new PDO(
-                'mysql:host=' . getenv('MYSQL_HOST') . ';dbname=' . getenv('MYSQL_DATABASE'),
-                getenv('MYSQL_USER'),
-                getenv('MYSQL_PASSWORD'),
+                'mysql:host=' . Environment::get('MYSQL_HOST') . ';dbname=' . Environment::get('MYSQL_DATABASE'),
+                Environment::get('MYSQL_USER'),
+                Environment::get('MYSQL_PASSWORD'),
                 [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
             );
             $connection = DriverManager::getConnection(['pdo' => $pdo], $config);

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -ex
 
 if [ ! -d /etc/jwt ]; then
     mkdir /etc/jwt

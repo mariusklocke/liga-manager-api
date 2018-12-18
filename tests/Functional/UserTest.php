@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\Functional;
 
+use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Tests\Functional\Framework\ApiException;
 use HexagonalPlayground\Tests\Functional\Framework\EmailClientInterface;
 use HexagonalPlayground\Tests\Functional\Framework\MaildevClient;
@@ -15,7 +16,7 @@ class UserTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->emailClient = new MaildevClient(getenv('MAILDEV_URI') ?: 'http://localhost');
+        $this->emailClient = new MaildevClient(Environment::get('MAILDEV_URI'));
     }
 
     public function testPasswordResetSendsAnEmail()

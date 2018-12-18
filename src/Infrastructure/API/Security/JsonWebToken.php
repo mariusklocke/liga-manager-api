@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Firebase\JWT\JWT;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Security\TokenInterface;
+use HexagonalPlayground\Infrastructure\Environment;
 use UnexpectedValueException;
 
 final class JsonWebToken implements TokenInterface
@@ -94,7 +95,7 @@ final class JsonWebToken implements TokenInterface
     private static function getSecret(): string
     {
         if (null === self::$secret) {
-            self::$secret = file_get_contents(getenv('JWT_SECRET_PATH') . '/secret.key');
+            self::$secret = file_get_contents(Environment::get('JWT_SECRET_PATH') . '/secret.key');
         }
         return self::$secret;
     }
