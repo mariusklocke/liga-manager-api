@@ -1,4 +1,4 @@
-FROM php:7.2-fpm-alpine
+FROM php:7.3-fpm-alpine
 
 ENV PHPIZE_DEPS \
     autoconf \
@@ -30,7 +30,7 @@ RUN set -xe \
     && docker-php-ext-install bcmath mysqli pcntl pdo_mysql mbstring \
     && pecl install apcu \
     && pecl install redis \
-    && pecl install xdebug \
+    && pecl install xdebug-beta \
     && apk del .build-deps \
     && rm -rf /tmp/*
 
