@@ -130,13 +130,13 @@ class LoadFixturesCommand extends Command
 
     private function generateMatchDayDates(int $teamCount): array
     {
-        $start = new \DateTimeImmutable();
-        $end   = new \DateTimeImmutable();
+        $start = new \DateTimeImmutable('next saturday');
+        $end   = $start->modify('next sunday');
         $result = [];
         $n = $teamCount - 1;
         for ($i = 0; $i < $n; $i++) {
-            $start = $start->modify('next saturday');
-            $end   = $end->modify('next sunday');
+            $start = $start->modify('+7 days');
+            $end   = $end->modify('+7 days');
             $result[] = new DatePeriod($start, $end);
         }
 
