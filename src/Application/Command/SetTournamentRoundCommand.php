@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
+use HexagonalPlayground\Application\InputParser;
+use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Application\Value\DatePeriod;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Value\TeamIdPair;
@@ -23,8 +25,19 @@ class SetTournamentRoundCommand implements CommandInterface
     /** @var DatePeriod */
     private $datePeriod;
 
-    public function __construct(string $tournamentId, int $round, array $teamIdPairs, DatePeriod $datePeriod)
+    /**
+     * @param string $tournamentId
+     * @param int $round
+     * @param array $teamIdPairs
+     * @param array $datePeriod
+     */
+    public function __construct($tournamentId, $round, $teamIdPairs, $datePeriod)
     {
+        TypeAssert::assertString($tournamentId, 'tournamentId');
+        TypeAssert::assertInteger($round, 'round');
+        TypeAssert::assertArray($teamIdPairs, 'teamIdPairs');
+        TypeAssert::assertArray($datePeriod, 'datePeriod');
+
         if (empty($teamIdPairs)) {
             throw new InvalidInputException('Team pairs cannot be empty');
         }
@@ -35,18 +48,12 @@ class SetTournamentRoundCommand implements CommandInterface
 
         $this->tournamentId = $tournamentId;
         $this->round        = $round;
-        $this->datePeriod   = $datePeriod;
+        $this->datePeriod   = InputParser::parseDatePeriod($datePeriod);
         $this->teamIdPairs  = [];
 
-        foreach ($teamIdPairs as $pair) {
-            if (!($pair instanceof TeamIdPair)) {
-                throw new InvalidInputException(sprintf(
-                    'Invalid type for team pair. Expected: %s. Given: %s',
-                    TeamIdPair::class,
-                    get_class($pair)
-                ));
-            }
-            $this->teamIdPairs[] = $pair;
+        foreach ($teamIdPairs as $index => $pair) {
+            TypeAssert::assertArray($pair, 'teamIdPairs[' . $index . ']');
+            $this->teamIdPairs[] = TeamIdPair::fromArray($pair);
         }
     }
 

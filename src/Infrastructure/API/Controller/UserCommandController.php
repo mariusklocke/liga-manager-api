@@ -15,33 +15,21 @@ class UserCommandController extends CommandController
 {
     public function changePassword(Request $request): ResponseInterface
     {
-        $newPassword = $request->getParsedBodyParam('new_password');
-        $this->assertString('new_password', $newPassword);
-
-        $command = new ChangeUserPasswordCommand($newPassword);
+        $command = new ChangeUserPasswordCommand($request->getParsedBodyParam('new_password'));
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
 
     public function createUser(Request $request): ResponseInterface
     {
-        $data = $request->getParsedBody();
-        $this->assertString('email', $data['email']);
-        $this->assertString('password', $data['password']);
-        $this->assertString('first_name', $data['first_name']);
-        $this->assertString('last_name', $data['last_name']);
-        $this->assertString('role', $data['role']);
-        $this->assertArray('teams', $data['teams']);
-        
         $command = new CreateUserCommand(
-            $data['email'],
-            $data['password'],
-            $data['first_name'],
-            $data['last_name'],
-            $data['role'],
-            $data['teams']
+            $request->getParsedBodyParam('email'),
+            $request->getParsedBodyParam('password'),
+            $request->getParsedBodyParam('first_name'),
+            $request->getParsedBodyParam('last_name'),
+            $request->getParsedBodyParam('role'),
+            $request->getParsedBodyParam('teams')
         );
-
         $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(200, ['id' => $id]);
     }
@@ -59,14 +47,11 @@ class UserCommandController extends CommandController
      */
     public function sendPasswordResetMail(Request $request): ResponseInterface
     {
-        $email      = $request->getParsedBodyParam('email');
-        $targetPath = $request->getParsedBodyParam('target_path');
-
-        $this->assertString('email', $email);
-        $this->assertString('target_path', $targetPath);
-
-        $targetUri = $request->getUri()->withPath($targetPath);
-        $this->commandBus->execute(new SendPasswordResetMailCommand($email, $targetUri));
+        $this->commandBus->execute(new SendPasswordResetMailCommand(
+            $request->getParsedBodyParam('email'),
+            $request->getUri(),
+            $request->getParsedBodyParam('target_path')
+        ));
         return $this->createResponse(204);
     }
 

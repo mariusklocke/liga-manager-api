@@ -87,8 +87,8 @@ class TypeAssert
         $message = sprintf(
             'Invalid parameter type for %s. Expected: %s. Given: %s',
             $name,
-            gettype($value),
-            $expectedType
+            $expectedType,
+            gettype($value)
         );
         return new InvalidInputException($message);
     }

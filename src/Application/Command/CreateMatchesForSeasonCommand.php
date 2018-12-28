@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
+use HexagonalPlayground\Application\InputParser;
+use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Application\Value\DatePeriod;
-use HexagonalPlayground\Application\Exception\InvalidInputException;
 
 class CreateMatchesForSeasonCommand implements CommandInterface
 {
@@ -17,19 +18,19 @@ class CreateMatchesForSeasonCommand implements CommandInterface
     private $matchDaysDates;
 
     /**
-     * CreateMatchesForSeasonCommand constructor.
      * @param string $seasonId
-     * @param iterable|DatePeriod[] $matchDaysDates
+     * @param array  $dates
      */
-    public function __construct(string $seasonId, iterable $matchDaysDates)
+    public function __construct($seasonId, $dates)
     {
+        TypeAssert::assertString($seasonId, 'seasonId');
+        TypeAssert::assertArray($dates, 'dates');
+
         $this->seasonId = $seasonId;
         $this->matchDaysDates = [];
-        foreach ($matchDaysDates as $matchDaysDate) {
-            if (!($matchDaysDate instanceof DatePeriod)) {
-                throw new InvalidInputException('MatchDay dates have to be instances of ' . DatePeriod::class);
-            }
-            $this->matchDaysDates[] = $matchDaysDate;
+        foreach ($dates as $index => $datePeriod) {
+            TypeAssert::assertArray($datePeriod, 'dates[' . $index . ']');
+            $this->matchDaysDates[] = InputParser::parseDatePeriod($datePeriod);
         }
     }
 

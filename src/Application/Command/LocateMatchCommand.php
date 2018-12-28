@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
+use HexagonalPlayground\Application\TypeAssert;
+
 class LocateMatchCommand implements CommandInterface
 {
     use AuthenticationAware;
@@ -12,8 +14,14 @@ class LocateMatchCommand implements CommandInterface
     /** @var string */
     private $pitchId;
 
-    public function __construct(string $matchId, string $pitchId)
+    /**
+     * @param string $matchId
+     * @param string $pitchId
+     */
+    public function __construct($matchId, $pitchId)
     {
+        TypeAssert::assertString($matchId, 'matchId');
+        TypeAssert::assertString($pitchId, 'pitchId');
         $this->matchId = $matchId;
         $this->pitchId = $pitchId;
     }

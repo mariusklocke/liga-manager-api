@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
+use HexagonalPlayground\Application\TypeAssert;
 use Psr\Http\Message\UriInterface;
 
 class SendPasswordResetMailCommand implements CommandInterface
@@ -15,12 +16,16 @@ class SendPasswordResetMailCommand implements CommandInterface
 
     /**
      * @param string $email
-     * @param UriInterface $targetUri
+     * @param UriInterface $baseUri
+     * @param string $targetPath
      */
-    public function __construct(string $email, UriInterface $targetUri)
+    public function __construct($email, UriInterface $baseUri, $targetPath)
     {
+        TypeAssert::assertString($email, 'email');
+        TypeAssert::assertString($targetPath, 'targetPath');
+
         $this->email     = $email;
-        $this->targetUri = $targetUri;
+        $this->targetUri = $baseUri->withPath($targetPath);
     }
 
     /**

@@ -10,7 +10,6 @@ use HexagonalPlayground\Infrastructure\API\Security\UserAware;
 abstract class CommandController
 {
     use UserAware;
-    use TypeAssert;
     use ResponseFactoryTrait;
 
     /** @var CommandBus */

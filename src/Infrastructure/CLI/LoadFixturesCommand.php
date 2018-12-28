@@ -137,7 +137,7 @@ class LoadFixturesCommand extends Command
         for ($i = 0; $i < $n; $i++) {
             $start = $start->modify('+7 days');
             $end   = $end->modify('+7 days');
-            $result[] = new DatePeriod($start, $end);
+            $result[] = ['from' => $start->format(DATE_ATOM), 'to' => $end->format(DATE_ATOM)];
         }
 
         return $result;

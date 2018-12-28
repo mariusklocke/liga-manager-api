@@ -6,8 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
-use HexagonalPlayground\Application\InputParser;
-use HexagonalPlayground\Application\Value\TeamIdPair;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 
@@ -19,9 +17,7 @@ class TournamentCommandController extends CommandController
      */
     public function create(Request $request): ResponseInterface
     {
-        $name = $request->getParsedBodyParam('name');
-        $this->assertString('name', $name);
-        $command = new CreateTournamentCommand($name);
+        $command = new CreateTournamentCommand($request->getParsedBodyParam('name'));
         $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(200, ['id' => $id]);
     }
@@ -46,19 +42,12 @@ class TournamentCommandController extends CommandController
      */
     public function setRound(string $tournamentId, int $round, Request $request): ResponseInterface
     {
-        $teamIdPairs = $request->getParsedBodyParam('team_pairs');
-        $datePeriod  = $request->getParsedBodyParam('date_period');
-        $this->assertArray('team_pairs', $teamIdPairs);
-        $this->assertArray('date_period', $datePeriod);
-
-        $teamIdPairs = array_map(function ($pair) {
-            $this->assertArray('team_pairs[]', $pair);
-            return TeamIdPair::fromArray($pair);
-        }, $teamIdPairs);
-
-        $datePeriod = InputParser::parseDatePeriod($datePeriod);
-
-        $command = new SetTournamentRoundCommand($tournamentId, $round, $teamIdPairs, $datePeriod);
+        $command = new SetTournamentRoundCommand(
+            $tournamentId,
+            $round,
+            $request->getParsedBodyParam('team_pairs'),
+            $request->getParsedBodyParam('date_period')
+        );
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }

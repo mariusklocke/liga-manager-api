@@ -12,7 +12,6 @@ use HexagonalPlayground\Application\Command\EndSeasonCommand;
 use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
-use HexagonalPlayground\Application\InputParser;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 
@@ -24,9 +23,7 @@ class SeasonCommandController extends CommandController
      */
     public function createSeason(Request $request): ResponseInterface
     {
-        $name = $request->getParsedBodyParam('name');
-        $this->assertString('name', $name);
-        $command = new CreateSeasonCommand($name);
+        $command = new CreateSeasonCommand($request->getParsedBodyParam('name'));
         $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(200, ['id' => $id]);
     }
@@ -38,15 +35,7 @@ class SeasonCommandController extends CommandController
      */
     public function createMatches(string $seasonId, Request $request): ResponseInterface
     {
-        $matchDays = $request->getParsedBodyParam('dates');
-        $this->assertArray('dates', $matchDays);
-
-        $matchDays = array_map(function ($matchDay) {
-            $this->assertArray('dates[]', $matchDay);
-            return InputParser::parseDatePeriod($matchDay);
-        }, $matchDays);
-
-        $command = new CreateMatchesForSeasonCommand($seasonId, $matchDays);
+        $command = new CreateMatchesForSeasonCommand($seasonId, $request->getParsedBodyParam('dates'));
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
@@ -120,13 +109,12 @@ class SeasonCommandController extends CommandController
      */
     public function addRankingPenalty(Request $request, string $seasonId): ResponseInterface
     {
-        $teamId = $request->getParsedBodyParam('team_id');
-        $reason = $request->getParsedBodyParam('reason');
-        $points = $request->getParsedBodyParam('points');
-        $this->assertString('team_id', $teamId);
-        $this->assertString('reason', $reason);
-        $this->assertInteger('points', $points);
-        $command = new AddRankingPenaltyCommand($seasonId, $teamId, $reason, $points);
+        $command = new AddRankingPenaltyCommand(
+            $seasonId,
+            $request->getParsedBodyParam('team_id'),
+            $request->getParsedBodyParam('reason'),
+            $request->getParsedBodyParam('points')
+        );
         $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(200, ['id' => $id]);

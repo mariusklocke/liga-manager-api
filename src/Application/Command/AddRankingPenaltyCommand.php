@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
+use HexagonalPlayground\Application\TypeAssert;
+
 class AddRankingPenaltyCommand implements CommandInterface
 {
     use AuthenticationAware;
@@ -25,8 +27,12 @@ class AddRankingPenaltyCommand implements CommandInterface
      * @param string $reason
      * @param int $points
      */
-    public function __construct(string $seasonId, string $teamId, string $reason, int $points)
+    public function __construct($seasonId, $teamId, $reason, $points)
     {
+        TypeAssert::assertString($seasonId, 'seasonId');
+        TypeAssert::assertString($teamId, 'teamId');
+        TypeAssert::assertString($reason, 'reason');
+        TypeAssert::assertInteger($points, 'points');
         $this->seasonId = $seasonId;
         $this->teamId = $teamId;
         $this->reason = $reason;

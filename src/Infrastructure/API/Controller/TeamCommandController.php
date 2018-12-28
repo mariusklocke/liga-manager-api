@@ -30,10 +30,7 @@ class TeamCommandController extends CommandController
      */
     public function create(Request $request): ResponseInterface
     {
-        $name = $request->getParsedBodyParam('name');
-        $this->assertString('name', $name);
-
-        $command = new CreateTeamCommand($name);
+        $command = new CreateTeamCommand($request->getParsedBodyParam('name'));
         $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(200, ['id' => $id]);
     }
@@ -45,17 +42,13 @@ class TeamCommandController extends CommandController
      */
     public function updateContact(string $teamId, Request $request): ResponseInterface
     {
-        $firstName = $request->getParsedBodyParam('first_name');
-        $lastName  = $request->getParsedBodyParam('last_name');
-        $phone     = $request->getParsedBodyParam('phone');
-        $email     = $request->getParsedBodyParam('email');
-
-        $this->assertString('first_name', $firstName);
-        $this->assertString('last_name', $lastName);
-        $this->assertString('phone', $phone);
-        $this->assertString('email', $email);
-
-        $command = new UpdateTeamContactCommand($teamId, $firstName, $lastName, $phone, $email);
+        $command = new UpdateTeamContactCommand(
+            $teamId,
+            $request->getParsedBodyParam('first_name'),
+            $request->getParsedBodyParam('last_name'),
+            $request->getParsedBodyParam('phone'),
+            $request->getParsedBodyParam('email')
+        );
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);
@@ -68,10 +61,7 @@ class TeamCommandController extends CommandController
      */
     public function rename(string $teamId, Request $request): ResponseInterface
     {
-        $name = $request->getParsedBodyParam('name');
-        $this->assertString('name', $name);
-
-        $command = new RenameTeamCommand($teamId, $name);
+        $command = new RenameTeamCommand($teamId, $request->getParsedBodyParam('name'));
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);

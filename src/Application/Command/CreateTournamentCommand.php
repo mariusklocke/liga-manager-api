@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
+use HexagonalPlayground\Application\TypeAssert;
+
 class CreateTournamentCommand implements CommandInterface
 {
     use AuthenticationAware;
@@ -10,8 +12,12 @@ class CreateTournamentCommand implements CommandInterface
     /** @var string */
     private $name;
 
-    public function __construct(string $name)
+    /**
+     * @param string $name
+     */
+    public function __construct($name)
     {
+        TypeAssert::assertString($name, 'name');
         $this->name = $name;
     }
 

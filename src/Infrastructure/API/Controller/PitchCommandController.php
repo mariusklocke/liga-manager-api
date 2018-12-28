@@ -16,14 +16,11 @@ class PitchCommandController extends CommandController
      */
     public function create(Request $request): ResponseInterface
     {
-        $latitude  = $request->getParsedBodyParam('location_latitude');
-        $longitude = $request->getParsedBodyParam('location_longitude');
-        $label     = $request->getParsedBodyParam('label');
-        $this->assertNumber('location_latitude', $latitude);
-        $this->assertNumber('location_longitude', $longitude);
-        $this->assertString('label', $label);
-
-        $command = new CreatePitchCommand($label, (float)$longitude, (float)$latitude);
+        $command = new CreatePitchCommand(
+            $request->getParsedBodyParam('label'),
+            $request->getParsedBodyParam('location_longitude'),
+            $request->getParsedBodyParam('location_latitude')
+        );
         $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(200, ['id' => $id]);
@@ -36,17 +33,13 @@ class PitchCommandController extends CommandController
      */
     public function updateContact(string $pitchId, Request $request): ResponseInterface
     {
-        $firstName = $request->getParsedBodyParam('first_name');
-        $lastName  = $request->getParsedBodyParam('last_name');
-        $phone     = $request->getParsedBodyParam('phone');
-        $email     = $request->getParsedBodyParam('email');
-
-        $this->assertString('first_name', $firstName);
-        $this->assertString('last_name', $lastName);
-        $this->assertString('phone', $phone);
-        $this->assertString('email', $email);
-
-        $command = new UpdatePitchContactCommand($pitchId, $firstName, $lastName, $phone, $email);
+        $command = new UpdatePitchContactCommand(
+            $pitchId,
+            $request->getParsedBodyParam('first_name'),
+            $request->getParsedBodyParam('last_name'),
+            $request->getParsedBodyParam('phone'),
+            $request->getParsedBodyParam('email')
+        );
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);

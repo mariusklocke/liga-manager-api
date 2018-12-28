@@ -7,7 +7,6 @@ use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
-use HexagonalPlayground\Application\InputParser;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 
@@ -20,12 +19,11 @@ class MatchCommandController extends CommandController
      */
     public function submitResult(string $matchId, Request $request): ResponseInterface
     {
-        $homeScore = $request->getParsedBodyParam('home_score');
-        $guestScore = $request->getParsedBodyParam('guest_score');
-        $this->assertInteger('home_score', $homeScore);
-        $this->assertInteger('guest_score', $guestScore);
-
-        $command = new SubmitMatchResultCommand($matchId, $homeScore, $guestScore);
+        $command = new SubmitMatchResultCommand(
+            $matchId,
+            $request->getParsedBodyParam('home_score'),
+            $request->getParsedBodyParam('guest_score')
+        );
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);
@@ -38,10 +36,7 @@ class MatchCommandController extends CommandController
      */
     public function cancel(Request $request, string $matchId): ResponseInterface
     {
-        $reason = $request->getParsedBodyParam('reason');
-        $this->assertString('reason', $reason);
-
-        $command = new CancelMatchCommand($matchId, $reason);
+        $command = new CancelMatchCommand($matchId, $request->getParsedBodyParam('reason'));
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }
@@ -53,10 +48,7 @@ class MatchCommandController extends CommandController
      */
     public function schedule(string $matchId, Request $request): ResponseInterface
     {
-        $kickoff = $request->getParsedBodyParam('kickoff');
-        $this->assertString('kickoff', $kickoff);
-
-        $command = new ScheduleMatchCommand($matchId, InputParser::parseDateTime($kickoff));
+        $command = new ScheduleMatchCommand($matchId, $request->getParsedBodyParam('kickoff'));
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);
@@ -69,10 +61,7 @@ class MatchCommandController extends CommandController
      */
     public function locate(string $matchId, Request $request): ResponseInterface
     {
-        $pitchId = $request->getParsedBodyParam('pitch_id');
-        $this->assertString('pitch_id', $pitchId);
-
-        $command = new LocateMatchCommand($matchId, $pitchId);
+        $command = new LocateMatchCommand($matchId, $request->getParsedBodyParam('pitch_id'));
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);
