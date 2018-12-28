@@ -12,6 +12,6 @@ class ChangeUserPasswordHandler
      */
     public function __invoke(ChangeUserPasswordCommand $command)
     {
-        $command->getAuthenticatedUser()->changePassword($command->getNewPassword());
+        $command->getAuthenticatedUser()->setPassword($command->getNewPassword());
     }
 }

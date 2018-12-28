@@ -123,4 +123,36 @@ class UserTest extends TestCase
 
         self::assertNull($exception);
     }
+
+    public function testUserCanBeUpdated()
+    {
+        $this->client->setBasicAuth('admin@example.com', '123456');
+        $user = $this->client->createUser([
+            'email' => 'who@example.com',
+            'password' => 'secret',
+            'first_name' => 'My Name Is',
+            'last_name' => 'Who',
+            'role' => 'admin',
+            'teams' => []
+        ]);
+        self::assertResponseHasValidId($user);
+
+        $this->client->updateUser($user->id, [
+            'first_name' => 'Homer',
+            'last_name'  => 'Simpson',
+            'email'      => 'homer.simpson@example.com',
+            'role'       => 'team_manager'
+        ]);
+
+        $this->client->setBasicAuth('homer.simpson@example.com', 'secret');
+        $user = $this->client->getAuthenticatedUser();
+        self::assertObjectHasAttribute('email', $user);
+        self::assertObjectHasAttribute('first_name', $user);
+        self::assertObjectHasAttribute('last_name', $user);
+
+        self::assertEquals('Homer', $user->first_name);
+        self::assertEquals('Simpson', $user->last_name);
+        self::assertEquals('homer.simpson@example.com', $user->email);
+        self::assertEquals('team_manager', $user->role);
+    }
 }

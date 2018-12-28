@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Command\DeleteUserCommand;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
+use HexagonalPlayground\Application\Command\UpdateUserCommand;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 
@@ -67,5 +68,33 @@ class UserCommandController extends CommandController
         $targetUri = $request->getUri()->withPath($targetPath);
         $this->commandBus->execute(new SendPasswordResetMailCommand($email, $targetUri));
         return $this->createResponse(204);
+    }
+
+    /**
+     * @param string $userId
+     * @param Request $request
+     * @return ResponseInterface
+     */
+    public function updateUser(string $userId, Request $request): ResponseInterface
+    {
+        $command = new UpdateUserCommand(
+            $this->resolveUserAlias($userId, $request),
+            $request->getParsedBodyParam('email'),
+            $request->getParsedBodyParam('first_name'),
+            $request->getParsedBodyParam('last_name'),
+            $request->getParsedBodyParam('role'),
+            $request->getParsedBodyParam('team_ids')
+        );
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+
+        return $this->createResponse(204);
+    }
+
+    private function resolveUserAlias(string $userId, Request $request): string
+    {
+        if ($userId === 'me') {
+            return $this->getUserFromRequest($request)->getId();
+        }
+        return $userId;
     }
 }

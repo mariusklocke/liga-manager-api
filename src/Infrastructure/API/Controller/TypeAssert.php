@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Infrastructure\API\Controller;
 
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 
+/**
+ * @deprecated Use Application layer class instead
+ */
 trait TypeAssert
 {
     /**

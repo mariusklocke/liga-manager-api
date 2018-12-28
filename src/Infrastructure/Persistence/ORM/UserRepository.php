@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
@@ -39,5 +40,22 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
 
         return $user;
+    }
+
+    /**
+     * @param string $email
+     * @throws UniquenessException
+     */
+    public function assertEmailDoesNotExist(string $email): void
+    {
+        try {
+            $this->findByEmail($email);
+        } catch (NotFoundException $e) {
+            return;
+        }
+
+        throw new UniquenessException(
+            sprintf("A user with email address %s already exists", $email)
+        );
     }
 }

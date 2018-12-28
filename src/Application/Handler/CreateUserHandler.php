@@ -4,12 +4,10 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateUserCommand;
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Permission\CanManageTeam;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
-use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\User;
 
@@ -41,7 +39,7 @@ class CreateUserHandler
             IsAdmin::check($command->getAuthenticatedUser());
         }
 
-        $this->assertEmailDoesNotExist($command->getEmail());
+        $this->userRepository->assertEmailDoesNotExist($command->getEmail());
         $user = new User($command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
         $user->setRole($command->getRole());
         foreach ($command->getTeamIds() as $teamId) {
@@ -52,22 +50,5 @@ class CreateUserHandler
         }
         $this->userRepository->save($user);
         return $user->getId();
-    }
-
-    /**
-     * @param string $email
-     * @throws DomainException
-     */
-    private function assertEmailDoesNotExist(string $email)
-    {
-        try {
-            $this->userRepository->findByEmail($email);
-        } catch (NotFoundException $e) {
-            return;
-        }
-
-        throw new DomainException(
-            sprintf("A user with email address %s already exists", $email)
-        );
     }
 }

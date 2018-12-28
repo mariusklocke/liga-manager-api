@@ -43,33 +43,22 @@ class User implements \JsonSerializable
      * @param string $password
      * @param string $firstName
      * @param string $lastName
+     * @param string $role
      */
     public function __construct(
         string $email,
         string $password,
         string $firstName,
-        string $lastName
+        string $lastName,
+        string $role = self::ROLE_TEAM_MANAGER
     ) {
-        $this->validatePassword($password);
-        Assert::emailAddress($email);
-
         $this->id = Uuid::create();
-        $this->email = $email;
-        $this->password = $this->hashPassword($password);
-        $this->lastPasswordChange = null;
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
+        $this->setEmail($email);
+        $this->setPassword($password);
+        $this->setFirstName($firstName);
+        $this->setLastName($lastName);
+        $this->setRole($role);
         $this->teams = new ArrayCollection();
-        $this->role = self::ROLE_TEAM_MANAGER;
-    }
-
-    /**
-     * @param string $password
-     * @return string
-     */
-    private function hashPassword(string $password): string
-    {
-        return password_hash($password, PASSWORD_BCRYPT);
     }
 
     /**
@@ -91,11 +80,11 @@ class User implements \JsonSerializable
     /**
      * @param string $password
      */
-    public function changePassword(string $password): void
+    public function setPassword(string $password): void
     {
-        $this->validatePassword($password);
-
-        $this->password = $this->hashPassword($password);
+        Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
+        Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
+        $this->password = password_hash($password, PASSWORD_BCRYPT);
         $this->lastPasswordChange = new DateTimeImmutable();
     }
 
@@ -199,13 +188,54 @@ class User implements \JsonSerializable
     }
 
     /**
-     * @param string $password
+     * @param string $firstName
+     */
+    public function setFirstName(string $firstName): void
+    {
+        $this->firstName = $firstName;
+    }
+
+    /**
+     * @param string $lastName
+     */
+    public function setLastName(string $lastName): void
+    {
+        $this->lastName = $lastName;
+    }
+
+    /**
+     * @param string $teamId
+     */
+    public function removeFromTeam(string $teamId): void
+    {
+        $this->teams->remove($teamId);
+    }
+
+    /**
+     * @param string $email
      * @throws DomainException
      */
-    private function validatePassword(string $password): void
+    public function setEmail(string $email): void
     {
-        Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
-        Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
+        Assert::emailAddress($email);
+        $this->email = $email;
+    }
+
+    /**
+     * @param User $other
+     * @return bool
+     */
+    public function equals(User $other): bool
+    {
+        return $this->id === $other->id;
+    }
+
+    /**
+     * @return string[]|array
+     */
+    public function getTeamIds(): array
+    {
+        return $this->teams->getKeys();
     }
 
     /**
@@ -216,7 +246,7 @@ class User implements \JsonSerializable
         return [
             'id' => $this->id,
             'email' => $this->email,
-            'teams' => $this->teams->getKeys(),
+            'teams' => $this->getTeamIds(),
             'role' => $this->role,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName

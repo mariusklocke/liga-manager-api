@@ -320,6 +320,15 @@ class RichClient
         ));
     }
 
+    public function updateUser(string $userId, array $properties): void
+    {
+        $this->handleErrors($this->slimClient->patch(
+            '/api/users/' . $userId,
+            $properties,
+            $this->headers
+        ));
+    }
+
     private function decodeBody(ResponseInterface $response)
     {
         $this->handleErrors($response);

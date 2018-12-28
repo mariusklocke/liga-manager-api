@@ -33,6 +33,7 @@ use HexagonalPlayground\Application\Handler\StartSeasonHandler;
 use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
 use HexagonalPlayground\Application\Handler\UpdatePitchContactHandler;
 use HexagonalPlayground\Application\Handler\UpdateTeamContactHandler;
+use HexagonalPlayground\Application\Handler\UpdateUserHandler;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use Pimple\Container;
@@ -168,6 +169,9 @@ class CommandBusProvider implements ServiceProviderInterface
         };
         $container[RenameTeamHandler::class] = function () use ($container) {
             return new RenameTeamHandler($container['orm.repository.team']);
+        };
+        $container[UpdateUserHandler::class] = function () use ($container) {
+            return new UpdateUserHandler($container['orm.repository.user'], $container['orm.repository.team']);
         };
     }
 }

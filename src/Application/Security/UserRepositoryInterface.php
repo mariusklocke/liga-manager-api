@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Security;
 
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Domain\User;
 
 interface UserRepositoryInterface
@@ -37,4 +38,10 @@ interface UserRepositoryInterface
      * @param User $entity
      */
     public function delete($entity): void;
+
+    /**
+     * @param string $email
+     * @throws UniquenessException
+     */
+    public function assertEmailDoesNotExist(string $email): void;
 }
