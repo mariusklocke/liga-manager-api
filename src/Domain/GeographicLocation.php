@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use HexagonalPlayground\Domain\Util\Assert;
+
 class GeographicLocation
 {
     /** @var float */
@@ -18,12 +20,16 @@ class GeographicLocation
      */
     public function __construct(float $longitude, float $latitude)
     {
-        if ($latitude < -90.0 || $latitude > 90.0) {
-            throw new DomainException('Invalid latitude: Has to be a float between -90.0 and 90.0');
-        }
-        if ($longitude < -180.0 || $longitude > 180.0) {
-            throw new DomainException('Invalid longitude: Has to be a float between -180.0 and 180.0');
-        }
+        Assert::lessOrEqualThan(
+            abs($longitude),
+            180.0,
+            'Invalid longitude: Has to be a float between -180.0 and 180.0'
+        );
+        Assert::lessOrEqualThan(
+            abs($latitude),
+            90.0,
+            'Invalid latitude: Has to be a float between -90.0 and 90.0'
+        );
         $this->longitude = $longitude;
         $this->latitude = $latitude;
     }
