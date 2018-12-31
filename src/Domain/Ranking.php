@@ -85,7 +85,7 @@ class Ranking
 
         $penalty = new RankingPenalty($this, $team, $reason, $points);
         $this->getPositionForTeam($team->getId())->subtractPoints($points);
-        $this->penalties[] = $penalty;
+        $this->penalties[$penalty->getId()] = $penalty;
         $this->reorder();
         Publisher::getInstance()->publish(RankingPenaltyAdded::create(
             $this->season->getId(),
