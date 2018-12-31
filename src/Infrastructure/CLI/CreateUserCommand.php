@@ -5,9 +5,10 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CreateUserCommand as CreateUserApplicationCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CreateUserCommand extends Command
 {
@@ -22,23 +23,19 @@ class CreateUserCommand extends Command
 
     protected function configure()
     {
-        $this->setName('app:create-user')->setDefinition([
-            new InputArgument('email', InputArgument::REQUIRED, "Email address uniquely identifying the user"),
-            new InputArgument('password', InputArgument::REQUIRED, "User password"),
-            new InputArgument('first_name', InputArgument::REQUIRED, "User first name"),
-            new InputArgument('last_name', InputArgument::REQUIRED, "User last name"),
-            new InputArgument('role', InputArgument::REQUIRED, "User role")
-        ]);
+        $this->setName('app:create-user');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $styledIo = new SymfonyStyle($input, $output);
+
         $command = new CreateUserApplicationCommand(
-            $input->getArgument('email'),
-            $input->getArgument('password'),
-            $input->getArgument('first_name'),
-            $input->getArgument('last_name'),
-            $input->getArgument('role'),
+            $styledIo->ask('Email: '),
+            $styledIo->ask('Password: '),
+            $styledIo->ask('First name: '),
+            $styledIo->ask('Last name: '),
+            $styledIo->askQuestion(new ChoiceQuestion('Choose a role', ['admin', 'team_manager'], 'admin')),
             []
         );
         $userId = $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
