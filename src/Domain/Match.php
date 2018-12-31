@@ -146,13 +146,8 @@ class Match
     }
 
     /**
-     * @return string
+     * @param MatchResult|null $matchResult
      */
-    public function toString() : string
-    {
-        return sprintf('%s - %s', $this->homeTeam->getName(), $this->guestTeam->getName());
-    }
-
     private function setResult(?MatchResult $matchResult): void
     {
         $competition = $this->matchDay->getCompetition();
@@ -165,26 +160,6 @@ class Match
             }
         }
         $this->matchResult = $matchResult;
-    }
-
-    private function __clone()
-    {
-        $this->id = null;
-        $this->matchDay = null;
-        $this->matchResult = null;
-        $this->kickoff = null;
-        $this->pitch = null;
-        $this->cancelledAt = null;
-    }
-
-    public function rematch(MatchDay $matchDay) : Match
-    {
-        $clone = clone $this;
-        $clone->id = Uuid::create();
-        $clone->matchDay = $matchDay;
-        $clone->homeTeam = $this->guestTeam;
-        $clone->guestTeam = $this->homeTeam;
-        return $clone;
     }
 
     /**

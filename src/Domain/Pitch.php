@@ -29,13 +29,6 @@ class Pitch
         $this->location = $location;
     }
 
-    public function copy(string $id)
-    {
-        $clone = clone $this;
-        $clone->id = $id;
-        return $clone;
-    }
-
     /**
      * @return string
      */
@@ -50,10 +43,5 @@ class Pitch
     public function setContact(ContactPerson $contact): void
     {
         $this->contact = $contact;
-    }
-
-    private function __clone()
-    {
-        $this->id = null;
     }
 }
