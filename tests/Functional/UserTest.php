@@ -127,21 +127,26 @@ class UserTest extends TestCase
     public function testUserCanBeUpdated()
     {
         $this->client->setBasicAuth('admin@example.com', '123456');
+        $teamA = $this->client->createTeam('Team A');
+        self::assertResponseHasValidId($teamA);
         $user = $this->client->createUser([
             'email' => 'who@example.com',
             'password' => 'secret',
             'first_name' => 'My Name Is',
             'last_name' => 'Who',
             'role' => 'admin',
-            'teams' => []
+            'teams' => [$teamA->id]
         ]);
         self::assertResponseHasValidId($user);
 
+        $teamB = $this->client->createTeam('Team B');
+        self::assertResponseHasValidId($teamB);
         $this->client->updateUser($user->id, [
             'first_name' => 'Homer',
             'last_name'  => 'Simpson',
             'email'      => 'homer.simpson@example.com',
-            'role'       => 'team_manager'
+            'role'       => 'team_manager',
+            'teams'      => [$teamB->id]
         ]);
 
         $this->client->setBasicAuth('homer.simpson@example.com', 'secret');
