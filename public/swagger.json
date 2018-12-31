@@ -1487,6 +1487,59 @@
         }
       }
     },
+    "/users/{id}": {
+      "patch": {
+        "summary": "Updates a user",
+        "security": [
+          {"JWT": []},
+          {"basic-auth": []}
+        ],
+        "operationId": "updateUser",
+        "tags": ["user"],
+        "parameters": [
+          {
+            "description": "ID of user to update",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "updateUserBody",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "teams": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "role": {
+                  "type": "string",
+                  "enum": ["admin", "team_manager"]
+                },
+                "first_name": {
+                  "type": "string"
+                },
+                "last_name": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Operation successful"
+          }
+        }
+      }
+    },
     "/users/me": {
       "get": {
         "summary": "Retrieve the authenticated user",
