@@ -42,7 +42,7 @@ class UpdateUserCommand implements CommandInterface
         TypeAssert::assertStringOrNull($firstName, 'firstName');
         TypeAssert::assertStringOrNull($lastName, 'lastName');
         TypeAssert::assertStringOrNull($role, 'role');
-        TypeAssert::assertArrayOrNull($teamIds, 'teamIds');
+        TypeAssert::assertArrayOrNull($teamIds, 'teams');
 
         $this->userId = $userId;
         $this->email  = $email;
@@ -53,7 +53,7 @@ class UpdateUserCommand implements CommandInterface
         if (null !== $teamIds) {
             $this->teamIds = [];
             foreach ($teamIds as $index => $teamId) {
-                TypeAssert::assertString($teamId, 'teamIds[' . $index . ']');
+                TypeAssert::assertString($teamId, 'teams[' . $index . ']');
                 $this->teamIds[] = $teamId;
             }
         }

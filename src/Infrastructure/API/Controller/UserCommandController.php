@@ -68,7 +68,7 @@ class UserCommandController extends CommandController
             $request->getParsedBodyParam('first_name'),
             $request->getParsedBodyParam('last_name'),
             $request->getParsedBodyParam('role'),
-            $request->getParsedBodyParam('team_ids')
+            $request->getParsedBodyParam('teams')
         );
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 

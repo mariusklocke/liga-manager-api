@@ -59,13 +59,9 @@ class UpdateUserHandler
 
         if (null !== $command->getTeamIds()) {
             IsAdmin::check($command->getAuthenticatedUser());
-            $toRemove = array_diff($user->getTeamIds(), $command->getTeamIds());
-            foreach ($toRemove as $teamId) {
-                $user->removeFromTeam($teamId);
-            }
 
-            $toAdd = array_diff($command->getTeamIds(), $user->getTeamIds());
-            foreach ($toAdd as $teamId) {
+            $user->clearTeams();
+            foreach ($command->getTeamIds() as $teamId) {
                 $user->addTeam($this->teamRepository->find($teamId));
             }
         }

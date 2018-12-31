@@ -154,10 +154,13 @@ class UserTest extends TestCase
         self::assertObjectHasAttribute('email', $user);
         self::assertObjectHasAttribute('first_name', $user);
         self::assertObjectHasAttribute('last_name', $user);
+        self::assertObjectHasAttribute('role', $user);
+        self::assertObjectHasAttribute('teams', $user);
 
         self::assertEquals('Homer', $user->first_name);
         self::assertEquals('Simpson', $user->last_name);
         self::assertEquals('homer.simpson@example.com', $user->email);
         self::assertEquals('team_manager', $user->role);
+        self::assertEquals([$teamB->id], $user->teams);
     }
 }

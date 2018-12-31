@@ -116,7 +116,7 @@ class User implements \JsonSerializable
     public function addTeam(Team $team): void
     {
         if (!$this->teams->contains($team)) {
-            $this->teams[] = $team;
+            $this->teams[$team->getId()] = $team;
         }
     }
 
@@ -143,16 +143,8 @@ class User implements \JsonSerializable
      */
     public function setRole(string $role): void
     {
-        $this->assertValidRole($role);
-        $this->role = $role;
-    }
-
-    /**
-     * @param string $role
-     */
-    private function assertValidRole(string $role): void
-    {
         Assert::oneOf($role, [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER], 'Invalid role value. Valid: [%s], Got: %s');
+        $this->role = $role;
     }
 
     /**
@@ -204,14 +196,6 @@ class User implements \JsonSerializable
     }
 
     /**
-     * @param string $teamId
-     */
-    public function removeFromTeam(string $teamId): void
-    {
-        $this->teams->remove($teamId);
-    }
-
-    /**
      * @param string $email
      * @throws DomainException
      */
@@ -231,11 +215,11 @@ class User implements \JsonSerializable
     }
 
     /**
-     * @return string[]|array
+     * Clears all team associations
      */
-    public function getTeamIds(): array
+    public function clearTeams(): void
     {
-        return $this->teams->getKeys();
+        $this->teams->clear();
     }
 
     /**
@@ -246,7 +230,7 @@ class User implements \JsonSerializable
         return [
             'id' => $this->id,
             'email' => $this->email,
-            'teams' => $this->getTeamIds(),
+            'teams' => $this->teams->getKeys(),
             'role' => $this->role,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName
