@@ -3,11 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Import\Importer;
-use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
@@ -32,15 +29,6 @@ class CommandServiceProvider implements ServiceProviderInterface
                 },
                 'app:create-user' => function () use ($container) {
                     return new CreateUserCommand($container['commandBus']);
-                },
-                'app:reset-password' => function () use ($container) {
-                    return new ResetPasswordCommand(
-                        $container[MailerInterface::class],
-                        $container[TemplateRenderer::class]
-                    );
-                },
-                'app:list-events' => function () use ($container) {
-                    return new ListEventsCommand($container[EventStoreInterface::class]);
                 },
                 'app:import-season' => function () use ($container) {
                     return new L98ImportCommand(
