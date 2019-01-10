@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\Console\ConsoleRunner;
 use HexagonalPlayground\Application\Import\L98ImportProvider;
 use HexagonalPlayground\Infrastructure\CommandBusProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
@@ -25,12 +23,7 @@ class Bootstrap
         $container = self::createContainer();
 
         $app = new Application();
-        $app->setHelperSet(ConsoleRunner::createHelperSet($container[EntityManager::class]));
         $app->setCatchExceptions(true);
-
-        // Add Doctrine commands
-        ConsoleRunner::addCommands($app);
-        // Register loader for lazy-loading own commands
         $app->setCommandLoader($container[CommandLoaderInterface::class]);
         return $app;
     }
@@ -38,7 +31,7 @@ class Bootstrap
     /**
      * @return Container
      */
-    private static function createContainer(): Container
+    public static function createContainer(): Container
     {
         $container = new Container();
         (new MailServiceProvider())->register($container);
