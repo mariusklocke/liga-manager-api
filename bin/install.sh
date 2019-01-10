@@ -1,15 +1,12 @@
 #!/bin/sh
 set -ex
 
-if [ ! -d /etc/jwt ]; then
-    mkdir /etc/jwt
-fi
-if ssh-keygen -t rsa -b 4096 -f /etc/jwt/secret.key -N ''; then
-    rm /etc/jwt/secret.key.pub
-    chmod 644 /etc/jwt/secret.key
+if ssh-keygen -t rsa -b 4096 -f ${JWT_SECRET_PATH}/secret.key -N ''; then
+    rm ${JWT_SECRET_PATH}/secret.key.pub
+    chmod 600 ${JWT_SECRET_PATH}/secret.key
 fi
 
 php bin/console.php orm:schema-tool:drop --force
 php bin/console.php orm:schema-tool:create
-php bin/console.php app:load-fixtures
 php bin/console.php orm:generate-proxies
+php bin/console.php app:load-fixtures

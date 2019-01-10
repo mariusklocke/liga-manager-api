@@ -9,9 +9,8 @@ services:
 install:
   - export BRANCH=`if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi`
   - export TAG=`if [ "$BRANCH" == "master" ]; then echo "latest"; else echo $BRANCH ; fi`
-  - docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG .
 script:
-  - bash docker/run-tests.sh -c
+  - bash build.sh -c
 after_success:
   - docker login -u $DOCKER_USER -p "$DOCKER_PASS"
   - docker push $DOCKER_REPO:$TAG

@@ -11,10 +11,6 @@ ENV PHPIZE_DEPS \
     make \
     pkgconf \
     re2c
-ENV APP_HOME="/var/www/api"
-ENV JWT_SECRET_PATH="/etc/jwt"
-ENV LOG_PATH="/var/log"
-RUN chmod 777 /var/log
 
 # persistent / runtime deps
 RUN apk add --no-cache --virtual .persistent-deps openssh-keygen
@@ -39,19 +35,33 @@ RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar \
     && wget -O /usr/local/bin/composer https://getcomposer.org/composer.phar \
     && chmod +x /usr/local/bin/phpunit /usr/local/bin/composer
 
+# Configure PHP
+ARG XDEBUG=0
+COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
+COPY docker/php/php.ini /usr/local/etc/php/php.ini
+RUN if [ "$XDEBUG" = "1" ] ; then echo "zend_extension=xdebug.so" >> /usr/local/etc/php/php.ini ; fi
+
 # Install application sources
-RUN mkdir -p ${APP_HOME}
+ENV APP_HOME="/var/www/api"
+ENV JWT_SECRET_PATH="/var/www/jwt"
+RUN mkdir -p ${APP_HOME} ${JWT_SECRET_PATH} && chown www-data:www-data ${JWT_SECRET_PATH}
 WORKDIR ${APP_HOME}
 COPY composer.json composer.lock phpunit.xml ./
 RUN composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
 COPY bin bin
+RUN chmod +x bin/*
 COPY config config
 COPY migrations migrations
 COPY public public
 COPY src src
 COPY templates templates
 COPY tests tests
-COPY docker/php/entrypoint.sh docker/php/entrypoint.sh
-RUN chmod +x bin/* docker/php/entrypoint.sh
-ENTRYPOINT ["docker/php/entrypoint.sh"]
+
+# Simplify local development by adding developer user with id 1000
+RUN set -xe \
+    && apk add --no-cache shadow \
+    && useradd -u 1000 dev \
+    && apk del shadow
+
+USER www-data
 CMD php-fpm

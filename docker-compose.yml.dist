@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   nginx:
     image: nginx:alpine
@@ -6,17 +6,17 @@ services:
       - "80:80"
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    volumes_from:
-      - php
+      - .:/var/www/api
     depends_on:
       - php
       - swagger-ui
 
   php:
-    image: mklocke/liga-manager-api
+    image: mklocke/liga-manager-api:latest
+    user: dev
     volumes:
       - .:/var/www/api
-      - /etc/jwt:/etc/jwt
+      - ./docker/_volumes/jwt:/var/www/jwt
     depends_on:
       - mariadb
       - maildev
@@ -25,6 +25,8 @@ services:
 
   mariadb:
     image: mariadb
+    volumes:
+      - ./docker/_volumes/mysql:/var/lib/mysql
     ports:
       - "3306:3306"
     env_file:
