@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
+namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use Doctrine\DBAL\Logging\SQLLogger;
 use Psr\Log\LoggerInterface;
 
-class DoctrineQueryLogger implements SQLLogger
+class QueryLogger implements SQLLogger
 {
     /** @var LoggerInterface */
     private $logger;

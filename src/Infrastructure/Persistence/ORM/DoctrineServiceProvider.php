@@ -18,6 +18,7 @@ use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use PDO;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -42,7 +43,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             ]);
             $driver->setGlobalBasename('global');
             $config->setMetadataDriverImpl($driver);
-            $config->setSQLLogger($container['doctrine.queryLogger']);
+            $config->setSQLLogger(new QueryLogger($container['logger']));
             $config->setDefaultRepositoryClassName(BaseRepository::class);
             $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
             $pdo = new PDO(
@@ -58,9 +59,6 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 new DoctrineEmbeddableListener($em, $container['logger'])
             );
             return $em;
-        };
-        $container['doctrine.queryLogger'] = function () use ($container) {
-            return new DoctrineQueryLogger($container['logger']);
         };
         $container[OrmTransactionWrapperInterface::class] = function() use ($container) {
             return new DoctrineTransactionWrapper($container[EntityManager::class]);

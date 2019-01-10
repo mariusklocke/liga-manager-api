@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use Doctrine\DBAL\Logging\SQLLogger;
+use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use mysqli;
 use mysqli_driver;
 use mysqli_result;
@@ -14,7 +14,7 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
     /** @var mysqli */
     private $mysqli;
 
-    /** @var SQLLogger */
+    /** @var QueryLogger */
     private $logger;
 
     /**
@@ -57,10 +57,10 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
     }
 
     /**
-     * @param SQLLogger $logger
+     * @param QueryLogger $logger
      * @return MysqliReadDbAdapter
      */
-    public function setLogger(SQLLogger $logger) : self
+    public function setLogger(QueryLogger $logger) : self
     {
         $this->logger = $logger;
         return $this;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use mysqli;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
@@ -30,7 +31,7 @@ class ReadRepositoryProvider implements ServiceProviderInterface
             );
             $mysqli->set_charset('utf8');
             $db = new MysqliReadDbAdapter($mysqli);
-            $db->setLogger($container['doctrine.queryLogger']);
+            $db->setLogger(new QueryLogger($container['logger']));
             return $db;
         };
         $container[TeamRepository::class] = function() use ($container) {
