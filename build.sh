@@ -33,13 +33,17 @@ docker run --link mariadb --link redis --link maildev --rm ${APP_ENV_ARGS} \
     mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit"
 
 if  [[ $1 = "-c" ]]; then
+    docker volume create tmp-vol
+
     # Run tests with coverage
-    docker run --link mariadb --link redis --link maildev --rm ${APP_ENV_ARGS} -v $PWD/coverage:/coverage \
-        mklocke/liga-manager-api:${TAG}-xdebug sh -c "bin/install.sh && phpunit --coverage-clover /coverage/clover.xml"
+    docker run --link mariadb --link redis --link maildev --rm ${APP_ENV_ARGS} -v tmp-vol:/tmp \
+        mklocke/liga-manager-api:${TAG}-xdebug sh -c "bin/install.sh && phpunit --coverage-clover /tmp/clover.xml"
 
     # Upload coverage data
-    docker run --rm -v $PWD:/var/www/api -e TRAVIS -e TRAVIS_JOB_ID \
-        kielabokkie/coveralls-phpcov sh -c "cd /var/www/api && php-coveralls -v -x coverage/clover.xml -o coverage/coveralls.json"
+    docker run --rm -v $PWD:/var/www/api -v tmp-vol:/tmp -e TRAVIS -e TRAVIS_JOB_ID \
+        kielabokkie/coveralls-phpcov sh -c "cd /var/www/api && php-coveralls -v -x /tmp/clover.xml -o /tmp/coveralls.json"
+
+    docker volume rm tmp-vol
 fi
 
 # Cleanup
