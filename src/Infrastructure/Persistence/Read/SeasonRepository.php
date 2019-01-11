@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
-
 class SeasonRepository extends AbstractRepository
 {
     /**
@@ -21,10 +19,12 @@ class SeasonRepository extends AbstractRepository
      */
     public function findSeasonById(string $id): array
     {
-        $season = $this->getDb()->fetchFirstRow('SELECT * FROM `seasons` WHERE `id` = ?', [$id]);
-        if (null === $season) {
-            throw new NotFoundException('Cannot find season');
-        }
+        $season = $this->getDb()->fetchFirstRow(
+            'SELECT * FROM `seasons` WHERE `id` = ?',
+            [$id],
+            'Cannot find season'
+        );
+
         return $season;
     }
 
@@ -49,11 +49,9 @@ class SeasonRepository extends AbstractRepository
         $updatedAt = $this->getDateFormat('updated_at');
         $ranking   = $this->getDb()->fetchFirstRow(
             "SELECT season_id, $updatedAt FROM rankings WHERE season_id = ?",
-            [$seasonId]
+            [$seasonId],
+            'Cannot find ranking'
         );
-        if (null === $ranking) {
-            throw new NotFoundException('Cannot find ranking');
-        }
 
         $ranking['positions'] = $this->findRankingPositions($seasonId);
         $ranking['penalties'] = $this->findRankingPenalties($seasonId);

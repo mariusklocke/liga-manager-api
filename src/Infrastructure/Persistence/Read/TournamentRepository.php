@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
-
 class TournamentRepository extends AbstractRepository
 {
     /**
@@ -21,10 +19,8 @@ class TournamentRepository extends AbstractRepository
      */
     public function findTournamentById(string $id): array
     {
-        $tournament = $this->getDb()->fetchFirstRow('SELECT * FROM tournaments WHERE id = ?', [$id]);
-        if (null === $tournament) {
-            throw new NotFoundException('Cannot find tournament');
-        }
+        $query      = 'SELECT * FROM tournaments WHERE id = ?';
+        $tournament = $this->getDb()->fetchFirstRow($query, [$id], 'Cannot find tournament');
 
         return $tournament;
     }

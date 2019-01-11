@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Filter\EventFilter;
 
 class EventRepository extends AbstractRepository
@@ -15,10 +14,8 @@ class EventRepository extends AbstractRepository
     public function findEventById(string $id): array
     {
         $query = $this->getBaseQuery() . ' WHERE id = ?';
-        $row   = $this->getDb()->fetchFirstRow($query, [$id]);
-        if (null === $row) {
-            throw new NotFoundException('Cannot find event');
-        }
+        $row   = $this->getDb()->fetchFirstRow($query, [$id], 'Cannot find event');
+
         return $this->hydrate($row);
     }
 

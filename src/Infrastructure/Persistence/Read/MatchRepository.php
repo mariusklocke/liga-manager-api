@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Filter\MatchFilter;
 
 class MatchRepository extends AbstractRepository
@@ -63,10 +62,7 @@ class MatchRepository extends AbstractRepository
     public function findMatchById(string $matchId): array
     {
         $query = $this->getBaseQuery() . ' WHERE m.id = ?';
-        $match = $this->getDb()->fetchFirstRow($query, [$matchId]);
-        if (null === $match) {
-            throw new NotFoundException('Cannot find match');
-        }
+        $match = $this->getDb()->fetchFirstRow($query, [$matchId], 'Cannot find match');
 
         return $match;
     }
