@@ -48,11 +48,10 @@ class MatchResult
 
     /**
      * @param int $value
-     * @throws DomainException
      */
     private function assertValidScoreValue(int $value)
     {
-        Assert::greaterOrEqualThan($value, 0, 'Match scores have to be greater or equal than 0');
-        Assert::lessOrEqualThan($value, 99, 'Match scores have to be less or equal than 99');
+        Assert::true($value >= 0, 'Match scores have to be greater or equal than 0');
+        Assert::true($value <= 99, 'Match scores have to be less or equal than 99');
     }
 }

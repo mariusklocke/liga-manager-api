@@ -77,7 +77,6 @@ class Team
 
     /**
      * @param string $name
-     * @throws DomainException
      */
     private function setName(string $name): void
     {

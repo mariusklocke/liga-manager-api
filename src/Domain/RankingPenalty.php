@@ -31,11 +31,10 @@ class RankingPenalty
      * @param Team $team
      * @param string $reason
      * @param int $points
-     * @throws DomainException
      */
     public function __construct(Ranking $ranking, Team $team, string $reason, int $points)
     {
-        Assert::greaterThan($points, 0, 'Points on a RankingPenalty have to be greater than 0');
+        Assert::true($points > 0, 'Points on a RankingPenalty have to be greater than 0');
         Assert::minLength($reason, 1, 'Reason on a RankingPenalty cannot be empty string');
         $this->id        = Uuid::create();
         $this->ranking   = $ranking;

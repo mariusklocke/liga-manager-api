@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Application\Value\DatePeriod;
+use HexagonalPlayground\Domain\Util\Assert;
 use UnexpectedValueException;
 
 /**
@@ -17,7 +18,6 @@ class MatchFactory
      * @param Season $season
      * @param array|DatePeriod[] $matchDayDates
      * @return MatchDay[]
-     * @throws DomainException
      */
     public function createMatchDaysForSeason(Season $season, array $matchDayDates) : array
     {
@@ -28,13 +28,11 @@ class MatchFactory
         shuffle($teams);
         $matchDaysPerHalf = count($teams) - 1;
 
-        if (count($matchDayDates) !== $matchDaysPerHalf) {
-            throw new DomainException(sprintf(
-                'Count of MatchDay dates does not match. Expected %d. Got %d',
-                $matchDaysPerHalf,
-                count($matchDayDates)
-            ));
-        }
+        Assert::true(count($matchDayDates) === $matchDaysPerHalf, sprintf(
+            'Count of MatchDay dates does not match. Expected %d. Got %d',
+            $matchDaysPerHalf,
+            count($matchDayDates)
+        ));
 
         $matchDays = [];
         $matchDayNumber = 1;

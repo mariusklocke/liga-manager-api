@@ -48,13 +48,10 @@ class Season extends Competition
     /**
      * @param Team $team
      * @return Season
-     * @throws DomainException
      */
     public function addTeam(Team $team) : Season
     {
-        if ($this->hasStarted()) {
-            throw new DomainException('Cannot add teams to season which has already started');
-        }
+        Assert::false($this->hasStarted(), 'Cannot add teams to season which has already started');
         if (!$this->teams->contains($team)) {
             $this->teams[] = $team;
             $this->teamCount++;
@@ -65,13 +62,10 @@ class Season extends Competition
     /**
      * @param Team $team
      * @return Season
-     * @throws DomainException
      */
     public function removeTeam(Team $team) : Season
     {
-        if ($this->hasStarted()) {
-            throw new DomainException('Cannot remove team from season which has already started');
-        }
+        Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
         if ($this->teams->contains($team)) {
             $this->teams->removeElement($team);
             $this->teamCount--;
@@ -89,13 +83,10 @@ class Season extends Competition
 
     /**
      * @return Season
-     * @throws DomainException
      */
     public function clearTeams() : Season
     {
-        if ($this->hasStarted()) {
-            throw new DomainException("Cannot remove teams from a season which has already started");
-        }
+        Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
         $this->teams->clear();
         $this->teamCount = 0;
         return $this;
@@ -106,10 +97,7 @@ class Season extends Competition
      */
     public function clearMatchDays() : Season
     {
-        if ($this->hasStarted()) {
-            throw new DomainException('Cannot remove matches from a season which has already started');
-        }
-
+        Assert::false($this->hasStarted(), 'Cannot remove matches from a season which has already started');
         foreach ($this->matchDays as $matchDay) {
             $matchDay->clearMatches();
         }
@@ -155,17 +143,11 @@ class Season extends Competition
      * Initializes the season ranking
      *
      * @return Season
-     * @throws DomainException
      */
     public function start()
     {
-        if ($this->hasStarted()) {
-            throw new DomainException('Cannot start a season which has already been started');
-        }
-        if (!$this->hasMatches()) {
-            throw new DomainException('Cannot start a season which has no matches');
-        }
-
+        Assert::false($this->hasStarted(), 'Cannot start a season which has already been started');
+        Assert::true($this->hasMatches(), 'Cannot start a season which has no matches');
         $this->ranking = new Ranking($this);
         $this->state = self::STATE_PROGRESS;
         return $this;
@@ -173,13 +155,10 @@ class Season extends Competition
 
     /**
      * @return Season
-     * @throws DomainException
      */
     public function end() : Season
     {
-        if (!$this->hasStarted()) {
-            throw new DomainException("Cannot end a season which hasn't started");
-        }
+        Assert::true($this->hasStarted(), 'Cannot end a season which has not been started');
         $this->state = self::STATE_ENDED;
         return $this;
     }
@@ -195,13 +174,13 @@ class Season extends Competition
 
     /**
      * @return Ranking
-     * @throws DomainException
      */
     public function getRanking(): Ranking
     {
-        if ($this->ranking === null) {
-            throw new DomainException("Cannot access ranking for a season which hasn't started");
-        }
+        Assert::false(
+            $this->ranking === null,
+            'Cannot access ranking for a season which has not been started'
+        );
         return $this->ranking;
     }
 

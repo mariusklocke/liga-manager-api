@@ -47,13 +47,10 @@ class Match
      * @param MatchDay $matchDay
      * @param Team $homeTeam
      * @param Team $guestTeam
-     * @throws DomainException If $homeTeam and $guestTeam are equal
      */
     public function __construct(MatchDay $matchDay, Team $homeTeam, Team $guestTeam)
     {
-        if ($homeTeam === $guestTeam) {
-            throw new DomainException('A team cannot play against itself');
-        }
+        Assert::false($homeTeam->equals($guestTeam), 'A team cannot play against itself');
 
         $this->id = Uuid::create();
         $this->matchDay = $matchDay;

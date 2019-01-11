@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\Uuid;
 
 class MatchDay
@@ -36,13 +37,10 @@ class MatchDay
      * @param int $number
      * @param DateTimeImmutable $startDate
      * @param DateTimeImmutable $endDate
-     * @throws DomainException
      */
     public function __construct(Competition $competition, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate)
     {
-        if ($startDate > $endDate) {
-            throw new DomainException('Invalid date range: Start date cannot be after end date');
-        }
+        Assert::true($startDate <= $endDate, 'Invalid date range: Start date cannot be after end date');
 
         $this->setCompetition($competition);
         $this->id = Uuid::create();
@@ -110,7 +108,7 @@ class MatchDay
 
     /**
      * @param Competition $competition
-     * @throws DomainException if $competition is an instance of unsupported type
+     * @throws \UnexpectedValueException if $competition is an instance of unsupported type
      */
     private function setCompetition(Competition $competition): void
     {
@@ -119,7 +117,7 @@ class MatchDay
         } elseif ($competition instanceof Tournament) {
             $this->tournament = $competition;
         } else {
-            throw new DomainException('Unsupported competition type: ' . get_class($competition));
+            throw new \UnexpectedValueException('Unsupported competition type: ' . get_class($competition));
         }
     }
 }

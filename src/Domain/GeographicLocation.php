@@ -16,20 +16,11 @@ class GeographicLocation
     /**
      * @param float $longitude
      * @param float $latitude
-     * @throws DomainException
      */
     public function __construct(float $longitude, float $latitude)
     {
-        Assert::lessOrEqualThan(
-            abs($longitude),
-            180.0,
-            'Invalid longitude: Has to be a float between -180.0 and 180.0'
-        );
-        Assert::lessOrEqualThan(
-            abs($latitude),
-            90.0,
-            'Invalid latitude: Has to be a float between -90.0 and 90.0'
-        );
+        Assert::true(abs($longitude) <= 180.0, 'Invalid longitude: Has to be a float between -180.0 and 180.0');
+        Assert::true(abs($latitude) <= 90.0, 'Invalid latitude: Has to be a float between -90.0 and 90.0');
         $this->longitude = $longitude;
         $this->latitude = $latitude;
     }

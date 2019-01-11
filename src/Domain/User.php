@@ -197,7 +197,6 @@ class User implements \JsonSerializable
 
     /**
      * @param string $email
-     * @throws DomainException
      */
     public function setEmail(string $email): void
     {
