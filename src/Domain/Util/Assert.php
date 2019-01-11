@@ -22,9 +22,7 @@ class Assert
      */
     public static function minLength(string $value, int $minLength, string $message): void
     {
-        if (mb_strlen($value) < $minLength) {
-            self::throwException($message);
-        }
+        self::true(mb_strlen($value) >= $minLength, $message);
     }
 
     /**
@@ -37,9 +35,7 @@ class Assert
      */
     public static function maxLength(string $value, int $maxLength, string $message): void
     {
-        if (mb_strlen($value) > $maxLength) {
-            self::throwException($message);
-        }
+        self::true(mb_strlen($value) <= $maxLength, $message);
     }
 
     /**
@@ -50,9 +46,7 @@ class Assert
      */
     public static function emailAddress(string $value): void
     {
-        if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
-            self::throwException('Invalid email syntax');
-        }
+        self::true(filter_var($value, FILTER_VALIDATE_EMAIL) !== false, 'Invalid email syntax');
     }
 
     /**
@@ -65,13 +59,11 @@ class Assert
      */
     public static function oneOf($value, array $whitelist, string $message)
     {
-        if (!in_array($value, $whitelist, true)) {
-            self::throwException(sprintf(
-                $message,
-                implode(',', $whitelist),
-                $value
-            ));
-        }
+        self::true(in_array($value, $whitelist, true), sprintf(
+            $message,
+            implode(',', $whitelist),
+            $value
+        ));
     }
 
     /**
