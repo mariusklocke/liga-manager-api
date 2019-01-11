@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Application\Command;
 use HexagonalPlayground\Application\InputParser;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Application\Value\DatePeriod;
-use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Value\TeamIdPair;
 
 class SetTournamentRoundCommand implements CommandInterface
@@ -37,14 +36,6 @@ class SetTournamentRoundCommand implements CommandInterface
         TypeAssert::assertInteger($round, 'round');
         TypeAssert::assertArray($teamIdPairs, 'teamIdPairs');
         TypeAssert::assertArray($datePeriod, 'datePeriod');
-
-        if (empty($teamIdPairs)) {
-            throw new InvalidInputException('Team pairs cannot be empty');
-        }
-
-        if (count($teamIdPairs) > 64) {
-            throw new InvalidInputException('Request exceeds maximum amount of 64 team pairs.');
-        }
 
         $this->tournamentId = $tournamentId;
         $this->round        = $round;
