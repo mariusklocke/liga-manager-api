@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Value;
 
-use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Application\TypeAssert;
 
 class TeamIdPair
 {
@@ -17,9 +17,11 @@ class TeamIdPair
      * @param string $homeTeamId
      * @param string $guestTeamId
      */
-    public function __construct(string $homeTeamId, string $guestTeamId)
+    public function __construct($homeTeamId, $guestTeamId)
     {
-        $this->homeTeamId = $homeTeamId;
+        TypeAssert::assertString($homeTeamId, 'home_team_id');
+        TypeAssert::assertString($guestTeamId, 'guest_team_id');
+        $this->homeTeamId  = $homeTeamId;
         $this->guestTeamId = $guestTeamId;
     }
 
@@ -42,18 +44,11 @@ class TeamIdPair
     /**
      * @param array $array
      * @return TeamIdPair
-     * @throws InvalidInputException
      */
     public static function fromArray(array $array): self
     {
         $homeTeamId  = $array['home_team_id'] ?? null;
         $guestTeamId = $array['guest_team_id'] ?? null;
-        if (!is_string($homeTeamId)) {
-            throw new InvalidInputException('Invalid team pair. Missing or invalid property "home_team_id"');
-        }
-        if (!is_string($guestTeamId)) {
-            throw new InvalidInputException('Invalid team pair. Missing or invalid property "guest_team_id"');
-        }
 
         return new self($homeTeamId, $guestTeamId);
     }
