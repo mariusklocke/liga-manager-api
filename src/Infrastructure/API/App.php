@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use Exception;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App as SlimApp;
@@ -34,9 +32,6 @@ class App extends SlimApp
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @return ResponseInterface
-     * @throws Throwable
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
      */
     private function handleThrowable(Throwable $e, ServerRequestInterface $request, ResponseInterface $response) : ResponseInterface
     {
