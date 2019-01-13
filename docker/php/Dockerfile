@@ -1,5 +1,11 @@
 FROM php:7.3-fpm-alpine
 
+# Simplify local development by adding developer user with id 1000
+RUN set -xe \
+    && apk add --no-cache shadow \
+    && useradd -u 1000 dev \
+    && apk del shadow
+
 ENV PHPIZE_DEPS \
     autoconf \
     cmake \
@@ -56,12 +62,6 @@ COPY public public
 COPY src src
 COPY templates templates
 COPY tests tests
-
-# Simplify local development by adding developer user with id 1000
-RUN set -xe \
-    && apk add --no-cache shadow \
-    && useradd -u 1000 dev \
-    && apk del shadow
 
 USER www-data
 CMD php-fpm
