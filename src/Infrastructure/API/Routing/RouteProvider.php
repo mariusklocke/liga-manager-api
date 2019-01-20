@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Routing;
 
 use HexagonalPlayground\Infrastructure\API\Controller\EventQueryController;
+use HexagonalPlayground\Infrastructure\API\Controller\GraphQLController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchDayCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
@@ -224,6 +225,10 @@ class RouteProvider
 
             $app->get('/events/{id}', function ($request, $response, $args) use ($container) {
                 return (new EventQueryController($container[EventRepository::class]))->findEventById($args['id']);
+            });
+
+            $app->post('/graphql', function ($request, $response, $args) use ($container) {
+                return (new GraphQLController())->query($request, $container);
             });
         });
     }

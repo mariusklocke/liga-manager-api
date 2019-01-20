@@ -10,9 +10,7 @@ class PitchRepository extends AbstractRepository
      */
     public function findAllPitches()
     {
-        return array_map(function ($row) {
-            return $this->reconstructEmbeddedObject($row, 'contact');
-        }, $this->getDb()->fetchAll('SELECT * FROM `pitches`'));
+        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll('SELECT * FROM `pitches`'));
     }
 
     /**
@@ -27,6 +25,11 @@ class PitchRepository extends AbstractRepository
             'Cannot find pitch'
         );
 
-        return $this->reconstructEmbeddedObject($pitch, 'contact');
+        return $this->hydrate($pitch);
+    }
+
+    private function hydrate(array $row): array
+    {
+        return $this->reconstructEmbeddedObject($row, 'contact');
     }
 }

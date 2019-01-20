@@ -10,9 +10,7 @@ class TeamRepository extends AbstractRepository
      */
     public function findAllTeams()
     {
-        return array_map(function($row) {
-            return $this->reconstructEmbeddedObject($row, 'contact');
-        }, $this->getDb()->fetchAll($this->getBaseQuery()));
+        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll($this->getBaseQuery()));
     }
 
     /**
@@ -24,19 +22,27 @@ class TeamRepository extends AbstractRepository
         $query = $this->getBaseQuery() . ' WHERE id = ?';
         $team  = $this->getDb()->fetchFirstRow($query, [$id], 'Cannot find team');
 
-        return $this->reconstructEmbeddedObject($team, 'contact');
+        return $this->hydrate($team);
     }
 
     /**
      * @param string $seasonId
      * @return array
      */
-    public function findTeamsBySeasonId(string $seasonId)
+    public function findTeamsBySeasonId(string $seasonId): array
     {
         $query = $this->getBaseQuery() . ' JOIN seasons_teams_link ON id = team_id WHERE season_id = ?';
-        return array_map(function ($row) {
-            return $this->reconstructEmbeddedObject($row, 'contact');
-        }, $this->getDb()->fetchAll($query, [$seasonId]));
+        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll($query, [$seasonId]));
+    }
+
+    /**
+     * @param string $userId
+     * @return array
+     */
+    public function findTeamsByUserId(string $userId): array
+    {
+        $query = $this->getBaseQuery() . ' JOIN users_teams_link ON id = team_id WHERE user_id = ?';
+        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll($query, [$userId]));
     }
 
     /**
@@ -49,5 +55,10 @@ class TeamRepository extends AbstractRepository
   SELECT id, name, $createdAt, contact_email, contact_first_name, contact_last_name, contact_phone FROM teams
 SQL;
         return $query;
+    }
+
+    private function hydrate(array $row): array
+    {
+        return $this->reconstructEmbeddedObject($row, 'contact');
     }
 }

@@ -27,6 +27,7 @@
         "firebase/php-jwt": "^5.0",
         "swiftmailer/swiftmailer": "^6.0",
         "guzzlehttp/guzzle": "^6.3",
-        "doctrine/migrations": "^2.0"
+        "doctrine/migrations": "^2.0",
+        "webonyx/graphql-php": "^0.13.0"
     }
 }
