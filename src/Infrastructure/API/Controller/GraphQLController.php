@@ -20,7 +20,8 @@ class GraphQLController
             'query'      => new QueryType()
         ]);
         $query  = $request->getParsedBodyParam('query');
-        $result = GraphQL::executeQuery($schema, $query, null, $container);
+        $variables = (array) $request->getParsedBodyParam('variables');
+        $result = GraphQL::executeQuery($schema, $query, null, $container, $variables);
 
         return $this->createResponse(200, $result->toArray(true));
     }
