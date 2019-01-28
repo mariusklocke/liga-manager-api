@@ -26,7 +26,7 @@ class QueryType extends ObjectType
                         'args' => [
                             'id' => Type::string()
                         ],
-                        'resolve' => function ($root, $args, ContainerInterface $container) {
+                        'resolve' => function ($root, array $args, ContainerInterface $container) {
                             /** @var SeasonRepository $repo */
                             $repo = $container->get(SeasonRepository::class);
 

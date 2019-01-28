@@ -28,7 +28,7 @@ class MatchDayType extends ObjectType
                     ],
                     'matches' => [
                         'type' => Type::listOf(MatchType::getInstance()),
-                        'resolve' => function ($root, $args, ContainerInterface $container) {
+                        'resolve' => function (array $root, $args, ContainerInterface $container) {
                             /** @var MatchRepository $repo */
                             $repo = $container->get(MatchRepository::class);
                             return $repo->findMatches(

@@ -37,7 +37,7 @@ class SeasonType extends ObjectType
                     ],
                     'teams' => [
                         'type' => Type::listOf(TeamType::getInstance()),
-                        'resolve' => function ($root, $args, ContainerInterface $container) {
+                        'resolve' => function (array $root, $args, ContainerInterface $container) {
                             /** @var TeamRepository $repo */
                             $repo = $container->get(TeamRepository::class);
 
@@ -46,7 +46,7 @@ class SeasonType extends ObjectType
                     ],
                     'match_days' => [
                         'type' => Type::listOf(MatchDayType::getInstance()),
-                        'resolve' => function ($root, $args, ContainerInterface $container) {
+                        'resolve' => function (array $root, $args, ContainerInterface $container) {
                             /** @var SeasonRepository $repo */
                             $repo = $container->get(SeasonRepository::class);
 
