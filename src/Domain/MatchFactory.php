@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Application\Value\DatePeriod;
 use HexagonalPlayground\Domain\Util\Assert;
-use UnexpectedValueException;
 
 /**
  * A factory which constructs Match objects and implements a match day generation algorithm
@@ -74,13 +73,11 @@ class MatchFactory
             }
         }
 
-        if (count($teams) != 2) {
-            // This should never happen, but a check doesn't hurt and a potential algorithmic flaw can be found early
-            throw new UnexpectedValueException(sprintf(
-                'MatchDay generation algorithm failed: Expected 2 teams left. Actual: %d teams',
-                count($teams)
-            ));
-        }
+        // This should never happen, but a check doesn't hurt and a potential algorithmic flaw can be found early
+        Assert::true(count($teams) === 2, sprintf(
+            'MatchDay generation algorithm failed: Expected 2 teams left. Actual: %d teams',
+            count($teams)
+        ));
 
         $k = max(array_keys($teams));
         $l = min(array_keys($teams));
