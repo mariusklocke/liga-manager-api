@@ -17,10 +17,10 @@ class GraphQLController
     public function query(Request $request, ContainerInterface $container)
     {
         $schema = new Schema([
-            'query'      => new QueryType()
+            'query' => new QueryType()
         ]);
-        $query  = $request->getParsedBodyParam('query');
-        $variables = (array) $request->getParsedBodyParam('variables');
+        $query = $request->getParsedBodyParam('query');
+        $variables = (array)$request->getParsedBodyParam('variables');
         $result = GraphQL::executeQuery($schema, $query, null, $container, $variables);
 
         return $this->createResponse(200, $result->toArray(true));
