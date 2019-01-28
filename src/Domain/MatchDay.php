@@ -108,7 +108,6 @@ class MatchDay
 
     /**
      * @param Competition $competition
-     * @throws \UnexpectedValueException if $competition is an instance of unsupported type
      */
     private function setCompetition(Competition $competition): void
     {
@@ -116,8 +115,6 @@ class MatchDay
             $this->season = $competition;
         } elseif ($competition instanceof Tournament) {
             $this->tournament = $competition;
-        } else {
-            throw new \UnexpectedValueException('Unsupported competition type: ' . get_class($competition));
         }
     }
 }
