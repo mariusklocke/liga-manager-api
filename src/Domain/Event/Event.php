@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain\Event;
 
 use DateTimeImmutable;
-use DateTimeInterface;
+use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Util\Uuid;
 use JsonSerializable;
 use stdClass;
@@ -18,8 +18,13 @@ abstract class Event implements JsonSerializable
     private $occurredAt;
 
     /** @var array */
-    protected $payload;
+    private $payload;
 
+    /**
+     * @param string $id
+     * @param DateTimeImmutable $occurredAt
+     * @param array $payload
+     */
     private function __construct(string $id, DateTimeImmutable $occurredAt, array $payload)
     {
         $this->id         = $id;
@@ -27,39 +32,23 @@ abstract class Event implements JsonSerializable
         $this->payload    = $payload;
     }
 
+    /**
+     * @param array $payload
+     * @return static
+     */
     protected static function createFromPayload(array $payload)
     {
         return new static(Uuid::create(), new DateTimeImmutable(), $payload);
     }
 
     /**
-     * @return DateTimeInterface
-     */
-    public function getOccurredAt(): DateTimeInterface
-    {
-        return $this->occurredAt;
-    }
-
-    /**
      * @return string
      */
-    public function getId(): string
+    public static function getName(): string
     {
-        return $this->id;
+        $className = StringUtils::stripNamespace(static::class);
+        return StringUtils::camelCaseToSeparatedLowercase($className);
     }
-
-    /**
-     * @return array
-     */
-    public function getPayload(): array
-    {
-        return $this->payload;
-    }
-
-    /**
-     * @return string
-     */
-    abstract public function getName(): string;
 
     /**
      * @return stdClass
@@ -70,7 +59,7 @@ abstract class Event implements JsonSerializable
         $object->id         = $this->id;
         $object->occurredAt = $this->occurredAt->getTimestamp();
         $object->payload    = $this->payload;
-        $object->type       = $this->getName();
+        $object->type       = static::getName();
         return $object;
     }
 }

@@ -6,13 +6,11 @@ namespace HexagonalPlayground\Domain\Event;
 class TeamRenamed extends Event
 {
     /**
-     * @return string
+     * @param string $teamId
+     * @param string $oldName
+     * @param string $newName
+     * @return TeamRenamed
      */
-    public function getName(): string
-    {
-        return 'team:renamed';
-    }
-
     public static function create(string $teamId, string $oldName, string $newName): self
     {
         return self::createFromPayload([

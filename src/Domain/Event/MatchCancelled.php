@@ -7,14 +7,6 @@ use HexagonalPlayground\Domain\MatchResult;
 
 class MatchCancelled extends Event
 {
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return 'match:cancelled';
-    }
-
     public static function create(string $matchId, string $reason, ?MatchResult $previousResult)
     {
         return self::createFromPayload([

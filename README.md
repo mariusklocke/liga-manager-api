@@ -34,7 +34,7 @@ Please see `docker-compose.yml.dist` for that.
 
 Configure `user: dev` in `docker-compose.yml` if you want to mount the project files into the container.
 
-## Conventions
+## Naming Conventions
 
 ### Singular vs. Plural
 
@@ -48,3 +48,8 @@ Configure `user: dev` in `docker-compose.yml` if you want to mount the project f
 * PHP methods and properties: lowerCamelCase
 * JSON fields: snake_case
 * DB tables and columns: snake_case
+
+### Domain Events
+
+* Class name must start with a context subject like "Match" or "Team"
+* Class name must contain a verb in past tense

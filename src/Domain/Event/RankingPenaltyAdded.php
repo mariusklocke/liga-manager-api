@@ -15,12 +15,4 @@ class RankingPenaltyAdded extends Event
             'userId'     => $userId
         ]);
     }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return 'ranking:penalty:added';
-    }
 }

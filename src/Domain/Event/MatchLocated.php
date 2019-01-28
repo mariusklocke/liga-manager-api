@@ -17,28 +17,4 @@ class MatchLocated extends Event
             'pitchId' => $pitchId
         ]);
     }
-
-    /**
-     * @return string
-     */
-    public function getMatchId(): string
-    {
-        return $this->payload['matchId'];
-    }
-
-    /**
-     * @return string
-     */
-    public function getPitchId(): string
-    {
-        return $this->payload['pitchId'];
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return 'match:located';
-    }
 }

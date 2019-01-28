@@ -23,12 +23,4 @@ class RankingPenaltyRemoved extends Event
             'userId'     => $userId
         ]);
     }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return 'ranking:penalty:removed';
-    }
 }

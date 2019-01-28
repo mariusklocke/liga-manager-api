@@ -19,28 +19,4 @@ class MatchScheduled extends Event
             'kickoff' => $kickoff->getTimestamp()
         ]);
     }
-
-    /**
-     * @return string
-     */
-    public function getMatchId(): string
-    {
-        return $this->payload['matchId'];
-    }
-
-    /**
-     * @return DateTimeImmutable
-     */
-    public function getKickoff(): DateTimeImmutable
-    {
-        return new DateTimeImmutable('@' . $this->payload['kickoff']);
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return 'match:scheduled';
-    }
 }
