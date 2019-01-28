@@ -11,7 +11,6 @@ use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
-use HexagonalPlayground\Application\Value\DatePeriod;
 use HexagonalPlayground\Domain\User;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
