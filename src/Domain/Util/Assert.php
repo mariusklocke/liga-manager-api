@@ -42,11 +42,12 @@ class Assert
      * Asserts that a string is a valid email address
      *
      * @param string $value
+     * @param string $message
      * @throws DomainException
      */
-    public static function emailAddress(string $value): void
+    public static function emailAddress(string $value, string $message): void
     {
-        self::true(filter_var($value, FILTER_VALIDATE_EMAIL) !== false, 'Invalid email syntax');
+        self::true(filter_var($value, FILTER_VALIDATE_EMAIL) !== false, $message);
     }
 
     /**

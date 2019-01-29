@@ -27,7 +27,7 @@ class ContactPerson
      */
     public function __construct(string $firstName, string $lastName, string $phone, string $email)
     {
-        Assert::emailAddress($email);
+        Assert::emailAddress($email, 'Invalid email address for contact');
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->phone = $phone;

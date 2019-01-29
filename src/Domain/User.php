@@ -200,7 +200,7 @@ class User implements \JsonSerializable
      */
     public function setEmail(string $email): void
     {
-        Assert::emailAddress($email);
+        Assert::emailAddress($email, 'Invalid email address for user');
         $this->email = $email;
     }
 
