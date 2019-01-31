@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Routing;
 
 use HexagonalPlayground\Infrastructure\API\Controller\EventQueryController;
-use HexagonalPlayground\Infrastructure\API\Controller\GraphQLController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchDayCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\MatchQueryController;
@@ -19,6 +18,7 @@ use HexagonalPlayground\Infrastructure\API\Controller\TournamentCommandControlle
 use HexagonalPlayground\Infrastructure\API\Controller\TournamentQueryController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserCommandController;
 use HexagonalPlayground\Infrastructure\API\Controller\UserQueryController;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Controller as GraphQLController;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\Persistence\Read\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
