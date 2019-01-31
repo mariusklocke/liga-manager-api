@@ -52,6 +52,15 @@ class SeasonType extends ObjectType
 
                             return $repo->findMatchDays($root['id']);
                         }
+                    ],
+                    'ranking' => [
+                        'type' => RankingType::getInstance(),
+                        'resolve' => function (array $root, $args, ContainerInterface $container) {
+                            /** @var SeasonRepository $repo */
+                            $repo = $container->get(SeasonRepository::class);
+
+                            return $repo->findRanking($root['id']);
+                        }
                     ]
                 ];
             }
