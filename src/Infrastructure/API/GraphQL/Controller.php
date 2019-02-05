@@ -19,13 +19,14 @@ class Controller
     public function query(Request $request, ContainerInterface $container)
     {
         $schema = new Schema([
-            'query' => new QueryType(),
-            //'mutation' => new MutationType()
+            'query'    => new QueryType(),
+            'mutation' => new MutationType()
         ]);
         $query = $request->getParsedBodyParam('query');
         $variables = (array)$request->getParsedBodyParam('variables');
+        $context = new AppContext($request, $container);
 
-        $result = GraphQL::executeQuery($schema, $query, null, $container, $variables)
+        $result = GraphQL::executeQuery($schema, $query, null, $context, $variables)
             ->setErrorFormatter(function (Error $error) {
                 $formatted = FormattedError::createFromException($error, true);
                 $previous  = $error->getPrevious();

@@ -6,12 +6,18 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CommandInterface;
-use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Domain\Util\StringUtils;
-use Psr\Container\ContainerInterface;
 
 class MutationMapper
 {
+    /** @var TypeMapper */
+    private $typeMapper;
+
+    public function __construct()
+    {
+        $this->typeMapper = new TypeMapper();
+    }
+
     public function getDefinition(string $commandClass): array
     {
         $name = StringUtils::stripNamespace($commandClass);
@@ -25,11 +31,18 @@ class MutationMapper
             $name => [
                 'args' => $argTypes,
                 'type' => Type::boolean(),
-                'resolve' => function ($val, $args, ContainerInterface $container) use ($commandClass, $argumentOrder) {
+                'resolve' => function ($val, $args, AppContext $context) use ($commandClass, $argumentOrder) {
+                    $command = $this->createCommand($commandClass, $argumentOrder, $args);
+                    if (method_exists($command, 'withAuthenticatedUser')) {
+                        $command = $command->withAuthenticatedUser($context->getAuthenticatedUser());
+                    }
+                    if (method_exists($command, 'withBaseUri')) {
+                        $command = $command->withBaseUri($context->getRequest()->getUri());
+                    }
+
                     /** @var CommandBus $commandBus */
-                    $commandBus = $container->get('commandBus');
-                    $command    = $this->createCommand($commandClass, $argumentOrder, $args);
-                    $commandBus->execute($command->withAuthenticatedUser(new User('foo@example.com', '123456', 'foo', 'bar', 'admin')));
+                    $commandBus = $context->getContainer()->get('commandBus');
+                    $commandBus->execute($command);
                     return true;
                 }
             ]
@@ -39,7 +52,7 @@ class MutationMapper
     private function buildArgumentTypes(string $commandClass): array
     {
         return array_map(function(string $internalType) {
-            return $this->mapType($internalType);
+            return $this->typeMapper->map($internalType);
         }, $this->parseConstructorArgs($commandClass));
     }
 
@@ -58,46 +71,19 @@ class MutationMapper
     {
         $constructorDocBlock = (new \ReflectionClass($commandClass))->getConstructor()->getDocComment();
         if (!is_string($constructorDocBlock)) {
-            throw new \Exception('Missing DocBlock for ' . $commandClass);
+            throw new MappingException('Missing DocBlock for ' . $commandClass);
         }
+
         $args = [];
         foreach (explode("\n", $constructorDocBlock) as $line) {
             $matches = [];
             if (preg_match('/@param\s+(\S+)\s+(\S+)/', $line, $matches)) {
-                $name = substr($matches[2], 1); // strip $ characters
+                $name = substr($matches[2], 1); // strip $ character
+                $name = StringUtils::camelCaseToSeparatedLowercase($name, '_');
                 $args[$name] = $matches[1];
             }
         }
 
         return $args;
-    }
-
-    private function mapType(string $internalType): Type
-    {
-        switch ($internalType) {
-            case 'string':
-                return Type::string();
-            case 'string[]':
-                return Type::listOf(Type::string());
-            case 'int':
-            case 'integer':
-                return Type::int();
-            case 'DatePeriod':
-                return DatePeriodType::getInstance();
-            case 'DatePeriod[]':
-                return Type::listOf(DatePeriodType::getInstance());
-            case 'float|int':
-                return Type::float();
-            case 'UriInterface':
-                return Type::string();
-            case 'TeamIdPair[]':
-                return Type::listOf(Type::string());
-            case 'string|null':
-                return Type::string();
-            case 'string[]|null':
-                return Type::listOf(Type::string());
-        }
-
-        throw new \InvalidArgumentException(sprintf('Cannot map internal type "%s"', $internalType));
     }
 }

@@ -10,19 +10,22 @@ class CreateTeamCommand implements CommandInterface
     use AuthenticationAware;
 
     /** @var string */
-    private $teamName;
+    private $name;
 
     /**
-     * @param string $teamName
+     * @param string $name
      */
-    public function __construct($teamName)
+    public function __construct($name)
     {
-        TypeAssert::assertString($teamName, 'teamName');
-        $this->teamName = $teamName;
+        TypeAssert::assertString($name, 'teamName');
+        $this->name = $name;
     }
 
-    public function getTeamName() : string
+    /**
+     * @return string
+     */
+    public function getName() : string
     {
-        return $this->teamName;
+        return $this->name;
     }
 }

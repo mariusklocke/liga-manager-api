@@ -28,7 +28,7 @@ class CreateTeamHandler
     public function __invoke(CreateTeamCommand $command)
     {
         IsAdmin::check($command->getAuthenticatedUser());
-        $team = new Team($command->getTeamName());
+        $team = new Team($command->getName());
         $this->teamRepository->save($team);
         return $team->getId();
     }

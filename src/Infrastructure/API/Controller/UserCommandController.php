@@ -47,11 +47,11 @@ class UserCommandController extends CommandController
      */
     public function sendPasswordResetMail(Request $request): ResponseInterface
     {
-        $this->commandBus->execute(new SendPasswordResetMailCommand(
+        $command = new SendPasswordResetMailCommand(
             $request->getParsedBodyParam('email'),
-            $request->getUri(),
             $request->getParsedBodyParam('target_path')
-        ));
+        );
+        $this->commandBus->execute($command->withBaseUri($request->getUri()));
         return $this->createResponse(204);
     }
 

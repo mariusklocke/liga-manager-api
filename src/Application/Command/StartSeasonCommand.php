@@ -10,6 +10,9 @@ class StartSeasonCommand implements CommandInterface
     /** @var string */
     private $seasonId;
 
+    /**
+     * @param string $seasonId
+     */
     public function __construct(string $seasonId)
     {
         $this->seasonId = $seasonId;

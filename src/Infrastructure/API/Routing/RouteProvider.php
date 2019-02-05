@@ -229,7 +229,7 @@ class RouteProvider
 
             $app->post('/graphql', function ($request, $response, $args) use ($container) {
                 return (new GraphQLController())->query($request, $container);
-            });
+            })->add($auth);
         });
     }
 }

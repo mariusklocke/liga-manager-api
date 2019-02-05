@@ -11,21 +11,23 @@ class SendPasswordResetMailCommand implements CommandInterface
     /** @var string */
     private $email;
 
+    /** @var string */
+    private $targetPath;
+
     /** @var UriInterface */
-    private $targetUri;
+    private $baseUri;
 
     /**
      * @param string $email
-     * @param UriInterface $baseUri
      * @param string $targetPath
      */
-    public function __construct($email, UriInterface $baseUri, $targetPath)
+    public function __construct($email, $targetPath)
     {
         TypeAssert::assertString($email, 'email');
         TypeAssert::assertString($targetPath, 'targetPath');
 
-        $this->email     = $email;
-        $this->targetUri = $baseUri->withPath($targetPath);
+        $this->email      = $email;
+        $this->targetPath = $targetPath;
     }
 
     /**
@@ -37,10 +39,30 @@ class SendPasswordResetMailCommand implements CommandInterface
     }
 
     /**
+     * @return string
+     */
+    public function getTargetPath(): string
+    {
+        return $this->targetPath;
+    }
+
+    /**
      * @return UriInterface
      */
-    public function getTargetUri(): UriInterface
+    public function getBaseUri(): UriInterface
     {
-        return $this->targetUri;
+        return $this->baseUri;
+    }
+
+    /**
+     * @param UriInterface $baseUri
+     * @return SendPasswordResetMailCommand
+     */
+    public function withBaseUri(UriInterface $baseUri): self
+    {
+        $clone = clone $this;
+        $clone->baseUri = $baseUri;
+
+        return $clone;
     }
 }

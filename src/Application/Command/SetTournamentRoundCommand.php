@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\InputParser;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Application\Value\DatePeriod;
 use HexagonalPlayground\Application\Value\TeamIdPair;
@@ -27,25 +26,21 @@ class SetTournamentRoundCommand implements CommandInterface
     /**
      * @param string $tournamentId
      * @param int $round
-     * @param array $teamIdPairs
-     * @param array $datePeriod
+     * @param TeamIdPair[] $teamIdPairs
+     * @param DatePeriod $datePeriod
      */
-    public function __construct($tournamentId, $round, $teamIdPairs, $datePeriod)
+    public function __construct($tournamentId, $round, array $teamIdPairs, DatePeriod $datePeriod)
     {
         TypeAssert::assertString($tournamentId, 'tournamentId');
         TypeAssert::assertInteger($round, 'round');
         TypeAssert::assertArray($teamIdPairs, 'teamIdPairs');
-        TypeAssert::assertArray($datePeriod, 'datePeriod');
 
         $this->tournamentId = $tournamentId;
         $this->round        = $round;
-        $this->datePeriod   = InputParser::parseDatePeriod($datePeriod);
-        $this->teamIdPairs  = [];
-
-        foreach ($teamIdPairs as $index => $pair) {
-            TypeAssert::assertArray($pair, 'teamIdPairs[' . $index . ']');
-            $this->teamIdPairs[] = TeamIdPair::fromArray($pair);
-        }
+        $this->datePeriod   = $datePeriod;
+        $this->teamIdPairs  = array_map(function (TeamIdPair $idPair) {
+            return $idPair;
+        }, $teamIdPairs);
     }
 
     /**

@@ -10,6 +10,9 @@ class DeleteTeamCommand implements CommandInterface
     /** @var string */
     private $teamId;
 
+    /**
+     * @param string $teamId
+     */
     public function __construct(string $teamId)
     {
         $this->teamId = $teamId;

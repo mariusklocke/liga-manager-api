@@ -10,8 +10,6 @@ class TeamType extends ObjectType
 {
     use SingletonTrait;
 
-    const NAME = 'Team';
-
     public function __construct()
     {
         $config = [

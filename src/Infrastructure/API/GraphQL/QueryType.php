@@ -6,18 +6,14 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
-use Psr\Container\ContainerInterface;
 
 class QueryType extends ObjectType
 {
     use SingletonTrait;
 
-    const NAME = 'Query';
-
     public function __construct()
     {
         $config = [
-            'name'   => self::NAME,
             'fields' => function () {
                 return [
                     'season' => [
@@ -26,9 +22,9 @@ class QueryType extends ObjectType
                         'args' => [
                             'id' => Type::string()
                         ],
-                        'resolve' => function ($root, array $args, ContainerInterface $container) {
+                        'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var SeasonRepository $repo */
-                            $repo = $container->get(SeasonRepository::class);
+                            $repo = $context->getContainer()->get(SeasonRepository::class);
 
                             return $repo->findSeasonById($args['id']);
                         }
@@ -36,9 +32,9 @@ class QueryType extends ObjectType
                     'allSeasons' => [
                         'type' => Type::listOf(SeasonType::getInstance()),
                         'description' => 'Get a list of all seasons',
-                        'resolve' => function ($root, $args, ContainerInterface $container) {
+                        'resolve' => function ($root, $args, AppContext $context) {
                             /** @var SeasonRepository $repo */
-                            $repo = $container->get(SeasonRepository::class);
+                            $repo = $context->getContainer()->get(SeasonRepository::class);
 
                             return $repo->findAllSeasons();
                         }

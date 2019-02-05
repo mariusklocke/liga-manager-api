@@ -8,11 +8,17 @@ class DeletePitchCommand
     /** @var string */
     private $pitchId;
 
+    /**
+     * @param string $pitchId
+     */
     public function __construct(string $pitchId)
     {
         $this->pitchId = $pitchId;
     }
 
+    /**
+     * @return string
+     */
     public function getPitchId() : string
     {
         return $this->pitchId;

@@ -7,13 +7,10 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Filter\MatchFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
-use Psr\Container\ContainerInterface;
 
 class MatchDayType extends ObjectType
 {
     use SingletonTrait;
-
-    const NAME = 'MatchDay';
 
     public function __construct()
     {
@@ -28,9 +25,9 @@ class MatchDayType extends ObjectType
                     ],
                     'matches' => [
                         'type' => Type::listOf(MatchType::getInstance()),
-                        'resolve' => function (array $root, $args, ContainerInterface $container) {
+                        'resolve' => function (array $root, $args, AppContext $context) {
                             /** @var MatchRepository $repo */
-                            $repo = $container->get(MatchRepository::class);
+                            $repo = $context->getContainer()->get(MatchRepository::class);
                             return $repo->findMatches(
                                 new MatchFilter(null, null, $root['id'], null)
                             );

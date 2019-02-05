@@ -11,6 +11,7 @@ use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Application\Value\DatePeriod;
 use HexagonalPlayground\Domain\User;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -136,7 +137,7 @@ class LoadFixturesCommand extends Command
         for ($i = 0; $i < $n; $i++) {
             $start = $start->modify('+7 days');
             $end   = $end->modify('+7 days');
-            $result[] = ['from' => $start->format(DATE_ATOM), 'to' => $end->format(DATE_ATOM)];
+            $result[] = new DatePeriod($start, $end);
         }
 
         return $result;

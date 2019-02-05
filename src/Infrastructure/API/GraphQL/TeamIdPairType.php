@@ -7,9 +7,9 @@ use Exception;
 use GraphQL\Error\Error;
 use GraphQL\Language\AST\Node;
 use GraphQL\Type\Definition\ScalarType;
-use HexagonalPlayground\Application\InputParser;
+use HexagonalPlayground\Application\Value\TeamIdPair;
 
-class DatePeriodType extends ScalarType
+class TeamIdPairType extends ScalarType
 {
     use SingletonTrait;
 
@@ -40,7 +40,7 @@ class DatePeriodType extends ScalarType
      */
     public function parseValue($value)
     {
-        return InputParser::parseDatePeriod($value);
+        return TeamIdPair::fromArray($value);
     }
 
     /**

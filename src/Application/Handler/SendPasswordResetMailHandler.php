@@ -46,7 +46,10 @@ class SendPasswordResetMailHandler
         $user  = $this->userRepository->findByEmail($command->getEmail());
         $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 day'));
 
-        $targetUri = $command->getTargetUri()->withQuery(http_build_query(['token' => $token->encode()]));
+        $targetUri = $command
+            ->getBaseUri()
+            ->withPath($command->getTargetPath())
+            ->withQuery(http_build_query(['token' => $token->encode()]));
         $message = $this->mailer->createMessage();
         $message->setTo([$user->getEmail() => $user->getFullName()]);
         $message->setSubject('Reset your password');

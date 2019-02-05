@@ -7,13 +7,10 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
-use Psr\Container\ContainerInterface;
 
 class SeasonType extends ObjectType
 {
     use SingletonTrait;
-
-    const NAME = 'Season';
 
     public function __construct()
     {
@@ -37,27 +34,27 @@ class SeasonType extends ObjectType
                     ],
                     'teams' => [
                         'type' => Type::listOf(TeamType::getInstance()),
-                        'resolve' => function (array $root, $args, ContainerInterface $container) {
+                        'resolve' => function (array $root, $args, AppContext $context) {
                             /** @var TeamRepository $repo */
-                            $repo = $container->get(TeamRepository::class);
+                            $repo = $context->getContainer()->get(TeamRepository::class);
 
                             return $repo->findTeamsBySeasonId($root['id']);
                         }
                     ],
                     'match_days' => [
                         'type' => Type::listOf(MatchDayType::getInstance()),
-                        'resolve' => function (array $root, $args, ContainerInterface $container) {
+                        'resolve' => function (array $root, $args, AppContext $context) {
                             /** @var SeasonRepository $repo */
-                            $repo = $container->get(SeasonRepository::class);
+                            $repo = $context->getContainer()->get(SeasonRepository::class);
 
                             return $repo->findMatchDays($root['id']);
                         }
                     ],
                     'ranking' => [
                         'type' => RankingType::getInstance(),
-                        'resolve' => function (array $root, $args, ContainerInterface $container) {
+                        'resolve' => function (array $root, $args, AppContext $context) {
                             /** @var SeasonRepository $repo */
-                            $repo = $container->get(SeasonRepository::class);
+                            $repo = $context->getContainer()->get(SeasonRepository::class);
 
                             return $repo->findRanking($root['id']);
                         }

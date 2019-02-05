@@ -12,6 +12,8 @@ use HexagonalPlayground\Application\Command\EndSeasonCommand;
 use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Application\InputParser;
+use HexagonalPlayground\Application\TypeAssert;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 
@@ -35,7 +37,14 @@ class SeasonCommandController extends CommandController
      */
     public function createMatches(string $seasonId, Request $request): ResponseInterface
     {
-        $command = new CreateMatchesForSeasonCommand($seasonId, $request->getParsedBodyParam('dates'));
+        $dates   = $request->getParsedBodyParam('dates');
+        TypeAssert::assertArray($dates, 'dates');
+        $dates   = array_map(function ($datePeriod) {
+            TypeAssert::assertArray($datePeriod, 'dates[]');
+            return InputParser::parseDatePeriod($datePeriod);
+        }, $dates);
+
+        $command = new CreateMatchesForSeasonCommand($seasonId, $dates);
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
         return $this->createResponse(204);
     }

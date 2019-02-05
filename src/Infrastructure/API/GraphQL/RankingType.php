@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
-use Psr\Container\ContainerInterface;
 
 class RankingType extends ObjectType
 {
@@ -28,9 +27,9 @@ class RankingType extends ObjectType
                     ],
                     'season' => [
                         'type' => SeasonType::getInstance(),
-                        'resolve' => function (array $root, $args, ContainerInterface $container) {
+                        'resolve' => function (array $root, $args, AppContext $context) {
                             /** @var SeasonRepository $repo */
-                            $repo = $container->get(SeasonRepository::class);
+                            $repo = $context->getContainer()->get(SeasonRepository::class);
 
                             return $repo->findSeasonById($root['season_id']);
                         }

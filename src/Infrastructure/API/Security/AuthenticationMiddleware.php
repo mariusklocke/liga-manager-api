@@ -17,17 +17,12 @@ class AuthenticationMiddleware
     /** @var ContainerInterface */
     private $container;
 
-    /** @var bool */
-    private $credentialsRequired;
-
     /**
      * @param ContainerInterface $container
-     * @param bool $credentialsRequired
      */
-    public function __construct(ContainerInterface $container, bool $credentialsRequired = false)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->credentialsRequired = $credentialsRequired;
     }
 
     /**
@@ -54,7 +49,12 @@ class AuthenticationMiddleware
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
     {
-        list($type, $secret) = $this->parseAuthHeader($request);
+        $rawHeaderValue = $this->getAuthHeader($request);
+        if (!is_string($rawHeaderValue)) {
+            return $next($request, $response);
+        }
+
+        list($type, $secret) = $this->parseAuthHeader($rawHeaderValue);
         switch (strtolower($type)) {
             case 'basic':
                 list($email, $password) = $this->parseCredentials($secret);
@@ -78,9 +78,6 @@ class AuthenticationMiddleware
                 return $response->withHeader('X-Token', $token->encode());
 
             case 'bearer':
-                if ($this->credentialsRequired) {
-                    throw new AuthenticationException('Bearer authentication is not allowed on this route');
-                }
                 $user = $this->getAuthenticator()->authenticateByToken(JsonWebToken::decode($secret));
                 return $next($this->setUser($request, $user), $response);
         }
@@ -95,16 +92,25 @@ class AuthenticationMiddleware
 
     /**
      * @param RequestInterface $request
-     * @return string[]
+     * @return string|null
      */
-    private function parseAuthHeader(RequestInterface $request): array
+    private function getAuthHeader(RequestInterface $request)
     {
         $headerValues = $request->getHeader('Authorization');
         if (count($headerValues) === 0) {
-            throw new AuthenticationException('Missing Authorization header');
+            return null;
         }
 
-        $parts  = explode(' ', array_shift($headerValues), 2);
+        return array_shift($headerValues);
+    }
+
+    /**
+     * @param string $rawHeaderValue
+     * @return string[]
+     */
+    private function parseAuthHeader(string $rawHeaderValue): array
+    {
+        $parts  = explode(' ', $rawHeaderValue, 2);
         $secret = count($parts) > 1 ? $parts[1] : $parts[0];
         $type   = count($parts) > 1 ? $parts[0]: 'bearer';
         if (!is_string($type) || !is_string($secret)) {

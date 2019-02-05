@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\InputParser;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Application\Value\DatePeriod;
 
@@ -19,14 +18,13 @@ class RescheduleMatchDayCommand implements CommandInterface
 
     /**
      * @param string $matchDayId
-     * @param array $datePeriod
+     * @param DatePeriod $datePeriod
      */
-    public function __construct($matchDayId, $datePeriod)
+    public function __construct($matchDayId, DatePeriod $datePeriod)
     {
         TypeAssert::assertString($matchDayId, 'matchDayId');
-        TypeAssert::assertArray($datePeriod, 'datePeriod');
         $this->matchDayId = $matchDayId;
-        $this->datePeriod = InputParser::parseDatePeriod($datePeriod);
+        $this->datePeriod = $datePeriod;
     }
 
     /**

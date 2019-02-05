@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\InputParser;
-use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Application\Value\DatePeriod;
 
 class CreateMatchesForSeasonCommand implements CommandInterface
@@ -14,24 +12,19 @@ class CreateMatchesForSeasonCommand implements CommandInterface
     /** @var string */
     private $seasonId;
 
-    /** @var array|DatePeriod[] */
+    /** @var DatePeriod[] */
     private $matchDaysDates;
 
     /**
-     * @param string $seasonId
-     * @param array  $dates
+     * @param string       $seasonId
+     * @param DatePeriod[] $dates
      */
-    public function __construct($seasonId, $dates)
+    public function __construct(string $seasonId, array $dates)
     {
-        TypeAssert::assertString($seasonId, 'seasonId');
-        TypeAssert::assertArray($dates, 'dates');
-
         $this->seasonId = $seasonId;
-        $this->matchDaysDates = [];
-        foreach ($dates as $index => $datePeriod) {
-            TypeAssert::assertArray($datePeriod, 'dates[' . $index . ']');
-            $this->matchDaysDates[] = InputParser::parseDatePeriod($datePeriod);
-        }
+        $this->matchDaysDates = array_map(function (DatePeriod $datePeriod) {
+            return $datePeriod;
+        }, $dates);
     }
 
     /**
