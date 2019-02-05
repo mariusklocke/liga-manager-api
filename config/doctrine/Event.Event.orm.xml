@@ -4,6 +4,9 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\Event\Event" table="events" inheritance-type="SINGLE_TABLE">
+        <indexes>
+            <index columns="occurred_at"/>
+        </indexes>
         <id name="id" type="string" />
         <discriminator-column name="type" type="string" />
         <discriminator-map>
