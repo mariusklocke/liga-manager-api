@@ -19,7 +19,7 @@ ENV PHPIZE_DEPS \
     re2c
 
 # persistent / runtime deps
-RUN apk add --no-cache --virtual .persistent-deps openssh-keygen
+RUN apk add --no-cache --virtual .persistent-deps
 
 # Install PHP extensions
 RUN set -xe \
