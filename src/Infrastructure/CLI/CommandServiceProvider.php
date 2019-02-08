@@ -35,6 +35,9 @@ class CommandServiceProvider implements ServiceProviderInterface
                         $container[OrmTransactionWrapperInterface::class],
                         $container[Importer::class]
                     );
+                },
+                'app:generate-jwt-secret' => function () use ($container) {
+                    return new GenerateJwtSecretCommand();
                 }
             ]);
         };
