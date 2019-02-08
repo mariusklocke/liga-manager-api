@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
+use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 
 class RankingPenaltyType extends ObjectType
 {
@@ -19,10 +20,12 @@ class RankingPenaltyType extends ObjectType
                     'team' => [
                         'type' => TeamType::getInstance(),
                         'resolve' => function (array $root, $args, AppContext $context) {
-                            /** @var TeamRepository $repo */
-                            $repo = $context->getContainer()->get(TeamRepository::class);
-
-                            return $repo->findTeamById($root['team_id']);
+                            /** @var BufferedTeamLoader $loader */
+                            $loader = $context->getContainer()->get(BufferedTeamLoader::class);
+                            $loader->addTeam($root['team_id']);
+                            return new Deferred(function () use ($loader, $root) {
+                                return $loader->getByTeam($root['team_id']);
+                            });
                         }
                     ],
                     'reason' => [

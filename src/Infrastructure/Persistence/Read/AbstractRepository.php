@@ -59,4 +59,13 @@ class AbstractRepository
         }
         return "DATE_FORMAT($field, '%Y-%m-%dT%TZ') as $alias";
     }
+
+    /**
+     * @param array $params
+     * @return string
+     */
+    protected function getPlaceholders(array $params): string
+    {
+        return implode(',', array_fill(0, count($params), '?'));
+    }
 }

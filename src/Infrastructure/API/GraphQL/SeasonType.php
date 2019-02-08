@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
+use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchDayLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
-use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 
 class SeasonType extends ObjectType
 {
@@ -35,19 +37,23 @@ class SeasonType extends ObjectType
                     'teams' => [
                         'type' => Type::listOf(TeamType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {
-                            /** @var TeamRepository $repo */
-                            $repo = $context->getContainer()->get(TeamRepository::class);
-
-                            return $repo->findTeamsBySeasonId($root['id']);
+                            /** @var BufferedTeamLoader $loader */
+                            $loader = $context->getContainer()->get(BufferedTeamLoader::class);
+                            $loader->addSeason($root['id']);
+                            return new Deferred(function () use ($loader, $root) {
+                                return $loader->getBySeason($root['id']);
+                            });
                         }
                     ],
                     'match_days' => [
                         'type' => Type::listOf(MatchDayType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {
-                            /** @var SeasonRepository $repo */
-                            $repo = $context->getContainer()->get(SeasonRepository::class);
-
-                            return $repo->findMatchDays($root['id']);
+                            /** @var BufferedMatchDayLoader $loader */
+                            $loader = $context->getContainer()->get(BufferedMatchDayLoader::class);
+                            $loader->addSeason($root['id']);
+                            return new Deferred(function () use ($loader, $root) {
+                                return $loader->getBySeason($root['id']);
+                            });
                         }
                     ],
                     'ranking' => [

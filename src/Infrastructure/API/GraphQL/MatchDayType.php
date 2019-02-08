@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
+use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Filter\MatchFilter;
-use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchLoader;
 
 class MatchDayType extends ObjectType
 {
@@ -26,11 +26,12 @@ class MatchDayType extends ObjectType
                     'matches' => [
                         'type' => Type::listOf(MatchType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {
-                            /** @var MatchRepository $repo */
-                            $repo = $context->getContainer()->get(MatchRepository::class);
-                            return $repo->findMatches(
-                                new MatchFilter(null, null, $root['id'], null)
-                            );
+                            /** @var BufferedMatchLoader $loader */
+                            $loader = $context->getContainer()->get(BufferedMatchLoader::class);
+                            $loader->addMatchDay($root['id']);
+                            return new Deferred(function() use ($root, $loader) {
+                                return $loader->getByMatchDay($root['id']);
+                            });
                         }
                     ]
                 ];

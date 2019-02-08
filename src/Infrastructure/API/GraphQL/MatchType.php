@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
+use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 
 class MatchType extends ObjectType
 {
@@ -22,19 +23,13 @@ class MatchType extends ObjectType
                     'home_team' => [
                         'type' => TeamType::getInstance(),
                         'resolve' => function (array $root, $args, AppContext $context) {
-                            /** @var TeamRepository $repo */
-                            $repo = $context->getContainer()->get(TeamRepository::class);
-
-                            return $repo->findTeamById($root['home_team_id']);
+                            return $this->resolveTeam($root['home_team_id'], $context);
                         }
                     ],
                     'guest_team' => [
                         'type' => TeamType::getInstance(),
                         'resolve' => function (array $root, $args, AppContext $context) {
-                            /** @var TeamRepository $repo */
-                            $repo = $context->getContainer()->get(TeamRepository::class);
-
-                            return $repo->findTeamById($root['guest_team_id']);
+                            return $this->resolveTeam($root['guest_team_id'], $context);
                         }
                     ],
                     'kickoff' => [
@@ -44,5 +39,15 @@ class MatchType extends ObjectType
             }
         ];
         parent::__construct($config);
+    }
+
+    private function resolveTeam(string $teamId, AppContext $context): Deferred
+    {
+        /** @var BufferedTeamLoader $loader */
+        $loader = $context->getContainer()->get(BufferedTeamLoader::class);
+        $loader->addTeam($teamId);
+        return new Deferred(function() use ($loader, $teamId) {
+            return $loader->getByTeam($teamId);
+        });
     }
 }

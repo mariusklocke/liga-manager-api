@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\LoaderProvider;
 use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Routing\RouteProvider;
 use HexagonalPlayground\Infrastructure\CommandBusProvider;
@@ -56,6 +57,7 @@ class Bootstrap
         (new SecurityServiceProvider())->register($container);
         (new MailServiceProvider())->register($container);
         (new EventServiceProvider())->register($container);
+        (new LoaderProvider())->register($container);
 
         return $container;
     }
