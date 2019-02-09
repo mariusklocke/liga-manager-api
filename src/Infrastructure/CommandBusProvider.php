@@ -121,7 +121,7 @@ class CommandBusProvider implements ServiceProviderInterface
                 $container['orm.repository.team']
             );
         };
-        $container[ChangeUserPasswordHandler::class] = function () use ($container) {
+        $container[ChangeUserPasswordHandler::class] = function () {
             return new ChangeUserPasswordHandler();
         };
         $container[CreateUserHandler::class] = function () use ($container) {

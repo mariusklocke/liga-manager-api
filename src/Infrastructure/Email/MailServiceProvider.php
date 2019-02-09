@@ -24,7 +24,7 @@ class MailServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
-        $container[MailerInterface::class] = function () use ($container) {
+        $container[MailerInterface::class] = function () {
             $transport = new Swift_SmtpTransport(Environment::get('SMTP_HOST'), Environment::get('SMTP_PORT'));
             list($senderAddress, $senderName) = explode(';', Environment::get('EMAIL_SENDER'));
             return new SwiftMailer(
@@ -33,7 +33,7 @@ class MailServiceProvider implements ServiceProviderInterface
                 $senderName
             );
         };
-        $container[TemplateRenderer::class] = function () use ($container) {
+        $container[TemplateRenderer::class] = function () {
             return new TemplateRenderer(Environment::get('APP_HOME') . '/templates');
         };
     }

@@ -53,7 +53,7 @@ class Assert
     /**
      * Asserts that a value is contained in a whitelist
      *
-     * @param $value
+     * @param mixed $value
      * @param array $whitelist
      * @param string $message
      * @throws DomainException

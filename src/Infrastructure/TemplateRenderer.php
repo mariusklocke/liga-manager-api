@@ -11,9 +11,9 @@ class TemplateRenderer implements TemplateRendererInterface
     private $templatePath;
 
     /**
-     * @param $templatePath
+     * @param string $templatePath
      */
-    public function __construct($templatePath)
+    public function __construct(string $templatePath)
     {
         if (!is_dir($templatePath)) {
             throw new InvalidArgumentException('Template directory does not exist');

@@ -148,7 +148,7 @@ class Ranking
     {
         $parts = [];
         foreach ($this->positions as $teamId => $position) {
-            /** @var $position RankingPosition */
+            /** @var RankingPosition $position */
             $parts[] = $position->toString();
         }
         return implode(PHP_EOL, $parts);
