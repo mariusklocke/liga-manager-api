@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 
 class QueryType extends ObjectType
 {
@@ -37,6 +38,15 @@ class QueryType extends ObjectType
                             $repo = $context->getContainer()->get(SeasonRepository::class);
 
                             return $repo->findAllSeasons();
+                        }
+                    ],
+                    'allTeams' => [
+                        'type' => Type::listOf(TeamType::getInstance()),
+                        'resolve' => function ($root, $args, AppContext $context) {
+                            /** @var TeamRepository $repo */
+                            $repo = $context->getContainer()->get(TeamRepository::class);
+
+                            return $repo->findAllTeams();
                         }
                     ]
                 ];
