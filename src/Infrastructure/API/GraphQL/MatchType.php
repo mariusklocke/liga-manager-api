@@ -34,6 +34,18 @@ class MatchType extends ObjectType
                     ],
                     'kickoff' => [
                         'type' => Type::string()
+                    ],
+                    'home_score' => [
+                        'type' => Type::int()
+                    ],
+                    'guest_score' => [
+                        'type' => Type::int()
+                    ],
+                    'cancelled_at' => [
+                        'type' => Type::string()
+                    ],
+                    'cancellation_reason' => [
+                        'type' => Type::string()
                     ]
                 ];
             }
