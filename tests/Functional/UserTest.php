@@ -13,7 +13,7 @@ class UserTest extends TestCase
     /** @var EmailClientInterface */
     private $emailClient;
 
-    public function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->emailClient = new MaildevClient(Environment::get('MAILDEV_URI'));

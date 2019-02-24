@@ -62,7 +62,7 @@ class BasicUseCaseTest extends TestCase
     public function testSeasonCanBeFound(string $seasonId)
     {
         $seasonList = $this->client->getAllSeasons();
-        self::assertInternalType('array', $seasonList);
+        self::assertIsArray($seasonList);
 
         $found = false;
         foreach ($seasonList as $season) {
@@ -162,7 +162,7 @@ class BasicUseCaseTest extends TestCase
         self::assertObjectHasAttribute('positions', $ranking);
         self::assertObjectHasAttribute('updated_at', $ranking);
         $positions = $ranking->positions;
-        self::assertInternalType('array', $positions);
+        self::assertIsArray($positions);
         $count = 0;
         $expectedProperties = [
             'conceded_goals',
@@ -186,7 +186,7 @@ class BasicUseCaseTest extends TestCase
         self::assertEquals(4, $count);
 
         self::assertObjectHasAttribute('penalties', $ranking);
-        self::assertInternalType('array', $ranking->penalties);
+        self::assertIsArray($ranking->penalties);
         self::assertCount(0, $ranking->penalties);
 
         return $seasonId;
@@ -231,7 +231,7 @@ class BasicUseCaseTest extends TestCase
         $ranking = $this->client->getSeasonRanking($seasonId);
         self::assertObjectHasAttribute('positions', $ranking);
         $positions = $ranking->positions;
-        self::assertInternalType('array', $positions);
+        self::assertIsArray($positions);
 
         $count = 0;
         $found = false;
@@ -408,7 +408,7 @@ class BasicUseCaseTest extends TestCase
         $this->client->setBasicAuth('admin@example.com', '123456');
         $response = $this->client->createTournament('Foo');
         self::assertObjectHasAttribute('id', $response);
-        self::assertInternalType('string', $response->id);
+        self::assertIsString($response->id);
         self::assertGreaterThan(0, strlen($response->id));
 
         return $response->id;

@@ -12,7 +12,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     /** @var RichClient */
     protected $client;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->client = new RichClient(new SlimClient(Bootstrap::bootstrap()));
     }

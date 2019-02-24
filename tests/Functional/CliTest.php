@@ -12,7 +12,7 @@ class CliTest extends \PHPUnit\Framework\TestCase
     /** @var Application */
     private $app;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->app = Bootstrap::bootstrap();
     }
