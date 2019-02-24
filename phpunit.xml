@@ -4,7 +4,8 @@
          bootstrap="tests/bootstrap.php"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
-         verbose="true">
+         verbose="true"
+         cacheResult="false">
     <testsuite name="default">
         <directory suffix="Test.php">tests</directory>
     </testsuite>
