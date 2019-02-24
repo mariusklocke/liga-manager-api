@@ -23,5 +23,8 @@ class LoaderProvider implements ServiceProviderInterface
         $container[BufferedMatchLoader::class] = function () use ($container) {
             return new BufferedMatchLoader(new MatchLoader($container[ReadDbAdapterInterface::class]));
         };
+        $container[BufferedPitchLoader::class] = function () use ($container) {
+            return new BufferedPitchLoader(new PitchLoader($container[ReadDbAdapterInterface::class]));
+        };
     }
 }

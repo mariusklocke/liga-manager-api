@@ -1,12 +1,11 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
-class TeamType extends ObjectType
+class ContactType extends ObjectType
 {
     use SingletonTrait;
 
@@ -15,17 +14,17 @@ class TeamType extends ObjectType
         $config = [
             'fields' => function() {
                 return [
-                    'id' => [
+                    'first_name' => [
                         'type' => Type::string()
                     ],
-                    'name' => [
+                    'last_name' => [
                         'type' => Type::string()
                     ],
-                    'created_at' => [
-                        'type' => Type::string() // look for date-time
+                    'phone' => [
+                        'type' => Type::string()
                     ],
-                    'contact' => [
-                        'type' => ContactType::getInstance()
+                    'email' => [
+                        'type' => Type::string()
                     ]
                 ];
             }

@@ -17,6 +17,9 @@ class RankingPositionType extends ObjectType
         $config = [
             'fields' => function() {
                 return [
+                    'id' => [
+                        'type' => Type::string()
+                    ],
                     'team' => [
                         'type' => TeamType::getInstance(),
                         'resolve' => function (array $root, $args, AppContext $context) {

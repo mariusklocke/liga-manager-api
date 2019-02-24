@@ -30,6 +30,15 @@ class UserType extends ObjectType
 
                             return $repo->findTeamsByUserId($root['id']);
                         }
+                    ],
+                    'role' => [
+                        'type' => Type::string()
+                    ],
+                    'first_name' => [
+                        'type' => Type::string()
+                    ],
+                    'last_name' => [
+                        'type' => Type::string()
                     ]
                 ];
             }

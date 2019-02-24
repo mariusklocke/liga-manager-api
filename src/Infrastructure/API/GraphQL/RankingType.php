@@ -16,6 +16,9 @@ class RankingType extends ObjectType
         $config = [
             'fields' => function() {
                 return [
+                    'id' => [
+                        'type' => Type::string()
+                    ],
                     'updated_at' => [
                         'type' => Type::string()
                     ],
@@ -24,16 +27,7 @@ class RankingType extends ObjectType
                     ],
                     'penalties' => [
                         'type' => Type::listOf(RankingPenaltyType::getInstance())
-                    ],
-                    'season' => [
-                        'type' => SeasonType::getInstance(),
-                        'resolve' => function (array $root, $args, AppContext $context) {
-                            /** @var SeasonRepository $repo */
-                            $repo = $context->getContainer()->get(SeasonRepository::class);
-
-                            return $repo->findSeasonById($root['season_id']);
-                        }
-                    ],
+                    ]
                 ];
             }
         ];

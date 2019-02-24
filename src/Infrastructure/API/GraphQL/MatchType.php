@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedPitchLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 
 class MatchType extends ObjectType
@@ -46,6 +47,21 @@ class MatchType extends ObjectType
                     ],
                     'cancellation_reason' => [
                         'type' => Type::string()
+                    ],
+                    'pitch' => [
+                        'type' => PitchType::getInstance(),
+                        'resolve' => function (array $root, $args, AppContext $context) {
+                            if (null === $root['pitch_id']) {
+                                return null;
+                            }
+
+                            /** @var BufferedPitchLoader $loader */
+                            $loader = $context->getContainer()->get(BufferedPitchLoader::class);
+                            $loader->addPitch($root['pitch_id']);
+                            return new Deferred(function () use ($loader, $root) {
+                                return $loader->getByPitch($root['pitch_id']);
+                            });
+                        }
                     ]
                 ];
             }

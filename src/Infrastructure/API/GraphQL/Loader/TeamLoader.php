@@ -22,7 +22,7 @@ class TeamLoader extends AbstractRepository
         $query = "SELECT id, name, $createdAt, contact_email, contact_first_name, contact_last_name, contact_phone FROM teams WHERE id IN ($placeholder)";
         $result = [];
         foreach ($this->getDb()->fetchAll($query, $teamIds) as $row) {
-            $result[$row['id']] = $row;
+            $result[$row['id']] = $this->hydrate($row);
         }
 
         return $result;
@@ -50,7 +50,7 @@ SQL;
         foreach ($this->getDb()->fetchAll($query, $seasonIds) as $row) {
             $seasonId = $row['season_id'];
             unset($row['season_id']);
-            $result[$seasonId][] = $row;
+            $result[$seasonId][] = $this->hydrate($row);
         }
 
         return $result;
@@ -78,9 +78,14 @@ SQL;
         foreach ($this->getDb()->fetchAll($query, $userIds) as $row) {
             $userId = $row['user_id'];
             unset($row['user_id']);
-            $result[$userId][] = $row;
+            $result[$userId][] = $this->hydrate($row);
         }
 
         return $result;
+    }
+
+    private function hydrate(array $row): array
+    {
+        return $this->reconstructEmbeddedObject($row, 'contact');
     }
 }
