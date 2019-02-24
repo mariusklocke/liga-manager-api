@@ -19,7 +19,7 @@ class EventFilter
      * @param \DateTimeImmutable|null $endDate
      * @param string|null $type
      */
-    public function __construct(?\DateTimeImmutable $startDate, ?\DateTimeImmutable $endDate, ?string $type)
+    public function __construct(?\DateTimeImmutable $startDate = null, ?\DateTimeImmutable $endDate = null, ?string $type = null)
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
