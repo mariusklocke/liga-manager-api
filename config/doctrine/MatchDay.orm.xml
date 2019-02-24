@@ -19,5 +19,8 @@
         <many-to-one field="tournament" target-entity="HexagonalPlayground\Domain\Tournament" inversed-by="matchDays">
             <join-column name="tournament_id" referenced-column-name="id" />
         </many-to-one>
+        <unique-constraints>
+            <unique-constraint columns="number,season_id,tournament_id" />
+        </unique-constraints>
     </entity>
 </doctrine-mapping>
