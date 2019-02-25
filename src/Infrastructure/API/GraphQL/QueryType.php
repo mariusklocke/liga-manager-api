@@ -101,9 +101,9 @@ class QueryType extends ObjectType
                             $repo = $context->getContainer()->get(EventRepository::class);
 
                             $filter = new EventFilter(
-                                $args['start_date'],
-                                $args['end_date'],
-                                $args['type']
+                                $args['start_date'] ?? null,
+                                $args['end_date'] ?? null,
+                                $args['type'] ?? null
                             );
 
                             return $repo->findLatestEvents($filter);
