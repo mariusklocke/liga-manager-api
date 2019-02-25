@@ -47,30 +47,26 @@ class Season extends Competition
 
     /**
      * @param Team $team
-     * @return Season
      */
-    public function addTeam(Team $team) : Season
+    public function addTeam(Team $team): void
     {
         Assert::false($this->hasStarted(), 'Cannot add teams to season which has already started');
         if (!$this->teams->contains($team)) {
             $this->teams[] = $team;
             $this->teamCount++;
         }
-        return $this;
     }
 
     /**
      * @param Team $team
-     * @return Season
      */
-    public function removeTeam(Team $team) : Season
+    public function removeTeam(Team $team): void
     {
         Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
         if ($this->teams->contains($team)) {
             $this->teams->removeElement($team);
             $this->teamCount--;
         }
-        return $this;
     }
 
     /**
@@ -82,20 +78,19 @@ class Season extends Competition
     }
 
     /**
-     * @return Season
+     * Removes all teams from season
      */
-    public function clearTeams() : Season
+    public function clearTeams(): void
     {
         Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
         $this->teams->clear();
         $this->teamCount = 0;
-        return $this;
     }
 
     /**
-     * @return Season
+     * Removes all match days and their matches from season
      */
-    public function clearMatchDays() : Season
+    public function clearMatchDays(): void
     {
         Assert::false($this->hasStarted(), 'Cannot remove matches from a season which has already started');
         foreach ($this->matchDays as $matchDay) {
@@ -103,8 +98,6 @@ class Season extends Competition
         }
         $this->matchDays->clear();
         $this->matchDayCount = 0;
-
-        return $this;
     }
 
     /**
@@ -141,26 +134,22 @@ class Season extends Competition
 
     /**
      * Initializes the season ranking
-     *
-     * @return Season
      */
-    public function start()
+    public function start(): void
     {
         Assert::false($this->hasStarted(), 'Cannot start a season which has already been started');
         Assert::true($this->hasMatches(), 'Cannot start a season which has no matches');
         $this->ranking = new Ranking($this);
         $this->state = self::STATE_PROGRESS;
-        return $this;
     }
 
     /**
-     * @return Season
+     * Finalizes the season
      */
-    public function end() : Season
+    public function end(): void
     {
         Assert::true($this->hasStarted(), 'Cannot end a season which has not been started');
         $this->state = self::STATE_ENDED;
-        return $this;
     }
 
     /**

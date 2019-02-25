@@ -81,13 +81,11 @@ class Match
 
     /**
      * @param DateTimeImmutable $kickoff
-     * @return Match
      */
-    public function schedule(DateTimeImmutable $kickoff) : Match
+    public function schedule(DateTimeImmutable $kickoff): void
     {
         $this->kickoff = $kickoff;
         Publisher::getInstance()->publish(MatchScheduled::create($this->id, $kickoff));
-        return $this;
     }
 
     /**
@@ -109,13 +107,11 @@ class Match
 
     /**
      * @param Pitch $pitch
-     * @return Match
      */
-    public function locate(Pitch $pitch) : Match
+    public function locate(Pitch $pitch): void
     {
         $this->pitch = $pitch;
         Publisher::getInstance()->publish(MatchLocated::create($this->id, $pitch->getId()));
-        return $this;
     }
 
     /**

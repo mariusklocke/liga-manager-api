@@ -136,22 +136,18 @@ class RankingPosition
 
     /**
      * @param int $number
-     * @return RankingPosition
      */
-    public function setNumber(int $number) : RankingPosition
+    public function setNumber(int $number): void
     {
         $this->number = $number;
-        return $this;
     }
 
     /**
      * @param int $sortIndex
-     * @return RankingPosition
      */
-    public function setSortIndex(int $sortIndex) : RankingPosition
+    public function setSortIndex(int $sortIndex): void
     {
         $this->sortIndex = $sortIndex;
-        return $this;
     }
 
     /**
