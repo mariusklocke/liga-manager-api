@@ -91,11 +91,22 @@ class QueryType extends ObjectType
                     ],
                     'latestEvents' => [
                         'type' => Type::listOf(EventType::getInstance()),
+                        'args' => [
+                            'start_date' => DateType::getInstance(),
+                            'end_date' => DateType::getInstance(),
+                            'type' => Type::string(),
+                        ],
                         'resolve' => function ($root, $args, AppContext $context) {
                             /** @var EventRepository $repo */
                             $repo = $context->getContainer()->get(EventRepository::class);
 
-                            return $repo->findLatestEvents(new EventFilter());
+                            $filter = new EventFilter(
+                                $args['start_date'],
+                                $args['end_date'],
+                                $args['type']
+                            );
+
+                            return $repo->findLatestEvents($filter);
                         }
                     ],
                     'tournament' => [
