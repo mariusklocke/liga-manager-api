@@ -23,13 +23,11 @@ class CreateSeasonHandler
 
     /**
      * @param CreateSeasonCommand $command
-     * @return string
      */
     public function __invoke(CreateSeasonCommand $command)
     {
         IsAdmin::check($command->getAuthenticatedUser());
-        $season = new Season($command->getName());
+        $season = new Season($command->getId(), $command->getName());
         $this->seasonRepository->save($season);
-        return $season->getId();
     }
 }

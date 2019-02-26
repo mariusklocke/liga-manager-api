@@ -17,13 +17,14 @@ class PitchCommandController extends CommandController
     public function create(Request $request): ResponseInterface
     {
         $command = new CreatePitchCommand(
+            $request->getParsedBodyParam('id'),
             $request->getParsedBodyParam('label'),
             $request->getParsedBodyParam('location_longitude'),
             $request->getParsedBodyParam('location_latitude')
         );
-        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
-        return $this->createResponse(200, ['id' => $id]);
+        return $this->createResponse(200, ['id' => $command->getId()]);
     }
 
     /**

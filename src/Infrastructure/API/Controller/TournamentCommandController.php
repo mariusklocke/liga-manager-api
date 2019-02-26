@@ -20,9 +20,9 @@ class TournamentCommandController extends CommandController
      */
     public function create(Request $request): ResponseInterface
     {
-        $command = new CreateTournamentCommand($request->getParsedBodyParam('name'));
-        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
-        return $this->createResponse(200, ['id' => $id]);
+        $command = new CreateTournamentCommand($request->getParsedBodyParam('id'), $request->getParsedBodyParam('name'));
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+        return $this->createResponse(200, ['id' => $command->getId()]);
     }
 
     /**

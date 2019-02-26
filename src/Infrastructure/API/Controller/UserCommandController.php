@@ -23,6 +23,7 @@ class UserCommandController extends CommandController
     public function createUser(Request $request): ResponseInterface
     {
         $command = new CreateUserCommand(
+            $request->getParsedBodyParam('id'),
             $request->getParsedBodyParam('email'),
             $request->getParsedBodyParam('password'),
             $request->getParsedBodyParam('first_name'),
@@ -30,8 +31,8 @@ class UserCommandController extends CommandController
             $request->getParsedBodyParam('role'),
             $request->getParsedBodyParam('teams')
         );
-        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
-        return $this->createResponse(200, ['id' => $id]);
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+        return $this->createResponse(200, ['id' => $command->getId()]);
     }
 
     public function deleteUser(Request $request, string $id): ResponseInterface

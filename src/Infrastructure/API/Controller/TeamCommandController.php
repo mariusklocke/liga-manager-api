@@ -30,9 +30,9 @@ class TeamCommandController extends CommandController
      */
     public function create(Request $request): ResponseInterface
     {
-        $command = new CreateTeamCommand($request->getParsedBodyParam('name'));
-        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
-        return $this->createResponse(200, ['id' => $id]);
+        $command = new CreateTeamCommand($request->getParsedBodyParam('id'), $request->getParsedBodyParam('name'));
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+        return $this->createResponse(200, ['id' => $command->getId()]);
     }
 
     /**

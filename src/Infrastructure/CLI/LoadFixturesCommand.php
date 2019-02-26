@@ -53,8 +53,9 @@ class LoadFixturesCommand extends Command
         $years = ['17/18', '18/19', '19/20'];
         $ids   = [];
         foreach ($years as $year) {
-            $command = new CreateSeasonCommand('Season ' . $year);
-            $ids[] = $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
+            $command = new CreateSeasonCommand(null, 'Season ' . $year);
+            $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
+            $ids[] = $command->getId();
         }
 
         return $ids;
@@ -64,7 +65,7 @@ class LoadFixturesCommand extends Command
     {
         $colors = ['Red', 'Blue'];
         foreach ($colors as $color) {
-            $command = new CreatePitchCommand('Pitch ' . $color, 12.34, 23.45);
+            $command = new CreatePitchCommand(null, 'Pitch ' . $color, 12.34, 23.45);
             $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
         }
     }
@@ -74,8 +75,9 @@ class LoadFixturesCommand extends Command
         $ids = [];
         for ($i = 1; $i <= 8; $i++) {
             $teamName = sprintf('Team No. %02d', $i);
-            $command  = new CreateTeamCommand($teamName);
-            $ids[] = $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
+            $command  = new CreateTeamCommand(null, $teamName);
+            $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
+            $ids[] = $command->getId();
         }
 
         return $ids;
@@ -84,6 +86,7 @@ class LoadFixturesCommand extends Command
     private function createAdmin(): void
     {
         $command = new CreateUserCommand(
+            null,
             'admin@example.com',
             '123456',
             'admin',
@@ -98,6 +101,7 @@ class LoadFixturesCommand extends Command
     {
         for ($i = 1; $i <= 8; $i++) {
             $command = new CreateUserCommand(
+                null,
                 'user' . $i . "@example.com",
                 '123456',
                 'user' . $i,

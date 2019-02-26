@@ -28,7 +28,6 @@ class AddRankingPenaltyHandler
 
     /**
      * @param AddRankingPenaltyCommand $command
-     * @return string
      */
     public function __invoke(AddRankingPenaltyCommand $command)
     {
@@ -37,7 +36,8 @@ class AddRankingPenaltyHandler
         $season = $this->seasonRepository->find($command->getSeasonId());
         $team   = $this->teamRepository->find($command->getTeamId());
 
-        $penalty = $season->getRanking()->addPenalty(
+        $season->getRanking()->addPenalty(
+            $command->getId(),
             $team,
             $command->getReason(),
             $command->getPoints(),
@@ -45,7 +45,5 @@ class AddRankingPenaltyHandler
         );
 
         $this->seasonRepository->save($season);
-
-        return $penalty->getId();
     }
 }

@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Domain;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Util\Uuid;
 
 class Season extends Competition
 {
@@ -30,13 +29,15 @@ class Season extends Competition
     private $teamCount;
 
     /**
+     * @param string $id
      * @param string $name
      */
-    public function __construct(string $name)
+    public function __construct(string $id, string $name)
     {
+        Assert::minLength($id, 1, "A season's id cannot be blank");
         Assert::minLength($name, 1, "A season's name cannot be blank");
         Assert::maxLength($name, 255, "A season's name cannot exceed 255 characters");
-        $this->id = Uuid::create();
+        $this->id = $id;
         $this->name = $name;
         $this->teams = new ArrayCollection();
         $this->matchDays = new ArrayCollection();

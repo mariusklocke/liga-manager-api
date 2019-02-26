@@ -7,7 +7,6 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Util\Uuid;
 
 class User implements \JsonSerializable
 {
@@ -39,6 +38,7 @@ class User implements \JsonSerializable
     private $role;
 
     /**
+     * @param string $id
      * @param string $email
      * @param string $password
      * @param string $firstName
@@ -46,13 +46,15 @@ class User implements \JsonSerializable
      * @param string $role
      */
     public function __construct(
+        string $id,
         string $email,
         string $password,
         string $firstName,
         string $lastName,
         string $role = self::ROLE_TEAM_MANAGER
     ) {
-        $this->id = Uuid::create();
+        Assert::minLength($id, 1, "A user's id cannot be blank");
+        $this->id = $id;
         $this->setEmail($email);
         $this->setPassword($password);
         $this->setFirstName($firstName);

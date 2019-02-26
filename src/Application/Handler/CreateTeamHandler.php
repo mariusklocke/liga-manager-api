@@ -23,13 +23,11 @@ class CreateTeamHandler
 
     /**
      * @param CreateTeamCommand $command
-     * @return string Created team's ID
      */
     public function __invoke(CreateTeamCommand $command)
     {
         IsAdmin::check($command->getAuthenticatedUser());
-        $team = new Team($command->getName());
+        $team = new Team($command->getId(), $command->getName());
         $this->teamRepository->save($team);
-        return $team->getId();
     }
 }

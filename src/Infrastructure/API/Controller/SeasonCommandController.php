@@ -25,9 +25,9 @@ class SeasonCommandController extends CommandController
      */
     public function createSeason(Request $request): ResponseInterface
     {
-        $command = new CreateSeasonCommand($request->getParsedBodyParam('name'));
-        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
-        return $this->createResponse(200, ['id' => $id]);
+        $command = new CreateSeasonCommand($request->getParsedBodyParam('id'), $request->getParsedBodyParam('name'));
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+        return $this->createResponse(200, ['id' => $command->getId()]);
     }
 
     /**
@@ -119,14 +119,15 @@ class SeasonCommandController extends CommandController
     public function addRankingPenalty(Request $request, string $seasonId): ResponseInterface
     {
         $command = new AddRankingPenaltyCommand(
+            $request->getParsedBodyParam('id'),
             $seasonId,
             $request->getParsedBodyParam('team_id'),
             $request->getParsedBodyParam('reason'),
             $request->getParsedBodyParam('points')
         );
-        $id = $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
-        return $this->createResponse(200, ['id' => $id]);
+        return $this->createResponse(200, ['id' => $command->getId()]);
     }
 
     /**

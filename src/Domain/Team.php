@@ -7,7 +7,6 @@ use DateTimeImmutable;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Event\TeamRenamed;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Util\Uuid;
 
 class Team
 {
@@ -23,9 +22,10 @@ class Team
     /** @var ContactPerson */
     private $contact;
 
-    public function __construct(string $name)
+    public function __construct(string $id, string $name)
     {
-        $this->id = Uuid::create();
+        Assert::minLength($id, 1, "A team's id cannot be blank");
+        $this->id = $id;
         $this->setName($name);
         $this->createdAt = new DateTimeImmutable();
     }

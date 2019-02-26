@@ -31,7 +31,6 @@ class CreateUserHandler
 
     /**
      * @param CreateUserCommand $command
-     * @return string
      */
     public function __invoke(CreateUserCommand $command)
     {
@@ -40,7 +39,7 @@ class CreateUserHandler
         }
 
         $this->userRepository->assertEmailDoesNotExist($command->getEmail());
-        $user = new User($command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
+        $user = new User($command->getId(), $command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
         $user->setRole($command->getRole());
         foreach ($command->getTeamIds() as $teamId) {
             /** @var Team $team */
@@ -49,6 +48,5 @@ class CreateUserHandler
             $user->addTeam($team);
         }
         $this->userRepository->save($user);
-        return $user->getId();
     }
 }

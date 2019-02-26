@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Util\Uuid;
 
 class RankingPenalty
 {
@@ -27,16 +26,18 @@ class RankingPenalty
     private $createdAt;
 
     /**
+     * @param string $id
      * @param Ranking $ranking
      * @param Team $team
      * @param string $reason
      * @param int $points
      */
-    public function __construct(Ranking $ranking, Team $team, string $reason, int $points)
+    public function __construct(string $id, Ranking $ranking, Team $team, string $reason, int $points)
     {
+        Assert::minLength($id, 1, "A RankingPenalty's id cannot be blank");
         Assert::true($points > 0, 'Points on a RankingPenalty have to be greater than 0');
         Assert::minLength($reason, 1, 'Reason on a RankingPenalty cannot be empty string');
-        $this->id        = Uuid::create();
+        $this->id        = $id;
         $this->ranking   = $ranking;
         $this->team      = $team;
         $this->reason    = $reason;

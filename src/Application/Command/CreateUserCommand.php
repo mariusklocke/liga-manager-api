@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\TypeAssert;
 class CreateUserCommand implements CommandInterface
 {
     use AuthenticationAware;
+    use IdAware;
 
     /** @var string */
     private $email;
@@ -28,6 +29,7 @@ class CreateUserCommand implements CommandInterface
     private $teamIds;
 
     /**
+     * @param string|null $id
      * @param string $email
      * @param string $password
      * @param string $firstName
@@ -35,7 +37,7 @@ class CreateUserCommand implements CommandInterface
      * @param string $role
      * @param string[] $teamIds
      */
-    public function __construct($email, $password, $firstName, $lastName, $role, $teamIds)
+    public function __construct($id, $email, $password, $firstName, $lastName, $role, $teamIds)
     {
         TypeAssert::assertString($email, 'email');
         TypeAssert::assertString($password, 'password');
@@ -44,6 +46,7 @@ class CreateUserCommand implements CommandInterface
         TypeAssert::assertString($role, 'role');
         TypeAssert::assertArray($teamIds, 'teamIds');
 
+        $this->setId($id);
         $this->email = $email;
         $this->password = $password;
         $this->firstName = $firstName;

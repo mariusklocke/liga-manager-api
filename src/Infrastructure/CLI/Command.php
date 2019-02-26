@@ -42,6 +42,7 @@ class Command extends SymfonyCommand
     {
         if (null === $this->user) {
             $this->user = new User(
+                'cli',
                 'cli@example.com',
                 '123456',
                 'CLI',

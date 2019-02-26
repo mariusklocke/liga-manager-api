@@ -23,14 +23,12 @@ class CreateTournamentHandler
 
     /**
      * @param CreateTournamentCommand $command
-     * @return string
      */
     public function __invoke(CreateTournamentCommand $command)
     {
         IsAdmin::check($command->getAuthenticatedUser());
 
-        $tournament = new Tournament($command->getName());
+        $tournament = new Tournament($command->getId(), $command->getName());
         $this->tournamentRepository->save($tournament);
-        return $tournament->getId();
     }
 }

@@ -31,6 +31,7 @@ class CreateUserCommand extends Command
         $styledIo = new SymfonyStyle($input, $output);
 
         $command = new CreateUserApplicationCommand(
+            null,
             $styledIo->ask('Email: '),
             $styledIo->ask('Password: '),
             $styledIo->ask('First name: '),
@@ -38,12 +39,9 @@ class CreateUserCommand extends Command
             $styledIo->askQuestion(new ChoiceQuestion('Choose a role', ['admin', 'team_manager'], 'admin')),
             []
         );
-        $userId = $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
-        if (!is_string($userId)) {
-            throw new \Exception('Command Bus did not return a valid user id');
-        }
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
 
-        $output->writeln('User successfully created. ID: ' . $userId);
+        $output->writeln('User successfully created. ID: ' . $command->getId());
         return parent::execute($input, $output);
     }
 }

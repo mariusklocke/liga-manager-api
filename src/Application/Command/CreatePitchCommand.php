@@ -9,6 +9,7 @@ use HexagonalPlayground\Domain\GeographicLocation;
 class CreatePitchCommand implements CommandInterface
 {
     use AuthenticationAware;
+    use IdAware;
 
     /** @var string */
     private $label;
@@ -17,17 +18,19 @@ class CreatePitchCommand implements CommandInterface
     private $location;
 
     /**
+     * @param string|null $id
      * @param string $label
      * @param float|int $longitude
      * @param float|int $latitude
      */
-    public function __construct($label, $longitude, $latitude)
+    public function __construct($id, $label, $longitude, $latitude)
     {
         TypeAssert::assertString($label, 'label');
         TypeAssert::assertNumber($longitude, 'longitude');
         TypeAssert::assertNumber($latitude, 'latitude');
         $this->label = $label;
         $this->location = new GeographicLocation((float)$longitude, (float)$latitude);
+        $this->setId($id);
     }
 
     /**

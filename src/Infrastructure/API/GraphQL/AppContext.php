@@ -36,7 +36,7 @@ class AppContext
 
     public function getAuthenticatedUser(): User
     {
-        return new User('fake@example.com', '123456', 'foo', 'bar', 'admin');
+        return new User('fake', 'fake@example.com', '123456', 'foo', 'bar', 'admin');
         $user = $this->request->getAttribute('user');
         if ($user instanceof User) {
             return $user;

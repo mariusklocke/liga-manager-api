@@ -28,7 +28,7 @@ class CreatePitchHandler
     public function __invoke(CreatePitchCommand $command)
     {
         IsAdmin::check($command->getAuthenticatedUser());
-        $pitch = new Pitch($command->getLabel(), $command->getLocation());
+        $pitch = new Pitch($command->getId(), $command->getLabel(), $command->getLocation());
         $this->pitchRepository->save($pitch);
         return $pitch->getId();
     }
