@@ -7,8 +7,10 @@ use HexagonalPlayground\Domain\User;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\StyleInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
-class Command extends SymfonyCommand
+abstract class Command extends SymfonyCommand
 {
     /** @var float */
     private $startTime;
@@ -19,15 +21,19 @@ class Command extends SymfonyCommand
     public function __construct()
     {
         parent::__construct(null);
-        $this->startTime = microtime(true);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    /**
+     * {@inheritdoc}
+     */
+    public function run(InputInterface $input, OutputInterface $output)
     {
+        $this->startTime = microtime(true);
+        $exitCode = parent::run($input, $output);
         if (!$output->isQuiet()) {
             $this->printStats($output);
         }
-        return 0;
+        return $exitCode;
     }
 
     private function printStats(OutputInterface $output)
@@ -51,5 +57,10 @@ class Command extends SymfonyCommand
             $this->user->setRole(User::ROLE_ADMIN);
         }
         return $this->user;
+    }
+
+    protected function getStyledIO(InputInterface $input, OutputInterface $output): StyleInterface
+    {
+        return new SymfonyStyle($input, $output);
     }
 }

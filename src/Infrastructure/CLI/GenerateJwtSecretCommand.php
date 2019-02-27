@@ -26,11 +26,12 @@ class GenerateJwtSecretCommand extends Command
                 $input, $output, 'JWT secret already exists, do you want to overwrite?'
             );
             if ($shouldOverwrite !== true) {
-                return parent::execute($input, $output);
+                $output->writeln('Aborted due to missing user confirmation');
+                return 0;
             }
         }
         $this->generate($secretPath);
-        return parent::execute($input, $output);
+        return 0;
     }
 
     private function generate(string $targetPath): void

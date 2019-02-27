@@ -51,7 +51,7 @@ class L98ImportCommand extends Command
             $outputDecorator->writeln('Finished importing ' . $fileInfo->getPathname());
         }
         $outputDecorator->success('Import completed successfully!');
-        return parent::execute($input, $output);
+        return 0;
     }
 
     /**

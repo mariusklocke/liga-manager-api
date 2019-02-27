@@ -9,9 +9,12 @@ use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
+use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
+use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
 use HexagonalPlayground\Application\Value\DatePeriod;
+use HexagonalPlayground\Application\Value\TeamIdPair;
 use HexagonalPlayground\Domain\User;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,8 +47,38 @@ class LoadFixturesCommand extends Command
         $this->createPitches();
         $this->linkTeamsWithSeasons($teamIds, $seasonIds);
         $this->startSeason(array_shift($seasonIds), count($teamIds));
+        $tournamentIds = $this->createTournaments();
+        $this->createTournamentRounds($tournamentIds, $teamIds);
         $output->writeln('Fixtures successfully loaded');
-        return parent::execute($input, $output);
+        return 0;
+    }
+
+    private function createTournaments(): array
+    {
+        $ids = [];
+        foreach (['A', 'B', 'C'] as $char) {
+            $command = new CreateTournamentCommand(null, 'Tournament ' . $char);
+            $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
+            $ids[] = $command->getId();
+        }
+
+        return $ids;
+    }
+
+    private function createTournamentRounds(array $tournamentIds, array $teamIds)
+    {
+        foreach ($tournamentIds as $tournamentId) {
+            $pairs = [];
+            foreach (array_chunk($teamIds, 2) as $chunk) {
+                if (count($chunk) === 2) {
+                    $pairs[] = new TeamIdPair($chunk[0], $chunk[1]);
+                }
+            }
+            $start   = new \DateTimeImmutable('next saturday');
+            $period  = new DatePeriod($start, $start->modify('next sunday'));
+            $command = new SetTournamentRoundCommand($tournamentId, 1, $pairs, $period);
+            $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
+        }
     }
 
     private function createSeasons(): array

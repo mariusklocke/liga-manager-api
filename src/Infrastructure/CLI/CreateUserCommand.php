@@ -5,10 +5,9 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CreateUserCommand as CreateUserApplicationCommand;
+use HexagonalPlayground\Domain\User;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class CreateUserCommand extends Command
 {
@@ -28,20 +27,20 @@ class CreateUserCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $styledIo = new SymfonyStyle($input, $output);
+        $styledIo = $this->getStyledIO($input, $output);
 
         $command = new CreateUserApplicationCommand(
             null,
-            $styledIo->ask('Email: '),
-            $styledIo->ask('Password: '),
-            $styledIo->ask('First name: '),
-            $styledIo->ask('Last name: '),
-            $styledIo->askQuestion(new ChoiceQuestion('Choose a role', ['admin', 'team_manager'], 'admin')),
+            $styledIo->ask('Email'),
+            $styledIo->ask('Password'),
+            $styledIo->ask('First name'),
+            $styledIo->ask('Last name'),
+            $styledIo->choice('Choose a role', [User::ROLE_ADMIN, User::ROLE_TEAM_MANAGER], User::ROLE_ADMIN),
             []
         );
         $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
 
         $output->writeln('User successfully created. ID: ' . $command->getId());
-        return parent::execute($input, $output);
+        return 0;
     }
 }
