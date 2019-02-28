@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Import;
 
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Domain\Util\Uuid;
 
 class TeamMapper
 {
@@ -49,7 +50,7 @@ class TeamMapper
 
     private function create(L98TeamModel $l98Team): Team
     {
-        $team = new Team($l98Team->getName());
+        $team = new Team(Uuid::create(), $l98Team->getName());
         $this->map($l98Team, $team);
         $this->repository->save($team);
         return $team;

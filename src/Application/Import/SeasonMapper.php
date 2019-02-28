@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Import;
 
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Domain\Util\Uuid;
 
 class SeasonMapper
 {
@@ -25,7 +26,7 @@ class SeasonMapper
      */
     public function create(L98SeasonModel $l98Season): Season
     {
-        $season = new Season($l98Season->getName());
+        $season = new Season(Uuid::create(), $l98Season->getName());
         $this->repository->save($season);
         return $season;
     }
