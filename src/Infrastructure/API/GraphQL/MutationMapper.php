@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
+use GraphQL\Type\Definition\ListOfType;
+use GraphQL\Type\Definition\NonNull;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CommandInterface;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\StringUtils;
 
 class MutationMapper
@@ -24,15 +27,14 @@ class MutationMapper
         $name = str_replace('Command', '', $name);
         $name = lcfirst($name);
 
-        $argTypes      = $this->buildArgumentTypes($commandClass);
-        $argumentOrder = array_keys($argTypes);
+        $argTypes = $this->buildArgumentTypes($commandClass);
 
         return [
             $name => [
                 'args' => $argTypes,
                 'type' => Type::boolean(),
-                'resolve' => function ($val, $args, AppContext $context) use ($commandClass, $argumentOrder) {
-                    $command = $this->createCommand($commandClass, $argumentOrder, $args);
+                'resolve' => function ($val, $argValues, AppContext $context) use ($commandClass, $argTypes) {
+                    $command = $this->createCommand($commandClass, $argTypes, $argValues);
                     if (method_exists($command, 'withAuthenticatedUser')) {
                         $command = $command->withAuthenticatedUser($context->getAuthenticatedUser());
                     }
@@ -56,15 +58,42 @@ class MutationMapper
         }, $this->parseConstructorArgs($commandClass));
     }
 
-    private function createCommand(string $commandClass, array $argumentOrder, array $argValues): CommandInterface
+    private function createCommand(string $commandClass, array $argTypes, array $argValues): CommandInterface
     {
         $finalArgs = [];
-        foreach ($argumentOrder as $index => $name) {
-            if (isset($argValues[$name])) {
-                $finalArgs[$index] = $argValues[$name];
+        foreach ($argTypes as $name => $type) {
+            if (!isset($argValues[$name])) {
+                throw new InvalidInputException(sprintf('Missing value for argument "%s"', $name));
             }
+
+            $finalArgs[] = $this->parseValue($argValues[$name], $type);
         }
         return new $commandClass(...$finalArgs);
+    }
+
+    private function parseValue($inputVal, Type $type)
+    {
+        if ($inputVal === null) {
+            return null;
+        }
+
+        if ($type instanceof NonNull) {
+            $type = $type->getWrappedType();
+        }
+
+        if ($type instanceof CustomObjectType) {
+            return $type->parseCustomValue($inputVal);
+        }
+
+        if ($type instanceof ListOfType && $type->getWrappedType() instanceof CustomObjectType && is_array($inputVal)) {
+            /** @var CustomObjectType $wrappedType */
+            $wrappedType = $type->getWrappedType();
+            return array_map(function ($innerVal) use ($wrappedType) {
+                return $wrappedType->parseCustomValue($innerVal);
+            }, $inputVal);
+        }
+
+        return $inputVal;
     }
 
     private function parseConstructorArgs(string $commandClass): array

@@ -81,13 +81,17 @@ class InputParser
     {
         $from = $datePeriod['from'] ?? null;
         $to   = $datePeriod['to'] ?? null;
-        if (!is_string($from)) {
+
+        if (!is_string($from) && !($from instanceof \DateTimeImmutable)) {
             throw new InvalidInputException('Cannot parse date period. Missing or invalid property "from".');
         }
-        if (!is_string($to)) {
+        if (!is_string($to) && !($to instanceof \DateTimeImmutable)) {
             throw new InvalidInputException('Cannot parse date period. Missing or invalid property "to".');
         }
 
-        return new DatePeriod(self::parseDateTime($from), self::parseDateTime($to));
+        return new DatePeriod(
+            is_string($from) ? self::parseDateTime($from) : $from,
+            is_string($to)? self::parseDateTime($to) : $to
+        );
     }
 }
