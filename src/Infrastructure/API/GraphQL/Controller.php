@@ -3,11 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
-use GraphQL\Error\Error;
-use GraphQL\Error\FormattedError;
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
-use HexagonalPlayground\Domain\ExceptionInterface;
 use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use Psr\Container\ContainerInterface;
 use Slim\Http\Request;
@@ -25,19 +22,11 @@ class Controller
         $query = $request->getParsedBodyParam('query');
         $variables = (array)$request->getParsedBodyParam('variables');
         $context = new AppContext($request, $container);
+        $errorHandler = new ErrorHandler($container->get('logger'), $context);
 
         $result = GraphQL::executeQuery($schema, $query, null, $context, $variables)
-            ->setErrorFormatter(function (Error $error) {
-                $formatted = FormattedError::createFromException($error, true);
-                $previous  = $error->getPrevious();
-                if ($previous instanceof ExceptionInterface) {
-                    $formatted['message'] = $previous->getMessage();
-                    unset($formatted['extensions']);
-                }
-                return $formatted;
-            })
-            ->toArray(true);
+            ->setErrorsHandler($errorHandler);
 
-        return $this->createResponse(200, $result);
+        return $this->createResponse(200, $result->toArray());
     }
 }
