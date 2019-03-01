@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain\Util;
 
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
 use HexagonalPlayground\Domain\DomainException;
 
 class Assert
@@ -47,7 +49,7 @@ class Assert
      */
     public static function emailAddress(string $value, string $message): void
     {
-        self::true(filter_var($value, FILTER_VALIDATE_EMAIL) !== false, $message);
+        self::true((new EmailValidator())->isValid($value, new RFCValidation()), $message);
     }
 
     /**
