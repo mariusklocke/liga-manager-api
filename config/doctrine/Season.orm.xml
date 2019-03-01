@@ -14,7 +14,7 @@
                 <cascade-all/>
             </cascade>
         </one-to-one>
-        <one-to-many field="matchDays" target-entity="HexagonalPlayground\Domain\MatchDay" mapped-by="season" orphan-removal="true">
+        <one-to-many field="matchDays" target-entity="HexagonalPlayground\Domain\MatchDay" mapped-by="season" index-by="number" orphan-removal="true">
             <cascade>
                 <cascade-all/>
             </cascade>
