@@ -31,10 +31,7 @@ class CreateMatchesForSeasonHandler
         IsAdmin::check($command->getAuthenticatedUser());
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->clearMatchDays();
-        $matchDays = (new MatchFactory())->createMatchDaysForSeason($season, $command->getMatchDaysDates());
-        foreach ($matchDays as $matchDay) {
-            $season->addMatchDay($matchDay);
-        }
+        (new MatchFactory())->createMatchDaysForSeason($season, $command->getMatchDaysDates());
         $this->seasonRepository->save($season);
     }
 }

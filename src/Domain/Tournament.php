@@ -43,9 +43,16 @@ class Tournament extends Competition
         $this->updateRoundCount();
     }
 
-    public function setMatchDay(MatchDay $matchDay): void
+    public function createMatchDay(int $number, \DateTimeImmutable $startDate, \DateTimeImmutable $endDate): MatchDay
     {
-        $this->matchDays[$matchDay->getNumber()] = $matchDay;
+        $matchDay = parent::createMatchDay($number, $startDate, $endDate);
+        $this->updateRoundCount();
+        return $matchDay;
+    }
+
+    public function removeMatchDay(int $number): void
+    {
+        parent::removeMatchDay($number);
         $this->updateRoundCount();
     }
 

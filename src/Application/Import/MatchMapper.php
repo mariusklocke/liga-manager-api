@@ -33,7 +33,7 @@ class MatchMapper
      */
     public function getDomainModel(L98MatchDayModel $matchDay, Season $season): MatchDay
     {
-        $domainModel = new MatchDay($season, $matchDay->getNumber(), $matchDay->getStartDate(), $matchDay->getEndDate());
+        $domainModel = $season->createMatchDay($matchDay->getNumber(), $matchDay->getStartDate(), $matchDay->getEndDate());
         foreach ($matchDay->getMatches() as $l98Match) {
             $domainModel->addMatch($this->createDomainMatch($l98Match, $domainModel));
         }

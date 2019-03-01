@@ -48,8 +48,7 @@ class Importer
             $season->addTeam($team);
         }
         foreach ($l98season->getMatchDays() as $l98MatchDay) {
-            $matchDay = $this->matchMapper->getDomainModel($l98MatchDay, $season);
-            $season->addMatchDay($matchDay);
+            $this->matchMapper->getDomainModel($l98MatchDay, $season);
         }
         $season->start();
         foreach ($season->getMatches() as $match) {

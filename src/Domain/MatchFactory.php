@@ -16,9 +16,8 @@ class MatchFactory
      *
      * @param Season $season
      * @param array|DatePeriod[] $matchDayDates
-     * @return MatchDay[]
      */
-    public function createMatchDaysForSeason(Season $season, array $matchDayDates) : array
+    public function createMatchDaysForSeason(Season $season, array $matchDayDates): void
     {
         $teams = array_values($season->getTeams());
         if (count($teams) % 2 != 0) {
@@ -33,16 +32,12 @@ class MatchFactory
             count($matchDayDates)
         ));
 
-        $matchDays = [];
         $matchDayNumber = 1;
         foreach ($matchDayDates as $datePeriod) {
-            $matchDay = new MatchDay($season, $matchDayNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
+            $matchDay = $season->createMatchDay($matchDayNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
             $this->generateMatchesForMatchDay($matchDay, $teams);
-            $matchDays[] = $matchDay;
             $matchDayNumber++;
         }
-
-        return $matchDays;
     }
 
     /**

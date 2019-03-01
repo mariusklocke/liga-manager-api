@@ -43,7 +43,7 @@ class Season extends Competition
         $this->matchDays = new ArrayCollection();
         $this->state = self::STATE_PREPARATION;
         $this->teamCount = 0;
-        $this->matchDayCount = 0;
+        $this->updateMatchDayCount();
     }
 
     /**
@@ -98,7 +98,7 @@ class Season extends Competition
             $matchDay->clearMatches();
         }
         $this->matchDays->clear();
-        $this->matchDayCount = 0;
+        $this->updateMatchDayCount();
     }
 
     /**
@@ -153,13 +153,11 @@ class Season extends Competition
         $this->state = self::STATE_ENDED;
     }
 
-    /**
-     * @param MatchDay $matchDay
-     */
-    public function addMatchDay(MatchDay $matchDay)
+    public function createMatchDay(int $number, \DateTimeImmutable $startDate, \DateTimeImmutable $endDate): MatchDay
     {
-        $this->matchDays[] = $matchDay;
-        $this->matchDayCount = $this->matchDays->count();
+        $matchDay = parent::createMatchDay($number, $startDate, $endDate);
+        $this->updateMatchDayCount();
+        return $matchDay;
     }
 
     /**
@@ -185,5 +183,10 @@ class Season extends Competition
             $matches = array_merge($matches, $matchDay->getMatches());
         }
         return $matches;
+    }
+
+    private function updateMatchDayCount(): void
+    {
+        $this->matchDayCount = $this->matchDays->count();
     }
 }
