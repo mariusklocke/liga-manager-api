@@ -56,8 +56,8 @@ class BufferedTeamLoader
     public function getByTeam(string $teamId): ?array
     {
         $teamIds = array_keys($this->byTeamId, null, true);
-        foreach ($this->teamLoader->loadTeamsById($teamIds) as $teamId => $team) {
-            $this->byTeamId[$teamId] = $team;
+        foreach ($this->teamLoader->loadTeamsById($teamIds) as $id => $team) {
+            $this->byTeamId[$id] = $team;
         }
         return $this->byTeamId[$teamId] ?? null;
     }
@@ -69,8 +69,8 @@ class BufferedTeamLoader
     public function getByUser(string $userId): ?array
     {
         $userIds = array_keys($this->byUserId, null, true);
-        foreach ($this->teamLoader->loadTeamsByUserId($userIds) as $userId => $teams) {
-            $this->byUserId[$userId] = $teams;
+        foreach ($this->teamLoader->loadTeamsByUserId($userIds) as $id => $teams) {
+            $this->byUserId[$id] = $teams;
         }
         return $this->byUserId[$userId] ?? null;
     }
@@ -82,8 +82,8 @@ class BufferedTeamLoader
     public function getBySeason(string $seasonId): ?array
     {
         $seasonIds = array_keys($this->bySeasonId, null, true);
-        foreach ($this->teamLoader->loadTeamsBySeasonId($seasonIds) as $seasonId => $teams) {
-            $this->bySeasonId[$seasonId] = $teams;
+        foreach ($this->teamLoader->loadTeamsBySeasonId($seasonIds) as $id => $teams) {
+            $this->bySeasonId[$id] = $teams;
         }
         return $this->bySeasonId[$seasonId] ?? null;
     }

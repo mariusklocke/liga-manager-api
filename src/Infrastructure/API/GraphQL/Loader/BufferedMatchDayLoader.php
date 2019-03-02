@@ -45,8 +45,8 @@ class BufferedMatchDayLoader
     public function getBySeason(string $seasonId): ?array
     {
         $seasonIds = array_keys($this->bySeasonId, null, true);
-        foreach ($this->matchDayLoader->loadBySeasonId($seasonIds) as $seasonId => $matchDays) {
-            $this->bySeasonId[$seasonId] = $matchDays;
+        foreach ($this->matchDayLoader->loadBySeasonId($seasonIds) as $id => $matchDays) {
+            $this->bySeasonId[$id] = $matchDays;
         }
         return $this->bySeasonId[$seasonId] ?? null;
     }
@@ -58,8 +58,8 @@ class BufferedMatchDayLoader
     public function getByTournament(string $tournamentId): ?array
     {
         $tournamentIds = array_keys($this->byTournamentId, null ,true);
-        foreach ($this->matchDayLoader->loadByTournamentId($tournamentIds) as $tournamentId => $matchDays) {
-            $this->byTournamentId[$tournamentId] = $matchDays;
+        foreach ($this->matchDayLoader->loadByTournamentId($tournamentIds) as $id => $matchDays) {
+            $this->byTournamentId[$id] = $matchDays;
         }
         return $this->byTournamentId[$tournamentId] ?? null;
     }

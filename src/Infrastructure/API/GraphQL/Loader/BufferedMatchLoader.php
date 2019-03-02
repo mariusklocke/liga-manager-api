@@ -34,8 +34,8 @@ class BufferedMatchLoader
     public function getByMatchDay(string $matchDayId): ?array
     {
         $matchDayIds = array_keys($this->byMatchDayId, null, true);
-        foreach ($this->matchLoader->loadByMatchDayId($matchDayIds) as $matchDayId => $matches) {
-            $this->byMatchDayId[$matchDayId] = $matches;
+        foreach ($this->matchLoader->loadByMatchDayId($matchDayIds) as $id => $matches) {
+            $this->byMatchDayId[$id] = $matches;
         }
         return $this->byMatchDayId[$matchDayId] ?? null;
     }
