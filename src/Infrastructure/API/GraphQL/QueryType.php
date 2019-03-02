@@ -7,12 +7,14 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Filter\EventFilter;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Infrastructure\Persistence\Read\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\UserRepository;
 
 class QueryType extends ObjectType
 {
@@ -177,6 +179,22 @@ class QueryType extends ObjectType
                             return $repo->findAllPitches();
                         }
                     ],
+                    'authenticatedUser' => [
+                        'type' => UserType::getInstance(),
+                        'resolve' => function ($root, $args, AppContext $context) {
+                            return $context->getAuthenticatedUser()->jsonSerialize();
+                        }
+                    ],
+                    'allUsers' => [
+                        'type' => Type::listOf(UserType::getInstance()),
+                        'resolve' => function ($root, array $args, AppContext $context) {
+                            /** @var UserRepository $repo */
+                            $repo = $context->getContainer()->get(UserRepository::class);
+                            IsAdmin::check($context->getAuthenticatedUser());
+
+                            return $repo->findAllUsers();
+                        }
+                    ]
                 ];
             }
         ];
