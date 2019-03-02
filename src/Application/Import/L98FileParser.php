@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Import;
 
+use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\InputParser;
 
 class L98FileParser
@@ -12,16 +13,20 @@ class L98FileParser
 
     public function __construct(string $path)
     {
+        $fileContent = file_get_contents($path);
+        if (false === $fileContent) {
+            throw new InvalidInputException('Cannot read from file ' . $path);
+        }
+
         // Add quotes around all values
-        $iniData = preg_replace('/^([A-Za-z0-9]+)=(.*)$/m', '${1}="${2}"', file_get_contents($path));
-        $data = parse_ini_string(
+        $iniData = preg_replace('/^([A-Za-z0-9]+)=(.*)$/m', '${1}="${2}"', $fileContent);
+        $this->data = parse_ini_string(
             $iniData,
             true
         );
-        if (!is_array($data)) {
-            throw new \Exception('Cannot parse L98 file');
+        if (!is_array($this->data)) {
+            throw new InvalidInputException('Failed parsing L98 file contents as INI');
         }
-        $this->data = $data;
     }
 
     private function getSection(string $key): ?array

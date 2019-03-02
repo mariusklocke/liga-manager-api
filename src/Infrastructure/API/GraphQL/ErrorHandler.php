@@ -39,14 +39,14 @@ class ErrorHandler
             if ($previous instanceof ExceptionInterface) {
                 $formatted['message'] = $previous->getMessage();
                 $this->logger->notice('Handling expected uncaught exception', [
-                    'exception' => $this->getExceptionContext($previous),
+                    'exception' => $this->getLoggingContext($previous),
                     'user' => $this->getUserId()
                 ]);
                 return $formatted;
             }
 
             $this->logger->error('Unexpected exception', [
-                'exception' => $this->getExceptionContext($previous ?? $error),
+                'exception' => $this->getLoggingContext($previous ?? $error),
                 'user' => $this->getUserId()
             ]);
             return $formatted;
@@ -57,7 +57,7 @@ class ErrorHandler
      * @param Throwable $throwable
      * @return array
      */
-    private function getExceptionContext(Throwable $throwable): array
+    private function getLoggingContext(Throwable $throwable): array
     {
         return [
             'class'   => get_class($throwable),
