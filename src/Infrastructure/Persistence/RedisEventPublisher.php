@@ -27,10 +27,6 @@ class RedisEventPublisher implements Subscriber
      */
     public function handle(Event $event): void
     {
-        $json = json_encode($event);
-        if ($json === false) {
-            throw new \RuntimeException(json_last_error_msg(), json_last_error());
-        }
-        $this->redis->publish('events', $json);
+        $this->redis->publish('events', json_encode($event, JSON_THROW_ON_ERROR));
     }
 }
