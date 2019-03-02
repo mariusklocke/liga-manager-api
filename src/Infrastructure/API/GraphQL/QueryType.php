@@ -8,6 +8,7 @@ use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Filter\EventFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\EventRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
@@ -132,6 +133,22 @@ class QueryType extends ObjectType
                             $repo = $context->getContainer()->get(TournamentRepository::class);
 
                             return $repo->findAllTournaments();
+                        }
+                    ],
+                    'match' => [
+                        'type' => MatchType::getInstance(),
+                        'args' => [
+                            'id' => Type::string()
+                        ],
+                        'resolve' => function ($root, $args, AppContext $context) {
+                            /** @var MatchRepository $repo */
+                            $repo = $context->getContainer()->get(MatchRepository::class);
+
+                            try {
+                                return $repo->findMatchById($args['id']);
+                            } catch (NotFoundException $e) {
+                                return null;
+                            }
                         }
                     ]
                 ];
