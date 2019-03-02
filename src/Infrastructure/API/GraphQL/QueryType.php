@@ -9,6 +9,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Filter\EventFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
+use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
@@ -150,7 +151,32 @@ class QueryType extends ObjectType
                                 return null;
                             }
                         }
-                    ]
+                    ],
+                    'pitch' => [
+                        'type' => PitchType::getInstance(),
+                        'args' => [
+                            'id' => Type::string()
+                        ],
+                        'resolve' => function ($root, $args, AppContext $context) {
+                            /** @var PitchRepository $repo */
+                            $repo = $context->getContainer()->get(PitchRepository::class);
+
+                            try {
+                                return $repo->findPitchById($args['id']);
+                            } catch (NotFoundException $e) {
+                                return null;
+                            }
+                        }
+                    ],
+                    'allPitches' => [
+                        'type' => Type::listOf(PitchType::getInstance()),
+                        'resolve' => function ($root, $args, AppContext $context) {
+                            /** @var PitchRepository $repo */
+                            $repo = $context->getContainer()->get(PitchRepository::class);
+
+                            return $repo->findAllPitches();
+                        }
+                    ],
                 ];
             }
         ];
