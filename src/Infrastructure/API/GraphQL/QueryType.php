@@ -64,7 +64,7 @@ class QueryType extends ObjectType
                         'args' => [
                             'id' => Type::string()
                         ],
-                        'resolve' => function ($root, $args, AppContext $context) {
+                        'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var TeamRepository $repo */
                             $repo = $context->getContainer()->get(TeamRepository::class);
 
@@ -80,7 +80,7 @@ class QueryType extends ObjectType
                         'args' => [
                             'id' => Type::string()
                         ],
-                        'resolve' => function ($root, $args, AppContext $context) {
+                        'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var EventRepository $repo */
                             $repo = $context->getContainer()->get(EventRepository::class);
 
@@ -98,7 +98,7 @@ class QueryType extends ObjectType
                             'end_date' => DateType::getInstance(),
                             'type' => Type::string(),
                         ],
-                        'resolve' => function ($root, $args, AppContext $context) {
+                        'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var EventRepository $repo */
                             $repo = $context->getContainer()->get(EventRepository::class);
 
@@ -116,12 +116,12 @@ class QueryType extends ObjectType
                         'args' => [
                             'id' => Type::string()
                         ],
-                        'resolve' => function ($root, $args, AppContext $context) {
+                        'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var TournamentRepository $repo */
                             $repo = $context->getContainer()->get(TournamentRepository::class);
 
                             try {
-                                return $repo->findTournamentById($root['id']);
+                                return $repo->findTournamentById($args['id']);
                             } catch (NotFoundException $e) {
                                 return null;
                             }
@@ -141,7 +141,7 @@ class QueryType extends ObjectType
                         'args' => [
                             'id' => Type::string()
                         ],
-                        'resolve' => function ($root, $args, AppContext $context) {
+                        'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var MatchRepository $repo */
                             $repo = $context->getContainer()->get(MatchRepository::class);
 
@@ -157,7 +157,7 @@ class QueryType extends ObjectType
                         'args' => [
                             'id' => Type::string()
                         ],
-                        'resolve' => function ($root, $args, AppContext $context) {
+                        'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var PitchRepository $repo */
                             $repo = $context->getContainer()->get(PitchRepository::class);
 
