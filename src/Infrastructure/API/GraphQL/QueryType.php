@@ -182,7 +182,7 @@ class QueryType extends ObjectType
                     'authenticatedUser' => [
                         'type' => UserType::getInstance(),
                         'resolve' => function ($root, $args, AppContext $context) {
-                            return $context->getAuthenticatedUser()->jsonSerialize();
+                            return $context->getAuthenticatedUser()->jsonSerialize(false);
                         }
                     ],
                     'allUsers' => [

@@ -224,17 +224,22 @@ class User implements \JsonSerializable
     }
 
     /**
-     * @inheritdoc
+     * @param bool $withTeamIds
+     * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize($withTeamIds = true)
     {
-        return [
+        $data = [
             'id' => $this->id,
             'email' => $this->email,
-            'teams' => $this->teams->getKeys(),
             'role' => $this->role,
             'first_name' => $this->firstName,
             'last_name' => $this->lastName
         ];
+        if ($withTeamIds) {
+            $data['teams'] = $this->teams->getKeys();
+        }
+
+        return $data;
     }
 }
