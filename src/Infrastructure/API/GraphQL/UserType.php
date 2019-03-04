@@ -32,7 +32,7 @@ class UserType extends ObjectType
                         }
                     ],
                     'role' => [
-                        'type' => Type::string()
+                        'type' => UserRoleType::getInstance()
                     ],
                     'first_name' => [
                         'type' => Type::string()
