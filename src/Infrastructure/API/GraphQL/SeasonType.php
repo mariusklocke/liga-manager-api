@@ -27,7 +27,7 @@ class SeasonType extends ObjectType
                         'type' => Type::string()
                     ],
                     'state' => [
-                        'type' => Type::string()
+                        'type' => SeasonStateType::getInstance()
                     ],
                     'match_day_count' => [
                         'type' => Type::int()
