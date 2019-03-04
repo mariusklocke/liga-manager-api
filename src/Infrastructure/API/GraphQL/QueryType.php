@@ -29,7 +29,7 @@ class QueryType extends ObjectType
                         'type' => SeasonType::getInstance(),
                         'description' => 'Get a single season',
                         'args' => [
-                            'id' => Type::string()
+                            'id' => Type::nonNull(Type::string())
                         ],
                         'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var SeasonRepository $repo */
@@ -64,7 +64,7 @@ class QueryType extends ObjectType
                     'team' => [
                         'type' => TeamType::getInstance(),
                         'args' => [
-                            'id' => Type::string()
+                            'id' => Type::nonNull(Type::string())
                         ],
                         'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var TeamRepository $repo */
@@ -80,7 +80,7 @@ class QueryType extends ObjectType
                     'event' => [
                         'type' => EventType::getInstance(),
                         'args' => [
-                            'id' => Type::string()
+                            'id' => Type::nonNull(Type::string())
                         ],
                         'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var EventRepository $repo */
@@ -116,7 +116,7 @@ class QueryType extends ObjectType
                     'tournament' => [
                         'type' => TournamentType::getInstance(),
                         'args' => [
-                            'id' => Type::string()
+                            'id' => Type::nonNull(Type::string())
                         ],
                         'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var TournamentRepository $repo */
@@ -141,7 +141,7 @@ class QueryType extends ObjectType
                     'match' => [
                         'type' => MatchType::getInstance(),
                         'args' => [
-                            'id' => Type::string()
+                            'id' => Type::nonNull(Type::string())
                         ],
                         'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var MatchRepository $repo */
@@ -157,7 +157,7 @@ class QueryType extends ObjectType
                     'pitch' => [
                         'type' => PitchType::getInstance(),
                         'args' => [
-                            'id' => Type::string()
+                            'id' => Type::nonNull(Type::string())
                         ],
                         'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var PitchRepository $repo */
