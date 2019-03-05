@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
+use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Import\Importer;
 use Pimple\Container;
@@ -38,6 +39,9 @@ class CommandServiceProvider implements ServiceProviderInterface
                 },
                 'app:generate-jwt-secret' => function () {
                     return new GenerateJwtSecretCommand();
+                },
+                'app:send-test-mail' => function () use ($container) {
+                    return new SendTestMailCommand($container[MailerInterface::class]);
                 }
             ]);
         };
