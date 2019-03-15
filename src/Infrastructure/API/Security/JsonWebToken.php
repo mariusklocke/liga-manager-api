@@ -95,7 +95,11 @@ final class JsonWebToken implements TokenInterface
     private static function getSecret(): string
     {
         if (null === self::$secret) {
-            self::$secret = file_get_contents(Environment::get('JWT_SECRET_PATH') . '/secret.key');
+            try {
+                self::$secret = hex2bin(Environment::get('JWT_SECRET'));
+            } catch (\RuntimeException $e) {
+                self::$secret = file_get_contents(Environment::get('JWT_SECRET_PATH') . '/secret.key');
+            }
         }
         return self::$secret;
     }

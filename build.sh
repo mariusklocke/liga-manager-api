@@ -17,7 +17,7 @@ docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG-xdebug --build-arg XD
 # Define environment
 MYSQL_ENV_ARGS="-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_HOST=mariadb -e MYSQL_DATABASE=test -e MYSQL_USER=test -e MYSQL_PASSWORD=test"
 EMAIL_ENV_ARGS="-e SMTP_HOST=maildev -e SMTP_PORT=25 -e MAILDEV_URI=http://maildev -e EMAIL_SENDER=admin@example.com;Admin"
-APP_ENV_ARGS="$MYSQL_ENV_ARGS $EMAIL_ENV_ARGS -e LOG_LEVEL=warning -e REDIS_HOST=redis"
+APP_ENV_ARGS="$MYSQL_ENV_ARGS $EMAIL_ENV_ARGS -e LOG_LEVEL=warning -e REDIS_HOST=redis -e JWT_SECRET=a194be3811fc"
 
 # Launch MariaDB and Redis containers
 docker run -d --name mariadb ${MYSQL_ENV_ARGS} mariadb > /dev/null
