@@ -20,6 +20,8 @@ class MatchFactory
     public function createMatchDaysForSeason(Season $season, array $matchDayDates): void
     {
         $teams = array_values($season->getTeams());
+        Assert::true(count($teams) >= 2, 'Cannot create matches for season with less than 2 teams');
+
         if (count($teams) % 2 != 0) {
             $teams[] = null;
         }
