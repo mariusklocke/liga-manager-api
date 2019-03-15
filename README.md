@@ -26,9 +26,8 @@ For more information on how to manage containers, please refer to the [docker-co
 
 ## JSON Web Token
 
-This application uses JSON Web Token (JWT) for authentication. In order to create secure tokens, you have a create environment-specific RSA secret key.
-It is recommended to store this secret on the host's file system and mount it to the container so the key won't change when deploying a new container.
-Please see `docker-compose.yml.dist` for that.
+This application uses JSON Web Token (JWT) for authentication. In order to create secure tokens, you have to generate an environment-specific secret.
+Please run `docker-compose exec php bin/console.php app:generate-jwt-secret` and add the generated key to your `.env` file as described in the command output.
 
 ## OS users & file permissions
 

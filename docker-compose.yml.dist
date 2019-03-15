@@ -6,17 +6,20 @@ services:
       - "80:80"
     volumes:
       - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - .:/var/www/api
+      - api-public:/var/www/api/public:ro
     depends_on:
       - php
       - swagger-ui
 
   php:
-    image: mklocke/liga-manager-api:latest
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      args:
+        XDEBUG: 0
     user: dev
     volumes:
-      - .:/var/www/api
-      - ./docker/_volumes/jwt:/var/www/jwt
+      - api-public:/var/www/api/public
     depends_on:
       - mariadb
       - maildev
@@ -46,3 +49,6 @@ services:
     image: swaggerapi/swagger-ui
     environment:
       - API_URL=http://localhost/api/swagger.json
+
+volumes:
+  api-public:
