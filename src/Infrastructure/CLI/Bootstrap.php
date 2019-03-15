@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Import\L98ImportProvider;
+use HexagonalPlayground\Infrastructure\API\GraphQL\SchemaProvider;
 use HexagonalPlayground\Infrastructure\CommandBusProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
@@ -41,6 +42,7 @@ class Bootstrap
         (new DoctrineServiceProvider())->register($container);
         (new L98ImportProvider())->register($container);
         (new CommandServiceProvider())->register($container);
+        (new SchemaProvider())->register($container);
 
         return $container;
     }

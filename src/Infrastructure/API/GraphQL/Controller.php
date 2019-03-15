@@ -15,16 +15,12 @@ class Controller
 
     public function query(Request $request, ContainerInterface $container)
     {
-        $schema = new Schema([
-            'query'    => new QueryType(),
-            'mutation' => new MutationType()
-        ]);
         $query = $request->getParsedBodyParam('query');
         $variables = (array)$request->getParsedBodyParam('variables');
         $context = new AppContext($request, $container);
         $errorHandler = new ErrorHandler($container->get('logger'), $context);
 
-        $result = GraphQL::executeQuery($schema, $query, null, $context, $variables)
+        $result = GraphQL::executeQuery($container->get(Schema::class), $query, null, $context, $variables)
             ->setErrorsHandler($errorHandler);
 
         return $this->createResponse(200, $result->toArray());

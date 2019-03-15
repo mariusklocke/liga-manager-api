@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
+use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Import\Importer;
@@ -42,6 +43,9 @@ class CommandServiceProvider implements ServiceProviderInterface
                 },
                 'app:send-test-mail' => function () use ($container) {
                     return new SendTestMailCommand($container[MailerInterface::class]);
+                },
+                'app:debug-gql-schema' => function () use ($container) {
+                    return new DebugGqlSchemaCommand($container[Schema::class]);
                 }
             ]);
         };
