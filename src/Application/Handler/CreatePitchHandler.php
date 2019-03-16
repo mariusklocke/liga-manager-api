@@ -23,13 +23,11 @@ class CreatePitchHandler
 
     /**
      * @param CreatePitchCommand $command
-     * @return string
      */
     public function __invoke(CreatePitchCommand $command)
     {
         IsAdmin::check($command->getAuthenticatedUser());
         $pitch = new Pitch($command->getId(), $command->getLabel(), $command->getLocation());
         $this->pitchRepository->save($pitch);
-        return $pitch->getId();
     }
 }
