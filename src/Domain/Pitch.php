@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use HexagonalPlayground\Domain\Event\PitchContactUpdated;
+use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Util\Uuid;
 
 class Pitch
 {
@@ -17,7 +18,7 @@ class Pitch
     /** @var GeographicLocation */
     private $location;
 
-    /** @var ContactPerson */
+    /** @var ContactPerson|null */
     private $contact;
 
     public function __construct(string $id, string $label, GeographicLocation $location)
@@ -43,6 +44,9 @@ class Pitch
      */
     public function setContact(ContactPerson $contact): void
     {
-        $this->contact = $contact;
+        if (null === $this->contact || !$this->contact->equals($contact)) {
+            Publisher::getInstance()->publish(PitchContactUpdated::create($this->id, $this->contact, $contact));
+            $this->contact = $contact;
+        }
     }
 }

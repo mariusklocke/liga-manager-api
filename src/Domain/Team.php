@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\Event\Publisher;
+use HexagonalPlayground\Domain\Event\TeamContactUpdated;
 use HexagonalPlayground\Domain\Event\TeamCreated;
 use HexagonalPlayground\Domain\Event\TeamRenamed;
 use HexagonalPlayground\Domain\Util\Assert;
@@ -20,7 +21,7 @@ class Team
     /** @var DateTimeImmutable */
     private $createdAt;
 
-    /** @var ContactPerson */
+    /** @var ContactPerson|null */
     private $contact;
 
     public function __construct(string $id, string $name)
@@ -70,11 +71,14 @@ class Team
     }
 
     /**
-     * @param ContactPerson $person
+     * @param ContactPerson $contact
      */
-    public function setContact(ContactPerson $person): void
+    public function setContact(ContactPerson $contact): void
     {
-        $this->contact = $person;
+        if (null === $this->contact || !$this->contact->equals($contact)) {
+            Publisher::getInstance()->publish(TeamContactUpdated::create($this->id, $this->contact, $contact));
+            $this->contact = $contact;
+        }
     }
 
     /**

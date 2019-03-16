@@ -33,4 +33,24 @@ class ContactPerson
         $this->phone = $phone;
         $this->email = $email;
     }
+
+    /**
+     * @param ContactPerson $other
+     * @return bool
+     */
+    public function equals(ContactPerson $other): bool
+    {
+        return $this->firstName === $other->firstName
+            && $this->lastName  === $other->lastName
+            && $this->phone     === $other->phone
+            && $this->email     === $other->email;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return get_object_vars($this);
+    }
 }
