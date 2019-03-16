@@ -52,3 +52,8 @@ Configure `user: dev` in `docker-compose.yml` if you want to mount the project f
 
 * Class name must start with a context subject like "Match" or "Team"
 * Class name must contain a verb in past tense
+
+### Inspired by
+
+* https://apihandyman.io/writing-openapi-swagger-specification-tutorial-part-3-simplifying-specification-file/
+* https://fideloper.com/hexagonal-architecture
