@@ -5,6 +5,10 @@ namespace HexagonalPlayground\Domain;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Event\Publisher;
+use HexagonalPlayground\Domain\Event\SeasonCreated;
+use HexagonalPlayground\Domain\Event\SeasonEnded;
+use HexagonalPlayground\Domain\Event\SeasonStarted;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class Season extends Competition
@@ -44,6 +48,7 @@ class Season extends Competition
         $this->state = self::STATE_PREPARATION;
         $this->teamCount = 0;
         $this->updateMatchDayCount();
+        Publisher::getInstance()->publish(SeasonCreated::create($this->id));
     }
 
     /**
@@ -142,6 +147,7 @@ class Season extends Competition
         Assert::true($this->hasMatches(), 'Cannot start a season which has no matches');
         $this->ranking = new Ranking($this);
         $this->state = self::STATE_PROGRESS;
+        Publisher::getInstance()->publish(SeasonStarted::create($this->id));
     }
 
     /**
@@ -151,6 +157,7 @@ class Season extends Competition
     {
         Assert::true($this->hasStarted(), 'Cannot end a season which has not been started');
         $this->state = self::STATE_ENDED;
+        Publisher::getInstance()->publish(SeasonEnded::create($this->id));
     }
 
     public function createMatchDay(int $number, \DateTimeImmutable $startDate, \DateTimeImmutable $endDate): MatchDay

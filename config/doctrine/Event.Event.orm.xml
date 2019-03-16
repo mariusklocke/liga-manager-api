@@ -16,7 +16,12 @@
             <discriminator-mapping value="match:cancelled" class="MatchCancelled"/>
             <discriminator-mapping value="ranking:penalty:added" class="RankingPenaltyAdded"/>
             <discriminator-mapping value="ranking:penalty:removed" class="RankingPenaltyRemoved"/>
+            <discriminator-mapping value="season:created" class="SeasonCreated"/>
+            <discriminator-mapping value="season:started" class="SeasonStarted"/>
+            <discriminator-mapping value="season:ended" class="SeasonEnded"/>
+            <discriminator-mapping value="team:created" class="TeamCreated"/>
             <discriminator-mapping value="team:renamed" class="TeamRenamed"/>
+            <discriminator-mapping value="tournament:created" class="TournamentCreated"/>
         </discriminator-map>
         <field name="occurredAt" column="occurred_at" type="datetime_immutable" />
         <field name="payload" type="array" />

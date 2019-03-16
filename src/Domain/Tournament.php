@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use HexagonalPlayground\Domain\Event\Publisher;
+use HexagonalPlayground\Domain\Event\TournamentCreated;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class Tournament extends Competition
@@ -24,6 +26,7 @@ class Tournament extends Competition
         $this->name = $name;
         $this->matchDays = new ArrayCollection();
         $this->updateRoundCount();
+        Publisher::getInstance()->publish(TournamentCreated::create($this->id));
     }
 
     /**

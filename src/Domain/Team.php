@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\Event\Publisher;
+use HexagonalPlayground\Domain\Event\TeamCreated;
 use HexagonalPlayground\Domain\Event\TeamRenamed;
 use HexagonalPlayground\Domain\Util\Assert;
 
@@ -28,6 +29,7 @@ class Team
         $this->id = $id;
         $this->setName($name);
         $this->createdAt = new DateTimeImmutable();
+        Publisher::getInstance()->publish(TeamCreated::create($this->id));
     }
 
     /**
