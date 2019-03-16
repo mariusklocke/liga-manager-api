@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\InputParser;
 
 class DatePeriodType extends InputObjectType implements CustomObjectType
@@ -16,10 +17,10 @@ class DatePeriodType extends InputObjectType implements CustomObjectType
             'fields' => function () {
                 return [
                     'from' => [
-                        'type' => DateType::getInstance()
+                        'type' => Type::nonNull(DateType::getInstance())
                     ],
                     'to' => [
-                        'type' => DateType::getInstance()
+                        'type' => Type::nonNull(DateType::getInstance())
                     ]
                 ];
             }

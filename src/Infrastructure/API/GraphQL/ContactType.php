@@ -15,16 +15,16 @@ class ContactType extends ObjectType
             'fields' => function() {
                 return [
                     'first_name' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'last_name' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'phone' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'email' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ]
                 ];
             }

@@ -17,10 +17,10 @@ class UserType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'email' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'teams' => [
                         'type' => Type::listOf(TeamType::getInstance()),
@@ -32,13 +32,13 @@ class UserType extends ObjectType
                         }
                     ],
                     'role' => [
-                        'type' => UserRoleType::getInstance()
+                        'type' => Type::nonNull(UserRoleType::getInstance())
                     ],
                     'first_name' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'last_name' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ]
                 ];
             }

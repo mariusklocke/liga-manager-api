@@ -15,13 +15,13 @@ class EventType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'occurred_at' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'type' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ]
                 ];
             }

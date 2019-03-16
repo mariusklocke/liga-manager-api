@@ -17,10 +17,10 @@ class TournamentType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'name' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'rounds' => [
                         'type' => Type::listOf(MatchDayType::getInstance()),

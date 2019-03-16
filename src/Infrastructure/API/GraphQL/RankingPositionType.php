@@ -18,10 +18,10 @@ class RankingPositionType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'team' => [
-                        'type' => TeamType::getInstance(),
+                        'type' => Type::nonNull(TeamType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {
                             /** @var BufferedTeamLoader $loader */
                             $loader = $context->getContainer()->get(BufferedTeamLoader::class);
@@ -32,31 +32,31 @@ class RankingPositionType extends ObjectType
                         }
                     ],
                     'sort_index' => [
-                        'type' => Type::int(),
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'number' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'matches' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'wins' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'draws' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'losses' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'scored_goals' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'conceded_goals' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'points' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                 ];
             }

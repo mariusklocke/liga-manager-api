@@ -19,16 +19,16 @@ class MatchType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'home_team' => [
-                        'type' => TeamType::getInstance(),
+                        'type' => Type::nonNull(TeamType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {
                             return $this->resolveTeam($root['home_team_id'], $context);
                         }
                     ],
                     'guest_team' => [
-                        'type' => TeamType::getInstance(),
+                        'type' => Type::nonNull(TeamType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {
                             return $this->resolveTeam($root['guest_team_id'], $context);
                         }

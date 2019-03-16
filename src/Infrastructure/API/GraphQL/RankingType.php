@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 
 class RankingType extends ObjectType
 {
@@ -17,10 +16,10 @@ class RankingType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'updated_at' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'positions' => [
                         'type' => Type::listOf(RankingPositionType::getInstance())

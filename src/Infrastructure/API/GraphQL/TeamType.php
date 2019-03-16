@@ -16,13 +16,13 @@ class TeamType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'name' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'created_at' => [
-                        'type' => Type::string() // look for date-time
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'contact' => [
                         'type' => ContactType::getInstance()

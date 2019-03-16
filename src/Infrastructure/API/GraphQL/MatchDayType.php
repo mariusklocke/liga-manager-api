@@ -18,16 +18,16 @@ class MatchDayType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'number' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'start_date' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'end_date' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'matches' => [
                         'type' => Type::listOf(MatchType::getInstance()),

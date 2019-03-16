@@ -21,19 +21,19 @@ class SeasonType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'name' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'state' => [
-                        'type' => SeasonStateType::getInstance()
+                        'type' => Type::nonNull(SeasonStateType::getInstance())
                     ],
                     'match_day_count' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'team_count' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                     'teams' => [
                         'type' => Type::listOf(TeamType::getInstance()),

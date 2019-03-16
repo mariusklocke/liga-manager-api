@@ -18,10 +18,10 @@ class RankingPenaltyType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'team' => [
-                        'type' => TeamType::getInstance(),
+                        'type' => Type::nonNull(TeamType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {
                             /** @var BufferedTeamLoader $loader */
                             $loader = $context->getContainer()->get(BufferedTeamLoader::class);
@@ -32,13 +32,13 @@ class RankingPenaltyType extends ObjectType
                         }
                     ],
                     'reason' => [
-                        'type' => Type::string(),
+                        'type' => Type::nonNull(Type::string()),
                     ],
                     'created_at' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'points' => [
-                        'type' => Type::int()
+                        'type' => Type::nonNull(Type::int())
                     ],
                 ];
             }

@@ -17,10 +17,10 @@ class TeamIdPairType extends InputObjectType implements CustomObjectType
             'fields' => function () {
                 return [
                     'home_team_id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'guest_team_id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ]
                 ];
             }

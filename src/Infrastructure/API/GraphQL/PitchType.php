@@ -15,16 +15,16 @@ class PitchType extends ObjectType
             'fields' => function() {
                 return [
                     'id' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'label' => [
-                        'type' => Type::string()
+                        'type' => Type::nonNull(Type::string())
                     ],
                     'location_longitude' => [
-                        'type' => Type::float()
+                        'type' => Type::nonNull(Type::float())
                     ],
                     'location_latitude' => [
-                        'type' => Type::float()
+                        'type' => Type::nonNull(Type::float())
                     ],
                     'contact' => [
                         'type' => ContactType::getInstance()
