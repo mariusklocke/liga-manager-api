@@ -72,9 +72,8 @@ class Ranking
      * @param string $reason
      * @param int $points
      * @param User $user
-     * @return RankingPenalty
      */
-    public function addPenalty(string $id, Team $team, string $reason, int $points, User $user): RankingPenalty
+    public function addPenalty(string $id, Team $team, string $reason, int $points, User $user): void
     {
         Assert::true($this->season->isInProgress(), 'Cannot add a penalty for a season which is not in progress');
 
@@ -89,8 +88,6 @@ class Ranking
             $penalty->getPoints(),
             $user->getId()
         ));
-
-        return $penalty;
     }
 
     /**
