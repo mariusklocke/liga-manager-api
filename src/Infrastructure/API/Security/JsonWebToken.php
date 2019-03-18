@@ -75,7 +75,7 @@ final class JsonWebToken implements TokenInterface
     {
         try {
             $payload = JWT::decode($encoded, self::getSecret(), [self::ALGORITHM]);
-        } catch (\RuntimeException $e) {
+        } catch (\Exception $e) {
             throw new AuthenticationException('Invalid Token');
         }
 
