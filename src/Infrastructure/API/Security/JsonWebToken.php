@@ -8,7 +8,6 @@ use Firebase\JWT\JWT;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Security\TokenInterface;
 use HexagonalPlayground\Infrastructure\Environment;
-use UnexpectedValueException;
 
 final class JsonWebToken implements TokenInterface
 {
@@ -76,7 +75,7 @@ final class JsonWebToken implements TokenInterface
     {
         try {
             $payload = JWT::decode($encoded, self::getSecret(), [self::ALGORITHM]);
-        } catch (UnexpectedValueException $e) {
+        } catch (\RuntimeException $e) {
             throw new AuthenticationException('Invalid Token');
         }
 
