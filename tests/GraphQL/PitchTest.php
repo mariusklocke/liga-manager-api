@@ -58,7 +58,6 @@ class PitchTest extends TestCase
      */
     public function testPitchCanBeDeleted(array $pitchIds)
     {
-        $this->markTestSkipped('Functionality not fully implemented');
         $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
         foreach ($pitchIds as $pitchId) {
             $pitch = $this->client->getPitchById($pitchId);

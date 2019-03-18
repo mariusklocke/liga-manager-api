@@ -19,4 +19,9 @@ interface PitchRepositoryInterface
      * @param Pitch $pitch
      */
     public function save($pitch): void;
+
+    /**
+     * @param $pitch
+     */
+    public function delete($pitch): void;
 }
