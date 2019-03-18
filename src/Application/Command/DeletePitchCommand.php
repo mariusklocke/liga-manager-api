@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-class DeletePitchCommand
+class DeletePitchCommand implements CommandInterface
 {
     /** @var string */
     private $pitchId;
