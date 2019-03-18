@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\Functional;
+namespace HexagonalPlayground\Tests\REST;
 
-use HexagonalPlayground\Tests\Functional\Framework\ApiException;
+use HexagonalPlayground\Tests\Framework\ApiException;
 
 class ValidationTest extends TestCase
 {

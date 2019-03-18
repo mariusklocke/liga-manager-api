@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\Functional\Framework;
+namespace HexagonalPlayground\Tests\Framework;
 
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;

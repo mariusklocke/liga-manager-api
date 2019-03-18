@@ -6,9 +6,17 @@
          beStrictAboutTodoAnnotatedTests="true"
          verbose="true"
          cacheResult="false">
-    <testsuite name="default">
-        <directory suffix="Test.php">tests</directory>
-    </testsuite>
+    <testsuites>
+        <testsuite name="CLI">
+            <directory suffix="Test.php">tests/CLI</directory>
+        </testsuite>
+        <testsuite name="GraphQL">
+            <directory suffix="Test.php">tests/GraphQL</directory>
+        </testsuite>
+        <testsuite name="REST">
+            <directory suffix="Test.php">tests/REST</directory>
+        </testsuite>
+    </testsuites>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">

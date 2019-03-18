@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\Functional;
+namespace HexagonalPlayground\Tests\CLI;
 
 use HexagonalPlayground\Infrastructure\CLI\Bootstrap;
 use Symfony\Component\Console\Application;

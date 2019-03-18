@@ -1,11 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\Functional;
+namespace HexagonalPlayground\Tests\REST;
 
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
-use HexagonalPlayground\Tests\Functional\Framework\SlimClient;
-use HexagonalPlayground\Tests\Functional\Framework\RichClient;
+use HexagonalPlayground\Tests\Framework\SlimClient;
+use HexagonalPlayground\Tests\Framework\RichClient;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {

@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\Functional;
+namespace HexagonalPlayground\Tests\REST;
 
 use HexagonalPlayground\Infrastructure\Environment;
-use HexagonalPlayground\Tests\Functional\Framework\ApiException;
-use HexagonalPlayground\Tests\Functional\Framework\EmailClientInterface;
-use HexagonalPlayground\Tests\Functional\Framework\MaildevClient;
+use HexagonalPlayground\Tests\Framework\ApiException;
+use HexagonalPlayground\Tests\Framework\EmailClientInterface;
+use HexagonalPlayground\Tests\Framework\MaildevClient;
 
 class UserTest extends TestCase
 {
