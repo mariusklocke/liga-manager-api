@@ -52,7 +52,7 @@ ENV APP_HOME="/var/www/api"
 ENV JWT_SECRET_PATH="/var/www/jwt"
 RUN mkdir -p ${APP_HOME} ${JWT_SECRET_PATH} && chown www-data:www-data ${JWT_SECRET_PATH}
 WORKDIR ${APP_HOME}
-COPY composer.json composer.lock phpunit.xml ./
+COPY migrations.php composer.json composer.lock phpunit.xml ./
 RUN composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
 COPY bin bin
 RUN chmod +x bin/*
