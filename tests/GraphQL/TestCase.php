@@ -21,4 +21,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $tolerance = 0.00001;
         self::assertLessThan($tolerance, abs($expected - $actual));
     }
+
+    protected static function assertArrayContainsObjectWithAttribute(array $array, string $attribute, $value)
+    {
+        $filtered = array_filter($array, function ($object) use ($attribute, $value) {
+            return is_object($object) && isset($object->$attribute) && $object->$attribute === $value;
+        });
+        self::assertGreaterThan(0, count($filtered));
+    }
 }

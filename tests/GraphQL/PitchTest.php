@@ -6,9 +6,14 @@ use HexagonalPlayground\Tests\Framework\Fixtures;
 
 class PitchTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
+    }
+
     public function testPitchCanBeCreated(): array
     {
-        $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
         $this->client->createPitch('TestFloat', 'TestFloat', 89.99, 6.78);
         $this->client->createPitch('TestInt', 'TestInt', 89, 6);
 
@@ -36,7 +41,6 @@ class PitchTest extends TestCase
      */
     public function testPitchContactCanBeUpdated(array $pitchIds)
     {
-        $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
         $pitchId = $pitchIds[0];
         $contact = [
             'first_name' => 'Marty',
@@ -61,7 +65,6 @@ class PitchTest extends TestCase
      */
     public function testPitchCanBeDeleted(array $pitchIds)
     {
-        $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
         foreach ($pitchIds as $pitchId) {
             $pitch = $this->client->getPitchById($pitchId);
             self::assertNotNull($pitch);
