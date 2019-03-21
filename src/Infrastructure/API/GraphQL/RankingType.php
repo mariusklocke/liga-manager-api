@@ -15,11 +15,8 @@ class RankingType extends ObjectType
         $config = [
             'fields' => function() {
                 return [
-                    'id' => [
-                        'type' => Type::nonNull(Type::string())
-                    ],
                     'updated_at' => [
-                        'type' => Type::nonNull(Type::string())
+                        'type' => Type::string()
                     ],
                     'positions' => [
                         'type' => Type::listOf(RankingPositionType::getInstance())
