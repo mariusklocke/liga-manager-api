@@ -13,7 +13,12 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        $this->client = new Client(new SlimClient(Bootstrap::bootstrap()));
+        $this->client = self::createClient();
+    }
+
+    protected static function createClient(): Client
+    {
+        return new Client(new SlimClient(Bootstrap::bootstrap()));
     }
 
     protected static function assertSimilarFloats(float $expected, float $actual)

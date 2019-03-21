@@ -33,16 +33,16 @@ class Client
 
     public function getAllSeasons(): array
     {
-        return $this->request(<<<GRAPHQL
+        $query = <<<GRAPHQL
     query allSeasons {
       allSeasons {
         id,
-        name,
-        created_at
+        name
       }
     }
-GRAPHQL
-);
+GRAPHQL;
+        $data = $this->request($query);
+        return $data->allSeasons;
     }
 
     public function createPitch($id, $label, $latitude, $longitude): void
@@ -213,6 +213,126 @@ GRAPHQL;
 GRAPHQL;
         $data = $this->request($query);
         return $data->allTeams;
+    }
+
+    public function createSeason($id, $name): void
+    {
+        $query = <<<'GRAPHQL'
+mutation createSeason($id: String!, $name: String!) {
+  createSeason(id: $id, name: $name)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'id' => $id,
+            'name' => $name
+        ]);
+    }
+
+    public function getSeasonById($id): ?\stdClass
+    {
+        $query = <<<'GRAPHQL'
+query season($id: String!) {
+  season(id: $id) {
+    id,
+    name,
+    state,
+    match_day_count,
+    team_count,
+    ranking {
+      updated_at
+    }
+  }
+}
+GRAPHQL;
+
+        $data = $this->request($query, ['id' => $id]);
+        return $data->season ?? null;
+    }
+
+    public function getSeasonByIdWithMatchDays($id): ?\stdClass
+    {
+        $query = <<<'GRAPHQL'
+query season($id: String!) {
+  season(id: $id) {
+    id,
+    name,
+    state,
+    match_day_count,
+    team_count,
+    ranking {
+      updated_at
+    },
+    match_days {
+      id,
+      number,
+      start_date,
+      end_date,
+      matches {
+        id
+      }
+    }
+  }
+}
+GRAPHQL;
+
+        $data = $this->request($query, ['id' => $id]);
+        return $data->season ?? null;
+    }
+
+    public function addTeamToSeason($seasonId, $teamId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation addTeamToSeason($seasonId: String!, $teamId: String!) {
+  addTeamToSeason(season_id: $seasonId, team_id: $teamId)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'teamId' => $teamId,
+            'seasonId' => $seasonId
+        ]);
+    }
+
+    public function removeTeamFromSeason($seasonId, $teamId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation removeTeamFromSeason($seasonId: String!, $teamId: String!) {
+  removeTeamFromSeason(season_id: $seasonId, team_id: $teamId)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'teamId' => $teamId,
+            'seasonId' => $seasonId
+        ]);
+    }
+
+    public function startSeason($seasonId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation startSeason($seasonId: String!) {
+  startSeason(season_id: $seasonId)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'seasonId' => $seasonId
+        ]);
+    }
+
+    public function createMatchesForSeason($seasonId, $dates)
+    {
+        $query = <<<'GRAPHQL'
+mutation createMatchesForSeason($seasonId: String!, $dates: [DatePeriod]!) {
+  createMatchesForSeason(season_id: $seasonId, dates: $dates)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'seasonId' => $seasonId,
+            'dates' => $dates
+        ]);
     }
 
     private function request(string $query, array $variables = [])
