@@ -14,6 +14,7 @@
             <discriminator-mapping value="match:result:submitted" class="MatchResultSubmitted"/>
             <discriminator-mapping value="match:scheduled" class="MatchScheduled"/>
             <discriminator-mapping value="match:cancelled" class="MatchCancelled"/>
+            <discriminator-mapping value="match:day:rescheduled" class="MatchDayRescheduled"/>
             <discriminator-mapping value="pitch:contact:updated" class="PitchContactUpdated"/>
             <discriminator-mapping value="ranking:penalty:added" class="RankingPenaltyAdded"/>
             <discriminator-mapping value="ranking:penalty:removed" class="RankingPenaltyRemoved"/>

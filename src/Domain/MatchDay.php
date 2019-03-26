@@ -6,6 +6,8 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Event\MatchDayRescheduled;
+use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\Uuid;
 
@@ -102,8 +104,10 @@ class MatchDay
      */
     public function reschedule(DateTimeImmutable $startDate, DateTimeImmutable $endDate): void
     {
+        Assert::true($startDate <= $endDate, 'Invalid date range: Start date cannot be after end date');
         $this->startDate = $startDate;
         $this->endDate   = $endDate;
+        Publisher::getInstance()->publish(MatchDayRescheduled::create($this->id, $this->startDate, $this->endDate));
     }
 
     /**
