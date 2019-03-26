@@ -3,29 +3,10 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\Season;
-use HexagonalPlayground\Tests\Framework\Fixtures;
+use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 
-class SeasonTest extends TestCase
+class SeasonTest extends CompetitionTestCase
 {
-    private static $teamIds = [];
-
-    public static function setUpBeforeClass(): void
-    {
-        $client = self::createClient();
-        $client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
-        for ($i = 1; $i <= 8; $i++) {
-            $teamId = 'Team' . $i;
-            $client->createTeam($teamId, $teamId);
-            self::$teamIds[] = $teamId;
-        }
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
-    }
-
     public function testSeasonCanBeCreated(): string
     {
         $sent = [
@@ -51,8 +32,9 @@ class SeasonTest extends TestCase
     /**
      * @depends testSeasonCanBeCreated
      * @param string $seasonId
+     * @return string
      */
-    public function testSeasonCanBeStarted(string $seasonId)
+    public function testSeasonCanBeStarted(string $seasonId): string
     {
         $teamIdSlice = array_slice(self::$teamIds, 0, 2);
         foreach ($teamIdSlice as $teamId) {
@@ -88,22 +70,73 @@ class SeasonTest extends TestCase
             $matchCount += count($matchDay->matches);
         }
         self::assertSame(count($dates) * count(self::$teamIds) / 2, $matchCount);
+
+        return $season->id;
     }
 
-    private static function createMatchDayDates(int $count): array
+    /**
+     * @depends testSeasonCanBeStarted
+     * @param string $seasonId
+     * @return string
+     */
+    public function testSubmittingMatchResultByNonParticipatingTeamFails(string $seasonId): string
     {
-        $result = [];
-        $start  = new \DateTime('2019-03-21');
-        $end    = new \DateTime('2019-03-22');
-        for ($i = 0; $i < $count; $i++) {
-            $result[] = [
-                'from' => $start->format('Y-m-d'),
-                'to'   => $end->format('Y-m-d')
-            ];
-            $start->modify('+7 days');
-            $end->modify('+7 days');
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $matchId = $season->match_days[0]->matches[0]->id;
+        $match = $this->client->getMatchById($matchId);
+        $nonParticipatingTeamIds = array_diff(self::$teamIds, [
+            $match->home_team->id,
+            $match->guest_team->id
+        ]);
+
+        $this->useTeamManagerAuth(array_shift($nonParticipatingTeamIds));
+        $this->expectException(Exception::class);
+        $this->client->submitMatchResult($seasonId, 4, 3);
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testSeasonCanBeStarted
+     * @param string $seasonId
+     * @return string
+     */
+    public function testSubmittingMatchResultAffectsRanking(string $seasonId): string
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $matchId = $season->match_days[0]->matches[0]->id;
+        $match = $this->client->getMatchById($matchId);
+        self::assertNotNull($match);
+        $this->useTeamManagerAuth($match->home_team->id);
+        $this->client->submitMatchResult($matchId, 1, 1);
+
+        $season = $this->client->getSeasonById($seasonId);
+        self::assertNotNull($season->ranking);
+
+        foreach ($season->ranking->positions as $position) {
+            if ($position->team->id === $match->home_team->id || $position->team->id === $match->guest_team->id) {
+                self::assertSame(1, $position->number);
+                self::assertSame(0, $position->losses);
+                self::assertSame(1, $position->draws);
+                self::assertSame(0, $position->wins);
+                self::assertSame(1, $position->scored_goals);
+                self::assertSame(1, $position->conceded_goals);
+                self::assertSame(1, $position->points);
+            } else {
+                self::assertGreaterThan(2, $position->number);
+                self::assertSame(0, $position->losses);
+                self::assertSame(0, $position->draws);
+                self::assertSame(0, $position->wins);
+                self::assertSame(0, $position->scored_goals);
+                self::assertSame(0, $position->conceded_goals);
+                self::assertSame(0, $position->points);
+            }
         }
 
-        return $result;
+        $now = time();
+        $updatedAt = strtotime($season->ranking->updated_at);
+        self::assertLessThan(5, $now - $updatedAt);
+
+        return $seasonId;
     }
 }

@@ -240,7 +240,22 @@ query season($id: String!) {
     match_day_count,
     team_count,
     ranking {
-      updated_at
+      updated_at,
+      positions {
+        team {
+          id,
+          name
+        },
+        sort_index,
+        number,
+        matches,
+        wins,
+        draws,
+        losses,
+        scored_goals,
+        conceded_goals
+        points
+      }
     }
   }
 }
@@ -261,7 +276,22 @@ query season($id: String!) {
     match_day_count,
     team_count,
     ranking {
-      updated_at
+      updated_at,
+      positions {
+        team {
+          id,
+          name
+        },
+        sort_index,
+        number,
+        matches,
+        wins,
+        draws,
+        losses,
+        scored_goals,
+        conceded_goals
+        points
+      }
     },
     match_days {
       id,
@@ -321,7 +351,7 @@ GRAPHQL;
         ]);
     }
 
-    public function createMatchesForSeason($seasonId, $dates)
+    public function createMatchesForSeason($seasonId, $dates): void
     {
         $query = <<<'GRAPHQL'
 mutation createMatchesForSeason($seasonId: String!, $dates: [DatePeriod]!) {
@@ -332,6 +362,59 @@ GRAPHQL;
         $this->request($query, [
             'seasonId' => $seasonId,
             'dates' => $dates
+        ]);
+    }
+
+    public function createUser($user): void
+    {
+        $query = <<<'GRAPHQL'
+mutation createUser($id: String, $email: String!, $password: String!, $firstName: String!, $lastName: String!, $role: String!, $teamIds: [String]!) {
+  createUser(id: $id, email: $email, password: $password, first_name: $firstName, last_name: $lastName, role: $role, team_ids: $teamIds)
+}
+GRAPHQL;
+
+        $this->request($query, $user);
+    }
+
+    public function getMatchById($id): ?\stdClass
+    {
+        $query = <<<'GRAPHQL'
+query match($id: String!) {
+  match(id: $id) {
+    id,
+    home_team {
+      id,
+      name
+    }
+    guest_team {
+      id,
+      name
+    },
+    kickoff,
+    home_score,
+    guest_score,
+    cancelled_at,
+    cancellation_reason
+  }
+}
+GRAPHQL;
+
+        $data = $this->request($query, ['id' => $id]);
+        return $data->match;
+    }
+
+    public function submitMatchResult($matchId, $homeScore, $guestScore): void
+    {
+        $query = <<<'GRAPHQL'
+mutation submitMatchResult($matchId: String!, $homeScore: Int!, $guestScore: Int!) {
+  submitMatchResult(match_id: $matchId, home_score: $homeScore, guest_score: $guestScore)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'matchId' => $matchId,
+            'homeScore' => $homeScore,
+            'guestScore' => $guestScore
         ]);
     }
 
