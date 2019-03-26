@@ -77,23 +77,17 @@ class SeasonTest extends CompetitionTestCase
     /**
      * @depends testSeasonCanBeStarted
      * @param string $seasonId
-     * @return string
      */
-    public function testSubmittingMatchResultByNonParticipatingTeamFails(string $seasonId): string
+    public function testSubmittingMatchResultByNonParticipatingTeamFails(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         $matchId = $season->match_days[0]->matches[0]->id;
         $match = $this->client->getMatchById($matchId);
-        $nonParticipatingTeamIds = array_diff(self::$teamIds, [
-            $match->home_team->id,
-            $match->guest_team->id
-        ]);
+        $nonParticipatingTeamIds = $this->getNonParticipatingTeamIds($match);
 
         $this->useTeamManagerAuth(array_shift($nonParticipatingTeamIds));
         $this->expectException(Exception::class);
-        $this->client->submitMatchResult($seasonId, 4, 3);
-
-        return $seasonId;
+        $this->client->submitMatchResult($matchId, 4, 3);
     }
 
     /**
@@ -138,5 +132,62 @@ class SeasonTest extends CompetitionTestCase
         self::assertLessThan(5, $now - $updatedAt);
 
         return $seasonId;
+    }
+
+    /**
+     * @depends testSubmittingMatchResultAffectsRanking
+     * @param string $seasonId
+     */
+    public function testCancellingMatchByNonParticipatingTeamFails(string $seasonId): void
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $matchId = $season->match_days[0]->matches[0]->id;
+        $match = $this->client->getMatchById($matchId);
+        $nonParticipatingTeamIds = $this->getNonParticipatingTeamIds($match);
+
+        $this->useTeamManagerAuth(array_shift($nonParticipatingTeamIds));
+        $this->expectException(Exception::class);
+        $this->client->cancelMatch($matchId, 'Just cause');
+    }
+
+    /**
+     * @depends testSubmittingMatchResultAffectsRanking
+     * @param string $seasonId
+     * @return string
+     */
+    public function testCancellingMatchAffectsRanking(string $seasonId): string
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $matchId = $season->match_days[0]->matches[0]->id;
+        $match = $this->client->getMatchById($matchId);
+        self::assertNotNull($match);
+        $this->useTeamManagerAuth($match->home_team->id);
+        $this->client->cancelMatch($matchId, 'Team did not show up');
+
+        $season = $this->client->getSeasonById($seasonId);
+        self::assertNotNull($season->ranking);
+
+        foreach ($season->ranking->positions as $position) {
+            self::assertSame(0, $position->losses);
+            self::assertSame(0, $position->draws);
+            self::assertSame(0, $position->wins);
+            self::assertSame(0, $position->scored_goals);
+            self::assertSame(0, $position->conceded_goals);
+            self::assertSame(0, $position->points);
+        }
+
+        $now = time();
+        $updatedAt = strtotime($season->ranking->updated_at);
+        self::assertLessThan(5, $now - $updatedAt);
+
+        return $seasonId;
+    }
+
+    private function getNonParticipatingTeamIds(\stdClass $match): array
+    {
+        return array_diff(self::$teamIds, [
+            $match->home_team->id,
+            $match->guest_team->id
+        ]);
     }
 }

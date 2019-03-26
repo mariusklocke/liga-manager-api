@@ -432,4 +432,18 @@ GRAPHQL;
         }
         return $body->data;
     }
+
+    public function cancelMatch($matchId, $reason): void
+    {
+        $query = <<<'GRAPHQL'
+mutation cancelMatch($matchId: String!, $reason: String!) {
+  cancelMatch(match_id: $matchId, reason: $reason)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'matchId' => $matchId,
+            'reason'  => $reason
+        ]);
+    }
 }
