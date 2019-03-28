@@ -10,9 +10,8 @@ fi
 
 trap 'rc=$?' ERR
 
-# Build images
+# Build image
 docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG .
-docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG-xdebug --build-arg XDEBUG=1 .
 
 # Define environment
 MYSQL_ENV_ARGS="-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_HOST=mariadb -e MYSQL_DATABASE=test -e MYSQL_USER=test -e MYSQL_PASSWORD=test"
@@ -30,9 +29,13 @@ docker run --link mariadb --rm dadarek/wait-for-dependencies mariadb:3306
 
 # Run tests
 docker run --link mariadb --link redis --link maildev --rm ${APP_ENV_ARGS} \
-    mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit"
+    mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit --testdox"
 
-if  [[ $1 = "-c" ]]; then
+if [[ $1 = "-c" ]]; then
+    # Build image with xdebug
+    docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG-xdebug --build-arg XDEBUG=1 .
+
+    # Create temporary volume
     docker volume create tmp-vol
 
     # Run tests with coverage
@@ -43,6 +46,7 @@ if  [[ $1 = "-c" ]]; then
     docker run --rm -v $PWD:/var/www/api -v tmp-vol:/tmp -e TRAVIS -e TRAVIS_JOB_ID \
         kielabokkie/coveralls-phpcov sh -c "cd /var/www/api && php-coveralls -v -x /tmp/clover.xml -o /tmp/coveralls.json"
 
+    # Remove temporary volume
     docker volume rm tmp-vol
 fi
 
