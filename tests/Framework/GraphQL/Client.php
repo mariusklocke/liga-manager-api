@@ -476,4 +476,31 @@ GRAPHQL;
             'points' => $points
         ]);
     }
+
+    public function rescheduleMatchDay($matchDayId, $datePeriod)
+    {
+        $query = <<<'GRAPHQL'
+mutation rescheduleMatchDay($matchDayId: String!, $datePeriod: DatePeriod!) {
+  rescheduleMatchDay(match_day_id: $matchDayId, date_period: $datePeriod)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'matchDayId' => $matchDayId,
+            'datePeriod' => $datePeriod
+        ]);
+    }
+
+    public function deleteSeason($seasonId)
+    {
+        $query = <<<'GRAPHQL'
+mutation deleteSeason($seasonId: String!) {
+  deleteSeason(season_id: $seasonId)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'seasonId' => $seasonId
+        ]);
+    }
 }

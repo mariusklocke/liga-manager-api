@@ -29,6 +29,18 @@ class SeasonTest extends CompetitionTestCase
         return $sent['id'];
     }
 
+    public function testSeasonCanBeDeleted(): void
+    {
+        $seasonId = 'toDelete';
+        $this->client->createSeason($seasonId, $seasonId);
+        $season = $this->client->getSeasonById($seasonId);
+        self::assertNotNull($season);
+
+        $this->client->deleteSeason($seasonId);
+        $season = $this->client->getSeasonById($seasonId);
+        self::assertNull($season);
+    }
+
     /**
      * @depends testSeasonCanBeCreated
      * @param string $seasonId
@@ -209,8 +221,39 @@ class SeasonTest extends CompetitionTestCase
     /**
      * @depends testPenaltiesAffectRanking
      * @param string $seasonId
+     * @return string
      */
-    public function testEndedSeasonsRankingIsFinal(string $seasonId)
+    public function testMatchDayCanBeRescheduled(string $seasonId): string
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        self::assertGreaterThan(0, count($season->match_days));
+        $matchDay = $season->match_days[0];
+        $matchDayId = $matchDay->id;
+
+        $newStart = (new \DateTimeImmutable($matchDay->start_date))->modify('+7 days');
+        $newEnd   = $newStart->modify('+1 day');
+
+        $this->client->rescheduleMatchDay($matchDayId, [
+            'from' => $newStart->format(DATE_ATOM),
+            'to'   => $newEnd->format(DATE_ATOM)
+        ]);
+
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        self::assertGreaterThan(0, count($season->match_days));
+        $matchDay = $season->match_days[0];
+
+        self::assertSame($matchDayId, $matchDay->id);
+        self::assertEquals($newStart->format('U'), strtotime($matchDay->start_date));
+        self::assertEquals($newEnd->format('U'), strtotime($matchDay->end_date));
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testMatchDayCanBeRescheduled
+     * @param string $seasonId
+     */
+    public function testEndedSeasonsRankingIsFinal(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         self::assertSame(Season::STATE_PROGRESS, $season->state);
