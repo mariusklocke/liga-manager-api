@@ -183,6 +183,47 @@ class SeasonTest extends CompetitionTestCase
         return $seasonId;
     }
 
+    /**
+     * @depends testCancellingMatchAffectsRanking
+     * @depends testCancellingMatchByNonParticipatingTeamFails
+     * @param string $seasonId
+     * @return string
+     */
+    public function testPenaltiesAffectRanking(string $seasonId): string
+    {
+        $teamId = self::$teamIds[0];
+        $this->client->addRankingPenalty('firstPenalty', $seasonId, $teamId, 'for not partying hard', 5);
+
+        $season = $this->client->getSeasonById($seasonId);
+        $positions = array_filter($season->ranking->positions, function($position) use ($teamId) {
+            return $position->team->id === $teamId;
+        });
+        self::assertSame(1, count($positions));
+
+        $position = array_shift($positions);
+        self::assertSame(-5, $position->points);
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testPenaltiesAffectRanking
+     * @param string $seasonId
+     */
+    public function testEndedSeasonsRankingIsFinal(string $seasonId)
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        self::assertSame(Season::STATE_PROGRESS, $season->state);
+        $match = $season->match_days[0]->matches[1];
+
+        $this->client->endSeason($seasonId);
+        $season = $this->client->getSeasonById($seasonId);
+        self::assertSame(Season::STATE_ENDED, $season->state);
+
+        self::expectException(Exception::class);
+        $this->client->submitMatchResult($match->id, 2, 3);
+    }
+
     private function getNonParticipatingTeamIds(\stdClass $match): array
     {
         return array_diff(self::$teamIds, [

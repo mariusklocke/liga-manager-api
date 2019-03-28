@@ -446,4 +446,34 @@ GRAPHQL;
             'reason'  => $reason
         ]);
     }
+
+    public function endSeason($seasonId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation endSeason($seasonId: String!) {
+  endSeason(season_id: $seasonId)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'seasonId' => $seasonId
+        ]);
+    }
+
+    public function addRankingPenalty($id, $seasonId, $teamId, $reason, $points)
+    {
+        $query = <<<'GRAPHQL'
+mutation addRankingPenalty($id: String, $seasonId: String!, $teamId: String!, $reason: String!, $points: Int!) {
+  addRankingPenalty(id: $id, season_id: $seasonId, team_id: $teamId, reason: $reason, points: $points)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'id' => $id,
+            'seasonId' => $seasonId,
+            'teamId' => $teamId,
+            'reason' => $reason,
+            'points' => $points
+        ]);
+    }
 }
