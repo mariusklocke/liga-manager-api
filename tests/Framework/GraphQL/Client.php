@@ -477,6 +477,20 @@ GRAPHQL;
         ]);
     }
 
+    public function removeRankingPenalty($rankingPenaltyId, $seasonId)
+    {
+        $query = <<<'GRAPHQL'
+mutation removeRankingPenalty($rankingPenaltyId: String!, $seasonId: String!) {
+  removeRankingPenalty(ranking_penalty_id: $rankingPenaltyId, season_id: $seasonId)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'rankingPenaltyId' => $rankingPenaltyId,
+            'seasonId' => $seasonId
+        ]);
+    }
+
     public function rescheduleMatchDay($matchDayId, $datePeriod)
     {
         $query = <<<'GRAPHQL'

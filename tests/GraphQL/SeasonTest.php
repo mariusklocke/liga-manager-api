@@ -203,9 +203,10 @@ class SeasonTest extends CompetitionTestCase
      */
     public function testPenaltiesAffectRanking(string $seasonId): string
     {
+        $penaltyId = 'foobar';
         $teamId = self::$teamIds[0];
-        $this->client->addRankingPenalty('firstPenalty', $seasonId, $teamId, 'for not partying hard', 5);
 
+        $this->client->addRankingPenalty($penaltyId, $seasonId, $teamId, 'for not partying hard', 5);
         $season = $this->client->getSeasonById($seasonId);
         $positions = array_filter($season->ranking->positions, function($position) use ($teamId) {
             return $position->team->id === $teamId;
@@ -214,6 +215,16 @@ class SeasonTest extends CompetitionTestCase
 
         $position = array_shift($positions);
         self::assertSame(-5, $position->points);
+
+        $this->client->removeRankingPenalty($penaltyId, $seasonId);
+        $season = $this->client->getSeasonById($seasonId);
+        $positions = array_filter($season->ranking->positions, function($position) use ($teamId) {
+            return $position->team->id === $teamId;
+        });
+        self::assertSame(1, count($positions));
+
+        $position = array_shift($positions);
+        self::assertSame(0, $position->points);
 
         return $seasonId;
     }
