@@ -517,4 +517,113 @@ GRAPHQL;
             'seasonId' => $seasonId
         ]);
     }
+
+    public function createTournament($id, $name)
+    {
+        $query = <<<'GRAPHQL'
+mutation createTournament($id: String, $name: String!) {
+  createTournament(id: $id, name: $name)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'id' => $id,
+            'name' => $name
+        ]);
+    }
+
+    public function getTournamentById($id): ?\stdClass
+    {
+        $query = <<<'GRAPHQL'
+query tournament($id: String!) {
+  tournament(id: $id) {
+    id,
+    name
+  }
+}
+GRAPHQL;
+
+        $data = $this->request($query, ['id' => $id]);
+        return $data->tournament;
+    }
+
+    public function getTournamentByIdWithRounds($id): ?\stdClass
+    {
+        $query = <<<'GRAPHQL'
+query tournament($id: String!) {
+  tournament(id: $id) {
+    id,
+    name,
+    rounds {
+      id,
+      number,
+      start_date,
+      end_date,
+      matches {
+        id,
+        home_team {
+          id,
+          name
+        },
+        guest_team {
+          id,
+          name
+        },
+        kickoff,
+        home_score,
+        guest_score,
+        cancelled_at,
+        cancellation_reason
+      }
+    }
+  }
+}
+GRAPHQL;
+
+        $data = $this->request($query, ['id' => $id]);
+        return $data->tournament;
+    }
+
+    public function getAllTournaments(): array
+    {
+        $query = <<<GRAPHQL
+    query allTournaments {
+      allTournaments {
+        id,
+        name
+      }
+    }
+GRAPHQL;
+        $data = $this->request($query);
+        return $data->allTournaments;
+    }
+
+    public function setTournamentRound($tournamentId, $round, $teamIdPairs, $datePeriod): void
+    {
+        $query = <<<'GRAPHQL'
+mutation setTournamentRound($tournamentId: String!, $round: Int!, $teamIdPairs: [TeamIdPair]!, $datePeriod: DatePeriod!) {
+  setTournamentRound(tournament_id: $tournamentId, round: $round, team_id_pairs: $teamIdPairs, date_period: $datePeriod)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'tournamentId' => $tournamentId,
+            'round' => $round,
+            'teamIdPairs' => $teamIdPairs,
+            'datePeriod' => $datePeriod
+        ]);
+    }
+
+    public function deleteTournament($tournamentId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation deleteTournament($tournamentId: String!) {
+  deleteTournament(tournament_id: $tournamentId)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'tournamentId' => $tournamentId
+        ]);
+    }
 }

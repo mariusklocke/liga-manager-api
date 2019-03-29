@@ -12,6 +12,10 @@ abstract class CompetitionTestCase extends TestCase
 
     public static function setUpBeforeClass(): void
     {
+        if (!empty(self::$teamIds)) {
+            return;
+        }
+
         $client = self::createClient();
         $client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
         for ($i = 1; $i <= 8; $i++) {
