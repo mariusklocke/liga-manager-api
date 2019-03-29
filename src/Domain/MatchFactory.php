@@ -26,11 +26,11 @@ class MatchFactory
             $teams[] = null;
         }
         shuffle($teams);
-        $matchDaysPerHalf = count($teams) - 1;
+        $expectedMatchDayCount = count($teams) - 1;
 
-        Assert::true(count($matchDayDates) === $matchDaysPerHalf, sprintf(
+        Assert::true(count($matchDayDates) === $expectedMatchDayCount, sprintf(
             'Count of MatchDay dates does not match. Expected %d. Got %d',
-            $matchDaysPerHalf,
+            $expectedMatchDayCount,
             count($matchDayDates)
         ));
 
