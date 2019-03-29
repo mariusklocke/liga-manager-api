@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
-use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Domain\Match;
@@ -18,21 +17,16 @@ class SetTournamentRoundHandler
     /** @var TournamentRepositoryInterface */
     private $tournamentRepository;
 
-    /** @var MatchRepositoryInterface */
-    private $matchRepository;
-
     /** @var TeamRepositoryInterface */
     private $teamRepository;
 
     /**
      * @param TournamentRepositoryInterface $tournamentRepository
-     * @param MatchRepositoryInterface $matchRepository
      * @param TeamRepositoryInterface $teamRepository
      */
-    public function __construct(TournamentRepositoryInterface $tournamentRepository, MatchRepositoryInterface $matchRepository, TeamRepositoryInterface $teamRepository)
+    public function __construct(TournamentRepositoryInterface $tournamentRepository, TeamRepositoryInterface $teamRepository)
     {
         $this->tournamentRepository = $tournamentRepository;
-        $this->matchRepository = $matchRepository;
         $this->teamRepository = $teamRepository;
     }
 

@@ -118,7 +118,6 @@ class CommandBusProvider implements ServiceProviderInterface
         $container[SetTournamentRoundHandler::class] = function () use ($container) {
             return new SetTournamentRoundHandler(
                 $container['orm.repository.tournament'],
-                $container['orm.repository.match'],
                 $container['orm.repository.team']
             );
         };
