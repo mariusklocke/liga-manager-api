@@ -18,10 +18,9 @@ class MatchDayLoader extends AbstractRepository
         }
 
         $placeholders = $this->getPlaceholders($seasonIds);
-        $startDate = $this->getDateFormat('start_date');
-        $endDate   = $this->getDateFormat('end_date');
-        $query     = <<<SQL
-  SELECT id, season_id, tournament_id, number, $startDate, $endDate
+
+        $query = <<<SQL
+  SELECT id, season_id, tournament_id, number, start_date, end_date
   FROM match_days
   WHERE season_id IN ($placeholders)
   ORDER BY number ASC
@@ -46,10 +45,9 @@ SQL;
         }
 
         $placeholders = $this->getPlaceholders($tournamentIds);
-        $startDate = $this->getDateFormat('start_date');
-        $endDate   = $this->getDateFormat('end_date');
-        $query     = <<<SQL
-  SELECT id, season_id, tournament_id, number, $startDate, $endDate
+
+        $query = <<<SQL
+  SELECT id, season_id, tournament_id, number, start_date, end_date
   FROM match_days
   WHERE tournament_id IN ($placeholders)
   ORDER BY number ASC
