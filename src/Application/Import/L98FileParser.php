@@ -51,8 +51,8 @@ class L98FileParser
         while ($round = $this->getSection(sprintf('Round%d', $matchDayIndex))) {
             $matchDay = new L98MatchDayModel(
                 $matchDayIndex,
-                InputParser::parseDateTime($round['D1']),
-                InputParser::parseDateTime($round['D2'])
+                InputParser::parseDate($round['D1']),
+                InputParser::parseDate($round['D2'])
             );
 
             $matchIndex = 1;
