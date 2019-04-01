@@ -56,6 +56,17 @@ class InputParser
     }
 
     /**
+     * Parses a Date from a string
+     *
+     * @param string $value
+     * @return \DateTimeImmutable
+     */
+    public static function parseDate(string $value): \DateTimeImmutable
+    {
+        return self::parseDateTime($value)->setTime(0, 0);
+    }
+
+    /**
      * Parses a DateTime from a string
      *
      * @param string $value
@@ -90,8 +101,8 @@ class InputParser
         }
 
         return new DatePeriod(
-            is_string($from) ? self::parseDateTime($from) : $from,
-            is_string($to)? self::parseDateTime($to) : $to
+            is_string($from) ? self::parseDate($from) : $from,
+            is_string($to)? self::parseDate($to) : $to
         );
     }
 }

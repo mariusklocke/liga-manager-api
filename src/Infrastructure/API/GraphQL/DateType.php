@@ -41,8 +41,7 @@ class DateType extends ScalarType
      */
     public function parseValue($value)
     {
-        $dateTime = InputParser::parseDateTime($value);
-        return $dateTime;
+        return InputParser::parseDate($value);
     }
 
     /**
