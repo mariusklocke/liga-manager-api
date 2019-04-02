@@ -8,5 +8,6 @@
         <field name="label" type="string" />
         <embedded name="location" class="HexagonalPlayground\Domain\GeographicLocation" />
         <embedded name="contact" class="HexagonalPlayground\Domain\ContactPerson" />
+        <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="pitch"/>
     </entity>
 </doctrine-mapping>
