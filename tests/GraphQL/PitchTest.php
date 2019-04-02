@@ -57,4 +57,19 @@ class PitchTest extends TestCase
         return $pitchIds;
     }
 
+    /**
+     * @depends testPitchContactCanBeUpdated
+     * @param array $pitchIds
+     */
+    public function testPitchCanBeDeleted(array $pitchIds)
+    {
+        foreach ($pitchIds as $pitchId) {
+            $pitch = $this->client->getPitchById($pitchId);
+            self::assertNotNull($pitch);
+
+            $this->client->deletePitch($pitchId);
+            $pitch = $this->client->getPitchById($pitchId);
+            self::assertNull($pitch);
+        }
+    }
 }
