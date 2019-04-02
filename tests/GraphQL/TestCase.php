@@ -2,7 +2,6 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use Doctrine\ORM\EntityManager;
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
 use HexagonalPlayground\Tests\Framework\Fixtures;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
@@ -18,16 +17,16 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /** @var App */
     private static $app;
 
-    protected function setUp(): void
+    public static function setUpBeforeClass(): void
     {
-        $this->client = self::createClient();
+        if (null === self::$app) {
+            self::$app = Bootstrap::bootstrap();
+        }
     }
 
-    protected function tearDown(): void
+    protected function setUp(): void
     {
-        /** @var EntityManager $em */
-        $em = self::$app->getContainer()->get(EntityManager::class);
-        $em->getConnection()->close();
+        $this->client = new Client(new SlimClient(self::$app));
     }
 
     protected function useAdminAuth(): void
@@ -38,12 +37,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function expectClientException(): void
     {
         self::expectException(Exception::class);
-    }
-
-    protected static function createClient(): Client
-    {
-        self::$app = Bootstrap::bootstrap();
-        return new Client(new SlimClient(self::$app));
     }
 
     protected static function assertSimilarFloats(float $expected, float $actual)
