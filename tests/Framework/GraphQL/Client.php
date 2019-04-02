@@ -365,11 +365,11 @@ GRAPHQL;
         ]);
     }
 
-    public function createUser($user): void
+    public function createUser(array $user): void
     {
         $query = <<<'GRAPHQL'
-mutation createUser($id: String, $email: String!, $password: String!, $firstName: String!, $lastName: String!, $role: String!, $teamIds: [String]!) {
-  createUser(id: $id, email: $email, password: $password, first_name: $firstName, last_name: $lastName, role: $role, team_ids: $teamIds)
+mutation createUser($id: String, $email: String!, $password: String!, $first_name: String!, $last_name: String!, $role: String!, $team_ids: [String]!) {
+  createUser(id: $id, email: $email, password: $password, first_name: $first_name, last_name: $last_name, role: $role, team_ids: $team_ids)
 }
 GRAPHQL;
 
@@ -427,6 +427,9 @@ GRAPHQL;
         );
 
         $body = json_decode($response->getBody()->__toString());
+        if ($response->getStatusCode() >= 400) {
+            throw new Exception([$body->message]);
+        }
         if (isset($body->errors) && is_array($body->errors) && count($body->errors) > 0) {
             throw new Exception($body->errors);
         }
@@ -624,6 +627,91 @@ GRAPHQL;
 
         $this->request($query, [
             'tournamentId' => $tournamentId
+        ]);
+    }
+
+    public function getAllUsers(): array
+    {
+        $query = <<<GRAPHQL
+query allUsers {
+  allUsers {
+    id,
+    email,
+    role,
+    first_name,
+    last_name
+  }
+}
+GRAPHQL;
+        $data = $this->request($query);
+        return $data->allUsers;
+    }
+
+    public function getAuthenticatedUser(): \stdClass
+    {
+        $query = <<<GRAPHQL
+query authenticatedUser {
+  authenticatedUser {
+    id,
+    email,
+    role,
+    first_name,
+    last_name
+  }
+}
+GRAPHQL;
+        $data = $this->request($query);
+        return $data->authenticatedUser;
+    }
+
+    public function changeUserPassword($newPassword): void
+    {
+        $query = <<<'GRAPHQL'
+mutation changeUserPassword($newPassword: String!) {
+  changeUserPassword(new_password: $newPassword)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'newPassword' => $newPassword
+        ]);
+    }
+
+    public function updateUser(array $user): void
+    {
+        $query = <<<'GRAPHQL'
+mutation updateUser($id: String!, $email: String, $first_name: String, $last_name: String, $role: String, $team_ids: [String]) {
+  updateUser(user_id: $id, email: $email, first_name: $first_name, last_name: $last_name, role: $role, team_ids: $team_ids)
+}
+GRAPHQL;
+
+        $this->request($query, $user);
+    }
+
+    public function deleteUser($id): void
+    {
+        $query = <<<'GRAPHQL'
+mutation deleteUser($id: String!) {
+  deleteUser(user_id: $id)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'id' => $id
+        ]);
+    }
+
+    public function sendPasswordResetMail($email, $targetPath)
+    {
+        $query = <<<'GRAPHQL'
+mutation sendPasswordResetMail($email: String!, $target_path: String!){
+  sendPasswordResetMail(email: $email, target_path: $target_path)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'email' => $email,
+            'target_path' => $targetPath
         ]);
     }
 }

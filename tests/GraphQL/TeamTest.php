@@ -2,14 +2,12 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use HexagonalPlayground\Tests\Framework\Fixtures;
-
 class TeamTest extends TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
+        $this->useAdminAuth();
     }
 
     /**

@@ -3,7 +3,6 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\Season;
-use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 
 class SeasonTest extends CompetitionTestCase
 {
@@ -98,7 +97,7 @@ class SeasonTest extends CompetitionTestCase
         $nonParticipatingTeamIds = $this->getNonParticipatingTeamIds($match);
 
         $this->useTeamManagerAuth(array_shift($nonParticipatingTeamIds));
-        $this->expectException(Exception::class);
+        $this->expectClientException();
         $this->client->submitMatchResult($matchId, 4, 3);
     }
 
@@ -158,7 +157,7 @@ class SeasonTest extends CompetitionTestCase
         $nonParticipatingTeamIds = $this->getNonParticipatingTeamIds($match);
 
         $this->useTeamManagerAuth(array_shift($nonParticipatingTeamIds));
-        $this->expectException(Exception::class);
+        $this->expectClientException();
         $this->client->cancelMatch($matchId, 'Just cause');
     }
 
@@ -274,7 +273,7 @@ class SeasonTest extends CompetitionTestCase
         $season = $this->client->getSeasonById($seasonId);
         self::assertSame(Season::STATE_ENDED, $season->state);
 
-        self::expectException(Exception::class);
+        $this->expectClientException();
         $this->client->submitMatchResult($match->id, 2, 3);
     }
 

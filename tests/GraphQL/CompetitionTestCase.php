@@ -3,44 +3,36 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\User;
-use HexagonalPlayground\Tests\Framework\Fixtures;
 
 abstract class CompetitionTestCase extends TestCase
 {
     protected static $teamIds = [];
     protected static $teamManagers = [];
 
-    public static function setUpBeforeClass(): void
-    {
-        if (!empty(self::$teamIds)) {
-            return;
-        }
-
-        $client = self::createClient();
-        $client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
-        for ($i = 1; $i <= 8; $i++) {
-            $teamId = 'Team' . $i;
-            $client->createTeam($teamId, $teamId);
-            self::$teamIds[] = $teamId;
-
-            $manager = [
-                'id' => 'TeamManager' . $i,
-                'email' => 'team' . $i . '@example.com',
-                'password' => '123456',
-                'firstName' => 'Foo',
-                'lastName' => 'Bar',
-                'role' => User::ROLE_TEAM_MANAGER,
-                'teamIds' => [$teamId]
-            ];
-            $client->createUser($manager);
-            self::$teamManagers[$teamId] = $manager;
-        }
-    }
-
     protected function setUp(): void
     {
         parent::setUp();
-        $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
+        $this->useAdminAuth();
+
+        if (empty(self::$teamIds)) {
+            for ($i = 1; $i <= 8; $i++) {
+                $teamId = 'Team' . $i;
+                $this->client->createTeam($teamId, $teamId);
+                self::$teamIds[] = $teamId;
+
+                $manager = [
+                    'id' => 'TeamManager' . $i,
+                    'email' => 'team' . $i . '@example.com',
+                    'password' => '123456',
+                    'first_name' => 'Foo',
+                    'last_name' => 'Bar',
+                    'role' => User::ROLE_TEAM_MANAGER,
+                    'team_ids' => [$teamId]
+                ];
+                $this->client->createUser($manager);
+                self::$teamManagers[$teamId] = $manager;
+            }
+        }
     }
 
     protected static function createMatchDayDates(int $count): array
