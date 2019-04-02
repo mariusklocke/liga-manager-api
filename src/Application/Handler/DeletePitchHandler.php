@@ -26,6 +26,7 @@ class DeletePitchHandler
     {
         IsAdmin::check($command->getAuthenticatedUser());
         $pitch = $this->pitchRepository->find($command->getPitchId());
+        $pitch->assertDeletable();
         $this->pitchRepository->delete($pitch);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
+use Doctrine\ORM\EntityManager;
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
 use HexagonalPlayground\Tests\Framework\Fixtures;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
@@ -17,16 +18,17 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /** @var App */
     private static $app;
 
-    public static function setUpBeforeClass(): void
-    {
-        if (null === self::$app) {
-            self::$app = Bootstrap::bootstrap();
-        }
-    }
-
     protected function setUp(): void
     {
+        self::$app = Bootstrap::bootstrap();
         $this->client = new Client(new SlimClient(self::$app));
+    }
+
+    protected function tearDown(): void
+    {
+        /** @var EntityManager $em */
+        $em = self::$app->getContainer()->get(EntityManager::class);
+        $em->getConnection()->close();
     }
 
     protected function useAdminAuth(): void

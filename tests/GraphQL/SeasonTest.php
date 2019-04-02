@@ -88,6 +88,46 @@ class SeasonTest extends CompetitionTestCase
     /**
      * @depends testSeasonCanBeStarted
      * @param string $seasonId
+     * @return string
+     */
+    public function testMatchCanBeLocated(string $seasonId): string
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $matchId = $season->match_days[0]->matches[0]->id;
+        $match = $this->client->getMatchById($matchId);
+
+        self::assertNotNull($match);
+        self::assertNull($match->pitch);
+
+        $pitchId = 'PitchABC';
+        $this->client->createPitch($pitchId, 'Pitch ABC', 12.34, 23.45);
+        $this->client->locateMatch($matchId, $pitchId);
+
+        $match = $this->client->getMatchById($matchId);
+        self::assertNotNull($match);
+        self::assertNotNull($match->pitch);
+        self::assertSame($pitchId, $match->pitch->id);
+
+        return $matchId;
+    }
+
+    /**
+     * @depends testMatchCanBeLocated
+     * @param string $matchId
+     */
+    public function testDeletingUsedPitchFails(string $matchId): void
+    {
+        $match = $this->client->getMatchById($matchId);
+        self::assertNotNull($match);
+        self::assertNotNull($match->pitch);
+
+        $this->expectClientException();
+        $this->client->deletePitch($match->pitch->id);
+    }
+
+    /**
+     * @depends testSeasonCanBeStarted
+     * @param string $seasonId
      */
     public function testSubmittingMatchResultByNonParticipatingTeamFails(string $seasonId): void
     {

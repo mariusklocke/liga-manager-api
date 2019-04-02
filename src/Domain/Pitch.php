@@ -55,9 +55,8 @@ class Pitch
             $this->contact = $contact;
         }
     }
-
-    public function hasMatches(): bool
+    public function assertDeletable(): void
     {
-        return !$this->matches->isEmpty();
+        Assert::true($this->matches->isEmpty(), 'Cannot delete pitch which is used in matches');
     }
 }

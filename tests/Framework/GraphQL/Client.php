@@ -395,6 +395,10 @@ query match($id: String!) {
     guest_score,
     cancelled_at,
     cancellation_reason
+    pitch {
+      id,
+      label    
+    }
   }
 }
 GRAPHQL;
@@ -712,6 +716,20 @@ GRAPHQL;
         $this->request($query, [
             'email' => $email,
             'target_path' => $targetPath
+        ]);
+    }
+
+    public function locateMatch($matchId, $pitchId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation locateMatch($match_id: String!, $pitch_id: String!) {
+  locateMatch(match_id: $match_id, pitch_id: $pitch_id)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'match_id' => $matchId,
+            'pitch_id' => $pitchId
         ]);
     }
 }
