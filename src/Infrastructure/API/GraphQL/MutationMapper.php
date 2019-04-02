@@ -8,7 +8,6 @@ use GraphQL\Type\Definition\NonNull;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CommandInterface;
-use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\StringUtils;
 
 class MutationMapper
@@ -62,11 +61,7 @@ class MutationMapper
     {
         $finalArgs = [];
         foreach ($argTypes as $name => $type) {
-            if (!isset($argValues[$name])) {
-                throw new InvalidInputException(sprintf('Missing value for argument "%s"', $name));
-            }
-
-            $finalArgs[] = $this->parseValue($argValues[$name], $type);
+            $finalArgs[] = $this->parseValue($argValues[$name] ?? null, $type);
         }
         return new $commandClass(...$finalArgs);
     }
