@@ -55,6 +55,37 @@ class Pitch
             $this->contact = $contact;
         }
     }
+
+    /**
+     * @param Match $match
+     */
+    public function addMatch(Match $match): void
+    {
+        if (!$this->matches->containsKey($match->getId())) {
+            $this->matches->add($match);
+        }
+    }
+
+    /**
+     * @param Match $match
+     */
+    public function removeMatch(Match $match): void
+    {
+        $this->matches->remove($match->getId());
+    }
+
+    /**
+     * @param Pitch $other
+     * @return bool
+     */
+    public function equals(Pitch $other): bool
+    {
+        return $this->id === $other->id;
+    }
+
+    /**
+     * Verifies if pitch can be safely deleted. Throws an exception otherwise.
+     */
     public function assertDeletable(): void
     {
         Assert::true($this->matches->isEmpty(), 'Cannot delete pitch which is used in matches');

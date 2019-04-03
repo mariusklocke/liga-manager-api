@@ -110,6 +110,15 @@ class Match
      */
     public function locate(Pitch $pitch): void
     {
+        if ($this->pitch !== null && $this->pitch->equals($pitch)) {
+            return;
+        }
+
+        if ($this->pitch !== null) {
+            $this->pitch->removeMatch($this);
+        }
+
+        $pitch->addMatch($this);
         $this->pitch = $pitch;
         Publisher::getInstance()->publish(MatchLocated::create($this->id, $pitch->getId()));
     }
