@@ -34,7 +34,7 @@ class MatchType extends ObjectType
                         }
                     ],
                     'kickoff' => [
-                        'type' => Type::string()
+                        'type' => DateTimeType::getInstance()
                     ],
                     'home_score' => [
                         'type' => Type::int()
