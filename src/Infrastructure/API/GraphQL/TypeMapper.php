@@ -42,6 +42,8 @@ class TypeMapper
             case 'int':
             case 'integer':
                 return Type::int();
+            case 'DateTimeImmutable':
+                return DateTimeType::getInstance();
             case 'DatePeriod':
                 return DatePeriodType::getInstance();
             case 'float':

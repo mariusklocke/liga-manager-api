@@ -7,6 +7,8 @@ use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
+use HexagonalPlayground\Application\InputParser;
+use HexagonalPlayground\Application\TypeAssert;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 
@@ -48,7 +50,9 @@ class MatchCommandController extends CommandController
      */
     public function schedule(string $matchId, Request $request): ResponseInterface
     {
-        $command = new ScheduleMatchCommand($matchId, $request->getParsedBodyParam('kickoff'));
+        $kickoff = $request->getParsedBodyParam('kickoff');
+        TypeAssert::assertString($kickoff, 'kickoff');
+        $command = new ScheduleMatchCommand($matchId, InputParser::parseDateTime($kickoff));
         $this->commandBus->execute($command->withAuthenticatedUser($this->getUserFromRequest($request)));
 
         return $this->createResponse(204);

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Command;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Application\InputParser;
 use HexagonalPlayground\Application\TypeAssert;
 
 class ScheduleMatchCommand implements CommandInterface
@@ -18,14 +17,13 @@ class ScheduleMatchCommand implements CommandInterface
 
     /**
      * @param string $matchId
-     * @param string $kickoff
+     * @param DateTimeImmutable $kickoff
      */
-    public function __construct($matchId, $kickoff)
+    public function __construct($matchId, DateTimeImmutable $kickoff)
     {
         TypeAssert::assertString($matchId, 'matchId');
-        TypeAssert::assertString($kickoff, 'kickoff');
         $this->matchId = $matchId;
-        $this->kickoff = InputParser::parseDateTime($kickoff);
+        $this->kickoff = $kickoff;
     }
 
     /**
