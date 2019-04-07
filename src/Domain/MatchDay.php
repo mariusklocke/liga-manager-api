@@ -111,6 +111,19 @@ class MatchDay
     }
 
     /**
+     * @return bool
+     */
+    public function hasMatchesWithResult(): bool
+    {
+        foreach ($this->matches as $match) {
+            if ($match->hasResult()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @param Competition $competition
      */
     private function setCompetition(Competition $competition): void

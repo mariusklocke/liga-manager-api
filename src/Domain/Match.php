@@ -148,6 +148,14 @@ class Match
     }
 
     /**
+     * @return bool
+     */
+    public function hasResult(): bool
+    {
+        return (null !== $this->matchResult);
+    }
+
+    /**
      * @param MatchResult|null $matchResult
      */
     private function setResult(?MatchResult $matchResult): void
