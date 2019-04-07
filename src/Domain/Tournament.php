@@ -30,6 +30,17 @@ class Tournament extends Competition
     }
 
     /**
+     * Clears all matches
+     */
+    public function clearMatches(): void
+    {
+        foreach ($this->matchDays as $matchDay) {
+            /** @var MatchDay $matchDay */
+            $matchDay->clearMatches();
+        }
+    }
+
+    /**
      * Clears all matches for a given round
      *
      * @param int $round
@@ -40,8 +51,8 @@ class Tournament extends Competition
         $toRemove = $this->matchDays->filter(function (MatchDay $matchDay) use ($round) {
             return $matchDay->getNumber() === $round;
         });
-        foreach ($toRemove as $matchDays) {
-            $matchDays->clearMatches();
+        foreach ($toRemove as $matchDay) {
+            $matchDay->clearMatches();
         }
         $this->updateRoundCount();
     }

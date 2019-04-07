@@ -27,6 +27,7 @@ class DeleteTournamentHandler
     {
         IsAdmin::check($command->getAuthenticatedUser());
         $tournament = $this->repository->find($command->getTournamentId());
+        $tournament->clearMatches();
         $this->repository->delete($tournament);
     }
 }
