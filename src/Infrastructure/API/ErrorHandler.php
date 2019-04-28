@@ -39,7 +39,7 @@ class ErrorHandler
             'exception' => $this->getExceptionContext($throwable),
             'request' => [
                 'method' => $request->getMethod(),
-                'uri' => $request->getUri()->__toString()
+                'uri' => $this->getSafeUri($request)
             ]
         ]);
 
@@ -58,7 +58,7 @@ class ErrorHandler
             'exception' => $this->getExceptionContext($throwable, true),
             'request' => [
                 'method' => $request->getMethod(),
-                'uri' => $request->getUri()->__toString()
+                'uri' => $this->getSafeUri($request)
             ]
         ]);
         return $this->createResponse(500, $this->getBody('Unhandled exception'));
@@ -101,5 +101,15 @@ class ErrorHandler
         }
 
         return $context;
+    }
+
+
+    /**
+     * @param RequestInterface $request
+     * @return string
+     */
+    private function getSafeUri(RequestInterface $request): string
+    {
+        return $request->getUri()->withUserInfo('', '')->__toString();
     }
 }
