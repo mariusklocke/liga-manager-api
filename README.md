@@ -17,7 +17,7 @@ Now you are ready to start the containers
 $ docker-compose up -d
 ```
 
-If you run the `php` container for the first time, you need to run `bin/install.sh`
+To initialize the database you need to run `bin/install.sh`
 ```bash
 $ docker-compose exec php bin/install.sh
 ```
