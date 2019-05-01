@@ -25,8 +25,38 @@ class MailServiceProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container[MailerInterface::class] = function () {
-            $transport = new Swift_SmtpTransport(Environment::get('SMTP_HOST'), Environment::get('SMTP_PORT'));
-            list($senderAddress, $senderName) = explode(';', Environment::get('EMAIL_SENDER'));
+            try {
+                $url = parse_url(Environment::get('EMAIL_URL'));
+            } catch (\Exception $e) {
+                $url = [
+                    'scheme' => 'smtp',
+                    'host' => Environment::get('SMTP_HOST'),
+                    'port' => Environment::get('SMTP_PORT')
+                ];
+            }
+
+            if ($url['scheme'] !== 'smtp') {
+                throw new \RuntimeException(
+                    sprintf('Unsupported Email Protocol. Expected: "smtp". Given: "%s" ', $url['scheme'])
+                );
+            }
+
+            $transport = new Swift_SmtpTransport($url['host'], $url['port'] ?? 25);
+
+            if (isset($url['user']) && !empty($url['user'])) {
+                $transport->setUsername($url['user']);
+            }
+            if (isset($url['pass']) && !empty($url['pass'])) {
+                $transport->setPassword($url['pass']);
+            }
+
+            try {
+                $senderAddress = Environment::get('EMAIL_SENDER_ADDRESS');
+                $senderName = Environment::get('EMAIL_SENDER_NAME');
+            } catch (\Exception $e) {
+                list($senderAddress, $senderName) = explode(';', Environment::get('EMAIL_SENDER'));
+            }
+
             return new SwiftMailer(
                 new Swift_Mailer($transport),
                 $senderAddress,
