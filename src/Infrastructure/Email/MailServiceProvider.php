@@ -35,13 +35,19 @@ class MailServiceProvider implements ServiceProviderInterface
                 ];
             }
 
-            if ($url['scheme'] !== 'smtp') {
-                throw new \RuntimeException(
-                    sprintf('Unsupported Email Protocol. Expected: "smtp". Given: "%s" ', $url['scheme'])
-                );
+            $supportedProtocols = ['smtp', 'smtps'];
+            if (!in_array($url['scheme'], $supportedProtocols)) {
+                throw new \RuntimeException(sprintf(
+                    'Unsupported Email Protocol. Expected: "%s". Given: "%s"',
+                    implode(',', $supportedProtocols),
+                    $url['scheme']
+                ));
             }
 
             $transport = new Swift_SmtpTransport($url['host'], $url['port'] ?? 25);
+            if ($url['scheme'] === 'smtps') {
+                $transport->setEncryption('tls');
+            }
 
             if (isset($url['user']) && !empty($url['user'])) {
                 $transport->setUsername($url['user']);
