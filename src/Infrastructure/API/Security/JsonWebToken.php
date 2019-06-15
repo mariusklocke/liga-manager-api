@@ -94,11 +94,7 @@ final class JsonWebToken implements TokenInterface
     private static function getSecret(): string
     {
         if (null === self::$secret) {
-            try {
-                self::$secret = hex2bin(Environment::get('JWT_SECRET'));
-            } catch (\RuntimeException $e) {
-                self::$secret = file_get_contents(Environment::get('JWT_SECRET_PATH') . '/secret.key');
-            }
+            self::$secret = hex2bin(Environment::get('JWT_SECRET'));
         }
         return self::$secret;
     }
@@ -111,5 +107,14 @@ final class JsonWebToken implements TokenInterface
     public function getExpiresAt(): DateTimeImmutable
     {
         return $this->expiresAt;
+    }
+
+    /**
+     * @param int $bytes
+     * @return string
+     */
+    public static function generateSecret(int $bytes = 32): string
+    {
+        return bin2hex(random_bytes($bytes));
     }
 }
