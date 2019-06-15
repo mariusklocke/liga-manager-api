@@ -17,17 +17,17 @@ Now you are ready to start the containers
 $ docker-compose up -d
 ```
 
+To setup your `.env` file follow the instructions given from
+```bash
+$ docker-compose exec php bin/console.php app:setup
+```
+
 To initialize the database you need to run `bin/install.sh`
 ```bash
 $ docker-compose exec php bin/install.sh
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
-
-## JSON Web Token
-
-This application uses JSON Web Token (JWT) for authentication. In order to create secure tokens, you have to generate an environment-specific secret.
-Please run `docker-compose exec php bin/console.php app:generate-jwt-secret` and add the generated key to your `.env` file as described in the command output.
 
 ## OS users & file permissions
 

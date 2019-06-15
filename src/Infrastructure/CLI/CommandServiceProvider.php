@@ -38,14 +38,14 @@ class CommandServiceProvider implements ServiceProviderInterface
                         $container[Importer::class]
                     );
                 },
-                'app:generate-jwt-secret' => function () {
-                    return new GenerateJwtSecretCommand();
-                },
                 'app:send-test-mail' => function () use ($container) {
                     return new SendTestMailCommand($container[MailerInterface::class]);
                 },
                 'app:debug-gql-schema' => function () use ($container) {
                     return new DebugGqlSchemaCommand($container[Schema::class]);
+                },
+                'app:setup' => function () use ($container) {
+                    return new SetupCommand();
                 }
             ]);
         };

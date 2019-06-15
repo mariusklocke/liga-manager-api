@@ -30,7 +30,7 @@ abstract class Command extends SymfonyCommand
     {
         $this->startTime = microtime(true);
         $exitCode = parent::run($input, $output);
-        if (!$output->isQuiet()) {
+        if ($output->isVerbose()) {
             $this->printStats($output);
         }
         return $exitCode;
