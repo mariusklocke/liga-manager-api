@@ -15,14 +15,11 @@ class TournamentRepository extends AbstractRepository
 
     /**
      * @param string $id
-     * @return array
+     * @return array|null
      */
-    public function findTournamentById(string $id): array
+    public function findTournamentById(string $id): ?array
     {
-        $query      = 'SELECT * FROM tournaments WHERE id = ?';
-        $tournament = $this->getDb()->fetchFirstRow($query, [$id], 'Cannot find tournament');
-
-        return $tournament;
+        return $this->getDb()->fetchFirstRow('SELECT * FROM tournaments WHERE id = ?', [$id]);
     }
 
     /**

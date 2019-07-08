@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Filter\EventFilter;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Infrastructure\Persistence\Read\EventRepository;
@@ -35,11 +34,7 @@ class QueryType extends ObjectType
                             /** @var SeasonRepository $repo */
                             $repo = $context->getContainer()->get(SeasonRepository::class);
 
-                            try {
-                                return $repo->findSeasonById($args['id']);
-                            } catch (NotFoundException $e) {
-                                return null;
-                            }
+                            return $repo->findSeasonById($args['id']);
                         }
                     ],
                     'allSeasons' => [
@@ -70,11 +65,7 @@ class QueryType extends ObjectType
                             /** @var TeamRepository $repo */
                             $repo = $context->getContainer()->get(TeamRepository::class);
 
-                            try {
-                                return $repo->findTeamById($args['id']);
-                            } catch (NotFoundException $e) {
-                                return null;
-                            }
+                            return $repo->findTeamById($args['id']);
                         }
                     ],
                     'event' => [
@@ -86,11 +77,7 @@ class QueryType extends ObjectType
                             /** @var EventRepository $repo */
                             $repo = $context->getContainer()->get(EventRepository::class);
 
-                            try {
-                                return $repo->findEventById($args['id']);
-                            } catch (NotFoundException $e) {
-                                return null;
-                            }
+                            return $repo->findEventById($args['id']);
                         }
                     ],
                     'latestEvents' => [
@@ -122,11 +109,7 @@ class QueryType extends ObjectType
                             /** @var TournamentRepository $repo */
                             $repo = $context->getContainer()->get(TournamentRepository::class);
 
-                            try {
-                                return $repo->findTournamentById($args['id']);
-                            } catch (NotFoundException $e) {
-                                return null;
-                            }
+                            return $repo->findTournamentById($args['id']);
                         }
                     ],
                     'allTournaments' => [
@@ -147,11 +130,7 @@ class QueryType extends ObjectType
                             /** @var MatchRepository $repo */
                             $repo = $context->getContainer()->get(MatchRepository::class);
 
-                            try {
-                                return $repo->findMatchById($args['id']);
-                            } catch (NotFoundException $e) {
-                                return null;
-                            }
+                            return $repo->findMatchById($args['id']);
                         }
                     ],
                     'pitch' => [
@@ -163,11 +142,7 @@ class QueryType extends ObjectType
                             /** @var PitchRepository $repo */
                             $repo = $context->getContainer()->get(PitchRepository::class);
 
-                            try {
-                                return $repo->findPitchById($args['id']);
-                            } catch (NotFoundException $e) {
-                                return null;
-                            }
+                            return $repo->findPitchById($args['id']);
                         }
                     ],
                     'allPitches' => [

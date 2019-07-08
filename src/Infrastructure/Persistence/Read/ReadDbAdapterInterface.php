@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
-
 interface ReadDbAdapterInterface
 {
     /**
@@ -21,11 +19,9 @@ interface ReadDbAdapterInterface
      *
      * @param string $query
      * @param array  $params
-     * @param string $message Exception message to use if no row could be found
-     * @return array
-     * @throws NotFoundException if there was no row found
+     * @return array|null
      */
-    public function fetchFirstRow(string $query, array $params, string $message): array;
+    public function fetchFirstRow(string $query, array $params): ?array;
 
     /**
      * Fetch the first column of the first row

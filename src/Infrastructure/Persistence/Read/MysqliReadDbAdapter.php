@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use mysqli;
 use mysqli_driver;
@@ -40,15 +39,10 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
     /**
      * {@inheritdoc}
      */
-    public function fetchFirstRow(string $query, array $params, string $message): array
+    public function fetchFirstRow(string $query, array $params): ?array
     {
         $result = $this->executeQuery($query, $params);
-        $row = $result->fetch_assoc();
-        if (!is_array($row)) {
-            throw new NotFoundException($message);
-        }
-
-        return $row;
+        return $result->fetch_assoc();
     }
 
     /**

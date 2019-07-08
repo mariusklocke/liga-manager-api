@@ -9,12 +9,15 @@ class EventRepository extends AbstractRepository
 {
     /**
      * @param string $id
-     * @return array
+     * @return array|null
      */
-    public function findEventById(string $id): array
+    public function findEventById(string $id): ?array
     {
         $query = $this->getBaseQuery() . ' WHERE id = ?';
-        $row   = $this->getDb()->fetchFirstRow($query, [$id], 'Cannot find event');
+        $row   = $this->getDb()->fetchFirstRow($query, [$id]);
+        if (null === $row) {
+            return null;
+        }
 
         return $this->hydrate($row);
     }

@@ -57,14 +57,11 @@ class MatchRepository extends AbstractRepository
 
     /**
      * @param string $matchId
-     * @return array
+     * @return array|null
      */
-    public function findMatchById(string $matchId): array
+    public function findMatchById(string $matchId): ?array
     {
-        $query = $this->getBaseQuery() . ' WHERE m.id = ?';
-        $match = $this->getDb()->fetchFirstRow($query, [$matchId], 'Cannot find match');
-
-        return $match;
+        return $this->getDb()->fetchFirstRow($this->getBaseQuery() . ' WHERE m.id = ?', [$matchId]);
     }
 
     /**

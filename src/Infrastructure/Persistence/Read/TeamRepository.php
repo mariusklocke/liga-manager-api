@@ -15,12 +15,15 @@ class TeamRepository extends AbstractRepository
 
     /**
      * @param string $id
-     * @return array
+     * @return array|null
      */
-    public function findTeamById(string $id): array
+    public function findTeamById(string $id): ?array
     {
         $query = $this->getBaseQuery() . ' WHERE id = ?';
-        $team  = $this->getDb()->fetchFirstRow($query, [$id], 'Cannot find team');
+        $team  = $this->getDb()->fetchFirstRow($query, [$id]);
+        if (null === $team) {
+            return null;
+        }
 
         return $this->hydrate($team);
     }

@@ -15,17 +15,11 @@ class SeasonRepository extends AbstractRepository
 
     /**
      * @param string $id
-     * @return array
+     * @return array|null
      */
-    public function findSeasonById(string $id): array
+    public function findSeasonById(string $id): ?array
     {
-        $season = $this->getDb()->fetchFirstRow(
-            'SELECT * FROM `seasons` WHERE `id` = ?',
-            [$id],
-            'Cannot find season'
-        );
-
-        return $season;
+        return $this->getDb()->fetchFirstRow('SELECT * FROM `seasons` WHERE `id` = ?', [$id]);
     }
 
     /**
@@ -42,16 +36,18 @@ class SeasonRepository extends AbstractRepository
 
     /**
      * @param string $seasonId
-     * @return array
+     * @return array|null
      */
-    public function findRanking(string $seasonId): array
+    public function findRanking(string $seasonId): ?array
     {
         $updatedAt = $this->getDateFormat('updated_at');
         $ranking   = $this->getDb()->fetchFirstRow(
             "SELECT season_id, $updatedAt FROM rankings WHERE season_id = ?",
-            [$seasonId],
-            'Cannot find ranking'
+            [$seasonId]
         );
+        if (null === $ranking) {
+            return null;
+        }
 
         $ranking['positions'] = $this->findRankingPositions($seasonId);
         $ranking['penalties'] = $this->findRankingPenalties($seasonId);

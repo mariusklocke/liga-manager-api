@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchDayLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
@@ -63,11 +62,7 @@ class SeasonType extends ObjectType
                             /** @var SeasonRepository $repo */
                             $repo = $context->getContainer()->get(SeasonRepository::class);
 
-                            try {
-                                return $repo->findRanking($root['id']);
-                            } catch (NotFoundException $e) {
-                                return null;
-                            }
+                            return $repo->findRanking($root['id']);
                         }
                     ]
                 ];

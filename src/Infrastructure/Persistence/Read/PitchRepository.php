@@ -15,15 +15,14 @@ class PitchRepository extends AbstractRepository
 
     /**
      * @param string $id
-     * @return array
+     * @return array|null
      */
-    public function findPitchById(string $id): array
+    public function findPitchById(string $id): ?array
     {
-        $pitch = $this->getDb()->fetchFirstRow(
-            'SELECT * FROM `pitches` WHERE `id` = ?',
-            [$id],
-            'Cannot find pitch'
-        );
+        $pitch = $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = ?', [$id]);
+        if (null === $pitch) {
+            return null;
+        }
 
         return $this->hydrate($pitch);
     }
