@@ -13,11 +13,6 @@
         <testsuite name="GraphQL">
             <directory suffix="Test.php">tests/GraphQL</directory>
         </testsuite>
-        <!--
-        <testsuite name="REST">
-            <directory suffix="Test.php">tests/REST</directory>
-        </testsuite>
-        -->
     </testsuites>
 
     <filter>
