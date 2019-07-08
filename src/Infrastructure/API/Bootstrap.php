@@ -14,6 +14,7 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use HexagonalPlayground\Infrastructure\SecurityServiceProvider;
+use Pimple\ServiceProviderInterface;
 use Slim\App as SlimApp;
 use Slim\Container;
 use Slim\Http\Request;
@@ -51,16 +52,28 @@ class Bootstrap
         unset($container['notAllowedHandler']);
         unset($container['notFoundHandler']);
 
-        (new CommandBusProvider())->register($container);
-        (new LoggerProvider())->register($container);
-        (new DoctrineServiceProvider())->register($container);
-        (new ReadRepositoryProvider())->register($container);
-        (new SecurityServiceProvider())->register($container);
-        (new MailServiceProvider())->register($container);
-        (new EventServiceProvider())->register($container);
-        (new LoaderProvider())->register($container);
-        (new SchemaProvider())->register($container);
+        foreach (self::getServiceProvider() as $provider) {
+            $provider->register($container);
+        }
 
         return $container;
+    }
+
+    /**
+     * @return ServiceProviderInterface[]
+     */
+    private static function getServiceProvider(): array
+    {
+        return [
+            new CommandBusProvider(),
+            new LoggerProvider(),
+            new DoctrineServiceProvider(),
+            new ReadRepositoryProvider(),
+            new SecurityServiceProvider(),
+            new MailServiceProvider(),
+            new EventServiceProvider(),
+            new LoaderProvider(),
+            new SchemaProvider()
+        ];
     }
 }
