@@ -32,7 +32,7 @@ RUN set -xe \
     && docker-php-ext-install bcmath mysqli pcntl pdo_mysql mbstring \
     && pecl install apcu \
     && pecl install redis \
-    && pecl install xdebug-beta \
+    && pecl install xdebug \
     && apk del .build-deps \
     && rm -rf /tmp/*
 
