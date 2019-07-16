@@ -37,7 +37,7 @@ RUN set -xe \
     && rm -rf /tmp/*
 
 # Install PHAR tools
-RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-8.0.4.phar \
+RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-8.2.5.phar \
     && wget -O /usr/local/bin/composer https://getcomposer.org/composer.phar \
     && chmod +x /usr/local/bin/phpunit /usr/local/bin/composer
 
