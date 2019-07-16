@@ -48,4 +48,9 @@ class SwiftMailer implements MailerInterface
         $message->setFrom([$this->fromAddress => $this->fromName]);
         return $message;
     }
+
+    public function registerPlugin(\Swift_Events_EventListener $plugin): void
+    {
+        $this->swift->registerPlugin($plugin);
+    }
 }

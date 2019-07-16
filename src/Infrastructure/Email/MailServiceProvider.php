@@ -35,7 +35,7 @@ class MailServiceProvider implements ServiceProviderInterface
                 ];
             }
 
-            $supportedProtocols = ['smtp', 'smtps'];
+            $supportedProtocols = ['null', 'smtp', 'smtps'];
             if (!in_array($url['scheme'], $supportedProtocols)) {
                 throw new \RuntimeException(sprintf(
                     'Unsupported Email Protocol. Expected: "%s". Given: "%s"',
@@ -44,16 +44,20 @@ class MailServiceProvider implements ServiceProviderInterface
                 ));
             }
 
-            $transport = new Swift_SmtpTransport($url['host'], $url['port'] ?? 25);
-            if ($url['scheme'] === 'smtps') {
-                $transport->setEncryption('tls');
-            }
+            if ($url['scheme'] === 'null') {
+                $transport = new \Swift_NullTransport();
+            } else {
+                $transport = new Swift_SmtpTransport($url['host'], $url['port'] ?? 25);
+                if ($url['scheme'] === 'smtps') {
+                    $transport->setEncryption('tls');
+                }
 
-            if (isset($url['user']) && !empty($url['user'])) {
-                $transport->setUsername($url['user']);
-            }
-            if (isset($url['pass']) && !empty($url['pass'])) {
-                $transport->setPassword($url['pass']);
+                if (isset($url['user']) && !empty($url['user'])) {
+                    $transport->setUsername($url['user']);
+                }
+                if (isset($url['pass']) && !empty($url['pass'])) {
+                    $transport->setPassword($url['pass']);
+                }
             }
 
             try {

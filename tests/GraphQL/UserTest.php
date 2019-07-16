@@ -3,20 +3,13 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\User;
-use HexagonalPlayground\Infrastructure\Environment;
-use HexagonalPlayground\Tests\Framework\EmailClientInterface;
-use HexagonalPlayground\Tests\Framework\MaildevClient;
 
 class UserTest extends TestCase
 {
-    /** @var EmailClientInterface */
-    private $emailClient;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->useAdminAuth();
-        $this->emailClient = new MaildevClient(Environment::get('MAILDEV_URI'));
     }
 
     public function testListingUserRequiresAdminPermissions(): void
@@ -41,14 +34,14 @@ class UserTest extends TestCase
 
     public function testPasswordResetSendsAnEmail()
     {
-        $this->emailClient->deleteAllEmails();
+        self::getEmailClient()->deleteAllEmails();
         $user = $this->getUserData();
         $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
 
         $tries = 0;
         do {
             usleep(100000);
-            $emails = $this->emailClient->getAllEmails();
+            $emails = self::getEmailClient()->getAllEmails();
             $tries++;
         } while (count($emails) === 0 && $tries < 10);
 
