@@ -8,7 +8,9 @@ use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use RuntimeException;
 use Swift_Mailer;
+use Swift_NullTransport;
 use Swift_SmtpTransport;
 
 class MailServiceProvider implements ServiceProviderInterface
@@ -25,19 +27,11 @@ class MailServiceProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container[MailerInterface::class] = function () {
-            try {
-                $url = parse_url(Environment::get('EMAIL_URL'));
-            } catch (\Exception $e) {
-                $url = [
-                    'scheme' => 'smtp',
-                    'host' => Environment::get('SMTP_HOST'),
-                    'port' => Environment::get('SMTP_PORT')
-                ];
-            }
+            $url = parse_url(Environment::get('EMAIL_URL'));
 
             $supportedProtocols = ['null', 'smtp', 'smtps'];
             if (!in_array($url['scheme'], $supportedProtocols)) {
-                throw new \RuntimeException(sprintf(
+                throw new RuntimeException(sprintf(
                     'Unsupported Email Protocol. Expected: "%s". Given: "%s"',
                     implode(',', $supportedProtocols),
                     $url['scheme']
@@ -45,7 +39,7 @@ class MailServiceProvider implements ServiceProviderInterface
             }
 
             if ($url['scheme'] === 'null') {
-                $transport = new \Swift_NullTransport();
+                $transport = new Swift_NullTransport();
             } else {
                 $transport = new Swift_SmtpTransport($url['host'], $url['port'] ?? 25);
                 if ($url['scheme'] === 'smtps') {
@@ -60,17 +54,10 @@ class MailServiceProvider implements ServiceProviderInterface
                 }
             }
 
-            try {
-                $senderAddress = Environment::get('EMAIL_SENDER_ADDRESS');
-                $senderName = Environment::get('EMAIL_SENDER_NAME');
-            } catch (\Exception $e) {
-                list($senderAddress, $senderName) = explode(';', Environment::get('EMAIL_SENDER'));
-            }
-
             return new SwiftMailer(
                 new Swift_Mailer($transport),
-                $senderAddress,
-                $senderName
+                Environment::get('EMAIL_SENDER_ADDRESS'),
+                Environment::get('EMAIL_SENDER_NAME')
             );
         };
         $container[TemplateRenderer::class] = function () {
