@@ -40,7 +40,6 @@ class LoadFixturesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->createAdmin();
         $seasonIds = $this->createSeasons();
         $teamIds   = $this->createTeams();
         $this->createTeamManagers($teamIds);
@@ -114,20 +113,6 @@ class LoadFixturesCommand extends Command
         }
 
         return $ids;
-    }
-
-    private function createAdmin(): void
-    {
-        $command = new CreateUserCommand(
-            null,
-            'admin@example.com',
-            '123456',
-            'admin',
-            'admin',
-            User::ROLE_ADMIN,
-            []
-        );
-        $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
     }
 
     private function createTeamManagers(array $teamIds): void
