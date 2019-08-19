@@ -5,8 +5,8 @@ namespace HexagonalPlayground\Tests\GraphQL;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
 use HexagonalPlayground\Infrastructure\Email\SwiftMailer;
+use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Tests\Framework\EmailClientInterface;
-use HexagonalPlayground\Tests\Framework\Fixtures;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\SlimClient;
@@ -42,7 +42,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             /** @var MailerInterface $mailer */
             $mailer = self::$app->getContainer()->get(MailerInterface::class);
             if (!($mailer instanceof SwiftMailer)) {
-                throw new \Exception('Mailer has to be instance of SwiftMailer');
+                throw new \Exception('Unsupported Mailer Type: ' . get_class($mailer));
             }
             self::$emailClient = new SwiftClient($mailer);
         }
@@ -51,7 +51,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function useAdminAuth(): void
     {
-        $this->client->useCredentials(Fixtures::ADMIN_USER_EMAIL, Fixtures::ADMIN_USER_PASSWORD);
+        $this->client->useCredentials(Environment::get('ADMIN_EMAIL'), Environment::get('ADMIN_PASSWORD'));
     }
 
     protected function expectClientException(): void
