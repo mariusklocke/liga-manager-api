@@ -20,6 +20,7 @@ use HexagonalPlayground\Application\Command\DeleteTeamCommand;
 use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
 use HexagonalPlayground\Application\Command\DeleteUserCommand;
 use HexagonalPlayground\Application\Command\EndSeasonCommand;
+use HexagonalPlayground\Application\Command\InviteUserCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
@@ -69,6 +70,7 @@ class MutationType extends ObjectType
             DeleteTournamentCommand::class,
             DeleteUserCommand::class,
             EndSeasonCommand::class,
+            InviteUserCommand::class,
             LocateMatchCommand::class,
             RemoveRankingPenaltyCommand::class,
             RemoveTeamFromSeasonCommand::class,

@@ -38,14 +38,7 @@ class UserTest extends TestCase
         $user = $this->getUserData();
         $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
 
-        $tries = 0;
-        do {
-            usleep(100000);
-            $emails = self::getEmailClient()->getAllEmails();
-            $tries++;
-        } while (count($emails) === 0 && $tries < 10);
-
-        self::assertCount(1, $emails);
+        $this->assertEmailReceived();
     }
 
     /**
@@ -113,10 +106,24 @@ class UserTest extends TestCase
         $this->client->getAuthenticatedUser();
     }
 
+    /**
+     * @depends testUserCanBeDeleted
+     */
+    public function testInvitingUserSendsAnEmail()
+    {
+        self::getEmailClient()->deleteAllEmails();
+        $user = $this->getUserData();
+        unset($user['password']);
+
+        $this->client->inviteUser($user, '/straight/to/hell');
+
+        $this->assertEmailReceived();
+    }
+
     private function getUserData(): array
     {
         return [
-            'id' => 'TeamManagerUserTest',
+            'id' => 'ed489246-cac2-4e67-8b22-ce2556d72a3e',
             'email' => 'user.test@example.com',
             'password' => '123456',
             'first_name' => 'Foo',
@@ -124,5 +131,17 @@ class UserTest extends TestCase
             'role' => User::ROLE_TEAM_MANAGER,
             'team_ids' => []
         ];
+    }
+
+    private function assertEmailReceived(): void
+    {
+        $tries = 0;
+        do {
+            usleep(100000);
+            $emails = self::getEmailClient()->getAllEmails();
+            $tries++;
+        } while (count($emails) === 0 && $tries < 10);
+
+        self::assertCount(1, $emails);
     }
 }

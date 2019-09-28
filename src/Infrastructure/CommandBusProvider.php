@@ -22,6 +22,7 @@ use HexagonalPlayground\Application\Handler\DeleteTeamHandler;
 use HexagonalPlayground\Application\Handler\DeleteTournamentHandler;
 use HexagonalPlayground\Application\Handler\DeleteUserHandler;
 use HexagonalPlayground\Application\Handler\EndSeasonHandler;
+use HexagonalPlayground\Application\Handler\InviteUserHandler;
 use HexagonalPlayground\Application\Handler\LocateMatchHandler;
 use HexagonalPlayground\Application\Handler\RemoveRankingPenaltyHandler;
 use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
@@ -175,6 +176,15 @@ class CommandBusProvider implements ServiceProviderInterface
         };
         $container[DeletePitchHandler::class] = function () use ($container) {
             return new DeletePitchHandler($container['orm.repository.pitch']);
+        };
+        $container[InviteUserHandler::class] = function () use ($container) {
+            return new InviteUserHandler(
+                $container[TokenFactoryInterface::class],
+                $container['orm.repository.user'],
+                $container['orm.repository.team'],
+                $container[TemplateRenderer::class],
+                $container[MailerInterface::class]
+            );
         };
     }
 }

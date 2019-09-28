@@ -732,4 +732,15 @@ GRAPHQL;
             'pitch_id' => $pitchId
         ]);
     }
+
+    public function inviteUser(array $user, string $targetPath): void
+    {
+        $query = <<<'GRAPHQL'
+mutation inviteUser($id: String, $email: String!, $first_name: String!, $last_name: String!, $role: String!, $team_ids: [String]!, $target_path: String!) {
+  inviteUser(id: $id, email: $email, first_name: $first_name, last_name: $last_name, role: $role, team_ids: $team_ids, target_path: $target_path)
+}
+GRAPHQL;
+
+        $this->request($query, array_merge($user, ['target_path' => $targetPath]));
+    }
 }
