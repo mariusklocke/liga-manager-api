@@ -19,7 +19,7 @@ class User implements \JsonSerializable
     /** @var string */
     private $email;
 
-    /** @var string */
+    /** @var string|null */
     private $password;
 
     /** @var string */
@@ -40,7 +40,7 @@ class User implements \JsonSerializable
     /**
      * @param string $id
      * @param string $email
-     * @param string $password
+     * @param string|null $password
      * @param string $firstName
      * @param string $lastName
      * @param string $role
@@ -48,7 +48,7 @@ class User implements \JsonSerializable
     public function __construct(
         string $id,
         string $email,
-        string $password,
+        ?string $password,
         string $firstName,
         string $lastName,
         string $role = self::ROLE_TEAM_MANAGER
@@ -80,13 +80,17 @@ class User implements \JsonSerializable
     }
 
     /**
-     * @param string $password
+     * @param string|null $password
      */
-    public function setPassword(string $password): void
+    public function setPassword(?string $password): void
     {
-        Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
-        Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
-        $this->password = password_hash($password, PASSWORD_BCRYPT);
+        if (null !== $password) {
+            Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
+            Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
+            $this->password = password_hash($password, PASSWORD_BCRYPT);
+        } else {
+            $this->password = null;
+        }
         $this->lastPasswordChange = new DateTimeImmutable();
     }
 
@@ -104,11 +108,22 @@ class User implements \JsonSerializable
     }
 
     /**
+     * @return bool
+     */
+    private function hasPassword(): bool
+    {
+        return $this->password !== null;
+    }
+
+    /**
      * @param string $password
      * @return bool
      */
     public function verifyPassword(string $password): bool
     {
+        if (!$this->hasPassword()) {
+            throw new DomainException('Cannot verify password. User has no password.');
+        }
         return password_verify($password, $this->password);
     }
 

@@ -6,7 +6,7 @@
     <entity name="HexagonalPlayground\Domain\User" table="users" repository-class="HexagonalPlayground\Infrastructure\Persistence\ORM\UserRepository">
         <id name="id" type="string" />
         <field name="email" type="string" unique="true" />
-        <field name="password" type="string" />
+        <field name="password" type="string" nullable="true" />
         <field name="lastPasswordChange" column="last_password_change" type="datetime_immutable" nullable="true"/>
         <field name="role" type="string" />
         <field name="firstName" column="first_name" type="string" />
