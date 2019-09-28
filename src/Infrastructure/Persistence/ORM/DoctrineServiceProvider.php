@@ -39,7 +39,8 @@ class DoctrineServiceProvider implements ServiceProviderInterface
         $container[EntityManager::class] = function() use ($container) {
             $config = Setup::createConfiguration(false);
             $driver = new SimplifiedXmlDriver([
-                Environment::get('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain"
+                Environment::get('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain",
+                Environment::get('APP_HOME') . "/config/doctrine/Event" => "HexagonalPlayground\\Domain\\Event"
             ]);
             $driver->setGlobalBasename('global');
             $config->setMetadataDriverImpl($driver);
