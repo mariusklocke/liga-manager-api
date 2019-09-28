@@ -12,6 +12,7 @@ ENV PHPIZE_DEPS \
     file \
     g++ \
     gcc \
+    gmp-dev \
     libc-dev \
     pcre-dev \
     make \
@@ -19,7 +20,7 @@ ENV PHPIZE_DEPS \
     re2c
 
 # persistent / runtime deps
-RUN apk add --no-cache --virtual .persistent-deps
+RUN apk add --no-cache --virtual .persistent-deps gmp
 
 # Install PHP extensions
 RUN set -xe \
@@ -29,10 +30,10 @@ RUN set -xe \
     && docker-php-ext-configure pcntl --enable-pcntl \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql \
     && docker-php-ext-configure mbstring --enable-mbstring \
-    && docker-php-ext-install bcmath mysqli pcntl pdo_mysql mbstring \
+    && docker-php-ext-install bcmath mysqli pcntl pdo_mysql mbstring gmp \
     && pecl install apcu \
     && pecl install redis \
-    && pecl install xdebug \
+    && pecl install xdebug-beta \
     && apk del .build-deps \
     && rm -rf /tmp/*
 
