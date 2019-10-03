@@ -17,6 +17,7 @@ use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
 use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use PDO;
@@ -39,8 +40,12 @@ class DoctrineServiceProvider implements ServiceProviderInterface
         $container[EntityManager::class] = function() use ($container) {
             $config = Setup::createConfiguration(false);
             $driver = new SimplifiedXmlDriver([
-                Environment::get('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain",
-                Environment::get('APP_HOME') . "/config/doctrine/Event" => "HexagonalPlayground\\Domain\\Event"
+                Environment::get('APP_HOME') . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
+                    => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",
+                Environment::get('APP_HOME') . "/config/doctrine/Domain"
+                    => "HexagonalPlayground\\Domain",
+                Environment::get('APP_HOME') . "/config/doctrine/Domain/Event"
+                    => "HexagonalPlayground\\Domain\\Event"
             ]);
             $driver->setGlobalBasename('global');
             $config->setMetadataDriverImpl($driver);
@@ -84,6 +89,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
         };
         $container['orm.repository.matchDay'] = function () use ($container) {
             return $container[EntityManager::class]->getRepository(MatchDay::class);
+        };
+        $container['orm.repository.publicKeyCredential'] = function () use ($container) {
+            return $container[EntityManager::class]->getRepository(PublicKeyCredential::class);
         };
     }
 }

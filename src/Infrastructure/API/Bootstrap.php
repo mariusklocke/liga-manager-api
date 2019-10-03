@@ -7,6 +7,7 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\LoaderProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\SchemaProvider;
 use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Routing\RouteProvider;
+use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
 use HexagonalPlayground\Infrastructure\CommandBusProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
@@ -73,7 +74,8 @@ class Bootstrap
             new MailServiceProvider(),
             new EventServiceProvider(),
             new LoaderProvider(),
-            new SchemaProvider()
+            new SchemaProvider(),
+            new WebAuthnServiceProvider()
         ];
     }
 }
