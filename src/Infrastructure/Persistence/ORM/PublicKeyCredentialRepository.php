@@ -39,6 +39,7 @@ class PublicKeyCredentialRepository extends BaseRepository implements PublicKeyC
      */
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
-        $this->save($publicKeyCredentialSource);
+        $this->_em->persist($publicKeyCredentialSource);
+        $this->_em->flush();
     }
 }

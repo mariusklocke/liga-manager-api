@@ -19,7 +19,7 @@ final class Version20191003150359 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $this->addSql('CREATE TABLE public_key_credentials (id VARCHAR(255) NOT NULL, type VARCHAR(255) NOT NULL, transports LONGTEXT NOT NULL COMMENT \'(DC2Type:json_array)\', attestationType VARCHAR(255) NOT NULL, trust_path LONGTEXT NOT NULL COMMENT \'(DC2Type:object)\', aaguid LONGTEXT NOT NULL COMMENT \'(DC2Type:object)\', public_key VARCHAR(255) NOT NULL, user_handle VARCHAR(255) NOT NULL, counter INT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE public_key_credentials (id VARBINARY(64) NOT NULL, type VARCHAR(255) NOT NULL, transports LONGTEXT NOT NULL COMMENT \'(DC2Type:json_array)\', attestationType VARCHAR(255) NOT NULL, trust_path LONGTEXT NOT NULL COMMENT \'(DC2Type:object)\', aaguid LONGTEXT NOT NULL COMMENT \'(DC2Type:object)\', public_key VARBINARY(255) NOT NULL, user_handle VARCHAR(255) NOT NULL, counter INT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB');
     }
 
     public function down(Schema $schema) : void

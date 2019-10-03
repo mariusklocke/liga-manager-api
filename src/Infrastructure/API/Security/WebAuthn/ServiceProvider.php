@@ -3,12 +3,23 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
 use Cose\Algorithm\Manager;
+use Cose\Algorithm\Signature\ECDSA\ES256;
+use Cose\Algorithm\Signature\ECDSA\ES384;
+use Cose\Algorithm\Signature\ECDSA\ES512;
+use Cose\Algorithm\Signature\RSA\RS1;
+use Cose\Algorithm\Signature\RSA\RS256;
+use Cose\Algorithm\Signature\RSA\RS384;
+use Cose\Algorithm\Signature\RSA\RS512;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
+use Redis;
+use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
+use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -31,7 +42,7 @@ class ServiceProvider implements ServiceProviderInterface
             return new ChallengeGenerator();
         };
         $container[OptionsStoreInterface::class] = function () use ($container) {
-            return new RedisOptionsStore($container[\Redis::class], 60);
+            return new RedisOptionsStore($container[Redis::class], 60);
         };
         $container[CreationOptionsFactory::class] = function () use ($container) {
             return new CreationOptionsFactory(
@@ -47,14 +58,27 @@ class ServiceProvider implements ServiceProviderInterface
             );
         };
         $container[Manager::class] = function () {
-            return new Manager();
+            $manager = new Manager();
+            $manager->add(new ES256());
+            $manager->add(new ES384());
+            $manager->add(new ES512());
+            $manager->add(new RS1());
+            $manager->add(new RS256());
+            $manager->add(new RS384());
+            $manager->add(new RS512());
+
+            return $manager;
         };
         $container[PublicKeyCredentialLoader::class] = function () use ($container) {
             $attestationObjectLoader = new AttestationObjectLoader($container[AttestationStatementSupportManager::class]);
             return new PublicKeyCredentialLoader($attestationObjectLoader);
         };
         $container[AttestationStatementSupportManager::class] = function () {
-            return new AttestationStatementSupportManager();
+            $manager = new AttestationStatementSupportManager();
+            $manager->add(new FidoU2FAttestationStatementSupport());
+            $manager->add(new AndroidKeyAttestationStatementSupport());
+
+            return $manager;
         };
         $container[AuthenticatorAttestationResponseValidator::class] = function () use ($container) {
             return new AuthenticatorAttestationResponseValidator(
@@ -96,6 +120,9 @@ class ServiceProvider implements ServiceProviderInterface
                 $container['orm.repository.user'],
                 $container[TokenFactoryInterface::class]
             );
+        };
+        $container[TestClientController::class] = function () use ($container) {
+            return new TestClientController($container[TemplateRenderer::class]);
         };
     }
 }

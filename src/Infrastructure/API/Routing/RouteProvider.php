@@ -8,6 +8,7 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\Controller as GraphQLControll
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\AuthController;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\CredentialController;
+use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\TestClientController;
 use Slim\App;
 
 class RouteProvider
@@ -17,6 +18,13 @@ class RouteProvider
         $app->group('/api', function() use ($app) {
             $container = $app->getContainer();
             $auth      = new AuthenticationMiddleware($container);
+
+            $app->get('/webauthn/test', function () use ($container) {
+                /** @var TestClientController $testClientController */
+                $testClientController = $container[TestClientController::class];
+
+                return $testClientController->show();
+            });
 
             $app->post('/webauthn/credential/options', function ($request) use ($container) {
                 /** @var CredentialController $credentialController */

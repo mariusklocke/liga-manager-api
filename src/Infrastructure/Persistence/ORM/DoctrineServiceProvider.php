@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
@@ -59,6 +60,8 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
             );
             $connection = DriverManager::getConnection(['pdo' => $pdo], $config);
+            Type::addType(CustomBinaryType::NAME, CustomBinaryType::class);
+            $connection->getDatabasePlatform()->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
             $em = EntityManager::create($connection, $config);
             $em->getEventManager()->addEventListener(
                 [Events::postLoad],
