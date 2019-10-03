@@ -122,7 +122,7 @@ class User implements \JsonSerializable
     public function verifyPassword(string $password): bool
     {
         if (!$this->hasPassword()) {
-            throw new DomainException('Cannot verify password. User has no password.');
+            return false;
         }
         return password_verify($password, $this->password);
     }
@@ -239,10 +239,9 @@ class User implements \JsonSerializable
     }
 
     /**
-     * @param bool $withTeamIds
      * @return array
      */
-    public function jsonSerialize($withTeamIds = true)
+    public function jsonSerialize()
     {
         $data = [
             'id' => $this->id,
@@ -251,9 +250,6 @@ class User implements \JsonSerializable
             'first_name' => $this->firstName,
             'last_name' => $this->lastName
         ];
-        if ($withTeamIds) {
-            $data['teams'] = $this->teams->getKeys();
-        }
 
         return $data;
     }
