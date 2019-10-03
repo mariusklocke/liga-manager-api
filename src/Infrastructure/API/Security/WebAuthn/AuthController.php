@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
 use DateTimeImmutable;
+use Exception;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
@@ -99,7 +100,7 @@ class AuthController
         try {
             $credential = $this->credentialLoader->loadArray($request->getParsedBody());
             $authenticatorResponse = $credential->getResponse();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new InvalidInputException($e->getMessage());
         }
 
@@ -109,13 +110,13 @@ class AuthController
 
         $options = $this->optionsStore->get($email);
         if (!$options instanceof PublicKeyCredentialRequestOptions) {
-            $this->denyAccess();
+            throw new InvalidInputException('Cannot find request options for requested user');
         }
 
         try {
             $user = $this->userRepository->findByEmail($email);
         } catch (NotFoundException $e) {
-            $this->denyAccess();
+            throw new AuthenticationException('Authentication failed');
         }
 
         try {
@@ -126,8 +127,8 @@ class AuthController
                 $request,
                 $user->getId()
             );
-        } catch (\Exception $e) {
-            $this->denyAccess();
+        } catch (Exception $e) {
+            throw new AuthenticationException('Authentication failed');
         }
 
         $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 year'));
@@ -135,15 +136,6 @@ class AuthController
         return (new Response())
             ->withHeader('X-Token', $token->encode())
             ->withJson($user->jsonSerialize());
-    }
-
-    /**
-     * @param string $message
-     * @throws AuthenticationException
-     */
-    private function denyAccess(string $message = '')
-    {
-        throw new AuthenticationException($message ?: 'Invalid Authentication');
     }
 
     /**
