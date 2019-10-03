@@ -2,6 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
+use Exception;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
@@ -79,7 +80,7 @@ class CredentialController
 
         try {
             $credential = $this->credentialLoader->loadArray($request->getParsedBody());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new InvalidInputException($e->getMessage());
         }
 
@@ -94,7 +95,12 @@ class CredentialController
             throw new InvalidInputException('Cannot find creation options for current user');
         }
 
-        $credentialSource = $this->authenticatorAttestationResponseValidator->check($authenticatorResponse, $options, $request);
+        try {
+            $credentialSource = $this->authenticatorAttestationResponseValidator->check($authenticatorResponse, $options, $request);
+        } catch (Exception $e) {
+            throw new InvalidInputException($e->getMessage());
+        }
+
         $namedCredential = new PublicKeyCredential($credentialSource, $name);
         $this->credentialRepository->saveCredentialSource($namedCredential);
 
