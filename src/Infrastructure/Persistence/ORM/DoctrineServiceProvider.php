@@ -60,7 +60,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
             );
             $connection = DriverManager::getConnection(['pdo' => $pdo], $config);
-            Type::addType(CustomBinaryType::NAME, CustomBinaryType::class);
+            if (!Type::hasType(CustomBinaryType::NAME)) {
+                Type::addType(CustomBinaryType::NAME, CustomBinaryType::class);
+            }
             $connection->getDatabasePlatform()->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
             $em = EntityManager::create($connection, $config);
             $em->getEventManager()->addEventListener(
