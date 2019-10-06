@@ -8,6 +8,7 @@
         <field name="email" type="string" unique="true" />
         <field name="password" type="string" nullable="true" />
         <field name="lastPasswordChange" column="last_password_change" type="datetime_immutable" nullable="true"/>
+        <field name="lastTokenInvalidation" column="last_token_invalidation" type="datetime_immutable" nullable="true"/>
         <field name="role" type="string" />
         <field name="firstName" column="first_name" type="string" />
         <field name="lastName" column="last_name" type="string" />

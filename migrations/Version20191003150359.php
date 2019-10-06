@@ -7,14 +7,11 @@ namespace Migrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-/**
- * Auto-generated Migration: Please modify to your needs!
- */
 final class Version20191003150359 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return '';
+        return 'Adds table for public key credentials';
     }
 
     public function up(Schema $schema) : void

@@ -31,6 +31,9 @@ class User implements \JsonSerializable
     /** @var DateTimeImmutable|null */
     private $lastPasswordChange;
 
+    /** @var DateTimeImmutable|null */
+    private $lastTokenInvalidation;
+
     /** @var Collection|Team[] */
     private $teams;
 
@@ -236,6 +239,27 @@ class User implements \JsonSerializable
     public function clearTeams(): void
     {
         $this->teams->clear();
+    }
+
+    /**
+     * Invalidates all access token
+     */
+    public function invalidateAccessTokens(): void
+    {
+        $this->lastTokenInvalidation = new DateTimeImmutable();
+    }
+
+    /**
+     * @param DateTimeImmutable $since
+     * @return bool
+     */
+    public function haveAccessTokensBeenInvalidatedSince(DateTimeImmutable $since): bool
+    {
+        if ($this->lastTokenInvalidation === null) {
+            return false;
+        }
+
+        return ($this->lastTokenInvalidation > $since);
     }
 
     /**

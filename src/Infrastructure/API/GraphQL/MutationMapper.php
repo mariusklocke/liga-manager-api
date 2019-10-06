@@ -93,9 +93,14 @@ class MutationMapper
 
     private function parseConstructorArgs(string $commandClass): array
     {
-        $constructorDocBlock = (new \ReflectionClass($commandClass))->getConstructor()->getDocComment();
+        $constructor = (new \ReflectionClass($commandClass))->getConstructor();
+        if (null === $constructor) {
+            return [];
+        }
+
+        $constructorDocBlock = $constructor->getDocComment();
         if (!is_string($constructorDocBlock)) {
-            throw new MappingException('Missing DocBlock for ' . $commandClass);
+            return [];
         }
 
         $args = [];
