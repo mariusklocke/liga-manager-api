@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Email;
 
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Pimple\Container;
@@ -60,7 +61,7 @@ class MailServiceProvider implements ServiceProviderInterface
                 Environment::get('EMAIL_SENDER_NAME')
             );
         };
-        $container[TemplateRenderer::class] = function () {
+        $container[TemplateRendererInterface::class] = function () {
             return new TemplateRenderer(Environment::get('APP_HOME') . '/templates');
         };
     }

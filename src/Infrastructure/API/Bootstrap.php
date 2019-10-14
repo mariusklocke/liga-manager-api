@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
+use HexagonalPlayground\Application\Bus\ServiceProvider as CommandBusProvider;
+use HexagonalPlayground\Application\Handler\ServiceProvider as CommandHandlerProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\LoaderProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\SchemaProvider;
 use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Routing\RouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
-use HexagonalPlayground\Infrastructure\CommandBusProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
@@ -67,6 +68,7 @@ class Bootstrap
     {
         return [
             new CommandBusProvider(),
+            new CommandHandlerProvider(),
             new LoggerProvider(),
             new DoctrineServiceProvider(),
             new ReadRepositoryProvider(),

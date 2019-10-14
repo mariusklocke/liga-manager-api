@@ -1,51 +1,15 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure;
+namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalPlayground\Application\Bus\HandlerResolver;
-use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\Handler\AddRankingPenaltyHandler;
-use HexagonalPlayground\Application\Handler\AddTeamToSeasonHandler;
-use HexagonalPlayground\Application\Handler\CancelMatchHandler;
-use HexagonalPlayground\Application\Handler\ChangeUserPasswordHandler;
-use HexagonalPlayground\Application\Handler\CreateMatchesForSeasonHandler;
-use HexagonalPlayground\Application\Handler\CreatePitchHandler;
-use HexagonalPlayground\Application\Handler\CreateSeasonHandler;
-use HexagonalPlayground\Application\Handler\CreateTeamHandler;
-use HexagonalPlayground\Application\Handler\CreateTournamentHandler;
-use HexagonalPlayground\Application\Handler\CreateUserHandler;
-use HexagonalPlayground\Application\Handler\DeletePitchHandler;
-use HexagonalPlayground\Application\Handler\DeleteSeasonHandler;
-use HexagonalPlayground\Application\Handler\DeleteTeamHandler;
-use HexagonalPlayground\Application\Handler\DeleteTournamentHandler;
-use HexagonalPlayground\Application\Handler\DeleteUserHandler;
-use HexagonalPlayground\Application\Handler\EndSeasonHandler;
-use HexagonalPlayground\Application\Handler\InvalidateAccessTokensHandler;
-use HexagonalPlayground\Application\Handler\InviteUserHandler;
-use HexagonalPlayground\Application\Handler\LocateMatchHandler;
-use HexagonalPlayground\Application\Handler\RemoveRankingPenaltyHandler;
-use HexagonalPlayground\Application\Handler\RemoveTeamFromSeasonHandler;
-use HexagonalPlayground\Application\Handler\RenameTeamHandler;
-use HexagonalPlayground\Application\Handler\RescheduleMatchDayHandler;
-use HexagonalPlayground\Application\Handler\SendPasswordResetMailHandler;
-use HexagonalPlayground\Application\Handler\ScheduleMatchHandler;
-use HexagonalPlayground\Application\Handler\SetTournamentRoundHandler;
-use HexagonalPlayground\Application\Handler\StartSeasonHandler;
-use HexagonalPlayground\Application\Handler\SubmitMatchResultHandler;
-use HexagonalPlayground\Application\Handler\UpdatePitchContactHandler;
-use HexagonalPlayground\Application\Handler\UpdateTeamContactHandler;
-use HexagonalPlayground\Application\Handler\UpdateUserHandler;
-use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Application\TemplateRendererInterface;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Psr\Container\ContainerInterface;
 
-class CommandBusProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
-
     /**
      * Registers services on the given container.
      *
@@ -56,13 +20,6 @@ class CommandBusProvider implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
-        $container[HandlerResolver::class] = function () use ($container) {
-            /** @var ContainerInterface $container */
-            return new CommandHandlerResolver($container);
-        };
-        $container['commandBus'] = function() use ($container) {
-            return new CommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
-        };
         $container[CreateTeamHandler::class] = function () use ($container) {
             return new CreateTeamHandler(
                 $container['orm.repository.team']
@@ -147,7 +104,7 @@ class CommandBusProvider implements ServiceProviderInterface
             return new SendPasswordResetMailHandler(
                 $container[TokenFactoryInterface::class],
                 $container['orm.repository.user'],
-                $container[TemplateRenderer::class],
+                $container[TemplateRendererInterface::class],
                 $container[MailerInterface::class]
             );
         };
@@ -183,7 +140,7 @@ class CommandBusProvider implements ServiceProviderInterface
                 $container[TokenFactoryInterface::class],
                 $container['orm.repository.user'],
                 $container['orm.repository.team'],
-                $container[TemplateRenderer::class],
+                $container[TemplateRendererInterface::class],
                 $container[MailerInterface::class]
             );
         };

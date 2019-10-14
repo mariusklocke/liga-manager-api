@@ -5,11 +5,13 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Import\L98ImportProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\SchemaProvider;
-use HexagonalPlayground\Infrastructure\CommandBusProvider;
+use HexagonalPlayground\Application\Bus\ServiceProvider as CommandBusProvider;
+use HexagonalPlayground\Application\Handler\ServiceProvider as CommandHandlerProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
+use Pimple\ServiceProviderInterface;
 use Slim\Container;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
@@ -35,15 +37,29 @@ class Bootstrap
     public static function createContainer(): Container
     {
         $container = new Container();
-        (new MailServiceProvider())->register($container);
-        (new CommandBusProvider())->register($container);
-        (new EventServiceProvider())->register($container);
-        (new LoggerProvider())->register($container);
-        (new DoctrineServiceProvider())->register($container);
-        (new L98ImportProvider())->register($container);
-        (new CommandServiceProvider())->register($container);
-        (new SchemaProvider())->register($container);
+
+        foreach (self::getServiceProvider() as $provider) {
+            $provider->register($container);
+        }
 
         return $container;
+    }
+
+    /**
+     * @return ServiceProviderInterface[]
+     */
+    private static function getServiceProvider(): array
+    {
+        return [
+            new MailServiceProvider(),
+            new CommandHandlerProvider(),
+            new CommandBusProvider(),
+            new EventServiceProvider(),
+            new LoggerProvider(),
+            new DoctrineServiceProvider(),
+            new L98ImportProvider(),
+            new CommandServiceProvider(),
+            new SchemaProvider()
+        ];
     }
 }
