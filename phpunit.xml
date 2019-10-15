@@ -13,6 +13,9 @@
         <testsuite name="GraphQL">
             <directory suffix="Test.php">tests/GraphQL</directory>
         </testsuite>
+        <testsuite name="WebAuthn">
+            <directory suffix="Test.php">tests/WebAuthn</directory>
+        </testsuite>
     </testsuites>
 
     <filter>

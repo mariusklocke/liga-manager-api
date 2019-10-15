@@ -10,8 +10,10 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Http\StatusCode;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -22,6 +24,8 @@ use Webauthn\PublicKeyCredentialUserEntity;
 
 class AuthController
 {
+    use ResponseFactoryTrait;
+
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
 
@@ -71,9 +75,9 @@ class AuthController
 
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function options(Request $request): Response
+    public function options(Request $request): ResponseInterface
     {
         $email = $request->getParsedBodyParam('email');
         TypeAssert::assertString($email, 'email');
@@ -85,14 +89,14 @@ class AuthController
 
         $this->optionsStore->save($email, $options);
 
-        return (new Response())->withJson($options);
+        return $this->createResponse(StatusCode::HTTP_OK, $options);
     }
 
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function login(Request $request): Response
+    public function login(Request $request): ResponseInterface
     {
         $email = $request->getParsedBodyParam('email');
         TypeAssert::assertString($email, 'email');
@@ -133,9 +137,9 @@ class AuthController
 
         $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 year'));
 
-        return (new Response())
-            ->withHeader('X-Token', $token->encode())
-            ->withJson($user->jsonSerialize());
+        return $this
+            ->createResponse(StatusCode::HTTP_OK, $user->jsonSerialize())
+            ->withHeader('X-Token', $token->encode());
     }
 
     /**

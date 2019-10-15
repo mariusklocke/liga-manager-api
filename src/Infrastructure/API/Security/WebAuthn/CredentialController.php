@@ -5,9 +5,10 @@ namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 use Exception;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
-use Slim\Http\Response;
 use Slim\Http\StatusCode;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -18,6 +19,7 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 class CredentialController
 {
     use UserAware;
+    use ResponseFactoryTrait;
 
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
@@ -52,9 +54,9 @@ class CredentialController
 
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function options(Request $request): Response
+    public function options(Request $request): ResponseInterface
     {
         $user = $this->getUserFromRequest($request);
 
@@ -66,14 +68,14 @@ class CredentialController
 
         $this->creationOptionsStore->save($user->getId(), $options);
 
-        return (new Response())->withJson($options);
+        return $this->createResponse(StatusCode::HTTP_OK, $options);
     }
 
     /**
      * @param Request $request
-     * @return Response
+     * @return ResponseInterface
      */
-    public function create(Request $request): Response
+    public function create(Request $request): ResponseInterface
     {
         $name = $request->getParsedBodyParam('name');
         TypeAssert::assertString($name, 'name');
@@ -104,6 +106,6 @@ class CredentialController
         $namedCredential = new PublicKeyCredential($credentialSource, $name);
         $this->credentialRepository->saveCredentialSource($namedCredential);
 
-        return new Response(StatusCode::HTTP_NO_CONTENT);
+        return $this->createResponse(StatusCode::HTTP_NO_CONTENT);
     }
 }
