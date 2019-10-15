@@ -24,6 +24,9 @@ abstract class HttpTest extends TestCase
     /** @var RequestAuthenticator */
     protected $authenticator;
 
+    /** @var Environment */
+    private static $environment;
+
     /** @var App */
     private static $app;
 
@@ -31,6 +34,9 @@ abstract class HttpTest extends TestCase
     {
         if (null === self::$app) {
             self::$app = Bootstrap::bootstrap();
+        }
+        if (null === self::$environment) {
+            self::$environment = Environment::mock();
         }
     }
 
@@ -49,7 +55,6 @@ abstract class HttpTest extends TestCase
      */
     protected function createRequest(string $method, string $uri, array $data = []): ServerRequestInterface
     {
-        $serverParams = Environment::mock()->all();
         $body = new Body(fopen('php://temp', 'r+'));
         if (!empty($data)) {
             $body->write(json_encode($data));
@@ -60,7 +65,7 @@ abstract class HttpTest extends TestCase
             Uri::createFromString($uri),
             new Headers(['Content-Type' => 'application/json']),
             [],
-            $serverParams,
+            self::$environment->all(),
             $body
         );
     }
