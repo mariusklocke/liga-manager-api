@@ -7,7 +7,6 @@ use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Email\MessageInterface;
 use HexagonalPlayground\Application\Permission\IsAdmin;
-use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
@@ -31,11 +30,10 @@ class SendInviteMailHandler
     /**
      * @param TokenFactoryInterface $tokenFactory
      * @param UserRepositoryInterface $userRepository
-     * @param TeamRepositoryInterface $teamRepository
      * @param TemplateRendererInterface $templateRenderer
      * @param MailerInterface $mailer
      */
-    public function __construct(TokenFactoryInterface $tokenFactory, UserRepositoryInterface $userRepository, TeamRepositoryInterface $teamRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
+    public function __construct(TokenFactoryInterface $tokenFactory, UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
     {
         $this->tokenFactory = $tokenFactory;
         $this->userRepository = $userRepository;

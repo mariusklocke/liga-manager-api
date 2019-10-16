@@ -139,7 +139,6 @@ class ServiceProvider implements ServiceProviderInterface
             return new SendInviteMailHandler(
                 $container[TokenFactoryInterface::class],
                 $container['orm.repository.user'],
-                $container['orm.repository.team'],
                 $container[TemplateRendererInterface::class],
                 $container[MailerInterface::class]
             );
