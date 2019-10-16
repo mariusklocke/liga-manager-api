@@ -1,7 +1,6 @@
 #!/bin/sh
 set -ex
 
-php vendor/bin/doctrine orm:generate-proxies
 php vendor/bin/doctrine-migrations migrations:migrate -n
 
 if [ "$ADMIN_EMAIL " != "" ] && [ "$ADMIN_PASSWORD" != "" ]; then

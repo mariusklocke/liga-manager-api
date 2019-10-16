@@ -40,7 +40,7 @@ if [[ $1 = "-c" ]]; then
 
     # Run tests with coverage
     docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} -v tmp-vol:/tmp \
-        mklocke/liga-manager-api:${TAG}-xdebug sh -c "bin/install.sh && phpunit --coverage-clover /tmp/clover.xml"
+        mklocke/liga-manager-api:${TAG}-xdebug sh -c "phpunit --coverage-clover /tmp/clover.xml"
 
     # Upload coverage data
     docker run --rm -v $PWD:/var/www/api -v tmp-vol:/tmp -e TRAVIS -e TRAVIS_JOB_ID \

@@ -64,4 +64,4 @@ COPY templates templates
 COPY tests tests
 
 USER www-data
-CMD php-fpm
+CMD bin/init-container.sh && php-fpm
