@@ -135,8 +135,8 @@ class ServiceProvider implements ServiceProviderInterface
         $container[DeletePitchHandler::class] = function () use ($container) {
             return new DeletePitchHandler($container['orm.repository.pitch']);
         };
-        $container[InviteUserHandler::class] = function () use ($container) {
-            return new InviteUserHandler(
+        $container[SendInviteMailHandler::class] = function () use ($container) {
+            return new SendInviteMailHandler(
                 $container[TokenFactoryInterface::class],
                 $container['orm.repository.user'],
                 $container['orm.repository.team'],

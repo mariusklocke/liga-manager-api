@@ -299,7 +299,7 @@
                                     <td>
                                         <p>Hey <?php echo htmlentities($userName); ?>,</p>
                                         <p>du wurdest eingeladen dich im Liga-Manager der Wilde Liga Bremen zu registrieren.</p>
-                                        <p>Der Link ist für eine Woche gültig.</p>
+                                        <p>Der Link ist bis <?php echo $validUntil->format('d.m.Y H:i'); ?> gültig.</p>
                                         <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
                                             <tbody>
                                             <tr>

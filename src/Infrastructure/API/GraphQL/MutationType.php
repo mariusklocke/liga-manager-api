@@ -21,7 +21,7 @@ use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
 use HexagonalPlayground\Application\Command\DeleteUserCommand;
 use HexagonalPlayground\Application\Command\EndSeasonCommand;
 use HexagonalPlayground\Application\Command\InvalidateAccessTokensCommand;
-use HexagonalPlayground\Application\Command\InviteUserCommand;
+use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
@@ -72,13 +72,13 @@ class MutationType extends ObjectType
             DeleteUserCommand::class,
             EndSeasonCommand::class,
             InvalidateAccessTokensCommand::class,
-            InviteUserCommand::class,
             LocateMatchCommand::class,
             RemoveRankingPenaltyCommand::class,
             RemoveTeamFromSeasonCommand::class,
             RenameTeamCommand::class,
             RescheduleMatchDayCommand::class,
             ScheduleMatchCommand::class,
+            SendInviteMailCommand::class,
             SendPasswordResetMailCommand::class,
             SetTournamentRoundCommand::class,
             StartSeasonCommand::class,

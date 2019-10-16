@@ -13,7 +13,7 @@ class CreateUserCommand implements CommandInterface
     /** @var string */
     private $email;
 
-    /** @var string */
+    /** @var string|null */
     private $password;
 
     /** @var string */
@@ -31,7 +31,7 @@ class CreateUserCommand implements CommandInterface
     /**
      * @param string|null $id
      * @param string $email
-     * @param string $password
+     * @param string|null $password
      * @param string $firstName
      * @param string $lastName
      * @param string $role
@@ -40,7 +40,10 @@ class CreateUserCommand implements CommandInterface
     public function __construct($id, $email, $password, $firstName, $lastName, $role, $teamIds)
     {
         TypeAssert::assertString($email, 'email');
-        TypeAssert::assertString($password, 'password');
+        if (null !== $password) {
+            TypeAssert::assertString($password, 'password');
+            $this->password = $password;
+        }
         TypeAssert::assertString($firstName, 'firstName');
         TypeAssert::assertString($lastName, 'lastName');
         TypeAssert::assertString($role, 'role');
@@ -48,7 +51,6 @@ class CreateUserCommand implements CommandInterface
 
         $this->setId($id);
         $this->email = $email;
-        $this->password = $password;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->role = $role;
@@ -68,9 +70,9 @@ class CreateUserCommand implements CommandInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }

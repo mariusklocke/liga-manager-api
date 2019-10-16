@@ -3,29 +3,24 @@
 namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Application\Command\InviteUserCommand;
+use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Email\MessageInterface;
-use HexagonalPlayground\Application\Permission\CanManageTeam;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
-use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\User;
 use Psr\Http\Message\UriInterface;
 
-class InviteUserHandler
+class SendInviteMailHandler
 {
     /** @var TokenFactoryInterface */
     private $tokenFactory;
 
     /** @var UserRepositoryInterface */
     private $userRepository;
-
-    /** @var TeamRepositoryInterface */
-    private $teamRepository;
 
     /** @var TemplateRendererInterface */
     private $templateRenderer;
@@ -44,39 +39,29 @@ class InviteUserHandler
     {
         $this->tokenFactory = $tokenFactory;
         $this->userRepository = $userRepository;
-        $this->teamRepository = $teamRepository;
         $this->templateRenderer = $templateRenderer;
         $this->mailer = $mailer;
     }
 
-
-    public function __invoke(InviteUserCommand $command)
+    /**
+     * @param SendInviteMailCommand $command
+     */
+    public function __invoke(SendInviteMailCommand $command)
     {
-        if ($command->getRole() === User::ROLE_ADMIN) {
-            IsAdmin::check($command->getAuthenticatedUser());
-        }
+        IsAdmin::check($command->getAuthenticatedUser());
 
-        $this->userRepository->assertEmailDoesNotExist($command->getEmail());
-        $user = new User(
-            $command->getId(),
-            $command->getEmail(),
-            null,
-            $command->getFirstName(),
-            $command->getLastName(),
-            $command->getRole()
-        );
+        $user    = $this->userRepository->findById($command->getUserId());
+        $message = $this->buildMessage($user, $command->getBaseUri(), $command->getTargetPath());
 
-        foreach ($command->getTeamIds() as $teamId) {
-            /** @var Team $team */
-            $team = $this->teamRepository->find($teamId);
-            CanManageTeam::check($team, $command->getAuthenticatedUser());
-            $user->addTeam($team);
-        }
-        $this->userRepository->save($user);
-
-        $this->mailer->send($this->buildMessage($user, $command->getBaseUri(), $command->getTargetPath()));
+        $this->mailer->send($message);
     }
 
+    /**
+     * @param User $invitedUser
+     * @param UriInterface $baseUri
+     * @param string $targetPath
+     * @return MessageInterface
+     */
     private function buildMessage(User $invitedUser, UriInterface $baseUri, string $targetPath): MessageInterface
     {
         $title = 'You have been invited';
@@ -92,7 +77,8 @@ class InviteUserHandler
         $message->setBody($this->templateRenderer->render('InviteUser.html.php', [
             'title'      => $title,
             'userName'   => $invitedUser->getFirstName(),
-            'targetLink' => $targetUri->__toString()
+            'targetLink' => $targetUri->__toString(),
+            'validUntil' => $token->getExpiresAt()
         ]), 'text/html');
 
         return $message;

@@ -92,6 +92,19 @@ class UserTest extends TestCase
     /**
      * @depends testUserCanChangePassword
      * @param array $user
+     * @return array
+     */
+    public function testSendingInviteEmail(array $user): array
+    {
+        self::getEmailClient()->deleteAllEmails();
+        $this->client->sendInviteMail($user['id'], '/straight/to/hell');
+        $this->assertEmailReceived();
+        return $user;
+    }
+
+    /**
+     * @depends testSendingInviteEmail
+     * @param array $user
      */
     public function testUserCanBeDeleted(array $user)
     {
@@ -104,20 +117,6 @@ class UserTest extends TestCase
         $this->client->useCredentials($user['email'], $user['password']);
         $this->expectClientException();
         $this->client->getAuthenticatedUser();
-    }
-
-    /**
-     * @depends testUserCanBeDeleted
-     */
-    public function testInvitingUserSendsAnEmail()
-    {
-        self::getEmailClient()->deleteAllEmails();
-        $user = $this->getUserData();
-        unset($user['password']);
-
-        $this->client->inviteUser($user, '/straight/to/hell');
-
-        $this->assertEmailReceived();
     }
 
     private function getUserData(): array

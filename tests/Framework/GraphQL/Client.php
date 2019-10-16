@@ -733,14 +733,17 @@ GRAPHQL;
         ]);
     }
 
-    public function inviteUser(array $user, string $targetPath): void
+    public function sendInviteMail($userId, $targetPath): void
     {
         $query = <<<'GRAPHQL'
-mutation inviteUser($id: String, $email: String!, $first_name: String!, $last_name: String!, $role: String!, $team_ids: [String]!, $target_path: String!) {
-  inviteUser(id: $id, email: $email, first_name: $first_name, last_name: $last_name, role: $role, team_ids: $team_ids, target_path: $target_path)
+mutation sendInviteMail($user_id: String!, $target_path: String!) {
+  sendInviteMail(user_id: $user_id, target_path: $target_path)
 }
 GRAPHQL;
 
-        $this->request($query, array_merge($user, ['target_path' => $targetPath]));
+        $this->request($query, [
+            'user_id' => $userId,
+            'target_path' => $targetPath
+        ]);
     }
 }
