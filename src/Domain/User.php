@@ -265,7 +265,7 @@ class User
     /**
      * @return array
      */
-    public function getPublicProperties()
+    public function getPublicProperties(): array
     {
         $data = [
             'id' => $this->id,
