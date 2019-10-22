@@ -3,6 +3,10 @@
  * HTML Email Template for resetting a user password
  *
  * Source: https://github.com/leemunroe/responsive-html-email-template
+ *
+ * @var string $title
+ * @var string $userName
+ * @var string $targetLink
  */
 ?>
 <!doctype html>

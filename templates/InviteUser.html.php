@@ -3,6 +3,11 @@
  * HTML Email Template for inviting users
  *
  * Source: https://github.com/leemunroe/responsive-html-email-template
+ *
+ * @var string $title
+ * @var string $userName
+ * @var DateTimeInterface $validUntil
+ * @var string $targetLink
  */
 ?>
 <!doctype html>
