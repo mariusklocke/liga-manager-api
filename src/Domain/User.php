@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Util\Assert;
 
-class User implements \JsonSerializable
+class User
 {
     const ROLE_TEAM_MANAGER = 'team_manager';
     const ROLE_ADMIN = 'admin';
@@ -265,7 +265,7 @@ class User implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function getPublicProperties()
     {
         $data = [
             'id' => $this->id,

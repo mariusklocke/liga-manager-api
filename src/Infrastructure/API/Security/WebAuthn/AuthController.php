@@ -138,7 +138,7 @@ class AuthController
         $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 year'));
 
         return $this
-            ->createResponse(StatusCode::HTTP_OK, $user->jsonSerialize())
+            ->createResponse(StatusCode::HTTP_OK, $user->getPublicProperties())
             ->withHeader('X-Token', $token->encode());
     }
 
