@@ -4,8 +4,8 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
+use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 
 class PublicKeyCredentialRepository extends BaseRepository implements PublicKeyCredentialSourceRepository
@@ -42,4 +42,11 @@ class PublicKeyCredentialRepository extends BaseRepository implements PublicKeyC
         $this->_em->persist($publicKeyCredentialSource);
         $this->_em->flush();
     }
+
+    public function delete($entity): void
+    {
+        parent::delete($entity);
+        $this->_em->flush();
+    }
+
 }

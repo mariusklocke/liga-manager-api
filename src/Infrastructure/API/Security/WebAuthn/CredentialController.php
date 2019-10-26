@@ -4,7 +4,9 @@ namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
 use Exception;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
 use Psr\Http\Message\ResponseInterface;
@@ -14,7 +16,7 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialSourceRepository;
+use Webauthn\PublicKeyCredentialUserEntity;
 
 class CredentialController
 {
@@ -107,5 +109,54 @@ class CredentialController
         $this->credentialRepository->saveCredentialSource($namedCredential);
 
         return $this->createResponse(StatusCode::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @param Request $request
+     * @param string $id
+     * @return ResponseInterface
+     */
+    public function deleteOne(Request $request, string $id): ResponseInterface
+    {
+        $user = $this->convertUser($this->getUserFromRequest($request));
+
+        /** @var PublicKeyCredential $credential */
+        $credential = $this->credentialRepository->findOneByCredentialId($id);
+        if (null === $credential || $credential->getUserHandle() !== $user->getId()) {
+            throw new NotFoundException();
+        }
+
+        $this->credentialRepository->delete($credential);
+
+        return $this->createResponse(StatusCode::HTTP_NO_CONTENT);
+    }
+
+    /**
+     * @param Request $request
+     * @return ResponseInterface
+     */
+    public function deleteAll(Request $request): ResponseInterface
+    {
+        $user = $this->convertUser($this->getUserFromRequest($request));
+
+        $credentials = $this->credentialRepository->findAllForUserEntity($user);
+        foreach ($credentials as $credential) {
+            $this->credentialRepository->delete($credential);
+        }
+
+        return $this->createResponse(StatusCode::HTTP_OK, ['count' => count($credentials)]);
+    }
+
+    /**
+     * @param User $user
+     * @return PublicKeyCredentialUserEntity
+     */
+    private function convertUser(User $user): PublicKeyCredentialUserEntity
+    {
+        return new PublicKeyCredentialUserEntity(
+            $user->getEmail(),
+            $user->getId(),
+            $user->getEmail()
+        );
     }
 }

@@ -8,6 +8,7 @@
             <label for="token">JWT</label>
             <input type="text" id="token" name="token"/>
             <button id="register" type="button">Register</button>
+            <button id="deleteAll" type="button">Delete All</button>
         </form>
         <form>
             <label for="email">Email</label>
@@ -121,7 +122,7 @@
                     window.alert('Credential successfully registered!');
                 }).catch(function(err) {
                     // handle errors
-                    window.alert(err.message || 'unknown error occured');
+                    window.alert(err.message || 'unknown error occurred');
                 });
             }
 
@@ -206,12 +207,33 @@
                     window.alert('Login success!');
                 }).catch(function(err) {
                     // show error
-                    window.alert(err.message || 'unknown error occured');
+                    window.alert(err.message || 'unknown error occurred');
+                });
+            }
+
+            function deleteAll() {
+                window.fetch('/api/webauthn/credential', {
+                    method: 'DELETE',
+                    cache: 'no-cache',
+                    headers: new Headers({
+                        'Authorization': 'Bearer ' + document.getElementById('token').value
+                    })
+                }).then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+
+                    return response.json();
+                }).then(function(data) {
+                    window.alert("Successfully deleted " + data.count + " credentials!");
+                }).catch(function(err) {
+                    window.alert(err.message || 'unknown error occurred');
                 });
             }
 
             document.getElementById('login').addEventListener('click', doLogin);
             document.getElementById('register').addEventListener('click', register);
+            document.getElementById('deleteAll').addEventListener('click', deleteAll);
         </script>
     </body>
 </html>
