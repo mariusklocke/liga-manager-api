@@ -760,4 +760,15 @@ GRAPHQL;
             'kickoff' => $kickoff
         ]);
     }
+
+    public function invalidateAccessTokens(): void
+    {
+        $query = <<<'GRAPHQL'
+mutation invalidateAccessTokens{
+  invalidateAccessTokens
+}
+GRAPHQL;
+
+        $this->request($query);
+    }
 }

@@ -105,6 +105,24 @@ class UserTest extends TestCase
     /**
      * @depends testSendingInviteEmail
      * @param array $user
+     * @return array
+     */
+    public function testAccessTokensCanBeInvalidated(array $user): array
+    {
+        $this->client->useCredentials($user['email'], $user['password']);
+        self::assertNotNull($this->client->getAuthenticatedUser());
+
+        $this->client->invalidateAccessTokens();
+
+        // Test authentication by credentials still works
+        self::assertNotNull($this->client->getAuthenticatedUser());
+
+        return $user;
+    }
+
+    /**
+     * @depends testAccessTokensCanBeInvalidated
+     * @param array $user
      */
     public function testUserCanBeDeleted(array $user)
     {
