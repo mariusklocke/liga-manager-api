@@ -11,8 +11,8 @@ use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Infrastructure\Environment;
-use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Redis;
@@ -122,7 +122,7 @@ class ServiceProvider implements ServiceProviderInterface
             );
         };
         $container[TestClientController::class] = function () use ($container) {
-            return new TestClientController($container[TemplateRenderer::class]);
+            return new TestClientController($container[TemplateRendererInterface::class]);
         };
     }
 }
