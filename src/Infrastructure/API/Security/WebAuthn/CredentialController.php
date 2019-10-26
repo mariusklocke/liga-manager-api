@@ -2,11 +2,11 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
+use Base64Url\Base64Url;
 use Exception;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
 use Psr\Http\Message\ResponseInterface;
@@ -16,7 +16,7 @@ use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialLoader;
-use Webauthn\PublicKeyCredentialUserEntity;
+use Webauthn\PublicKeyCredentialRpEntity;
 
 class CredentialController
 {
@@ -62,11 +62,14 @@ class CredentialController
     {
         $user = $this->getUserFromRequest($request);
 
-        $options = $this->creationOptionsFactory->create(
+        $rpEntity = new PublicKeyCredentialRpEntity(
             $request->getUri()->getHost(),
-            $user->getId(),
-            $user->getEmail()
+            $request->getUri()->getHost()
         );
+
+        $userEntity = UserConverter::convert($user);
+
+        $options = $this->creationOptionsFactory->create($rpEntity, $userEntity);
 
         $this->creationOptionsStore->save($user->getId(), $options);
 
@@ -118,7 +121,8 @@ class CredentialController
      */
     public function deleteOne(Request $request, string $id): ResponseInterface
     {
-        $user = $this->convertUser($this->getUserFromRequest($request));
+        $id = Base64Url::decode($id);
+        $user = UserConverter::convert($this->getUserFromRequest($request));
 
         /** @var PublicKeyCredential $credential */
         $credential = $this->credentialRepository->findOneByCredentialId($id);
@@ -137,7 +141,7 @@ class CredentialController
      */
     public function deleteAll(Request $request): ResponseInterface
     {
-        $user = $this->convertUser($this->getUserFromRequest($request));
+        $user = UserConverter::convert($this->getUserFromRequest($request));
 
         $credentials = $this->credentialRepository->findAllForUserEntity($user);
         foreach ($credentials as $credential) {
@@ -145,18 +149,5 @@ class CredentialController
         }
 
         return $this->createResponse(StatusCode::HTTP_OK, ['count' => count($credentials)]);
-    }
-
-    /**
-     * @param User $user
-     * @return PublicKeyCredentialUserEntity
-     */
-    private function convertUser(User $user): PublicKeyCredentialUserEntity
-    {
-        return new PublicKeyCredentialUserEntity(
-            $user->getEmail(),
-            $user->getId(),
-            $user->getEmail()
-        );
     }
 }

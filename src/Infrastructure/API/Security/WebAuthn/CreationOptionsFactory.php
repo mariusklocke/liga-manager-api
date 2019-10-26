@@ -34,49 +34,40 @@ class CreationOptionsFactory
     }
 
     /**
-     * @param string $hostName
-     * @param string $userId
-     * @param string $userName
+     * @param PublicKeyCredentialRpEntity $rpEntity
+     * @param PublicKeyCredentialUserEntity $userEntity
      * @return PublicKeyCredentialCreationOptions
      */
-    public function create(string $hostName, string $userId, string $userName): PublicKeyCredentialCreationOptions
+    public function create(PublicKeyCredentialRpEntity $rpEntity, PublicKeyCredentialUserEntity $userEntity): PublicKeyCredentialCreationOptions
     {
-        // RP Entity
-        $rpEntity = new PublicKeyCredentialRpEntity(
-            $hostName,
-            $hostName,
-            null
-        );
-
-        // User Entity
-        $userEntity = new PublicKeyCredentialUserEntity(
-            $userName,
-            $userId,
-            $userName,
-            null
-        );
-
-        // Public Key Credential Parameters
-        $publicKeyCredentialParametersList = [];
-        foreach ($this->algorithmManager->all() as $algorithm) {
-            $publicKeyCredentialParametersList[] = new PublicKeyCredentialParameters(
-                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-                $algorithm::identifier()
-            );
-        }
-
         $authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria();
 
         return new PublicKeyCredentialCreationOptions(
             $rpEntity,
             $userEntity,
             $this->challengeGenerator->generate(),
-            $publicKeyCredentialParametersList,
+            $this->buildCredentialParametersList(),
             $this->timeout,
             [],
             $authenticatorSelectionCriteria,
             PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
             null
         );
+    }
+
+    /**
+     * @return array|PublicKeyCredentialParameters[]
+     */
+    private function buildCredentialParametersList(): array
+    {
+        $list = [];
+        foreach ($this->algorithmManager->all() as $algorithm) {
+            $list[] = new PublicKeyCredentialParameters(
+                PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+                $algorithm::identifier()
+            );
+        }
+
+        return $list;
     }
 }

@@ -152,10 +152,7 @@ class AuthController
 
         try {
             $user = $this->userRepository->findByEmail($email);
-            $credentials = $this->credentialRepository->findAllForUserEntity(
-                new PublicKeyCredentialUserEntity($email, $user->getId(), $email)
-            );
-
+            $credentials = $this->credentialRepository->findAllForUserEntity(UserConverter::convert($user));
             foreach ($credentials as $credentialSource) {
                 $credentialDescriptors[] = $credentialSource->getPublicKeyCredentialDescriptor();
             }
