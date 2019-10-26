@@ -114,6 +114,29 @@ class SeasonTest extends CompetitionTestCase
     /**
      * @depends testMatchCanBeLocated
      * @param string $matchId
+     * @return string
+     */
+    public function testMatchCanBeScheduled(string $matchId): string
+    {
+        $match = $this->client->getMatchById($matchId);
+
+        self::assertNotNull($match);
+        self::assertNull($match->kickoff);
+
+        $kickoff = '2019-04-05 11:23:44';
+        $this->client->scheduleMatch($matchId, $kickoff);
+
+        $match = $this->client->getMatchById($matchId);
+        self::assertNotNull($match);
+        self::assertNotNull($match->kickoff);
+        self::assertSame(strtotime($kickoff), strtotime($match->kickoff));
+
+        return $matchId;
+    }
+
+    /**
+     * @depends testMatchCanBeScheduled
+     * @param string $matchId
      */
     public function testDeletingUsedPitchFails(string $matchId): void
     {

@@ -746,4 +746,18 @@ GRAPHQL;
             'target_path' => $targetPath
         ]);
     }
+
+    public function scheduleMatch($matchId, $kickoff): void
+    {
+        $query = <<<'GRAPHQL'
+mutation scheduleMatch($match_id: String!, $kickoff: DateTime!) {
+  scheduleMatch(match_id: $match_id, kickoff: $kickoff)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'match_id' => $matchId,
+            'kickoff' => $kickoff
+        ]);
+    }
 }
