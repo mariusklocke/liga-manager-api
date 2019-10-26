@@ -3,10 +3,11 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Application\Import\L98ImportProvider;
-use HexagonalPlayground\Infrastructure\API\GraphQL\SchemaProvider;
 use HexagonalPlayground\Application\Bus\ServiceProvider as CommandBusProvider;
 use HexagonalPlayground\Application\Handler\ServiceProvider as CommandHandlerProvider;
+use HexagonalPlayground\Application\Import\L98ImportProvider;
+use HexagonalPlayground\Infrastructure\API\GraphQL\SchemaProvider;
+use HexagonalPlayground\Infrastructure\CLI\ServiceProvider as CliServiceProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
@@ -58,7 +59,7 @@ class Bootstrap
             new LoggerProvider(),
             new DoctrineServiceProvider(),
             new L98ImportProvider(),
-            new CommandServiceProvider(),
+            new CliServiceProvider(),
             new SchemaProvider()
         ];
     }
