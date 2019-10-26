@@ -20,7 +20,6 @@ use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSourceRepository;
-use Webauthn\PublicKeyCredentialUserEntity;
 
 class AuthController
 {

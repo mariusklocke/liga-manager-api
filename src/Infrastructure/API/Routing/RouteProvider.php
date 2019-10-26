@@ -40,6 +40,13 @@ class RouteProvider
                 return $credentialController->create($request);
             })->add($auth);
 
+            $app->get('/webauthn/credential', function ($request) use ($container) {
+                /** @var CredentialController $credentialController */
+                $credentialController = $container[CredentialController::class];
+
+                return $credentialController->findAll($request);
+            })->add($auth);
+
             $app->delete('/webauthn/credential', function ($request) use ($container) {
                 /** @var CredentialController $credentialController */
                 $credentialController = $container[CredentialController::class];

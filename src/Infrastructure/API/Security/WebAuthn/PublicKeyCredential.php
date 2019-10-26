@@ -40,4 +40,15 @@ class PublicKeyCredential extends PublicKeyCredentialSource
     {
         $this->name = $name;
     }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        $data = parent::jsonSerialize();
+        $data['name'] = $this->name;
+
+        return $data;
+    }
 }

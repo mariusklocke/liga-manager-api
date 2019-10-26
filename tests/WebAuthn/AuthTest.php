@@ -42,4 +42,20 @@ class AuthTest extends HttpTest
         self::assertObjectHasAttribute('challenge', $options);
         self::assertObjectHasAttribute('rpId', $options);
     }
+
+    public function testCredentialsCanBeFound(): void
+    {
+        $request = $this->createRequest(
+            'GET',
+            '/api/webauthn/credential'
+        );
+        $request = $this->authenticator->withAdminAuth($request);
+
+        $response = $this->client->sendRequest($request);
+        self::assertSame(200, $response->getStatusCode());
+
+        $credentials = $this->parser->parse($response);
+        self::assertIsArray($credentials);
+        self::assertCount(0, $credentials);
+    }
 }

@@ -117,6 +117,19 @@ class CredentialController
 
     /**
      * @param Request $request
+     * @return ResponseInterface
+     */
+    public function findAll(Request $request): ResponseInterface
+    {
+        $user = UserConverter::convert($this->getUserFromRequest($request));
+
+        $credentials = $this->credentialRepository->findAllForUserEntity($user);
+
+        return $this->createResponse(StatusCode::HTTP_OK, $credentials);
+    }
+
+    /**
+     * @param Request $request
      * @param string $id
      * @return ResponseInterface
      */
