@@ -9,6 +9,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Request;
 use Slim\Http\StatusCode;
@@ -121,7 +122,12 @@ class CredentialController
      */
     public function deleteOne(Request $request, string $id): ResponseInterface
     {
-        $id = Base64Url::decode($id);
+        try {
+            $id = Base64Url::decode($id);
+        } catch (InvalidArgumentException $e) {
+            throw new InvalidInputException('Malformed parameter "id" in request URI');
+        }
+
         $user = UserConverter::convert($this->getUserFromRequest($request));
 
         /** @var PublicKeyCredential $credential */
