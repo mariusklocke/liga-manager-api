@@ -4,9 +4,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Error\Error;
 use GraphQL\Error\FormattedError;
-use HexagonalPlayground\Domain\ExceptionInterface;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 class ErrorHandler
 {
@@ -33,43 +31,28 @@ class ErrorHandler
     public function __invoke(array $errors): array
     {
         return array_map(function (Error $error) {
-            $formatted = FormattedError::createFromException($error);
 
             $previous = $error->getPrevious();
-            if ($previous instanceof ExceptionInterface) {
-                $formatted['message'] = $previous->getMessage();
-                $this->logger->notice('Handling expected uncaught exception', [
-                    'exception' => $this->getLoggingContext($previous),
-                    'user' => $this->getUserId()
-                ]);
-                return $formatted;
+            if ($previous instanceof \Throwable) {
+                // Re-throw exception not caused in GraphQL library
+                throw $previous;
             }
 
-            $this->logger->error('Unexpected exception', [
-                'exception' => $this->getLoggingContext($previous ?? $error),
+            $formatted = FormattedError::createFromException($error);
+
+            $this->logger->notice('Handling expected exception in GraphQL library', [
+                'exception' => $formatted,
                 'user' => $this->getUserId()
             ]);
+
             return $formatted;
         }, $errors);
     }
 
     /**
-     * @param Throwable $throwable
-     * @return array
+     * @return string|null
      */
-    private function getLoggingContext(Throwable $throwable): array
-    {
-        return [
-            'class'   => get_class($throwable),
-            'message' => $throwable->getMessage(),
-            'code'    => $throwable->getCode(),
-            'file'    => $throwable->getFile(),
-            'line'    => $throwable->getLine(),
-            'trace'   => $throwable->getTrace()
-        ];
-    }
-
-    private function getUserId()
+    private function getUserId(): ?string
     {
         return $this->appContext->isAuthenticated() ? $this->appContext->getAuthenticatedUser()->getId() : null;
     }

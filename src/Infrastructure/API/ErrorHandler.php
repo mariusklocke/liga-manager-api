@@ -37,10 +37,7 @@ class ErrorHandler
     {
         $this->logger->notice('Handling uncaught Exception', [
             'exception' => $this->getExceptionContext($throwable),
-            'request' => [
-                'method' => $request->getMethod(),
-                'uri' => $this->getSafeUri($request)
-            ]
+            'request' => $this->getRequestContext($request)
         ]);
 
         switch (true) {
@@ -56,12 +53,9 @@ class ErrorHandler
 
         $this->logger->error('Failed handling Exception. Internal Server Error', [
             'exception' => $this->getExceptionContext($throwable, true),
-            'request' => [
-                'method' => $request->getMethod(),
-                'uri' => $this->getSafeUri($request)
-            ]
+            'request' => $this->getRequestContext($request)
         ]);
-        return $this->createResponse(500, $this->getBody('Unhandled exception'));
+        return $this->createResponse(500, $this->getBody('Internal Server Error'));
     }
 
     /**
@@ -70,7 +64,11 @@ class ErrorHandler
      */
     private function getBody(string $message): array
     {
-        return ['message' => $message];
+        return [
+            'errors' => [
+                ['message' => $message]
+            ]
+        ];
     }
 
     /**
@@ -103,13 +101,15 @@ class ErrorHandler
         return $context;
     }
 
-
     /**
      * @param RequestInterface $request
-     * @return string
+     * @return array
      */
-    private function getSafeUri(RequestInterface $request): string
+    private function getRequestContext(RequestInterface $request): array
     {
-        return $request->getUri()->withUserInfo('', '')->__toString();
+        return [
+            'method' => $request->getMethod(),
+            'uri' => $request->getUri()->withUserInfo('', '')->__toString()
+        ];
     }
 }

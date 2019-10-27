@@ -23,6 +23,6 @@ class Controller
         $result = GraphQL::executeQuery($container->get(Schema::class), $query, null, $context, $variables)
             ->setErrorsHandler($errorHandler);
 
-        return $this->createResponse(200, $result->toArray());
+        return $this->createResponse(count($result->errors) ? 400 : 200, $result->toArray());
     }
 }
