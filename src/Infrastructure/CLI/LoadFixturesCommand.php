@@ -59,8 +59,7 @@ class LoadFixturesCommand extends Command
 
         $tournamentIds = [];
         foreach ($this->createTournaments() as $command) {
-            $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
-            $tournamentIds = $command->getId();
+            $tournamentIds[] = $command->getId();
         }
 
         $this->createTournamentRounds($tournamentIds, $teamIds);
