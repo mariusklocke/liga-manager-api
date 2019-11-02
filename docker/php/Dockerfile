@@ -30,7 +30,7 @@ RUN set -xe \
     && docker-php-ext-configure pcntl --enable-pcntl \
     && docker-php-ext-configure pdo_mysql --with-pdo-mysql \
     && docker-php-ext-configure mbstring --enable-mbstring \
-    && docker-php-ext-install bcmath mysqli pcntl pdo_mysql mbstring gmp \
+    && docker-php-ext-install bcmath mysqli pcntl pdo_mysql mbstring opcache gmp \
     && pecl install apcu \
     && pecl install redis \
     && pecl install xdebug-beta \
