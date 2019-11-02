@@ -4,12 +4,16 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
+      - "443:443"
     volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - api-public:/var/www/api/public:ro
+      - ./public:/var/www/api/public:ro
+      - ./docker/nginx/dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - /etc/ssl/certs/localhost.crt:/etc/ssl/certs/localhost.crt:ro
+      - /etc/ssl/private/localhost.key:/etc/ssl/private/localhost.key:ro
     depends_on:
       - php
-      - swagger-ui
+      - ui
+      - subscriptions
 
   php:
     build:
@@ -19,7 +23,7 @@ services:
         XDEBUG: 0
     user: dev
     volumes:
-      - api-public:/var/www/api/public
+      - .:/var/www/api
     depends_on:
       - mariadb
       - maildev
@@ -29,7 +33,7 @@ services:
   mariadb:
     image: mariadb
     volumes:
-      - ./docker/_volumes/mysql:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
     ports:
       - "3306:3306"
     env_file:
@@ -45,10 +49,22 @@ services:
     ports:
       - "1080:80"
 
-  swagger-ui:
-    image: swaggerapi/swagger-ui
+  ui:
+    image: robertkitzing/liga-manager-ui:4.0.0-210
     environment:
-      - API_URL=http://localhost/api/swagger.json
+      - EXPRESS_PORT=3098
+      - GRAPHQL_URL=api/graphql
+      - GRAPHQL_WS_URL=ws://localhost:4000
+      - GOOGLE_MAPS_API_KEY=INSERT-KEY-HERE
+
+  subscriptions:
+    image: robertkitzing/liga-manager-subscriptions:4.0.0-186
+    depends_on:
+      - redis
+    ports:
+      - "4000:4000"
+    environment:
+      - REDIS_HOST=redis
 
 volumes:
-  api-public:
+  mysql-data:
