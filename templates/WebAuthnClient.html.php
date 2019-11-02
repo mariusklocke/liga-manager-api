@@ -4,9 +4,8 @@
         <title>WebAuthn Test Client</title>
     </head>
     <body>
+        <div id="token-info"></div>
         <form>
-            <label for="token">JWT</label>
-            <input type="text" id="token" name="token"/>
             <button id="register" type="button">Register</button>
             <button id="deleteAll" type="button">Delete All</button>
         </form>
@@ -61,11 +60,17 @@
                     return;
                 }
 
+                let token = getJwtFromLocalStorage();
+                if (!token) {
+                    window.alert('Cannot find JWT in local storage');
+                    return;
+                }
+
                 window.fetch('/api/webauthn/credential/options', {
                     method: 'POST',
                     cache: 'no-cache',
                     headers: new Headers({
-                        'Authorization': 'Bearer ' + document.getElementById('token').value
+                        'Authorization': 'Bearer ' + token
                     })
                 }).then(function(response) {
                     if (!response.ok) {
@@ -108,7 +113,7 @@
                         body: JSON.stringify(data),
                         cache:'no-cache',
                         headers: new Headers({
-                            'Authorization': 'Bearer ' + document.getElementById('token').value,
+                            'Authorization': 'Bearer ' + token,
                             'Content-Type': 'application/json'
                         })
                     });
@@ -131,7 +136,6 @@
                     window.alert('Browser not supported.');
                     return;
                 }
-
 
                 window.fetch('/api/webauthn/login/options', {
                     method: 'POST',
@@ -199,6 +203,7 @@
                         throw new Error('Request failed');
                     }
 
+                    setJwtInLocalStorage(response.headers.get('X-Token'));
                     return response.json();
                 }).then(function(user) {
                     // Output response data
@@ -212,11 +217,17 @@
             }
 
             function deleteAll() {
+                let token = getJwtFromLocalStorage();
+                if (!token) {
+                    window.alert('Cannot find JWT in local storage');
+                    return;
+                }
+
                 window.fetch('/api/webauthn/credential', {
                     method: 'DELETE',
                     cache: 'no-cache',
                     headers: new Headers({
-                        'Authorization': 'Bearer ' + document.getElementById('token').value
+                        'Authorization': 'Bearer ' + token
                     })
                 }).then(function(response) {
                     if (!response.ok) {
@@ -231,9 +242,28 @@
                 });
             }
 
+            function getJwtFromLocalStorage() {
+                if (window.localStorage.ngx_ACCESS_TOKEN) {
+                    return window.localStorage.ngx_ACCESS_TOKEN.replace('"', '').replace('"', '');
+                }
+
+                return undefined;
+            }
+
+            function setJwtInLocalStorage(jwt) {
+                window.localStorage.ngx_ACCESS_TOKEN = jwt;
+                updateTokenInfo();
+            }
+
+            function updateTokenInfo() {
+                document.getElementById('token-info').innerHTML = getJwtFromLocalStorage() ? 'Found JWT in storage' : 'No JWT found in storage';
+            }
+
             document.getElementById('login').addEventListener('click', doLogin);
             document.getElementById('register').addEventListener('click', register);
             document.getElementById('deleteAll').addEventListener('click', deleteAll);
+
+            updateTokenInfo();
         </script>
     </body>
 </html>
