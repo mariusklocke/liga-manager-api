@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
@@ -17,6 +18,7 @@ use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
 use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use PDO;
@@ -39,7 +41,12 @@ class DoctrineServiceProvider implements ServiceProviderInterface
         $container[EntityManager::class] = function() use ($container) {
             $config = Setup::createConfiguration(false);
             $driver = new SimplifiedXmlDriver([
-                Environment::get('APP_HOME') . "/config/doctrine" => "HexagonalPlayground\\Domain"
+                Environment::get('APP_HOME') . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
+                    => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",
+                Environment::get('APP_HOME') . "/config/doctrine/Domain"
+                    => "HexagonalPlayground\\Domain",
+                Environment::get('APP_HOME') . "/config/doctrine/Domain/Event"
+                    => "HexagonalPlayground\\Domain\\Event"
             ]);
             $driver->setGlobalBasename('global');
             $config->setMetadataDriverImpl($driver);
@@ -53,6 +60,10 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
             );
             $connection = DriverManager::getConnection(['pdo' => $pdo], $config);
+            if (!Type::hasType(CustomBinaryType::NAME)) {
+                Type::addType(CustomBinaryType::NAME, CustomBinaryType::class);
+            }
+            $connection->getDatabasePlatform()->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
             $em = EntityManager::create($connection, $config);
             $em->getEventManager()->addEventListener(
                 [Events::postLoad],
@@ -83,6 +94,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
         };
         $container['orm.repository.matchDay'] = function () use ($container) {
             return $container[EntityManager::class]->getRepository(MatchDay::class);
+        };
+        $container['orm.repository.publicKeyCredential'] = function () use ($container) {
+            return $container[EntityManager::class]->getRepository(PublicKeyCredential::class);
         };
     }
 }

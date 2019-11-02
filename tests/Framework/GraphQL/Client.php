@@ -729,4 +729,43 @@ GRAPHQL;
             'pitch_id' => $pitchId
         ]);
     }
+
+    public function sendInviteMail($userId, $targetPath): void
+    {
+        $query = <<<'GRAPHQL'
+mutation sendInviteMail($user_id: String!, $target_path: String!) {
+  sendInviteMail(user_id: $user_id, target_path: $target_path)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'user_id' => $userId,
+            'target_path' => $targetPath
+        ]);
+    }
+
+    public function scheduleMatch($matchId, $kickoff): void
+    {
+        $query = <<<'GRAPHQL'
+mutation scheduleMatch($match_id: String!, $kickoff: DateTime!) {
+  scheduleMatch(match_id: $match_id, kickoff: $kickoff)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'match_id' => $matchId,
+            'kickoff' => $kickoff
+        ]);
+    }
+
+    public function invalidateAccessTokens(): void
+    {
+        $query = <<<'GRAPHQL'
+mutation invalidateAccessTokens{
+  invalidateAccessTokens
+}
+GRAPHQL;
+
+        $this->request($query);
+    }
 }

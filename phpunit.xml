@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.5/phpunit.xsd"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/8.2/phpunit.xsd"
          bootstrap="tests/bootstrap.php"
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTodoAnnotatedTests="true"
@@ -8,10 +8,13 @@
          cacheResult="false">
     <testsuites>
         <testsuite name="CLI">
-            <directory suffix="Test.php">tests/CLI</directory>
+            <directory>tests/CLI</directory>
         </testsuite>
         <testsuite name="GraphQL">
-            <directory suffix="Test.php">tests/GraphQL</directory>
+            <directory>tests/GraphQL</directory>
+        </testsuite>
+        <testsuite name="WebAuthn">
+            <directory>tests/WebAuthn</directory>
         </testsuite>
     </testsuites>
 

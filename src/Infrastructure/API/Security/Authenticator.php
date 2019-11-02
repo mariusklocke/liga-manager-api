@@ -78,6 +78,10 @@ class Authenticator
             throw $this->createException('Password has changed after token has been issued.');
         }
 
+        if ($user->haveAccessTokensBeenInvalidatedSince($token->getIssuedAt())) {
+            throw $this->createException('Token has been invalidated');
+        }
+
         return $user;
     }
 

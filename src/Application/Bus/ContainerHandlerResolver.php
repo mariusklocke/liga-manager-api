@@ -1,13 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure;
+namespace HexagonalPlayground\Application\Bus;
 
-use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\Command\CommandInterface;
 use Psr\Container\ContainerInterface;
 
-class CommandHandlerResolver implements HandlerResolver
+class ContainerHandlerResolver implements HandlerResolver
 {
     /** @var ContainerInterface */
     private $container;

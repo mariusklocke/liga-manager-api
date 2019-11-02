@@ -38,14 +38,7 @@ class UserTest extends TestCase
         $user = $this->getUserData();
         $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
 
-        $tries = 0;
-        do {
-            usleep(100000);
-            $emails = self::getEmailClient()->getAllEmails();
-            $tries++;
-        } while (count($emails) === 0 && $tries < 10);
-
-        self::assertCount(1, $emails);
+        $this->assertEmailReceived();
     }
 
     /**
@@ -99,6 +92,37 @@ class UserTest extends TestCase
     /**
      * @depends testUserCanChangePassword
      * @param array $user
+     * @return array
+     */
+    public function testSendingInviteEmail(array $user): array
+    {
+        self::getEmailClient()->deleteAllEmails();
+        $this->client->sendInviteMail($user['id'], '/straight/to/hell');
+        $this->assertEmailReceived();
+        return $user;
+    }
+
+    /**
+     * @depends testSendingInviteEmail
+     * @param array $user
+     * @return array
+     */
+    public function testAccessTokensCanBeInvalidated(array $user): array
+    {
+        $this->client->useCredentials($user['email'], $user['password']);
+        self::assertNotNull($this->client->getAuthenticatedUser());
+
+        $this->client->invalidateAccessTokens();
+
+        // Test authentication by credentials still works
+        self::assertNotNull($this->client->getAuthenticatedUser());
+
+        return $user;
+    }
+
+    /**
+     * @depends testAccessTokensCanBeInvalidated
+     * @param array $user
      */
     public function testUserCanBeDeleted(array $user)
     {
@@ -116,7 +140,7 @@ class UserTest extends TestCase
     private function getUserData(): array
     {
         return [
-            'id' => 'TeamManagerUserTest',
+            'id' => 'ed489246-cac2-4e67-8b22-ce2556d72a3e',
             'email' => 'user.test@example.com',
             'password' => '123456',
             'first_name' => 'Foo',
@@ -124,5 +148,17 @@ class UserTest extends TestCase
             'role' => User::ROLE_TEAM_MANAGER,
             'team_ids' => []
         ];
+    }
+
+    private function assertEmailReceived(): void
+    {
+        $tries = 0;
+        do {
+            usleep(100000);
+            $emails = self::getEmailClient()->getAllEmails();
+            $tries++;
+        } while (count($emails) === 0 && $tries < 10);
+
+        self::assertCount(1, $emails);
     }
 }
