@@ -20,6 +20,8 @@ use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
+use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
+use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
@@ -77,6 +79,8 @@ class ServiceProvider implements ServiceProviderInterface
             $manager = new AttestationStatementSupportManager();
             $manager->add(new FidoU2FAttestationStatementSupport());
             $manager->add(new AndroidKeyAttestationStatementSupport());
+            $manager->add(new NoneAttestationStatementSupport());
+            $manager->add(new TPMAttestationStatementSupport());
 
             return $manager;
         };
