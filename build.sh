@@ -23,10 +23,6 @@ APP_ENV_ARGS="$APP_ENV_ARGS -e ADMIN_EMAIL=admin@example.com -e ADMIN_PASSWORD=1
 docker run -d --name mariadb ${MYSQL_ENV_ARGS} mariadb > /dev/null
 docker run -d --name redis redis:4-alpine > /dev/null
 
-# Wait until MariaDB and Redis are ready
-docker run --link redis --rm dadarek/wait-for-dependencies redis:6379
-docker run --link mariadb --rm dadarek/wait-for-dependencies mariadb:3306
-
 # Run tests
 docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} \
     mklocke/liga-manager-api:${TAG} sh -c "bin/install.sh && phpunit --testdox"

@@ -48,9 +48,8 @@ COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
 RUN if [ "$XDEBUG" = "1" ] ; then echo "zend_extension=xdebug.so" >> /usr/local/etc/php/php.ini ; fi
 
-# Copy init script
-COPY docker/php/init-container.sh /usr/bin/init-container.sh
-RUN chmod +x /usr/bin/init-container.sh
+# Override entrypoint
+COPY docker/php/docker-php-entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
 # Install application sources
 ENV APP_HOME="/var/www/api"
@@ -68,4 +67,4 @@ COPY templates templates
 COPY tests tests
 
 USER www-data
-CMD init-container.sh && php-fpm
+CMD php-fpm
