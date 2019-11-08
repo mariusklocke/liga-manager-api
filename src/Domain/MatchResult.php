@@ -5,13 +5,13 @@ namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Util\Assert;
 
-class MatchResult
+class MatchResult extends ValueObject
 {
     /** @var int */
-    private $homeScore;
+    protected $homeScore;
 
     /** @var int */
-    private $guestScore;
+    protected $guestScore;
 
     public function __construct(int $homeScore, int $guestScore)
     {
@@ -35,15 +35,6 @@ class MatchResult
     public function getGuestScore(): int
     {
         return $this->guestScore;
-    }
-
-    /**
-     * @param MatchResult $other
-     * @return bool
-     */
-    public function equals(MatchResult $other): bool
-    {
-        return $this->getHomeScore() === $other->getHomeScore() && $this->getGuestScore() === $other->getGuestScore();
     }
 
     /**

@@ -6,24 +6,13 @@ namespace HexagonalPlayground\Domain;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Util\Assert;
 
-abstract class Competition
+abstract class Competition extends Entity
 {
-    /** @var string */
-    protected $id;
-
     /** @var string */
     protected $name;
 
     /** @var Collection|MatchDay[] */
     protected $matchDays;
-
-    /**
-     * @return string
-     */
-    public function getId() : string
-    {
-        return $this->id;
-    }
 
     /**
      * @param int $number

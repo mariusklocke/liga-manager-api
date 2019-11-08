@@ -5,13 +5,13 @@ namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Util\Assert;
 
-class GeographicLocation
+class GeographicLocation extends ValueObject
 {
     /** @var float */
-    private $longitude;
+    protected $longitude;
 
     /** @var float */
-    private $latitude;
+    protected $latitude;
 
     /**
      * @param float $longitude

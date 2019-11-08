@@ -12,11 +12,8 @@ use HexagonalPlayground\Domain\Event\MatchScheduled;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\Uuid;
 
-class Match
+class Match extends Entity
 {
-    /** @var string */
-    private $id;
-
     /** @var MatchDay */
     private $matchDay;
 
@@ -137,14 +134,6 @@ class Match
     public function getGuestTeam(): Team
     {
         return $this->guestTeam;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     /**

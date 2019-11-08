@@ -8,13 +8,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Util\Assert;
 
-class User
+class User extends Entity
 {
     const ROLE_TEAM_MANAGER = 'team_manager';
     const ROLE_ADMIN = 'admin';
-
-    /** @var string */
-    private $id;
 
     /** @var string */
     private $email;
@@ -72,14 +69,6 @@ class User
     public function getEmail(): string
     {
         return $this->email;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     /**
@@ -222,15 +211,6 @@ class User
     {
         Assert::emailAddress($email, 'Invalid email address for user');
         $this->email = $email;
-    }
-
-    /**
-     * @param User $other
-     * @return bool
-     */
-    public function equals(User $other): bool
-    {
-        return $this->id === $other->id;
     }
 
     /**

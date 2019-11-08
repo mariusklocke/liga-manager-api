@@ -5,19 +5,19 @@ namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Util\Assert;
 
-class ContactPerson
+class ContactPerson extends ValueObject
 {
     /** @var string */
-    private $firstName;
+    protected $firstName;
 
     /** @var string */
-    private $lastName;
+    protected $lastName;
 
     /** @var string */
-    private $phone;
+    protected $phone;
 
     /** @var string */
-    private $email;
+    protected $email;
 
     /**
      * @param string $firstName
@@ -32,25 +32,5 @@ class ContactPerson
         $this->lastName = $lastName;
         $this->phone = $phone;
         $this->email = $email;
-    }
-
-    /**
-     * @param ContactPerson $other
-     * @return bool
-     */
-    public function equals(ContactPerson $other): bool
-    {
-        return $this->firstName === $other->firstName
-            && $this->lastName  === $other->lastName
-            && $this->phone     === $other->phone
-            && $this->email     === $other->email;
-    }
-
-    /**
-     * @return array
-     */
-    public function toArray(): array
-    {
-        return get_object_vars($this);
     }
 }

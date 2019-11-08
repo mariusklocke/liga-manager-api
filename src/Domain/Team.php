@@ -10,11 +10,8 @@ use HexagonalPlayground\Domain\Event\TeamCreated;
 use HexagonalPlayground\Domain\Event\TeamRenamed;
 use HexagonalPlayground\Domain\Util\Assert;
 
-class Team
+class Team extends Entity
 {
-    /** @var string */
-    private $id;
-
     /** @var string */
     private $name;
 
@@ -36,14 +33,6 @@ class Team
     /**
      * @return string
      */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
     public function getName() : string
     {
         return $this->name;
@@ -59,15 +48,6 @@ class Team
             $this->setName($newName);
             Publisher::getInstance()->publish(TeamRenamed::create($this->id, $oldName, $newName));
         }
-    }
-
-    /**
-     * @param Team $otherTeam
-     * @return bool
-     */
-    public function equals(Team $otherTeam) : bool
-    {
-        return $this->getId() === $otherTeam->getId();
     }
 
     /**

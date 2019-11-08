@@ -5,11 +5,8 @@ namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Util\Assert;
 
-class RankingPenalty
+class RankingPenalty extends Entity
 {
-    /** @var string */
-    private $id;
-
     /** @var Ranking */
     private $ranking;
 
@@ -43,14 +40,6 @@ class RankingPenalty
         $this->reason    = $reason;
         $this->points    = $points;
         $this->createdAt = new \DateTimeImmutable();
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     /**

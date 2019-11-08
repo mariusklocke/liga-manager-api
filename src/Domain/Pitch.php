@@ -9,11 +9,8 @@ use HexagonalPlayground\Domain\Event\PitchContactUpdated;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
 
-class Pitch
+class Pitch extends Entity
 {
-    /** @var string */
-    private $id;
-
     /** @var string */
     private $label;
 
@@ -35,14 +32,6 @@ class Pitch
         $this->label = $label;
         $this->location = $location;
         $this->matches = new ArrayCollection();
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
     }
 
     /**
@@ -72,15 +61,6 @@ class Pitch
     public function removeMatch(Match $match): void
     {
         $this->matches->remove($match->getId());
-    }
-
-    /**
-     * @param Pitch $other
-     * @return bool
-     */
-    public function equals(Pitch $other): bool
-    {
-        return $this->id === $other->id;
     }
 
     /**
