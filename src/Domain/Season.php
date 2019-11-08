@@ -38,10 +38,9 @@ class Season extends Competition
      */
     public function __construct(string $id, string $name)
     {
-        Assert::minLength($id, 1, "A season's id cannot be blank");
         Assert::minLength($name, 1, "A season's name cannot be blank");
         Assert::maxLength($name, 255, "A season's name cannot exceed 255 characters");
-        $this->id = $id;
+        $this->setId($id);
         $this->name = $name;
         $this->teams = new ArrayCollection();
         $this->matchDays = new ArrayCollection();
@@ -177,6 +176,14 @@ class Season extends Competition
             'Cannot access ranking for a season which has not been started'
         );
         return $this->ranking;
+    }
+
+    /**
+     * @return MatchDay[]
+     */
+    public function getMatchDays(): array
+    {
+        return $this->matchDays->toArray();
     }
 
     /**

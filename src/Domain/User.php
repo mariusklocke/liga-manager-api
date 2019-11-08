@@ -53,8 +53,7 @@ class User extends Entity
         string $lastName,
         string $role = self::ROLE_TEAM_MANAGER
     ) {
-        Assert::minLength($id, 1, "A user's id cannot be blank");
-        $this->id = $id;
+        $this->setId($id);
         $this->setEmail($email);
         $this->setPassword($password);
         $this->setFirstName($firstName);

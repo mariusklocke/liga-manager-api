@@ -19,10 +19,9 @@ class Tournament extends Competition
      */
     public function __construct(string $id, string $name)
     {
-        Assert::minLength($id, 1, "A tournament's id cannot be blank");
         Assert::minLength($name, 1, "A tournament's name cannot be blank");
         Assert::maxLength($name, 255, "A tournament's name cannot exceed 255 characters");
-        $this->id = $id;
+        $this->setId($id);
         $this->name = $name;
         $this->matchDays = new ArrayCollection();
         $this->updateRoundCount();

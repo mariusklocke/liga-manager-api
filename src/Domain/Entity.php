@@ -2,6 +2,8 @@
 
 namespace HexagonalPlayground\Domain;
 
+use HexagonalPlayground\Domain\Util\Assert;
+
 abstract class Entity
 {
     /** @var string */
@@ -13,6 +15,15 @@ abstract class Entity
     public function getId(): string
     {
         return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    protected function setId(string $id): void
+    {
+        Assert::minLength($id, 1, "An entity id cannot be blank");
+        $this->id = $id;
     }
 
     /**

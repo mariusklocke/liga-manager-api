@@ -23,8 +23,7 @@ class Team extends Entity
 
     public function __construct(string $id, string $name)
     {
-        Assert::minLength($id, 1, "A team's id cannot be blank");
-        $this->id = $id;
+        $this->setId($id);
         $this->setName($name);
         $this->createdAt = new DateTimeImmutable();
         Publisher::getInstance()->publish(TeamCreated::create($this->id));
