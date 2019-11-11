@@ -146,5 +146,11 @@ class ServiceProvider implements ServiceProviderInterface
         $container[InvalidateAccessTokensHandler::class] = function () use ($container) {
             return new InvalidateAccessTokensHandler($container['orm.repository.user']);
         };
+        $container[ScheduleAllMatchesForSeasonHandler::class] = function () use ($container) {
+            return new ScheduleAllMatchesForSeasonHandler(
+                $container['orm.repository.season'],
+                $container['orm.repository.pitch']
+            );
+        };
     }
 }

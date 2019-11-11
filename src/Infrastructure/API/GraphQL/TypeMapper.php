@@ -51,6 +51,8 @@ class TypeMapper
                 return Type::float();
             case 'TeamIdPair':
                 return TeamIdPairType::getInstance();
+            case 'MatchAppointment':
+                return MatchAppointmentType::getInstance();
         }
 
         throw new MappingException(sprintf('Cannot map internal type "%s"', $phpType));

@@ -12,9 +12,11 @@ use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
+use HexagonalPlayground\Application\Command\ScheduleAllMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
 use HexagonalPlayground\Application\Value\DatePeriod;
+use HexagonalPlayground\Application\Value\MatchAppointment;
 use HexagonalPlayground\Application\Value\TeamIdPair;
 use HexagonalPlayground\Domain\User;
 use Iterator;
@@ -53,13 +55,19 @@ class LoadFixturesCommand extends Command
         }
 
         $this->createTeamManagers($teamIds);
-        $this->createPitches();
+
+        $pitchIds = [];
+        foreach ($this->createPitches() as $pitchId) {
+            $pitchIds[] = $pitchId;
+        }
+
         $this->linkTeamsWithSeasons($teamIds, $seasonIds);
         $this->startSeason($seasonIds[0], count($teamIds));
+        $this->scheduleMatches($seasonIds[0], $teamIds, $pitchIds);
 
         $tournamentIds = [];
-        foreach ($this->createTournaments() as $command) {
-            $tournamentIds[] = $command->getId();
+        foreach ($this->createTournaments() as $tournamentId) {
+            $tournamentIds[] = $tournamentId;
         }
 
         $this->createTournamentRounds($tournamentIds, $teamIds);
@@ -96,7 +104,7 @@ class LoadFixturesCommand extends Command
     }
 
     /**
-     * @return Iterator|CreateSeasonCommand[]
+     * @return Iterator|string[]
      */
     private function createSeasons(): Iterator
     {
@@ -109,7 +117,7 @@ class LoadFixturesCommand extends Command
     }
 
     /**
-     * @return Iterator|CreatePitchCommand[]
+     * @return Iterator|string[]
      */
     private function createPitches(): Iterator
     {
@@ -122,7 +130,7 @@ class LoadFixturesCommand extends Command
     }
 
     /**
-     * @return Iterator|CreateTeamCommand[]
+     * @return Iterator|string[]
      */
     private function createTeams(): Iterator
     {
@@ -181,6 +189,20 @@ class LoadFixturesCommand extends Command
     }
 
     /**
+     * @param string $seasonId
+     * @param array $teamIds
+     * @param array $pitchIds
+     */
+    private function scheduleMatches(string $seasonId, array $teamIds, array $pitchIds): void
+    {
+        $command = new ScheduleAllMatchesForSeasonCommand(
+            $seasonId,
+            $this->generateMatchAppointments($teamIds, $pitchIds)
+        );
+        $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
+    }
+
+    /**
      * @param int $teamCount
      * @return array
      */
@@ -197,5 +219,43 @@ class LoadFixturesCommand extends Command
         }
 
         return $result;
+    }
+
+    /**
+     * @param array $teamIds
+     * @param array $pitchIds
+     * @return array
+     */
+    private function generateMatchAppointments(array $teamIds, array $pitchIds): array
+    {
+        $appointments = [];
+        $saturday = new DateTimeImmutable('next saturday');
+        $sunday = $saturday->modify('+1 day');
+
+        $appointments[] = new MatchAppointment(
+            $saturday->setTime(15, 30),
+            [],
+            $pitchIds[0]
+        );
+
+        $appointments[] = new MatchAppointment(
+            $saturday->setTime(17, 30),
+            [$teamIds[0], $teamIds[1]],
+            $pitchIds[1]
+        );
+
+        $appointments[] = new MatchAppointment(
+            $sunday->setTime(12, 00),
+            [$teamIds[2]],
+            $pitchIds[0]
+        );
+
+        $appointments[] = new MatchAppointment(
+            $sunday->setTime(14, 00),
+            [],
+            $pitchIds[1]
+        );
+
+        return $appointments;
     }
 }

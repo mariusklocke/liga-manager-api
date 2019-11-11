@@ -115,6 +115,22 @@ class MatchDay
     }
 
     /**
+     * @return DateTimeImmutable
+     */
+    public function getStartDate(): DateTimeImmutable
+    {
+        return $this->startDate;
+    }
+
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getEndDate(): DateTimeImmutable
+    {
+        return $this->endDate;
+    }
+
+    /**
      * @return bool
      */
     private function hasMatchesWithResult(): bool
