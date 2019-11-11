@@ -88,7 +88,7 @@ class MatchDay
     public function clearMatches(): void
     {
         Assert::false(
-            $this->hasMatchesWithResult(),
+            $this->hasMatchWithResult(),
             'Cannot clear matches with result. Failed for matchDay ' . $this->number
         );
         $this->matches->clear();
@@ -133,7 +133,7 @@ class MatchDay
     /**
      * @return bool
      */
-    private function hasMatchesWithResult(): bool
+    private function hasMatchWithResult(): bool
     {
         foreach ($this->matches as $match) {
             if ($match->hasResult()) {
