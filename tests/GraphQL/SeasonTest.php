@@ -90,6 +90,27 @@ class SeasonTest extends CompetitionTestCase
      * @param string $seasonId
      * @return string
      */
+    public function testAllMatchesCanBeScheduledAtOnce(string $seasonId): string
+    {
+        $appointments = $this->createMatchAppointments();
+        $this->client->scheduleAllMatchesForSeason($seasonId, $appointments);
+
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $matchId = $season->match_days[0]->matches[0]->id;
+        $match = $this->client->getMatchById($matchId);
+
+        self::assertNotNull($match);
+        self::assertNotNull($match->pitch);
+        self::assertNotNull($match->kickoff);
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testAllMatchesCanBeScheduledAtOnce
+     * @param string $seasonId
+     * @return string
+     */
     public function testMatchCanBeLocated(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -97,7 +118,6 @@ class SeasonTest extends CompetitionTestCase
         $match = $this->client->getMatchById($matchId);
 
         self::assertNotNull($match);
-        self::assertNull($match->pitch);
 
         $pitchId = 'PitchABC';
         $this->client->createPitch($pitchId, 'Pitch ABC', 12.34, 23.45);
@@ -121,15 +141,16 @@ class SeasonTest extends CompetitionTestCase
         $match = $this->client->getMatchById($matchId);
 
         self::assertNotNull($match);
-        self::assertNull($match->kickoff);
 
-        $kickoff = '2019-04-05 11:23:44';
-        $this->client->scheduleMatch($matchId, $kickoff);
+        $newKickoff = '2019-04-05 11:23:44';
+        self::assertNotEquals($newKickoff, $match->kickoff);
+
+        $this->client->scheduleMatch($matchId, $newKickoff);
 
         $match = $this->client->getMatchById($matchId);
         self::assertNotNull($match);
         self::assertNotNull($match->kickoff);
-        self::assertSame(strtotime($kickoff), strtotime($match->kickoff));
+        self::assertSame(strtotime($newKickoff), strtotime($match->kickoff));
 
         return $matchId;
     }

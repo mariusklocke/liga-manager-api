@@ -768,4 +768,18 @@ GRAPHQL;
 
         $this->request($query);
     }
+
+    public function scheduleAllMatchesForSeason($seasonId, $matchAppointments): void
+    {
+        $query = <<<'GRAPHQL'
+mutation scheduleAllMatchesForSeason($season_id: String!, $match_appointments: [MatchAppointment]!) {
+  scheduleAllMatchesForSeason(season_id: $season_id, match_appointments: $match_appointments)
+}
+GRAPHQL;
+
+        $this->request($query, [
+            'season_id' => $seasonId,
+            'match_appointments' => $matchAppointments
+        ]);
+    }
 }
