@@ -35,27 +35,38 @@ class ErrorHandler
      */
     public function __invoke(RequestInterface $request, ResponseInterface $response, Throwable $throwable): ResponseInterface
     {
-        $this->logger->notice('Handling uncaught Exception', [
-            'exception' => $this->getExceptionContext($throwable),
-            'request' => $this->getRequestContext($request)
-        ]);
-
         switch (true) {
             case ($throwable instanceof ExceptionInterface):
-                return $this->createResponseFromException($throwable);
+                $response = $this->createResponseFromException($throwable);
+                break;
             case ($throwable instanceof RouteNotFoundException):
-                return $this->createResponse(404, $this->getBody('Route not found'));
+                $response = $this->createResponse(404, $this->getBody('Route not found'));
+                break;
             case ($throwable instanceof MethodNotAllowedException):
                 $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);
                 $message = 'HTTP Method not allowed. See Allow-Header for a list of allowed methods';
-                return $this->createResponse(405, $this->getBody($message), $headers);
+                $response = $this->createResponse(405, $this->getBody($message), $headers);
+                break;
+            default:
+                $response = $this->createResponse(500, $this->getBody('Internal Server Error'));
+                break;
+        }
+
+        if ($response->getStatusCode() !== 500) {
+            $this->logger->notice('Handling uncaught Exception', [
+                'exception' => $this->getExceptionContext($throwable),
+                'request' => $this->getRequestContext($request)
+            ]);
+
+            return $response;
         }
 
         $this->logger->error('Failed handling Exception. Internal Server Error', [
             'exception' => $this->getExceptionContext($throwable, true),
             'request' => $this->getRequestContext($request)
         ]);
-        return $this->createResponse(500, $this->getBody('Internal Server Error'));
+
+        return $response;
     }
 
     /**
