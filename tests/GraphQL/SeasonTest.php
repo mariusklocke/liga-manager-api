@@ -2,7 +2,9 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
+use DateTimeImmutable;
 use HexagonalPlayground\Domain\Season;
+use stdClass;
 
 class SeasonTest extends CompetitionTestCase
 {
@@ -96,12 +98,15 @@ class SeasonTest extends CompetitionTestCase
         $this->client->scheduleAllMatchesForSeason($seasonId, $appointments);
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
-        $matchId = $season->match_days[0]->matches[0]->id;
-        $match = $this->client->getMatchById($matchId);
+        foreach ($season->match_days as $matchDay) {
+            foreach ($matchDay->matches as $match) {
+                $match = $this->client->getMatchById($match->id);
 
-        self::assertNotNull($match);
-        self::assertNotNull($match->pitch);
-        self::assertNotNull($match->kickoff);
+                self::assertNotNull($match);
+                self::assertNotNull($match->pitch);
+                self::assertNotNull($match->kickoff);
+            }
+        }
 
         return $seasonId;
     }
@@ -324,7 +329,7 @@ class SeasonTest extends CompetitionTestCase
         $matchDay = $season->match_days[0];
         $matchDayId = $matchDay->id;
 
-        $newStart = (new \DateTimeImmutable($matchDay->start_date))->modify('+7 days');
+        $newStart = (new DateTimeImmutable($matchDay->start_date))->modify('+7 days');
         $newEnd   = $newStart->modify('+1 day');
 
         $this->client->rescheduleMatchDay($matchDayId, [
@@ -361,7 +366,7 @@ class SeasonTest extends CompetitionTestCase
         $this->client->submitMatchResult($match->id, 2, 3);
     }
 
-    private function getNonParticipatingTeamIds(\stdClass $match): array
+    private function getNonParticipatingTeamIds(stdClass $match): array
     {
         return array_diff(self::$teamIds, [
             $match->home_team->id,
