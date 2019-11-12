@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\CLI;
 
 use HexagonalPlayground\Infrastructure\CLI\Bootstrap;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CliTest extends \PHPUnit\Framework\TestCase
+class CliTest extends TestCase
 {
     /** @var Application */
     private $app;
@@ -17,13 +18,19 @@ class CliTest extends \PHPUnit\Framework\TestCase
         $this->app = Bootstrap::bootstrap();
     }
 
-    public function testCreatingUser()
+    public function testCreatingUser(): void
     {
         $tester = $this->getCommandTester('app:create-user');
         $tester->setInputs(['mary.poppins@example.com', '123456', 'Mary', 'Poppins', 'admin']);
 
         self::assertExecutionSuccess($tester->execute([]));
 
+    }
+
+    public function testLoadingFixtures(): void
+    {
+        $tester = $this->getCommandTester('app:load-fixtures');
+        self::assertExecutionSuccess($tester->execute([]));
     }
 
     private function getCommandTester(string $commandName): CommandTester
