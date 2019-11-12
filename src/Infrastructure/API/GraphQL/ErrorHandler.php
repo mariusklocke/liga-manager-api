@@ -4,7 +4,9 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Error\Error;
 use GraphQL\Error\FormattedError;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class ErrorHandler
 {
@@ -13,6 +15,12 @@ class ErrorHandler
 
     /** @var AppContext */
     private $appContext;
+
+    private static $loggableHeaders = [
+        'Content-Length',
+        'Content-Type',
+        'User-Agent'
+    ];
 
     /**
      * @param LoggerInterface $logger
@@ -30,30 +38,42 @@ class ErrorHandler
      */
     public function __invoke(array $errors): array
     {
-        return array_map(function (Error $error) {
-
+        $formatted = [];
+        foreach ($errors as $error) {
             $previous = $error->getPrevious();
-            if ($previous instanceof \Throwable) {
+            if ($previous instanceof Throwable) {
                 // Re-throw exception not caused in GraphQL library
                 throw $previous;
             }
 
-            $formatted = FormattedError::createFromException($error);
+            $formatted[] = FormattedError::createFromException($error);
 
-            $this->logger->notice('Handling expected exception in GraphQL library', [
-                'exception' => $formatted,
-                'user' => $this->getUserId()
-            ]);
+        }
 
-            return $formatted;
-        }, $errors);
+        $this->logger->notice('Handling exception in GraphQL library', [
+            'errors' => $formatted,
+            'request' => $this->getRequestContext($this->appContext->getRequest())
+        ]);
+
+        return $formatted;
     }
 
     /**
-     * @return string|null
+     * @param RequestInterface $request
+     * @return array
      */
-    private function getUserId(): ?string
+    private function getRequestContext(RequestInterface $request): array
     {
-        return $this->appContext->isAuthenticated() ? $this->appContext->getAuthenticatedUser()->getId() : null;
+        $headers = [];
+        foreach (self::$loggableHeaders as $headerName) {
+            $headers[$headerName] = $request->getHeader($headerName);
+        }
+
+        return [
+            'httpVersion' => $request->getProtocolVersion(),
+            'method' => $request->getMethod(),
+            'uri' => $request->getUri()->withUserInfo('', '')->__toString(),
+            'headers' => $headers
+        ];
     }
 }
