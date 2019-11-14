@@ -11,8 +11,7 @@ use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request;
-use Slim\Http\StatusCode;
+use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -56,10 +55,10 @@ class CredentialController
     }
 
     /**
-     * @param Request $request
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function options(Request $request): ResponseInterface
+    public function options(ServerRequestInterface $request): ResponseInterface
     {
         $user = $this->getUserFromRequest($request);
 
@@ -74,20 +73,23 @@ class CredentialController
 
         $this->creationOptionsStore->save($user->getId(), $options);
 
-        return $this->createResponse(StatusCode::HTTP_OK, $options);
+        return $this->createResponse(200, $options);
     }
 
     /**
-     * @param Request $request
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function create(Request $request): ResponseInterface
+    public function create(ServerRequestInterface $request): ResponseInterface
     {
-        $name = $request->getParsedBodyParam('name');
+        $parsedBody = $request->getParsedBody();
+        $name = $parsedBody['name'] ?? null;
+
+        /** @var string $name */
         TypeAssert::assertString($name, 'name');
 
         try {
-            $credential = $this->credentialLoader->loadArray($request->getParsedBody());
+            $credential = $this->credentialLoader->loadArray($parsedBody);
         } catch (Exception $e) {
             throw new InvalidInputException($e->getMessage());
         }
@@ -112,28 +114,28 @@ class CredentialController
         $namedCredential = new PublicKeyCredential($credentialSource, $name);
         $this->credentialRepository->saveCredentialSource($namedCredential);
 
-        return $this->createResponse(StatusCode::HTTP_NO_CONTENT);
+        return $this->createResponse(204);
     }
 
     /**
-     * @param Request $request
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function findAll(Request $request): ResponseInterface
+    public function findAll(ServerRequestInterface $request): ResponseInterface
     {
         $user = UserConverter::convert($this->getUserFromRequest($request));
 
         $credentials = $this->credentialRepository->findAllForUserEntity($user);
 
-        return $this->createResponse(StatusCode::HTTP_OK, $credentials);
+        return $this->createResponse(200, $credentials);
     }
 
     /**
-     * @param Request $request
+     * @param ServerRequestInterface $request
      * @param string $id
      * @return ResponseInterface
      */
-    public function deleteOne(Request $request, string $id): ResponseInterface
+    public function deleteOne(ServerRequestInterface $request, string $id): ResponseInterface
     {
         try {
             $id = Base64Url::decode($id);
@@ -151,14 +153,14 @@ class CredentialController
 
         $this->credentialRepository->delete($credential);
 
-        return $this->createResponse(StatusCode::HTTP_NO_CONTENT);
+        return $this->createResponse(204);
     }
 
     /**
-     * @param Request $request
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function deleteAll(Request $request): ResponseInterface
+    public function deleteAll(ServerRequestInterface $request): ResponseInterface
     {
         $user = UserConverter::convert($this->getUserFromRequest($request));
 
@@ -167,6 +169,6 @@ class CredentialController
             $this->credentialRepository->delete($credential);
         }
 
-        return $this->createResponse(StatusCode::HTTP_OK, ['count' => count($credentials)]);
+        return $this->createResponse(200, ['count' => count($credentials)]);
     }
 }

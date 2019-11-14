@@ -12,8 +12,7 @@ use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Request;
-use Slim\Http\StatusCode;
+use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -71,14 +70,16 @@ class AuthController
         $this->tokenFactory = $tokenFactory;
     }
 
-
     /**
-     * @param Request $request
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function options(Request $request): ResponseInterface
+    public function options(ServerRequestInterface $request): ResponseInterface
     {
-        $email = $request->getParsedBodyParam('email');
+        $parsedBody = $request->getParsedBody();
+        $email = $parsedBody['email'] ?? null;
+
+        /** @var string $email */
         TypeAssert::assertString($email, 'email');
 
         $options = $this->requestOptionsFactory->create(
@@ -88,20 +89,23 @@ class AuthController
 
         $this->optionsStore->save($email, $options);
 
-        return $this->createResponse(StatusCode::HTTP_OK, $options);
+        return $this->createResponse(200, $options);
     }
 
     /**
-     * @param Request $request
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function login(Request $request): ResponseInterface
+    public function login(ServerRequestInterface $request): ResponseInterface
     {
-        $email = $request->getParsedBodyParam('email');
+        $parsedBody = $request->getParsedBody();
+        $email = $parsedBody['email'] ?? null;
+
+        /** @var string $email */
         TypeAssert::assertString($email, 'email');
 
         try {
-            $credential = $this->credentialLoader->loadArray($request->getParsedBody());
+            $credential = $this->credentialLoader->loadArray($parsedBody);
             $authenticatorResponse = $credential->getResponse();
         } catch (Exception $e) {
             throw new InvalidInputException($e->getMessage());
@@ -137,7 +141,7 @@ class AuthController
         $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 year'));
 
         return $this
-            ->createResponse(StatusCode::HTTP_OK, $user->getPublicProperties())
+            ->createResponse(200, $user->getPublicProperties())
             ->withHeader('X-Token', $token->encode());
     }
 

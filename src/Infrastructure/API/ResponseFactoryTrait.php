@@ -5,19 +5,17 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Response;
-use Slim\Interfaces\Http\HeadersInterface;
 
 trait ResponseFactoryTrait
 {
     /**
-     * @param int                   $status
-     * @param mixed                 $data
-     * @param HeadersInterface|null $headers
+     * @param int   $status
+     * @param mixed $data
      * @return ResponseInterface
      */
-    protected function createResponse(int $status, $data = null, HeadersInterface $headers = null): ResponseInterface
+    protected function createResponse(int $status, $data = null): ResponseInterface
     {
-        $response = new Response($status, $headers);
+        $response = new Response($status);
         return $data !== null ? $response->withJson($data) : $response;
     }
 }

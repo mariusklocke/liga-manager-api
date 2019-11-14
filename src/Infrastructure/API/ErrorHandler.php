@@ -9,7 +9,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Slim\Exception\MethodNotAllowedException;
 use Slim\Exception\NotFoundException as RouteNotFoundException;
-use Slim\Http\Headers;
 use Throwable;
 
 class ErrorHandler
@@ -43,9 +42,10 @@ class ErrorHandler
                 $response = $this->createResponse(404, $this->getBody('Route not found'));
                 break;
             case ($throwable instanceof MethodNotAllowedException):
-                $headers = new Headers(['Allow' => implode(', ', $throwable->getAllowedMethods())]);
                 $message = 'HTTP Method not allowed. See Allow-Header for a list of allowed methods';
-                $response = $this->createResponse(405, $this->getBody($message), $headers);
+                $response = $this
+                    ->createResponse(405, $this->getBody($message))
+                    ->withHeader('Allow', implode(', ', $throwable->getAllowedMethods()));
                 break;
             default:
                 $response = $this->createResponse(500, $this->getBody('Internal Server Error'));
