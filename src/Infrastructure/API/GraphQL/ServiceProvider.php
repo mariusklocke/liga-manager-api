@@ -1,19 +1,33 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
+use GraphQL\Type\Schema;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchDayLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedPitchLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\MatchDayLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\MatchLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\PitchLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\TeamLoader;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadDbAdapterInterface;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
-class LoaderProvider implements ServiceProviderInterface
+class ServiceProvider implements ServiceProviderInterface
 {
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     public function register(Container $container)
     {
+        $container[Schema::class] = function () {
+            return new Schema([
+                'query'    => new QueryType(),
+                'mutation' => new MutationType()
+            ]);
+        };
         $container[BufferedTeamLoader::class] = function () use ($container) {
             return new BufferedTeamLoader(new TeamLoader($container[ReadDbAdapterInterface::class]));
         };

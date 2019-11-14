@@ -5,8 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Application\Bus\ServiceProvider as CommandBusProvider;
 use HexagonalPlayground\Application\Handler\ServiceProvider as CommandHandlerProvider;
-use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\LoaderProvider;
-use HexagonalPlayground\Infrastructure\API\GraphQL\SchemaProvider;
+use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLProvider;
 use HexagonalPlayground\Infrastructure\API\Routing\RemoveTrailingSlash;
 use HexagonalPlayground\Infrastructure\API\Routing\RouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
@@ -75,8 +74,7 @@ class Bootstrap
             new SecurityServiceProvider(),
             new MailServiceProvider(),
             new EventServiceProvider(),
-            new LoaderProvider(),
-            new SchemaProvider(),
+            new GraphQLProvider(),
             new WebAuthnServiceProvider()
         ];
     }

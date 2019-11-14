@@ -7,14 +7,39 @@ use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
-use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Controller
 {
     use ResponseFactoryTrait;
 
-    public function query(ServerRequestInterface $request, ContainerInterface $container)
+    /** @var AppContext */
+    private $appContext;
+
+    /** @var Schema */
+    private $schema;
+
+    /** @var ErrorHandler */
+    private $errorHandler;
+
+    /**
+     * @param AppContext $appContext
+     * @param Schema $schema
+     * @param ErrorHandler $errorHandler
+     */
+    public function __construct(AppContext $appContext, Schema $schema, ErrorHandler $errorHandler)
+    {
+        $this->appContext = $appContext;
+        $this->schema = $schema;
+        $this->errorHandler = $errorHandler;
+    }
+
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    public function query(ServerRequestInterface $request): ResponseInterface
     {
         $parsedBody = $request->getParsedBody();
         $query = $parsedBody['query'] ?? null;
@@ -23,11 +48,8 @@ class Controller
         TypeAssert::assertString($query, 'query');
         TypeAssert::assertArray($variables, 'variables');
 
-        $context = new AppContext($request, $container);
-        $errorHandler = new ErrorHandler($container->get('logger'), $context);
-
-        $result = GraphQL::executeQuery($container->get(Schema::class), $query, null, $context, $variables)
-            ->setErrorsHandler($errorHandler);
+        $result = GraphQL::executeQuery($this->schema, $query, null, $this->appContext, $variables)
+            ->setErrorsHandler($this->errorHandler);
 
         return $this->createResponse(count($result->errors) ? 400 : 200, $result->toArray());
     }
