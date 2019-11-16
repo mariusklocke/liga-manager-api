@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\InputParser;
+use HexagonalPlayground\Domain\Value\DatePeriod;
 
 class DatePeriodType extends InputObjectType implements CustomObjectType
 {
@@ -30,6 +30,6 @@ class DatePeriodType extends InputObjectType implements CustomObjectType
 
     public function parseCustomValue($value): object
     {
-        return InputParser::parseDatePeriod($value);
+        return new DatePeriod($value['from'], $value['to']);
     }
 }

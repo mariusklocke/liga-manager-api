@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Value\TeamIdPair;
+use HexagonalPlayground\Domain\Value\TeamIdPair;
 
 class TeamIdPairType extends InputObjectType implements CustomObjectType
 {
@@ -30,6 +30,6 @@ class TeamIdPairType extends InputObjectType implements CustomObjectType
 
     public function parseCustomValue($value): object
     {
-        return TeamIdPair::fromArray($value);
+        return new TeamIdPair($value['home_team_id'], $value['guest_team_id']);
     }
 }

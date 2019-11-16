@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\Value\MatchAppointment;
+use HexagonalPlayground\Domain\Value\MatchAppointment;
 
 class ScheduleAllMatchesForSeasonCommand implements CommandInterface
 {

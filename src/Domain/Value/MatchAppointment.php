@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Value;
+namespace HexagonalPlayground\Domain\Value;
 
 use DateTimeImmutable;
 

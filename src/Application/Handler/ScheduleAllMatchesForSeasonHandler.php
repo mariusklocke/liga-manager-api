@@ -8,7 +8,7 @@ use HexagonalPlayground\Application\Command\ScheduleAllMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
-use HexagonalPlayground\Application\Value\MatchAppointment;
+use HexagonalPlayground\Domain\Value\MatchAppointment;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\MatchDay;

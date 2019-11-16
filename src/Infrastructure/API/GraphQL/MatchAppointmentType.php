@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Value\MatchAppointment;
+use HexagonalPlayground\Domain\Value\MatchAppointment;
 
 class MatchAppointmentType extends InputObjectType implements CustomObjectType
 {

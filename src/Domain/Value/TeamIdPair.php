@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Value;
+namespace HexagonalPlayground\Domain\Value;
 
 use HexagonalPlayground\Application\TypeAssert;
 
@@ -39,17 +39,5 @@ class TeamIdPair
     public function getGuestTeamId(): string
     {
         return $this->guestTeamId;
-    }
-
-    /**
-     * @param array $array
-     * @return TeamIdPair
-     */
-    public static function fromArray(array $array): self
-    {
-        $homeTeamId  = $array['home_team_id'] ?? null;
-        $guestTeamId = $array['guest_team_id'] ?? null;
-
-        return new self($homeTeamId, $guestTeamId);
     }
 }

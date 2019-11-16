@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application;
 
+use DateTimeImmutable;
+use Exception;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
-use HexagonalPlayground\Application\Value\DatePeriod;
 
 class InputParser
 {
@@ -59,9 +60,9 @@ class InputParser
      * Parses a Date from a string
      *
      * @param string $value
-     * @return \DateTimeImmutable
+     * @return DateTimeImmutable
      */
-    public static function parseDate(string $value): \DateTimeImmutable
+    public static function parseDate(string $value): DateTimeImmutable
     {
         return self::parseDateTime($value)->setTime(0, 0);
     }
@@ -70,39 +71,14 @@ class InputParser
      * Parses a DateTime from a string
      *
      * @param string $value
-     * @return \DateTimeImmutable
+     * @return DateTimeImmutable
      */
-    public static function parseDateTime(string $value): \DateTimeImmutable
+    public static function parseDateTime(string $value): DateTimeImmutable
     {
         try {
-            return new \DateTimeImmutable($value);
-        } catch (\Exception $e) {
+            return new DateTimeImmutable($value);
+        } catch (Exception $e) {
             throw new InvalidInputException('Cannot parse date. Got: ' . $value);
         }
-    }
-
-    /**
-     * Parses a DatePeriod from a string tuple
-     *
-     * @param array $datePeriod
-     * @return DatePeriod
-     * @throws InvalidInputException
-     */
-    public static function parseDatePeriod(array $datePeriod): DatePeriod
-    {
-        $from = $datePeriod['from'] ?? null;
-        $to   = $datePeriod['to'] ?? null;
-
-        if (!is_string($from) && !($from instanceof \DateTimeImmutable)) {
-            throw new InvalidInputException('Cannot parse date period. Missing or invalid property "from".');
-        }
-        if (!is_string($to) && !($to instanceof \DateTimeImmutable)) {
-            throw new InvalidInputException('Cannot parse date period. Missing or invalid property "to".');
-        }
-
-        return new DatePeriod(
-            is_string($from) ? self::parseDate($from) : $from,
-            is_string($to)? self::parseDate($to) : $to
-        );
     }
 }

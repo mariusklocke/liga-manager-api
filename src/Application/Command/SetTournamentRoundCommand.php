@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Command;
 
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Application\Value\DatePeriod;
-use HexagonalPlayground\Application\Value\TeamIdPair;
+use HexagonalPlayground\Domain\Value\DatePeriod;
+use HexagonalPlayground\Domain\Value\TeamIdPair;
 
 class SetTournamentRoundCommand implements CommandInterface
 {

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
-use HexagonalPlayground\Application\Value\DatePeriod;
+use HexagonalPlayground\Domain\Value\DatePeriod;
 use HexagonalPlayground\Domain\Util\Assert;
 
 /**

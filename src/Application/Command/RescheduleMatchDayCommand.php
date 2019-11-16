@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Command;
 
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Application\Value\DatePeriod;
+use HexagonalPlayground\Domain\Value\DatePeriod;
 
 class RescheduleMatchDayCommand implements CommandInterface
 {
