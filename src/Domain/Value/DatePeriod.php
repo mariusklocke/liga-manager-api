@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Domain\Value;
 
 use DateTimeImmutable;
 
-class DatePeriod
+class DatePeriod extends ValueObject
 {
     /** @var DateTimeImmutable */
     private $startDate;

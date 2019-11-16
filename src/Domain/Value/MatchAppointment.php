@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Domain\Value;
 
 use DateTimeImmutable;
 
-class MatchAppointment
+class MatchAppointment extends ValueObject
 {
     /** @var DateTimeImmutable */
     private $kickoff;
