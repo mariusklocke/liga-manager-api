@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Tests\Unit;
 
-use HexagonalPlayground\Domain\GeographicLocation;
+use HexagonalPlayground\Domain\Value\GeographicLocation;
 use PHPUnit\Framework\TestCase;
 
 class ValueObjectTest extends TestCase

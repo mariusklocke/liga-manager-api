@@ -5,9 +5,9 @@ namespace HexagonalPlayground\Application\Import;
 
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\MatchDay;
-use HexagonalPlayground\Domain\MatchResult;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Domain\Value\MatchResult;
 
 class MatchMapper
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Command;
 
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Domain\GeographicLocation;
+use HexagonalPlayground\Domain\Value\GeographicLocation;
 
 class CreatePitchCommand implements CommandInterface
 {

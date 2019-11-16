@@ -6,8 +6,8 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Permission\CanManageTeam;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
-use HexagonalPlayground\Domain\ContactPerson;
 use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Domain\Value\ContactPerson;
 
 class UpdateTeamContactHandler
 {

@@ -7,7 +7,7 @@ use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Domain\Match;
-use HexagonalPlayground\Domain\MatchResult;
+use HexagonalPlayground\Domain\Value\MatchResult;
 
 class SubmitMatchResultHandler
 {

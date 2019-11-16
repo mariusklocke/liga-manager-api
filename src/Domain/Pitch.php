@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Event\PitchContactUpdated;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Value\ContactPerson;
+use HexagonalPlayground\Domain\Value\GeographicLocation;
 
 class Pitch extends Entity
 {

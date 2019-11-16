@@ -6,8 +6,8 @@
     <entity name="HexagonalPlayground\Domain\Pitch" table="pitches">
         <id name="id" type="string" />
         <field name="label" type="string" />
-        <embedded name="location" class="HexagonalPlayground\Domain\GeographicLocation" />
-        <embedded name="contact" class="HexagonalPlayground\Domain\ContactPerson" />
+        <embedded name="location" class="HexagonalPlayground\Domain\Value\GeographicLocation" />
+        <embedded name="contact" class="HexagonalPlayground\Domain\Value\ContactPerson" />
         <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="pitch" index-by="id"/>
     </entity>
 </doctrine-mapping>

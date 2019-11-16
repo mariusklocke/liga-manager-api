@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Domain\Event;
 
-use HexagonalPlayground\Domain\ContactPerson;
+use HexagonalPlayground\Domain\Value\ContactPerson;
 
 class PitchContactUpdated extends Event
 {

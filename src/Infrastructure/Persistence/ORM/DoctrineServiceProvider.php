@@ -46,7 +46,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 Environment::get('APP_HOME') . "/config/doctrine/Domain"
                     => "HexagonalPlayground\\Domain",
                 Environment::get('APP_HOME') . "/config/doctrine/Domain/Event"
-                    => "HexagonalPlayground\\Domain\\Event"
+                    => "HexagonalPlayground\\Domain\\Event",
+                Environment::get('APP_HOME') . "/config/doctrine/Domain/Value"
+                => "HexagonalPlayground\\Domain\\Value"
             ]);
             $driver->setGlobalBasename('global');
             $config->setMetadataDriverImpl($driver);

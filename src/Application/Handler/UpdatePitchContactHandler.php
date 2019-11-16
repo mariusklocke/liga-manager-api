@@ -6,8 +6,8 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
-use HexagonalPlayground\Domain\ContactPerson;
 use HexagonalPlayground\Domain\Pitch;
+use HexagonalPlayground\Domain\Value\ContactPerson;
 
 class UpdatePitchContactHandler
 {

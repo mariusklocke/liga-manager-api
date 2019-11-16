@@ -10,6 +10,7 @@ use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Event\RankingPenaltyAdded;
 use HexagonalPlayground\Domain\Event\RankingPenaltyRemoved;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Value\MatchResult;
 
 class Ranking
 {

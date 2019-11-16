@@ -9,6 +9,7 @@ use HexagonalPlayground\Domain\Event\TeamContactUpdated;
 use HexagonalPlayground\Domain\Event\TeamCreated;
 use HexagonalPlayground\Domain\Event\TeamRenamed;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Value\ContactPerson;
 
 class Team extends Entity
 {

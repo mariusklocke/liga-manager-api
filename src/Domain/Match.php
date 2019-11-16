@@ -11,6 +11,7 @@ use HexagonalPlayground\Domain\Event\MatchResultSubmitted;
 use HexagonalPlayground\Domain\Event\MatchScheduled;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\Uuid;
+use HexagonalPlayground\Domain\Value\MatchResult;
 
 class Match extends Entity
 {

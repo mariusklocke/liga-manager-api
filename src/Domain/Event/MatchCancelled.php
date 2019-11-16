@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain\Event;
 
-use HexagonalPlayground\Domain\MatchResult;
+use HexagonalPlayground\Domain\Value\MatchResult;
 
 class MatchCancelled extends Event
 {
