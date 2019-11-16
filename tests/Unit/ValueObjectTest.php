@@ -2,42 +2,46 @@
 
 namespace HexagonalPlayground\Tests\Unit;
 
-use HexagonalPlayground\Domain\ContactPerson;
+use HexagonalPlayground\Domain\GeographicLocation;
 use PHPUnit\Framework\TestCase;
 
 class ValueObjectTest extends TestCase
 {
+    /** @var GeographicLocation */
+    private $waltersHouse;
+
+    /** @var GeographicLocation */
+    private $whiteHouse;
+
+    protected function setUp(): void
+    {
+        $this->waltersHouse = new GeographicLocation(-106.536548, 35.126091);
+        $this->whiteHouse = new GeographicLocation(-77.036578,38.897580);
+    }
+
     public function testCanBeCheckedForEquality(): void
     {
-        $homer = new ContactPerson('Homer', 'Simpson', '12345', 'homer@example.com');
-        self::assertTrue($homer->equals(clone $homer));
-
-        $lisa = new ContactPerson('Lisa', 'Simpson', '12345', 'lisa@example.com');
-        self::assertFalse($homer->equals($lisa));
-        self::assertFalse($lisa->equals($homer));
+        self::assertTrue($this->waltersHouse->equals(clone $this->waltersHouse));
+        self::assertFalse($this->waltersHouse->equals($this->whiteHouse));
+        self::assertFalse($this->whiteHouse->equals($this->waltersHouse));
     }
 
     public function testCanBeConvertedToArray(): void
     {
-        $object = new ContactPerson('Homer', 'Simpson', '12345', 'homer@example.com');
-        $array = $object->toArray();
+        $array = $this->whiteHouse->toArray();
 
-        self::assertSame('Homer', $array['firstName']);
-        self::assertSame('Simpson', $array['lastName']);
-        self::assertSame('12345', $array['phone']);
-        self::assertSame('homer@example.com', $array['email']);
+        self::assertSame($this->whiteHouse->getLatitude(), $array['latitude']);
+        self::assertSame($this->whiteHouse->getLongitude(), $array['longitude']);
     }
 
     public function testCanBeIterated(): void
     {
-        $object = new ContactPerson('Homer', 'Simpson', '12345', 'homer@example.com');
-        $iterator = $object->getIterator();
+        $values = $this->whiteHouse->toArray();
+        $properties = array_keys($values);
 
-        $array = iterator_to_array($iterator);
-
-        self::assertSame('Homer', $array['firstName']);
-        self::assertSame('Simpson', $array['lastName']);
-        self::assertSame('12345', $array['phone']);
-        self::assertSame('homer@example.com', $array['email']);
+        foreach ($this->whiteHouse->getIterator() as $key => $value) {
+            self::assertTrue(in_array($key, $properties));
+            self::assertSame($values[$key], $value);
+        }
     }
 }
