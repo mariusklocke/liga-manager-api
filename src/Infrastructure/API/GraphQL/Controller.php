@@ -43,7 +43,7 @@ class Controller
     {
         $parsedBody = $request->getParsedBody();
         $query = $parsedBody['query'] ?? null;
-        $variables = $parsedBody['variables'] ?? null;
+        $variables = $parsedBody['variables'] ?? [];
 
         TypeAssert::assertString($query, 'query');
         TypeAssert::assertArray($variables, 'variables');

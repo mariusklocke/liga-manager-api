@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Error\Error;
 use GraphQL\Error\FormattedError;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -47,7 +47,6 @@ class ErrorHandler
             }
 
             $formatted[] = FormattedError::createFromException($error);
-
         }
 
         $this->logger->notice('Handling exception in GraphQL library', [
@@ -59,11 +58,13 @@ class ErrorHandler
     }
 
     /**
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      * @return array
      */
-    private function getRequestContext(RequestInterface $request): array
+    private function getRequestContext(ServerRequestInterface $request): array
     {
+        $body = $request->getParsedBody();
+
         $headers = [];
         foreach (self::$loggableHeaders as $headerName) {
             $headers[$headerName] = $request->getHeader($headerName);
@@ -73,7 +74,10 @@ class ErrorHandler
             'httpVersion' => $request->getProtocolVersion(),
             'method' => $request->getMethod(),
             'uri' => $request->getUri()->withUserInfo('', '')->__toString(),
-            'headers' => $headers
+            'headers' => $headers,
+            'body' => [
+                'query' => $body['query']
+            ]
         ];
     }
 }
