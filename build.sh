@@ -31,10 +31,19 @@ if [[ $1 = "-c" ]]; then
     # Build image with xdebug
     docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG-xdebug --build-arg XDEBUG=1 .
 
-    # Run tests with coverage & upload coverage report to coveralls.io
-    docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} -e TRAVIS -e TRAVIS_JOB_ID \
-        mklocke/liga-manager-api:${TAG}-xdebug sh -c \
-        "bin/init-db.sh && tools/phpunit.phar --coverage-clover /tmp/clover.xml && tools/php-coveralls.phar -x /tmp/clover.xml -o /tmp/coveralls.json"
+    # Create temporary volume
+    docker volume create tmp-vol
+
+    # Run tests with coverage
+    docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} -v tmp-vol:/tmp \
+        mklocke/liga-manager-api:${TAG}-xdebug sh -c "bin/init-db.sh && tools/phpunit.phar --coverage-clover /tmp/clover.xml"
+
+    # Upload coverage data
+    docker run --rm -v $PWD:/var/www/api -v tmp-vol:/tmp -e TRAVIS -e TRAVIS_JOB_ID \
+        kielabokkie/coveralls-phpcov sh -c "cd /var/www/api && php-coveralls -v -x /tmp/clover.xml -o /tmp/coveralls.json"
+
+    # Remove temporary volume
+    docker volume rm tmp-vol
 fi
 
 # Cleanup
