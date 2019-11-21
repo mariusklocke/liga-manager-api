@@ -2,3 +2,5 @@
 *.phar
 .env
 docker/_volumes
+.travis.yml
+build.sh

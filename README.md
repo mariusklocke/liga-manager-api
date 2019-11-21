@@ -22,9 +22,9 @@ To setup your `.env` file follow the instructions given from
 $ docker-compose exec php bin/console.php app:setup
 ```
 
-To initialize the database you need to run `bin/install.sh`
+To initialize the database you need to run `bin/init-db.sh`
 ```bash
-$ docker-compose exec php bin/install.sh
+$ docker-compose exec php bin/init-db.sh
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)

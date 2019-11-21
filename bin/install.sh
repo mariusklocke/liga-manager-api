@@ -1,10 +1,11 @@
 #!/bin/sh
-set -ex
 
-php vendor/bin/doctrine orm:schema-tool:drop --force
-php vendor/bin/doctrine dbal:run-sql "DROP TABLE IF EXISTS doctrine_migration_versions;"
-php vendor/bin/doctrine-migrations migrations:migrate -n
+mkdir -p tools
+wget -O tools/composer.phar https://github.com/composer/composer/releases/download/1.9.1/composer.phar
+wget -O tools/phpunit.phar https://phar.phpunit.de/phpunit-8.4.3.phar
+wget -O tools/php-coveralls.phar https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar
+chmod +x tools/*.phar
 
-if [ "$ADMIN_EMAIL " != "" ] && [ "$ADMIN_PASSWORD" != "" ]; then
-    php bin/console.php app:create-user --email=$ADMIN_EMAIL --password=$ADMIN_PASSWORD
+if [ -x "$(command -v php)" ]; then
+  tools/composer.phar install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
 fi

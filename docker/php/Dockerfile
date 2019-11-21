@@ -20,7 +20,7 @@ ENV PHPIZE_DEPS \
     re2c
 
 # persistent / runtime deps
-RUN apk add --no-cache --virtual .persistent-deps gmp
+RUN apk add --no-cache --virtual .persistent-deps gmp ncurses gnupg
 
 # Install PHP extensions
 RUN set -xe \
@@ -37,11 +37,6 @@ RUN set -xe \
     && apk del .build-deps \
     && rm -rf /tmp/*
 
-# Install PHAR tools
-RUN wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit-8.2.5.phar \
-    && wget -O /usr/local/bin/composer https://getcomposer.org/composer.phar \
-    && chmod +x /usr/local/bin/phpunit /usr/local/bin/composer
-
 # Configure PHP
 ARG XDEBUG=0
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
@@ -55,16 +50,10 @@ COPY docker/php/docker-php-entrypoint.sh /usr/local/bin/docker-php-entrypoint
 ENV APP_HOME="/var/www/api"
 RUN mkdir -p ${APP_HOME}
 WORKDIR ${APP_HOME}
-COPY migrations.php composer.json composer.lock phpunit.xml ./
-RUN composer install --prefer-dist --no-dev --optimize-autoloader --ignore-platform-reqs
-COPY bin bin
-RUN chmod +x bin/*
-COPY config config
-COPY migrations migrations
-COPY public public
-COPY src src
-COPY templates templates
-COPY tests tests
+COPY . .
+RUN chmod +x bin/* \
+    && bin/install.sh \
+    && rm -r docker
 
 USER www-data
 CMD php-fpm
