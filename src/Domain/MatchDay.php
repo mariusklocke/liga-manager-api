@@ -9,13 +9,9 @@ use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Event\MatchDayRescheduled;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Util\Uuid;
 
-class MatchDay
+class MatchDay extends Entity
 {
-    /** @var string */
-    private $id;
-
     /** @var Season|null */
     private $season;
 
@@ -42,10 +38,10 @@ class MatchDay
      */
     public function __construct(Competition $competition, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate)
     {
+        parent::__construct();
         Assert::true($startDate <= $endDate, 'Invalid date range: Start date cannot be after end date');
 
         $this->setCompetition($competition);
-        $this->id = Uuid::create();
         $this->number = $number;
         $this->startDate = $startDate;
         $this->endDate = $endDate;

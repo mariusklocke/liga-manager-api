@@ -31,10 +31,9 @@ class RankingPenalty extends Entity
      */
     public function __construct(string $id, Ranking $ranking, Team $team, string $reason, int $points)
     {
+        parent::__construct($id);
         Assert::true($points > 0, 'Points on a RankingPenalty have to be greater than 0');
         Assert::minLength($reason, 1, 'Reason on a RankingPenalty cannot be empty string');
-
-        $this->setId($id);
 
         $this->ranking   = $ranking;
         $this->team      = $team;

@@ -27,9 +27,9 @@ class Pitch extends Entity
 
     public function __construct(string $id, string $label, GeographicLocation $location)
     {
+        parent::__construct($id);
         Assert::minLength($label, 1, "A pitch's label cannot be blank");
         Assert::maxLength($label, 255, "A pitch's label cannot exceed 255 characters");
-        $this->setId($id);
         $this->label = $label;
         $this->location = $location;
         $this->matches = new ArrayCollection();

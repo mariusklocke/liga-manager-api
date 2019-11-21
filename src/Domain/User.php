@@ -53,7 +53,7 @@ class User extends Entity
         string $lastName,
         string $role = self::ROLE_TEAM_MANAGER
     ) {
-        $this->setId($id);
+        parent::__construct($id);
         $this->setEmail($email);
         $this->setPassword($password);
         $this->setFirstName($firstName);

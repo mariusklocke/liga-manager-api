@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\Uuid;
 
 abstract class Entity
 {
@@ -10,20 +11,24 @@ abstract class Entity
     protected $id;
 
     /**
+     * @param string|null $id
+     */
+    public function __construct(?string $id = null)
+    {
+        if ($id !== null) {
+            Assert::minLength($id, 1, "An entity id cannot be blank");
+            $this->id = $id;
+        } else {
+            $this->id = Uuid::create();
+        }
+    }
+
+    /**
      * @return string
      */
     public function getId(): string
     {
         return $this->id;
-    }
-
-    /**
-     * @param string $id
-     */
-    protected function setId(string $id): void
-    {
-        Assert::minLength($id, 1, "An entity id cannot be blank");
-        $this->id = $id;
     }
 
     /**

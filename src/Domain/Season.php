@@ -38,9 +38,9 @@ class Season extends Competition
      */
     public function __construct(string $id, string $name)
     {
+        parent::__construct($id);
         Assert::minLength($name, 1, "A season's name cannot be blank");
         Assert::maxLength($name, 255, "A season's name cannot exceed 255 characters");
-        $this->setId($id);
         $this->name = $name;
         $this->teams = new ArrayCollection();
         $this->matchDays = new ArrayCollection();
