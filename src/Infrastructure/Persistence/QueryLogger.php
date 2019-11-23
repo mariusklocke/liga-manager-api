@@ -10,7 +10,8 @@ class QueryLogger implements SQLLogger
 {
     /** @var LoggerInterface */
     private $logger;
-    /** @var float */
+
+    /** @var float|null */
     private $startTime;
 
     public function __construct(LoggerInterface $logger)
@@ -44,7 +45,7 @@ class QueryLogger implements SQLLogger
      */
     public function stopQuery()
     {
-        if ($this->startTime > 0) {
+        if ($this->startTime !== null) {
             $time = microtime(true) - $this->startTime;
             $this->logger->info(sprintf('Finished query after %.3f seconds', $time));
         }
