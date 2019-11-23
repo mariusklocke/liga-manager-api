@@ -31,7 +31,7 @@ class User extends Entity
     /** @var DateTimeImmutable|null */
     private $lastTokenInvalidation;
 
-    /** @var Collection|Team[] */
+    /** @var Collection */
     private $teams;
 
     /** @var string */
@@ -99,20 +99,12 @@ class User extends Entity
     }
 
     /**
-     * @return bool
-     */
-    private function hasPassword(): bool
-    {
-        return $this->password !== null;
-    }
-
-    /**
      * @param string $password
      * @return bool
      */
     public function verifyPassword(string $password): bool
     {
-        if (!$this->hasPassword()) {
+        if ($this->password === null) {
             return false;
         }
         return password_verify($password, $this->password);

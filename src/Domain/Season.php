@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Event\Publisher;
@@ -17,7 +18,7 @@ class Season extends Competition
     const STATE_PROGRESS = 'progress';
     const STATE_ENDED = 'ended';
 
-    /** @var Collection|Team[] */
+    /** @var Collection */
     private $teams;
 
     /** @var Ranking|null */
@@ -99,6 +100,7 @@ class Season extends Competition
     {
         Assert::false($this->hasStarted(), 'Cannot remove matches from a season which has already started');
         foreach ($this->matchDays as $matchDay) {
+            /** @var MatchDay $matchDay */
             $matchDay->clearMatches();
         }
         $this->matchDays->clear();
@@ -159,7 +161,7 @@ class Season extends Competition
         Publisher::getInstance()->publish(SeasonEnded::create($this->id));
     }
 
-    public function createMatchDay(int $number, \DateTimeImmutable $startDate, \DateTimeImmutable $endDate): MatchDay
+    public function createMatchDay(int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate): MatchDay
     {
         $matchDay = parent::createMatchDay($number, $startDate, $endDate);
         $this->updateMatchDayCount();

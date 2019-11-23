@@ -20,10 +20,10 @@ class Ranking
     /** @var DateTimeImmutable|null */
     private $updatedAt;
 
-    /** @var Collection|RankingPosition[] */
+    /** @var Collection */
     private $positions;
 
-    /** @var Collection|RankingPenalty[] */
+    /** @var Collection */
     private $penalties;
 
     /**
@@ -99,6 +99,7 @@ class Ranking
     {
         Assert::true($this->season->isInProgress(), 'Cannot remove a penalty from a season which is not in progress');
 
+        /** @var RankingPenalty $penalty */
         $penalty = $this->penalties->get($id);
         Assert::false($penalty === null, 'Cannot find ranking penalty');
 
@@ -125,7 +126,7 @@ class Ranking
             return $p2->compare($p1);
         });
         $index = 1;
-        /** @var RankingPosition $previous */
+        /** @var RankingPosition|null $previous */
         $previous = null;
         foreach ($sortedArray as $position) {
             if (null !== $previous && $position->compare($previous) === RankingPosition::COMPARISON_EQUAL) {
