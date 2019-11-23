@@ -11,6 +11,7 @@ use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
+use HexagonalPlayground\Domain\Util\StringUtils;
 
 class BaseRepository extends EntityRepository implements
     MatchRepositoryInterface,
@@ -27,8 +28,9 @@ class BaseRepository extends EntityRepository implements
     {
         $entity = parent::find($id, $lockMode, $lockVersion);
         if (null === $entity) {
+            $type = StringUtils::stripNamespace($this->_class->getName());
             throw new NotFoundException(
-                sprintf('Cannot find %s with ID %s', $this->stripNamespace($this->_class->getName()), $id)
+                sprintf('Cannot find %s with ID %s', $type, $id)
             );
         }
 
@@ -49,16 +51,5 @@ class BaseRepository extends EntityRepository implements
     public function delete($entity): void
     {
         $this->_em->remove($entity);
-    }
-
-    /**
-     * Strips the namespace part from a fully qualified class name
-     *
-     * @param string $className fully qualified class name
-     * @return string
-     */
-    private function stripNamespace(string $className) : string
-    {
-        return substr($className, strrpos($className, '\\') + 1);
     }
 }
