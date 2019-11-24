@@ -1,0 +1,54 @@
+POST https://localhost/api/graphql
+Authorization: Bearer {{jwt}}
+Content-Type: application/json
+
+{
+  "query": "mutation scheduleAllMatchesForSeason ($season_id: String!, $match_appointments: [MatchAppointment]!) { scheduleAllMatchesForSeason (season_id: $season_id, match_appointments: $match_appointments)}",
+  "variables": {
+    "season_id": "293db031-b77b-4a7e-be1a-8cd87287f7c4",
+    "match_appointments": [
+      {
+        "kickoff": "2019-11-30T10:00:00+00:00",
+        "unavailable_team_ids": ["d589fe2c-ef5b-4cb0-93d0-b1b885514b6e"],
+        "pitch_id": "a9778ee6-8625-461f-b8e2-b35a48ceba98"
+      },
+      {
+        "kickoff": "2019-11-30T10:00:00+00:00",
+        "unavailable_team_ids": ["d589fe2c-ef5b-4cb0-93d0-b1b885514b6e"],
+        "pitch_id": "d640244e-584d-47e1-bacb-418d8ecba3d5"
+      },
+      {
+        "kickoff": "2019-11-30T11:30:00+00:00",
+        "unavailable_team_ids": ["d589fe2c-ef5b-4cb0-93d0-b1b885514b6e"],
+        "pitch_id": "d640244e-584d-47e1-bacb-418d8ecba3d5"
+      },
+      {
+        "kickoff": "2019-12-01T11:00:00+00:00",
+        "unavailable_team_ids": [],
+        "pitch_id": "a9778ee6-8625-461f-b8e2-b35a48ceba98"
+      },
+      {
+        "kickoff": "2019-12-01T19:30:00+00:00",
+        "unavailable_team_ids": ["8445a2f0-eef7-4d77-aa48-950bf5a9477c"],
+        "pitch_id": "a9778ee6-8625-461f-b8e2-b35a48ceba98"
+      },
+      {
+        "kickoff": "2019-12-01T14:00:00+00:00",
+        "unavailable_team_ids": [],
+        "pitch_id": "d640244e-584d-47e1-bacb-418d8ecba3d5"
+      },
+      {
+        "kickoff": "2019-12-01T18:00:00+00:00",
+        "unavailable_team_ids": ["8445a2f0-eef7-4d77-aa48-950bf5a9477c"],
+        "pitch_id": "d640244e-584d-47e1-bacb-418d8ecba3d5"
+      },
+      {
+        "kickoff": "2019-12-01T19:30:00+00:00",
+        "unavailable_team_ids": ["8445a2f0-eef7-4d77-aa48-950bf5a9477c"],
+        "pitch_id": "d640244e-584d-47e1-bacb-418d8ecba3d5"
+      }
+    ]
+  }
+}
+
+###
