@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Event\MatchDayRescheduled;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Value\MatchResult;
 
 class MatchDay extends Entity
 {
@@ -124,6 +125,32 @@ class MatchDay extends Entity
     public function getEndDate(): DateTimeImmutable
     {
         return $this->endDate;
+    }
+
+    /**
+     * @param string $homeTeamId
+     * @param string $guestTeamId
+     * @param MatchResult $matchResult
+     */
+    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
+    {
+        $competition = $this->getCompetition();
+        if ($competition instanceof Season) {
+            $competition->addResult($homeTeamId, $guestTeamId, $matchResult);
+        }
+    }
+
+    /**
+     * @param string $homeTeamId
+     * @param string $guestTeamId
+     * @param MatchResult $matchResult
+     */
+    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
+    {
+        $competition = $this->getCompetition();
+        if ($competition instanceof Season) {
+            $competition->revertResult($homeTeamId, $guestTeamId, $matchResult);
+        }
     }
 
     /**

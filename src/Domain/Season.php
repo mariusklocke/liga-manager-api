@@ -11,6 +11,7 @@ use HexagonalPlayground\Domain\Event\SeasonCreated;
 use HexagonalPlayground\Domain\Event\SeasonEnded;
 use HexagonalPlayground\Domain\Event\SeasonStarted;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Value\MatchResult;
 
 class Season extends Competition
 {
@@ -199,6 +200,26 @@ class Season extends Competition
             $matches = array_merge($matches, $matchDay->getMatches());
         }
         return $matches;
+    }
+
+    /**
+     * @param string $homeTeamId
+     * @param string $guestTeamId
+     * @param MatchResult $matchResult
+     */
+    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
+    {
+        $this->getRanking()->addResult($homeTeamId, $guestTeamId, $matchResult);
+    }
+
+    /**
+     * @param string $homeTeamId
+     * @param string $guestTeamId
+     * @param MatchResult $matchResult
+     */
+    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
+    {
+        $this->getRanking()->revertResult($homeTeamId, $guestTeamId, $matchResult);
     }
 
     private function updateMatchDayCount(): void

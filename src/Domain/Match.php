@@ -10,7 +10,6 @@ use HexagonalPlayground\Domain\Event\MatchLocated;
 use HexagonalPlayground\Domain\Event\MatchResultSubmitted;
 use HexagonalPlayground\Domain\Event\MatchScheduled;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Util\Uuid;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
 class Match extends Entity
@@ -149,14 +148,11 @@ class Match extends Entity
      */
     private function setResult(?MatchResult $matchResult): void
     {
-        $competition = $this->matchDay->getCompetition();
-        if ($competition instanceof Season) {
-            if ($this->matchResult !== null) {
-                $competition->getRanking()->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
-            }
-            if ($matchResult !== null) {
-                $competition->getRanking()->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
-            }
+        if ($this->matchResult !== null) {
+            $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+        }
+        if ($matchResult !== null) {
+            $this->matchDay->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         }
         $this->matchResult = $matchResult;
     }
