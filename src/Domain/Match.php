@@ -41,13 +41,14 @@ class Match extends Entity
     /**
      * Create a new match
      *
+     * @param string|null $id
      * @param MatchDay $matchDay
      * @param Team $homeTeam
      * @param Team $guestTeam
      */
-    public function __construct(MatchDay $matchDay, Team $homeTeam, Team $guestTeam)
+    public function __construct(?string $id, MatchDay $matchDay, Team $homeTeam, Team $guestTeam)
     {
-        parent::__construct();
+        parent::__construct($id);
         Assert::false($homeTeam->equals($guestTeam), 'A team cannot play against itself');
         $this->matchDay = $matchDay;
         $this->homeTeam = $homeTeam;

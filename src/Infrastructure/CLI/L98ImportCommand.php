@@ -3,33 +3,34 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
-use HexagonalPlayground\Application\Import\Importer;
-use HexagonalPlayground\Application\Import\L98FileParser;
-use HexagonalPlayground\Application\Import\L98TeamModel;
+use GlobIterator;
+use HexagonalPlayground\Application\Import\Executor;
+use HexagonalPlayground\Infrastructure\Filesystem\FileStream;
+use Iterator;
+use RuntimeException;
+use SplFileInfo;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Style\StyleInterface;
 
 class L98ImportCommand extends Command
 {
-    /** @var OrmTransactionWrapperInterface */
-    private $transactionWrapper;
+    /** @var Executor */
+    private $executor;
 
-    /** @var Importer */
-    private $importer;
+    /** @var TeamMapper */
+    private $teamMapper;
 
     /**
-     * @param OrmTransactionWrapperInterface $transactionWrapper
-     * @param Importer $importer
+     * @param Executor $executor
+     * @param TeamMapper $teamMapper
      */
-    public function __construct(OrmTransactionWrapperInterface $transactionWrapper, Importer $importer)
+    public function __construct(Executor $executor, TeamMapper $teamMapper)
     {
         parent::__construct();
-        $this->transactionWrapper = $transactionWrapper;
-        $this->importer = $importer;
+        $this->executor = $executor;
+        $this->teamMapper = $teamMapper;
     }
 
     protected function configure()
@@ -37,77 +38,55 @@ class L98ImportCommand extends Command
         $this
             ->setName('app:import-season')
             ->setDefinition([
-                new InputArgument('file-pattern', InputArgument::REQUIRED, 'Pattern matching a set of L98 season files')
+                new InputArgument('path', InputArgument::REQUIRED, 'Path to L98 season files (wildcards allowed)')
             ]);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $outputDecorator = new SymfonyStyle($input, $output);
-        foreach ($this->getImportFiles($input->getArgument('file-pattern')) as $fileInfo) {
-            /** @var \SplFileInfo $fileInfo */
-            $outputDecorator->writeln('Start parsing ' . $fileInfo->getPathname());
-            $this->importFile(new L98FileParser($fileInfo->getPathname()), $outputDecorator);
-            $outputDecorator->writeln('Finished importing ' . $fileInfo->getPathname());
+        $styledIo = $this->getStyledIO($input, $output);
+
+        if ($input->isInteractive()) {
+            $this->teamMapper->setStyledIo($styledIo);
         }
-        $outputDecorator->success('Import completed successfully!');
+
+        /** @var SplFileInfo $fileInfo */
+        foreach ($this->getFileIterator($input->getArgument('path')) as $fileInfo) {
+            $this->importFile($fileInfo->getPathname(), $styledIo);
+        }
+
+        $styledIo->success('Import completed successfully!');
         return 0;
     }
 
     /**
      * @param string $pattern
-     * @return \Iterator
+     * @return Iterator
      */
-    private function getImportFiles(string $pattern): \Iterator
+    private function getFileIterator(string $pattern): Iterator
     {
-        $fileIterator = new \GlobIterator($pattern);
+        $fileIterator = new GlobIterator($pattern);
         if (0 === $fileIterator->count()) {
-            throw new \RuntimeException('Cannot find files matching pattern ' . $pattern);
+            throw new RuntimeException('Cannot find files matching pattern ' . $pattern);
         }
 
         return $fileIterator;
     }
 
     /**
-     * @param L98FileParser $parser
-     * @param SymfonyStyle $outputDecorator
+     * @param string $path
+     * @param StyleInterface $styledIo
      */
-    private function importFile(L98FileParser $parser, SymfonyStyle $outputDecorator)
+    private function importFile(string $path, StyleInterface $styledIo): void
     {
-        $season = $parser->parse();
-        foreach ($season->getTeams() as $importableTeam) {
-            $this->mapTeam($outputDecorator, $importableTeam);
-        }
-        $this->transactionWrapper->transactional(function () use ($season) {
-            $this->importer->import($season, $this->getCliUser());
-        });
-    }
+        $styledIo->text('Started processing ' . $path);
 
-    /**
-     * @param SymfonyStyle $outputDecorator
-     * @param L98TeamModel $importableTeam
-     */
-    private function mapTeam(SymfonyStyle $outputDecorator, L98TeamModel $importableTeam)
-    {
-        $recommendedTeams = $this->importer->getTeamMapper()->getRecommendations($importableTeam);
-        if (empty($recommendedTeams)) {
-            return;
-        }
+        $this->executor->__invoke(
+            new FileStream($path),
+            $this->getCliUser(),
+            $this->teamMapper
+        );
 
-        $choices = [];
-        foreach ($recommendedTeams as $index => $recommendedTeam) {
-            $choices[$index] = $recommendedTeam->getName();
-        }
-        $choices['*'] = '--- Import as a new team ---';
-        $choiceQuestion = new ChoiceQuestion('Please choose how to map ' . $importableTeam->getName(), $choices);
-        $answer = $outputDecorator->askQuestion($choiceQuestion);
-        if (isset($recommendedTeams[$answer])) {
-            $this->importer->getTeamMapper()->map($importableTeam, $recommendedTeams[$answer]);
-        } else {
-            $selectedTeamIndex = array_search($answer, $choices);
-            if ($selectedTeamIndex !== false && isset($recommendedTeams[$selectedTeamIndex])) {
-                $this->importer->getTeamMapper()->map($importableTeam, $recommendedTeams[$selectedTeamIndex]);
-            }
-        }
+        $styledIo->text('Finished processing ' . $path);
     }
 }

@@ -24,13 +24,23 @@ class CliTest extends TestCase
         $tester->setInputs(['mary.poppins@example.com', '123456', 'Mary', 'Poppins', 'admin']);
 
         self::assertExecutionSuccess($tester->execute([]));
-
     }
 
     public function testLoadingFixtures(): void
     {
         $tester = $this->getCommandTester('app:load-fixtures');
         self::assertExecutionSuccess($tester->execute([]));
+    }
+
+    public function testSeasonsCanBeImportedFromLegacyFiles(): void
+    {
+        $tester = $this->getCommandTester('app:import-season');
+
+        $exitCode = $tester->execute(['file-pattern' => __DIR__ . '/data/*.l98'], ['interactive' => false]);
+        $output = $tester->getDisplay();
+
+        self::assertExecutionSuccess($exitCode);
+        self::assertStringContainsString('success', $output);
     }
 
     private function getCommandTester(string $commandName): CommandTester
@@ -41,10 +51,5 @@ class CliTest extends TestCase
     private static function assertExecutionSuccess(int $exitCode): void
     {
         self::assertEquals(0, $exitCode);
-    }
-
-    private static function assertExecutionFailed(int $exitCode): void
-    {
-        self::assertNotEquals(0, $exitCode);
     }
 }

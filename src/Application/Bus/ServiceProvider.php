@@ -27,6 +27,8 @@ class ServiceProvider implements ServiceProviderInterface
         $container['commandBus'] = function() use ($container) {
             return new CommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
         };
-
+        $container[BatchCommandBus::class] = function () use ($container) {
+            return new BatchCommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);
+        };
     }
 }

@@ -16,7 +16,7 @@ interface MatchDayRepositoryInterface
     public function find($id);
 
     /**
-     * @param MatchDay $match
+     * @param MatchDay $matchDay
      */
-    public function save($match): void;
+    public function save($matchDay): void;
 }

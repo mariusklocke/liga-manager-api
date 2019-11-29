@@ -1,12 +1,10 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Bus;
 
-use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 
-class CommandBus
+class BatchCommandBus
 {
     /** @var HandlerResolver */
     private $resolver;
@@ -25,13 +23,15 @@ class CommandBus
     }
 
     /**
-     * @param CommandInterface $command
+     * @param CommandQueue $commandQueue
      */
-    public function execute(CommandInterface $command): void
+    public function execute(CommandQueue $commandQueue): void
     {
-        $handler = $this->resolver->resolve($command);
-        $this->transactionWrapper->transactional(function() use ($handler, $command) {
-            $handler($command);
+        $this->transactionWrapper->transactional(function () use ($commandQueue) {
+            foreach ($commandQueue->getIterator() as $command) {
+                $handler = $this->resolver->resolve($command);
+                $handler($command);
+            }
         });
     }
 }

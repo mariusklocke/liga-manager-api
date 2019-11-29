@@ -162,9 +162,16 @@ class Season extends Competition
         Publisher::getInstance()->publish(SeasonEnded::create($this->id));
     }
 
-    public function createMatchDay(int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate): MatchDay
+    /**
+     * @param string|null $id
+     * @param int $number
+     * @param DateTimeImmutable $startDate
+     * @param DateTimeImmutable $endDate
+     * @return MatchDay
+     */
+    public function createMatchDay(?string $id, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate): MatchDay
     {
-        $matchDay = parent::createMatchDay($number, $startDate, $endDate);
+        $matchDay = parent::createMatchDay($id, $number, $startDate, $endDate);
         $this->updateMatchDayCount();
         return $matchDay;
     }
@@ -187,19 +194,6 @@ class Season extends Competition
     public function getMatchDays(): array
     {
         return $this->matchDays->toArray();
-    }
-
-    /**
-     * @return Match[]
-     */
-    public function getMatches(): array
-    {
-        $matches = [];
-        foreach ($this->matchDays as $matchDay) {
-            /** @var MatchDay $matchDay */
-            $matches = array_merge($matches, $matchDay->getMatches());
-        }
-        return $matches;
     }
 
     /**

@@ -5,8 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
-use HexagonalPlayground\Application\Import\Importer;
+use HexagonalPlayground\Application\Import\Executor;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
@@ -34,8 +33,8 @@ class ServiceProvider implements ServiceProviderInterface
                 },
                 'app:import-season' => function () use ($container) {
                     return new L98ImportCommand(
-                        $container[OrmTransactionWrapperInterface::class],
-                        $container[Importer::class]
+                        $container[Executor::class],
+                        $container[TeamMapper::class]
                     );
                 },
                 'app:send-test-mail' => function () use ($container) {
@@ -48,6 +47,9 @@ class ServiceProvider implements ServiceProviderInterface
                     return new SetupCommand();
                 }
             ]);
+        };
+        $container[TeamMapper::class] = function () use ($container) {
+            return new TeamMapper($container['orm.repository.team']);
         };
     }
 }

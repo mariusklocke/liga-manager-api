@@ -36,7 +36,7 @@ class MatchFactory
 
         $matchDayNumber = 1;
         foreach ($matchDayDates as $datePeriod) {
-            $matchDay = $season->createMatchDay($matchDayNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
+            $matchDay = $season->createMatchDay(null, $matchDayNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
             $this->generateMatchesForMatchDay($matchDay, $teams);
             $matchDayNumber++;
         }
@@ -62,7 +62,7 @@ class MatchFactory
                     $homeTeam = $sumIsEven ? $teams[$k-1] : $teams[$l-1];
                     $guestTeam = $sumIsEven ? $teams[$l-1] : $teams[$k-1];
                     if (null !== $homeTeam && null !== $guestTeam) {
-                        $matchDay->addMatch(new Match($matchDay, $homeTeam, $guestTeam));
+                        $matchDay->createMatch(null, $homeTeam, $guestTeam);
                     }
                     unset($teams[$k-1]);
                     unset($teams[$l-1]);
@@ -81,7 +81,7 @@ class MatchFactory
         $homeTeam = $l+1 > $matchDayCount/2 ? $teams[$k] : $teams[$l];
         $guestTeam = $l+1 > $matchDayCount/2 ? $teams[$l] : $teams[$k];
         if (null !== $homeTeam && null !== $guestTeam) {
-            $matchDay->addMatch(new Match($matchDay, $homeTeam, $guestTeam));
+            $matchDay->createMatch(null, $homeTeam, $guestTeam);
         }
     }
 }

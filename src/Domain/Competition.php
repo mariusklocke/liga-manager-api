@@ -16,15 +16,16 @@ abstract class Competition extends Entity
     protected $matchDays;
 
     /**
+     * @param string|null $id
      * @param int $number
      * @param DateTimeImmutable $startDate
      * @param DateTimeImmutable $endDate
      * @return MatchDay
      */
-    public function createMatchDay(int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate): MatchDay
+    public function createMatchDay(?string $id, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate): MatchDay
     {
         Assert::false($this->matchDays->containsKey($number), 'Cannot create match day. Number already exists');
-        $this->matchDays[$number] = new MatchDay($this, $number, $startDate, $endDate);
+        $this->matchDays[$number] = new MatchDay($id, $this, $number, $startDate, $endDate);
 
         return $this->matchDays[$number];
     }

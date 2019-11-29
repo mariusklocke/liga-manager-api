@@ -152,5 +152,14 @@ class ServiceProvider implements ServiceProviderInterface
                 $container['orm.repository.pitch']
             );
         };
+        $container[CreateMatchHandler::class] = function () use ($container) {
+            return new CreateMatchHandler(
+                $container['orm.repository.matchDay'],
+                $container['orm.repository.team']
+            );
+        };
+        $container[CreateMatchDayForSeasonHandler::class] = function () use ($container) {
+            return new CreateMatchDayForSeasonHandler($container['orm.repository.season']);
+        };
     }
 }

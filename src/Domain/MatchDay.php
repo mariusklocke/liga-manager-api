@@ -32,14 +32,15 @@ class MatchDay extends Entity
     private $matches;
 
     /**
+     * @param string|null $id
      * @param Competition $competition
      * @param int $number
      * @param DateTimeImmutable $startDate
      * @param DateTimeImmutable $endDate
      */
-    public function __construct(Competition $competition, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate)
+    public function __construct(?string $id, Competition $competition, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate)
     {
-        parent::__construct();
+        parent::__construct($id);
         Assert::true($startDate <= $endDate, 'Invalid date range: Start date cannot be after end date');
 
         $this->setCompetition($competition);
@@ -49,18 +50,15 @@ class MatchDay extends Entity
         $this->matches = new ArrayCollection();
     }
 
-    public function addMatch(Match $match): void
-    {
-        $this->matches[] = $match;
-    }
-
     /**
-     * @param Match $match
-     * @return bool
+     * @param string|null $id
+     * @param Team $homeTeam
+     * @param Team $guestTeam
      */
-    public function hasMatch(Match $match): bool
+    public function createMatch(?string $id, Team $homeTeam, Team $guestTeam): void
     {
-        return $this->matches->contains($match);
+        $match = new Match($id, $this, $homeTeam, $guestTeam);
+        $this->matches[] = $match;
     }
 
     /**
