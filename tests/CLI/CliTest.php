@@ -36,7 +36,7 @@ class CliTest extends TestCase
     {
         $tester = $this->getCommandTester('app:import-season');
 
-        $exitCode = $tester->execute(['file-pattern' => __DIR__ . '/data/*.l98'], ['interactive' => false]);
+        $exitCode = $tester->execute(['path' => __DIR__ . '/data/*.l98'], ['interactive' => false]);
         $output = $tester->getDisplay();
 
         self::assertExecutionSuccess($exitCode);
