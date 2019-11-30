@@ -29,12 +29,8 @@ class StringUtils
      */
     public static function stripNamespace(string $className): string
     {
-        $lastSlashPosition = strrpos($className, '\\');
+        $pos = strrpos($className, '\\');
 
-        if (false === $lastSlashPosition) {
-            return $className;
-        }
-
-        return substr($className, $lastSlashPosition + 1);
+        return false !== $pos ? substr($className, $pos + 1) : $className;
     }
 }
