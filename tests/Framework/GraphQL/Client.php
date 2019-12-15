@@ -431,9 +431,11 @@ GRAPHQL;
         );
 
         $body = json_decode($response->getBody()->__toString());
+
         if (isset($body->errors) && is_array($body->errors) && count($body->errors) > 0) {
             throw new Exception($body->errors);
         }
+
         return $body->data;
     }
 

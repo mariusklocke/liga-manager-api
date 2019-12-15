@@ -10,7 +10,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Infrastructure\API\JsonEncoder;
+use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -22,6 +22,8 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 class AuthController
 {
+    use JsonEncodingTrait;
+
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
 
@@ -45,9 +47,6 @@ class AuthController
 
     /** @var TokenFactoryInterface */
     private $tokenFactory;
-
-    /** @var JsonEncoder */
-    private $jsonEncoder;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
@@ -91,7 +90,7 @@ class AuthController
 
         $this->optionsStore->save($email, $options);
 
-        return $this->jsonEncoder->encode($response->withStatus(200), $options);
+        return $this->toJson($response->withStatus(200), $options);
     }
 
     /**
@@ -146,7 +145,7 @@ class AuthController
         $response = $response->withStatus(200)
             ->withHeader('X-Token', $token->encode());
 
-        return $this->jsonEncoder->encode($response, $user->getPublicProperties());
+        return $this->toJson($response, $user->getPublicProperties());
     }
 
     /**

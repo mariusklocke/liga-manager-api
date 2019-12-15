@@ -4,9 +4,14 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use Psr\Http\Message\ResponseInterface;
 
-class JsonEncoder
+trait JsonEncodingTrait
 {
-    public function encode(ResponseInterface $response, $data): ResponseInterface
+    /**
+     * @param ResponseInterface $response
+     * @param mixed $data
+     * @return ResponseInterface
+     */
+    public function toJson(ResponseInterface $response, $data): ResponseInterface
     {
         $response->getBody()->write(json_encode($data));
 

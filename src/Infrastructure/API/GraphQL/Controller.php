@@ -6,12 +6,14 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Infrastructure\API\JsonEncoder;
+use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class Controller
 {
+    use JsonEncodingTrait;
+
     /** @var AppContext */
     private $appContext;
 
@@ -20,9 +22,6 @@ class Controller
 
     /** @var ErrorHandler */
     private $errorHandler;
-
-    /** @var JsonEncoder */
-    private $jsonEncoder;
 
     /**
      * @param AppContext $appContext
@@ -34,7 +33,6 @@ class Controller
         $this->appContext = $appContext;
         $this->schema = $schema;
         $this->errorHandler = $errorHandler;
-        $this->jsonEncoder = new JsonEncoder();
     }
 
     /**
@@ -56,6 +54,6 @@ class Controller
 
         $response = $response->withStatus(count($result->errors) ? 400 : 200);
 
-        return $this->jsonEncoder->encode($response, $result->toArray());
+        return $this->toJson($response, $result->toArray());
     }
 }

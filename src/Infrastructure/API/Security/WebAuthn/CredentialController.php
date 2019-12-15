@@ -7,7 +7,7 @@ use Exception;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Infrastructure\API\JsonEncoder;
+use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -21,6 +21,7 @@ use Webauthn\PublicKeyCredentialRpEntity;
 class CredentialController
 {
     use UserAware;
+    use JsonEncodingTrait;
 
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
@@ -36,9 +37,6 @@ class CredentialController
 
     /** @var CreationOptionsFactory */
     private $creationOptionsFactory;
-
-    /** @var JsonEncoder */
-    private $jsonEncoder;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
@@ -76,7 +74,7 @@ class CredentialController
 
         $this->creationOptionsStore->save($user->getId(), $options);
 
-        return $this->jsonEncoder->encode($response->withStatus(200), $options);
+        return $this->toJson($response->withStatus(200), $options);
     }
 
     /**
@@ -132,7 +130,7 @@ class CredentialController
 
         $credentials = $this->credentialRepository->findAllForUserEntity($user);
 
-        return $this->jsonEncoder->encode($response->withStatus(200), $credentials);
+        return $this->toJson($response->withStatus(200), $credentials);
     }
 
     /**
@@ -176,6 +174,6 @@ class CredentialController
             $this->credentialRepository->delete($credential);
         }
 
-        return $this->jsonEncoder->encode($response->withStatus(200), ['count' => count($credentials)]);
+        return $this->toJson($response->withStatus(200), ['count' => count($credentials)]);
     }
 }
