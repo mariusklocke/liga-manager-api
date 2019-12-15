@@ -425,7 +425,7 @@ GRAPHQL;
     private function request(string $query, array $variables = [])
     {
         $response = $this->slimClient->post(
-            '/api/graphql',
+            '/api/graphql/',
             ['query' => $query, 'variables' => $variables],
             $this->headers
         );
