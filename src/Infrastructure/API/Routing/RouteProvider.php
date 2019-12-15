@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Routing;
 
-use GraphQL\Type\Schema;
-use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Controller as GraphQLController;
-use HexagonalPlayground\Infrastructure\API\GraphQL\ErrorHandler;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\AuthController;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\CredentialController;
@@ -79,9 +76,7 @@ class RouteProvider
             });
 
             $group->post('/graphql', function ($request, $response, $args) use ($container) {
-                $appContext = new AppContext($request, $container);
-                $errorHandler = new ErrorHandler($container->get('logger'), $appContext);
-                $controller = new GraphQLController($appContext, $container->get(Schema::class), $errorHandler);
+                $controller = new GraphQLController($container);
 
                 return $controller->query($request, $response);
             })->add($auth);

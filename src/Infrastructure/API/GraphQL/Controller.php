@@ -7,6 +7,7 @@ use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -14,25 +15,15 @@ class Controller
 {
     use JsonEncodingTrait;
 
-    /** @var AppContext */
-    private $appContext;
-
-    /** @var Schema */
-    private $schema;
-
-    /** @var ErrorHandler */
-    private $errorHandler;
+    /** @var ContainerInterface */
+    private $container;
 
     /**
-     * @param AppContext $appContext
-     * @param Schema $schema
-     * @param ErrorHandler $errorHandler
+     * @param ContainerInterface $container
      */
-    public function __construct(AppContext $appContext, Schema $schema, ErrorHandler $errorHandler)
+    public function __construct(ContainerInterface $container)
     {
-        $this->appContext = $appContext;
-        $this->schema = $schema;
-        $this->errorHandler = $errorHandler;
+        $this->container = $container;
     }
 
     /**
@@ -49,8 +40,12 @@ class Controller
         TypeAssert::assertString($query, 'query');
         TypeAssert::assertArray($variables, 'variables');
 
-        $result = GraphQL::executeQuery($this->schema, $query, null, $this->appContext, $variables)
-            ->setErrorsHandler($this->errorHandler);
+        $context = new AppContext($request, $this->container);
+        $errorHandler = new ErrorHandler($this->container->get('logger'), $request);
+        $schema = $this->container->get(Schema::class);
+
+        $result = GraphQL::executeQuery($schema, $query, null, $context, $variables)
+            ->setErrorsHandler($errorHandler);
 
         $response = $response->withStatus(count($result->errors) ? 400 : 200);
 

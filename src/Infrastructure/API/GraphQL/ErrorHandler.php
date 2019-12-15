@@ -13,8 +13,8 @@ class ErrorHandler
     /** @var LoggerInterface */
     private $logger;
 
-    /** @var AppContext */
-    private $appContext;
+    /** @var ServerRequestInterface */
+    private $request;
 
     private static $loggableHeaders = [
         'Content-Length',
@@ -24,12 +24,12 @@ class ErrorHandler
 
     /**
      * @param LoggerInterface $logger
-     * @param AppContext $appContext
+     * @param ServerRequestInterface $request
      */
-    public function __construct(LoggerInterface $logger, AppContext $appContext)
+    public function __construct(LoggerInterface $logger, ServerRequestInterface $request)
     {
         $this->logger = $logger;
-        $this->appContext = $appContext;
+        $this->request = $request;
     }
 
     /**
@@ -51,29 +51,28 @@ class ErrorHandler
 
         $this->logger->notice('Handling exception in GraphQL library', [
             'errors' => $formatted,
-            'request' => $this->getRequestContext($this->appContext->getRequest())
+            'request' => $this->getRequestContext()
         ]);
 
         return $formatted;
     }
 
     /**
-     * @param ServerRequestInterface $request
      * @return array
      */
-    private function getRequestContext(ServerRequestInterface $request): array
+    private function getRequestContext(): array
     {
-        $body = $request->getParsedBody();
+        $body = $this->request->getParsedBody();
 
         $headers = [];
         foreach (self::$loggableHeaders as $headerName) {
-            $headers[$headerName] = $request->getHeader($headerName);
+            $headers[$headerName] = $this->request->getHeader($headerName);
         }
 
         return [
-            'httpVersion' => $request->getProtocolVersion(),
-            'method' => $request->getMethod(),
-            'uri' => $request->getUri()->withUserInfo('', '')->__toString(),
+            'httpVersion' => $this->request->getProtocolVersion(),
+            'method' => $this->request->getMethod(),
+            'uri' => $this->request->getUri()->withUserInfo('', '')->__toString(),
             'headers' => $headers,
             'body' => [
                 'query' => $body['query'] ?? null
