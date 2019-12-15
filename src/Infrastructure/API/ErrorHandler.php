@@ -13,10 +13,11 @@ use Throwable;
 
 class ErrorHandler
 {
-    use ResponseFactoryTrait;
-
     /** @var LoggerInterface */
     private $logger;
+
+    /** @var JsonEncoder */
+    private $jsonEncoder;
 
     /**
      * @param LoggerInterface $logger

@@ -12,78 +12,78 @@ use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\AuthController;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\CredentialController;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\TestClientController;
-use Slim\App;
+use Psr\Container\ContainerInterface;
+use Slim\Interfaces\RouteCollectorProxyInterface;
 
 class RouteProvider
 {
-    public function registerRoutes(App $app)
+    public function registerRoutes(RouteCollectorProxyInterface $routeCollector, ContainerInterface $container)
     {
-        $app->group('/api', function() use ($app) {
-            $container = $app->getContainer();
-            $auth      = new AuthenticationMiddleware($container);
+        $routeCollector->group('/api', function(RouteCollectorProxyInterface $group) use ($container) {
+            $auth = new AuthenticationMiddleware($container);
 
-            $app->get('/webauthn/test', function () use ($container) {
+            $group->get('/webauthn/test', function ($request, $response) use ($container) {
                 /** @var TestClientController $testClientController */
                 $testClientController = $container->get(TestClientController::class);
 
-                return $testClientController->show();
+                return $testClientController->show($response);
             });
 
-            $app->post('/webauthn/credential/options', function ($request) use ($container) {
+            $group->post('/webauthn/credential/options', function ($request, $response) use ($container) {
                 /** @var CredentialController $credentialController */
                 $credentialController = $container->get(CredentialController::class);
 
-                return $credentialController->options($request);
+                return $credentialController->options($request, $response);
             })->add($auth);
 
-            $app->post('/webauthn/credential', function ($request) use ($container) {
+            $group->post('/webauthn/credential', function ($request, $response) use ($container) {
                 /** @var CredentialController $credentialController */
                 $credentialController = $container->get(CredentialController::class);
 
-                return $credentialController->create($request);
+                return $credentialController->create($request, $response);
             })->add($auth);
 
-            $app->get('/webauthn/credential', function ($request) use ($container) {
+            $group->get('/webauthn/credential', function ($request, $response) use ($container) {
                 /** @var CredentialController $credentialController */
                 $credentialController = $container->get(CredentialController::class);
 
-                return $credentialController->findAll($request);
+                return $credentialController->findAll($request, $response);
             })->add($auth);
 
-            $app->delete('/webauthn/credential', function ($request) use ($container) {
+            $group->delete('/webauthn/credential', function ($request, $response) use ($container) {
                 /** @var CredentialController $credentialController */
                 $credentialController = $container->get(CredentialController::class);
 
-                return $credentialController->deleteAll($request);
+                return $credentialController->deleteAll($request, $response);
             })->add($auth);
 
-            $app->delete('/webauthn/credential/{id}', function ($request, $response, $args) use ($container) {
+            $group->delete('/webauthn/credential/{id}', function ($request, $response, $args) use ($container) {
                 /** @var CredentialController $credentialController */
                 $credentialController = $container->get(CredentialController::class);
 
-                return $credentialController->deleteOne($request, $args['id']);
+                return $credentialController->deleteOne($request, $response, $args['id']);
             })->add($auth);
 
-            $app->post('/webauthn/login/options', function ($request) use ($container) {
+            $group->post('/webauthn/login/options', function ($request, $response) use ($container) {
                 /** @var AuthController $authController */
                 $authController = $container->get(AuthController::class);
 
-                return $authController->options($request);
+                return $authController->options($request, $response);
             });
 
-            $app->post('/webauthn/login', function ($request) use ($container) {
+            $group->post('/webauthn/login', function ($request, $response) use ($container) {
                 /** @var AuthController $authController */
                 $authController = $container->get(AuthController::class);
 
-                return $authController->login($request);
+                return $authController->login($request, $response);
             });
 
-            $app->post('/graphql', function ($request, $response, $args) use ($container) {
+            $group->post('/graphql', function ($request, $response, $args) use ($container) {
                 $appContext = new AppContext($request, $container);
                 $errorHandler = new ErrorHandler($container->get('logger'), $appContext);
                 $controller = new GraphQLController($appContext, $container->get(Schema::class), $errorHandler);
 
-                return $controller->query($request);
+                return $controller->query($request, $response);
             })->add($auth);
         });
     }

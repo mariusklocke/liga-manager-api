@@ -8,7 +8,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
-use Slim\Http\Response;
 
 class PsrSlimClient implements ClientInterface
 {
@@ -39,7 +38,7 @@ class PsrSlimClient implements ClientInterface
         }
 
         ob_start();
-        $response = $this->app->process($request, new Response());
+        $response = $this->app->handle($request);
         $output = ob_get_clean();
         if (strlen($output) > 0) {
             throw new PsrClientException(sprintf("Illegal output buffer content detected\n%s", $output));

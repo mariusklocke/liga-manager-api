@@ -12,8 +12,8 @@ use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\LoggerProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
+use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Slim\Container;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 
@@ -29,6 +29,7 @@ class Bootstrap
         $app = new Application();
         $app->setCatchExceptions(true);
         $app->setCommandLoader($container[CommandLoaderInterface::class]);
+
         return $app;
     }
 

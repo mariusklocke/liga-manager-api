@@ -11,6 +11,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\SlimClient;
 use HexagonalPlayground\Tests\Framework\SwiftClient;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Slim\App;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
@@ -33,7 +34,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        $this->client = new Client(new SlimClient(self::$app));
+        $this->client = new Client(new SlimClient(self::$app, new Psr17Factory()));
     }
 
     protected static function getEmailClient(): EmailClientInterface

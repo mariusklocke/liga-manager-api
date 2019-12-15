@@ -11,8 +11,10 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class AuthenticationMiddleware
+class AuthenticationMiddleware implements MiddlewareInterface
 {
     /** @var ContainerInterface */
     private $container;
@@ -39,50 +41,6 @@ class AuthenticationMiddleware
     private function getTokenFactory(): TokenFactoryInterface
     {
         return $this->container->get(TokenFactoryInterface::class);
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @param callable $next
-     * @return ResponseInterface
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next): ResponseInterface
-    {
-        $rawHeaderValue = $this->getAuthHeader($request);
-        if (!is_string($rawHeaderValue)) {
-            return $next($request, $response);
-        }
-
-        list($type, $secret) = $this->parseAuthHeader($rawHeaderValue);
-        switch (strtolower($type)) {
-            case 'basic':
-                list($email, $password) = $this->parseCredentials($secret);
-                $user = $this->getAuthenticator()->authenticateByCredentials($email, $password);
-
-                /** @var ResponseInterface $response */
-                $response = $next($this->setUser($request, $user), $response);
-
-                /**
-                 * Creating the token after the controller is important when changing a user password
-                 * In this case the token has to be created *AFTER* the password has been changed, because otherwise
-                 * it would be considered invalid for the next request
-                 *
-                 * @see Authenticator::authenticateByToken()
-                 */
-
-                $token = $this->getTokenFactory()->create(
-                    $user,
-                    new DateTimeImmutable('now + 1 year')
-                );
-                return $response->withHeader('X-Token', $token->encode());
-
-            case 'bearer':
-                $user = $this->getAuthenticator()->authenticateByToken(JsonWebToken::decode($secret));
-                return $next($this->setUser($request, $user), $response);
-        }
-
-        throw new AuthenticationException('Unsupported authentication type');
     }
 
     private function setUser(ServerRequestInterface $request, User $user): ServerRequestInterface
@@ -134,5 +92,51 @@ class AuthenticationMiddleware
         }
 
         return [$email, $password];
+    }
+
+    /**
+     * Process an incoming server request.
+     *
+     * Processes an incoming server request in order to produce a response.
+     * If unable to produce the response itself, it may delegate to the provided
+     * request handler to do so.
+     */
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        $rawHeaderValue = $this->getAuthHeader($request);
+        if (!is_string($rawHeaderValue)) {
+            return $handler->handle($request);
+        }
+
+        list($type, $secret) = $this->parseAuthHeader($rawHeaderValue);
+        switch (strtolower($type)) {
+            case 'basic':
+                list($email, $password) = $this->parseCredentials($secret);
+                $user = $this->getAuthenticator()->authenticateByCredentials($email, $password);
+                $request = $this->setUser($request, $user);
+
+                $response = $handler->handle($request);
+
+                /**
+                 * Creating the token after the controller is important when changing a user password
+                 * In this case the token has to be created *AFTER* the password has been changed, because otherwise
+                 * it would be considered invalid for the next request
+                 *
+                 * @see Authenticator::authenticateByToken()
+                 */
+
+                $token = $this->getTokenFactory()->create(
+                    $user,
+                    new DateTimeImmutable('now + 1 year')
+                );
+                return $response->withHeader('X-Token', $token->encode());
+
+            case 'bearer':
+                $user = $this->getAuthenticator()->authenticateByToken(JsonWebToken::decode($secret));
+                $request = $this->setUser($request, $user);
+                return $handler->handle($request);
+        }
+
+        throw new AuthenticationException('Unsupported authentication type');
     }
 }
