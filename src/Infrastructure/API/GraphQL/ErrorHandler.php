@@ -76,7 +76,7 @@ class ErrorHandler
             'uri' => $request->getUri()->withUserInfo('', '')->__toString(),
             'headers' => $headers,
             'body' => [
-                'query' => $body['query']
+                'query' => $body['query'] ?? null
             ]
         ];
     }
