@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\App;
+use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class HttpTest extends TestCase
 {
@@ -24,7 +24,7 @@ abstract class HttpTest extends TestCase
     /** @var ServerRequestFactoryInterface */
     protected $requestFactory;
 
-    /** @var App */
+    /** @var RequestHandlerInterface */
     private static $app;
 
     public static function setUpBeforeClass(): void

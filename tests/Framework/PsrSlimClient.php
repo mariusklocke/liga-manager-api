@@ -7,17 +7,17 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\App;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class PsrSlimClient implements ClientInterface
 {
-    /** @var App */
+    /** @var RequestHandlerInterface */
     private $app;
 
     /**
-     * @param App $app
+     * @param RequestHandlerInterface $app
      */
-    public function __construct(App $app)
+    public function __construct(RequestHandlerInterface $app)
     {
         $this->app = $app;
     }

@@ -7,22 +7,22 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Slim\App;
 
 class SlimClient
 {
-    /** @var App */
+    /** @var RequestHandlerInterface */
     private $app;
 
     /** @var ServerRequestFactoryInterface */
     private $requestFactory;
 
     /**
-     * @param App $app
+     * @param RequestHandlerInterface $app
      * @param ServerRequestFactoryInterface $requestFactory
      */
-    public function __construct(App $app, ServerRequestFactoryInterface $requestFactory)
+    public function __construct(RequestHandlerInterface $app, ServerRequestFactoryInterface $requestFactory)
     {
         $this->app = $app;
         $this->requestFactory = $requestFactory;
