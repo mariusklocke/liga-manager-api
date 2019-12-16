@@ -142,19 +142,6 @@ class Ranking
     }
 
     /**
-     * @return string
-     */
-    public function toString()
-    {
-        $parts = [];
-        foreach ($this->positions as $teamId => $position) {
-            /** @var RankingPosition $position */
-            $parts[] = $position->toString();
-        }
-        return implode(PHP_EOL, $parts);
-    }
-
-    /**
      * @param string $teamId
      * @return RankingPosition
      */

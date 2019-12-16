@@ -158,21 +158,11 @@ class RankingPosition
         return $this->number;
     }
 
-    public function toString() : string
-    {
-        return sprintf("%d.\t%s\t%d\t%d", $this->number, $this->team->getName(), $this->getGoalDifference(), $this->points);
-    }
-
     /**
      * @return int
      */
     private function getGoalDifference() : int
     {
         return $this->scoredGoals - $this->concededGoals;
-    }
-
-    public function getMatchCount(): int
-    {
-        return $this->matches;
     }
 }

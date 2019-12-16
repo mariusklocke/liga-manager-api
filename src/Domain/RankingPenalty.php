@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use DateTimeImmutable;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class RankingPenalty extends Entity
@@ -19,7 +20,7 @@ class RankingPenalty extends Entity
     /** @var int */
     private $points;
 
-    /** @var \DateTimeImmutable */
+    /** @var DateTimeImmutable */
     private $createdAt;
 
     /**
@@ -39,15 +40,7 @@ class RankingPenalty extends Entity
         $this->team      = $team;
         $this->reason    = $reason;
         $this->points    = $points;
-        $this->createdAt = new \DateTimeImmutable();
-    }
-
-    /**
-     * @return Ranking
-     */
-    public function getRanking(): Ranking
-    {
-        return $this->ranking;
+        $this->createdAt = new DateTimeImmutable();
     }
 
     /**

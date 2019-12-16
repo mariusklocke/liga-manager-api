@@ -157,12 +157,4 @@ class Match extends Entity
         }
         $this->matchResult = $matchResult;
     }
-
-    /**
-     * @return MatchDay
-     */
-    public function getMatchDay(): MatchDay
-    {
-        return $this->matchDay;
-    }
 }
