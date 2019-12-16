@@ -3,15 +3,12 @@
 namespace HexagonalPlayground\Tests\Framework;
 
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\App;
-use Slim\Http\Body;
-use Slim\Http\Environment;
-use Slim\Http\Headers;
-use Slim\Http\Request;
-use Slim\Http\Uri;
+use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class HttpTest extends TestCase
 {
@@ -24,19 +21,16 @@ abstract class HttpTest extends TestCase
     /** @var RequestAuthenticator */
     protected $authenticator;
 
-    /** @var Environment */
-    private static $environment;
+    /** @var ServerRequestFactoryInterface */
+    protected $requestFactory;
 
-    /** @var App */
+    /** @var RequestHandlerInterface */
     private static $app;
 
     public static function setUpBeforeClass(): void
     {
         if (null === self::$app) {
             self::$app = Bootstrap::bootstrap();
-        }
-        if (null === self::$environment) {
-            self::$environment = Environment::mock();
         }
     }
 
@@ -45,6 +39,7 @@ abstract class HttpTest extends TestCase
         $this->client = new PsrSlimClient(self::$app);
         $this->parser = new JsonResponseParser();
         $this->authenticator = new RequestAuthenticator();
+        $this->requestFactory = new Psr17Factory();
     }
 
     /**
@@ -55,18 +50,13 @@ abstract class HttpTest extends TestCase
      */
     protected function createRequest(string $method, string $uri, array $data = []): ServerRequestInterface
     {
-        $body = new Body(fopen('php://temp', 'r+'));
+        $request = $this->requestFactory->createServerRequest($method, $uri);
+
         if (!empty($data)) {
-            $body->write(json_encode($data));
+            $request->getBody()->write(json_encode($data));
+            $request = $request->withHeader('Content-Type', 'application/json');
         }
 
-        return new Request(
-            $method,
-            Uri::createFromString($uri),
-            new Headers(['Content-Type' => 'application/json']),
-            [],
-            self::$environment->all(),
-            $body
-        );
+        return $request;
     }
 }

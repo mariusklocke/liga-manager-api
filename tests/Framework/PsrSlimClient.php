@@ -7,18 +7,17 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\App;
-use Slim\Http\Response;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class PsrSlimClient implements ClientInterface
 {
-    /** @var App */
+    /** @var RequestHandlerInterface */
     private $app;
 
     /**
-     * @param App $app
+     * @param RequestHandlerInterface $app
      */
-    public function __construct(App $app)
+    public function __construct(RequestHandlerInterface $app)
     {
         $this->app = $app;
     }
@@ -39,7 +38,7 @@ class PsrSlimClient implements ClientInterface
         }
 
         ob_start();
-        $response = $this->app->process($request, new Response());
+        $response = $this->app->handle($request);
         $output = ob_get_clean();
         if (strlen($output) > 0) {
             throw new PsrClientException(sprintf("Illegal output buffer content detected\n%s", $output));

@@ -7,7 +7,7 @@ use Exception;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
+use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
 use HexagonalPlayground\Infrastructure\API\Security\UserAware;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -21,7 +21,7 @@ use Webauthn\PublicKeyCredentialRpEntity;
 class CredentialController
 {
     use UserAware;
-    use ResponseFactoryTrait;
+    use JsonEncodingTrait;
 
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
@@ -56,9 +56,10 @@ class CredentialController
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function options(ServerRequestInterface $request): ResponseInterface
+    public function options(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $user = $this->getUserFromRequest($request);
 
@@ -73,14 +74,15 @@ class CredentialController
 
         $this->creationOptionsStore->save($user->getId(), $options);
 
-        return $this->createResponse(200, $options);
+        return $this->toJson($response->withStatus(200), $options);
     }
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function create(ServerRequestInterface $request): ResponseInterface
+    public function create(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $parsedBody = $request->getParsedBody();
         $name = $parsedBody['name'] ?? null;
@@ -114,28 +116,30 @@ class CredentialController
         $namedCredential = new PublicKeyCredential($credentialSource, $name);
         $this->credentialRepository->saveCredentialSource($namedCredential);
 
-        return $this->createResponse(204);
+        return $response->withStatus(204);
     }
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function findAll(ServerRequestInterface $request): ResponseInterface
+    public function findAll(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $user = UserConverter::convert($this->getUserFromRequest($request));
 
         $credentials = $this->credentialRepository->findAllForUserEntity($user);
 
-        return $this->createResponse(200, $credentials);
+        return $this->toJson($response->withStatus(200), $credentials);
     }
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @param string $id
      * @return ResponseInterface
      */
-    public function deleteOne(ServerRequestInterface $request, string $id): ResponseInterface
+    public function deleteOne(ServerRequestInterface $request, ResponseInterface $response, string $id): ResponseInterface
     {
         try {
             $id = Base64Url::decode($id);
@@ -153,14 +157,15 @@ class CredentialController
 
         $this->credentialRepository->delete($credential);
 
-        return $this->createResponse(204);
+        return $response->withStatus(204);
     }
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function deleteAll(ServerRequestInterface $request): ResponseInterface
+    public function deleteAll(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $user = UserConverter::convert($this->getUserFromRequest($request));
 
@@ -169,6 +174,6 @@ class CredentialController
             $this->credentialRepository->delete($credential);
         }
 
-        return $this->createResponse(200, ['count' => count($credentials)]);
+        return $this->toJson($response->withStatus(200), ['count' => count($credentials)]);
     }
 }

@@ -5,5 +5,5 @@ use Doctrine\ORM\Tools\Console\ConsoleRunner;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$container = \HexagonalPlayground\Infrastructure\CLI\Bootstrap::createContainer();
-return ConsoleRunner::createHelperSet($container[\Doctrine\ORM\EntityManager::class]);
+$container = \HexagonalPlayground\Infrastructure\ContainerBuilder::build();
+return ConsoleRunner::createHelperSet($container->get(\Doctrine\ORM\EntityManager::class));

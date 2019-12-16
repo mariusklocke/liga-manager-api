@@ -4,27 +4,28 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\Framework;
 
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
-use Slim\App;
-use Slim\Http\Body;
-use Slim\Http\Headers;
-use Slim\Http\Request;
-use Slim\Http\Response;
-use Slim\Http\Uri;
 
 class SlimClient
 {
-    /** @var App */
+    /** @var RequestHandlerInterface */
     private $app;
 
+    /** @var ServerRequestFactoryInterface */
+    private $requestFactory;
+
     /**
-     * @param App $app
+     * @param RequestHandlerInterface $app
+     * @param ServerRequestFactoryInterface $requestFactory
      */
-    public function __construct(App $app)
+    public function __construct(RequestHandlerInterface $app, ServerRequestFactoryInterface $requestFactory)
     {
         $this->app = $app;
+        $this->requestFactory = $requestFactory;
     }
 
     /**
@@ -114,11 +115,14 @@ class SlimClient
      */
     private function createRequest(string $method, string $uri, array $bodyData, array $headers = []) : ServerRequestInterface
     {
-        $body = new Body(fopen('php://memory', 'w+'));
-        $body->write(json_encode($bodyData));
-        $body->rewind();
+        $request = $this->requestFactory->createServerRequest($method, $uri);
+
         $headers['Content-Type'] = 'application/json';
-        $request = new Request($method, Uri::createFromString($uri), new Headers($headers), [], [], $body);
+        $request->getBody()->write(json_encode($bodyData));
+
+        foreach ($headers as $key => $value) {
+            $request = $request->withHeader($key, $value);
+        }
 
         return $request;
     }
@@ -132,7 +136,7 @@ class SlimClient
     private function processRequest(ServerRequestInterface $request) : ResponseInterface
     {
         ob_start();
-        $response = $this->app->process($request, new Response());
+        $response = $this->app->handle($request);
         $output = ob_get_clean();
         if (strlen($output) > 0) {
             throw new RuntimeException(sprintf("Illegal output buffer content detected\n%s", $output));

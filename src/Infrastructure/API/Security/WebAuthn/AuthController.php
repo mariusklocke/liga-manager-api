@@ -10,7 +10,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Infrastructure\API\ResponseFactoryTrait;
+use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AuthenticatorAssertionResponse;
@@ -22,7 +22,7 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 class AuthController
 {
-    use ResponseFactoryTrait;
+    use JsonEncodingTrait;
 
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
@@ -72,9 +72,10 @@ class AuthController
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function options(ServerRequestInterface $request): ResponseInterface
+    public function options(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $parsedBody = $request->getParsedBody();
         $email = $parsedBody['email'] ?? null;
@@ -89,14 +90,15 @@ class AuthController
 
         $this->optionsStore->save($email, $options);
 
-        return $this->createResponse(200, $options);
+        return $this->toJson($response->withStatus(200), $options);
     }
 
     /**
      * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function login(ServerRequestInterface $request): ResponseInterface
+    public function login(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $parsedBody = $request->getParsedBody();
         $email = $parsedBody['email'] ?? null;
@@ -140,9 +142,10 @@ class AuthController
 
         $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 year'));
 
-        return $this
-            ->createResponse(200, $user->getPublicProperties())
+        $response = $response->withStatus(200)
             ->withHeader('X-Token', $token->encode());
+
+        return $this->toJson($response, $user->getPublicProperties());
     }
 
     /**

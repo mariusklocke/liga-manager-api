@@ -21,8 +21,7 @@ class ServiceProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
         $container[HandlerResolver::class] = function () use ($container) {
-            /** @var ContainerInterface $container */
-            return new ContainerHandlerResolver($container);
+            return new ContainerHandlerResolver(new \Pimple\Psr11\Container($container));
         };
         $container['commandBus'] = function() use ($container) {
             return new CommandBus($container[HandlerResolver::class], $container[OrmTransactionWrapperInterface::class]);

@@ -5,56 +5,71 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Domain\ExceptionInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
-use Slim\Exception\MethodNotAllowedException;
-use Slim\Exception\NotFoundException as RouteNotFoundException;
+use Slim\Exception\HttpMethodNotAllowedException;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Interfaces\ErrorHandlerInterface;
 use Throwable;
 
-class ErrorHandler
+class ErrorHandler implements ErrorHandlerInterface
 {
-    use ResponseFactoryTrait;
+    use JsonEncodingTrait;
 
     /** @var LoggerInterface */
     private $logger;
 
+    /** @var ResponseFactoryInterface */
+    private $responseFactory;
+
     /**
      * @param LoggerInterface $logger
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory)
     {
         $this->logger = $logger;
+        $this->responseFactory = $responseFactory;
     }
 
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @param Throwable $throwable
+     * @param ServerRequestInterface $request
+     * @param Throwable $exception
+     * @param bool $displayErrorDetails
+     * @param bool $logErrors
+     * @param bool $logErrorDetails
      * @return ResponseInterface
      */
-    public function __invoke(RequestInterface $request, ResponseInterface $response, Throwable $throwable): ResponseInterface
+    public function __invoke(
+        ServerRequestInterface $request,
+        Throwable $exception,
+        bool $displayErrorDetails,
+        bool $logErrors,
+        bool $logErrorDetails
+    ): ResponseInterface
     {
         switch (true) {
-            case ($throwable instanceof ExceptionInterface):
-                $response = $this->createResponseFromException($throwable);
+            case ($exception instanceof ExceptionInterface):
+                $response = $this->createResponse($exception->getHttpStatusCode(), $exception->getMessage());
                 break;
-            case ($throwable instanceof RouteNotFoundException):
-                $response = $this->createResponse(404, $this->getBody('Route not found'));
+            case ($exception instanceof HttpNotFoundException):
+                $response = $this->createResponse(404, 'Route not found');
                 break;
-            case ($throwable instanceof MethodNotAllowedException):
+            case ($exception instanceof HttpMethodNotAllowedException):
                 $message = 'HTTP Method not allowed. See Allow-Header for a list of allowed methods';
                 $response = $this
-                    ->createResponse(405, $this->getBody($message))
-                    ->withHeader('Allow', implode(', ', $throwable->getAllowedMethods()));
+                    ->createResponse(405, $message)
+                    ->withHeader('Allow', implode(', ', $exception->getAllowedMethods()));
                 break;
             default:
-                $response = $this->createResponse(500, $this->getBody('Internal Server Error'));
+                $response = $this->createResponse(500, 'Internal Server Error');
                 break;
         }
 
         if ($response->getStatusCode() !== 500) {
             $this->logger->notice('Handling uncaught Exception', [
-                'exception' => $this->getExceptionContext($throwable),
+                'exception' => $this->getExceptionContext($exception),
                 'request' => $this->getRequestContext($request)
             ]);
 
@@ -62,7 +77,7 @@ class ErrorHandler
         }
 
         $this->logger->error('Failed handling Exception. Internal Server Error', [
-            'exception' => $this->getExceptionContext($throwable, true),
+            'exception' => $this->getExceptionContext($exception, true),
             'request' => $this->getRequestContext($request)
         ]);
 
@@ -70,25 +85,22 @@ class ErrorHandler
     }
 
     /**
+     * @param int $statusCode
      * @param string $message
-     * @return array
-     */
-    private function getBody(string $message): array
-    {
-        return [
-            'errors' => [
-                ['message' => $message]
-            ]
-        ];
-    }
-
-    /**
-     * @param ExceptionInterface $exception
      * @return ResponseInterface
      */
-    private function createResponseFromException(ExceptionInterface $exception): ResponseInterface
+    private function createResponse(int $statusCode, string $message): ResponseInterface
     {
-        return $this->createResponse($exception->getHttpStatusCode(), $this->getBody($exception->getMessage()));
+        $response = $this->responseFactory->createResponse($statusCode);
+        $response = $response->withHeader('Content-Type', 'application/json');
+
+        return $this->toJson($response, [
+            'errors' => [
+                [
+                    'message' => $message
+                ]
+            ]
+        ]);
     }
 
     /**
