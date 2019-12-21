@@ -38,7 +38,15 @@ class UserTest extends TestCase
         $user = $this->getUserData();
         $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
 
-        $this->assertEmailReceived();
+        self::assertCount(1, self::getEmailClient()->getAllEmails());
+    }
+
+    public function testPasswordResetDoesNotErrorWithUnknownEmail(): void
+    {
+        self::getEmailClient()->deleteAllEmails();
+        $this->client->sendPasswordResetMail('mister.secret@example.com', '/nowhere');
+
+        self::assertCount(0, self::getEmailClient()->getAllEmails());
     }
 
     /**
@@ -98,7 +106,7 @@ class UserTest extends TestCase
     {
         self::getEmailClient()->deleteAllEmails();
         $this->client->sendInviteMail($user['id'], '/straight/to/hell');
-        $this->assertEmailReceived();
+        self::assertCount(1, self::getEmailClient()->getAllEmails());
         return $user;
     }
 
@@ -148,17 +156,5 @@ class UserTest extends TestCase
             'role' => User::ROLE_TEAM_MANAGER,
             'team_ids' => []
         ];
-    }
-
-    private function assertEmailReceived(): void
-    {
-        $tries = 0;
-        do {
-            usleep(100000);
-            $emails = self::getEmailClient()->getAllEmails();
-            $tries++;
-        } while (count($emails) === 0 && $tries < 10);
-
-        self::assertCount(1, $emails);
     }
 }

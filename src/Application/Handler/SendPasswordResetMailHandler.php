@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Application\Handler;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
@@ -40,10 +41,14 @@ class SendPasswordResetMailHandler
         $this->mailer           = $mailer;
     }
 
-    public function __invoke(SendPasswordResetMailCommand $command)
+    public function __invoke(SendPasswordResetMailCommand $command): void
     {
-        /** @var User $user */
-        $user  = $this->userRepository->findByEmail($command->getEmail());
+        try {
+            $user = $this->userRepository->findByEmail($command->getEmail());
+        } catch (NotFoundException $e) {
+            return; // Simply do nothing, when user cannot be found to prevent user discovery attacks
+        }
+
         $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 day'));
 
         $targetUri = $command
