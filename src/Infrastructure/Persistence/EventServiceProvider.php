@@ -3,51 +3,46 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
-use Doctrine\ORM\EntityManager;
+use DI;
 use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\EventStoreInterface;
 use HexagonalPlayground\Application\EventStoreSubscriber;
+use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineEventStore;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 use Redis;
 use RuntimeException;
 
 class EventServiceProvider implements ServiceProviderInterface
 {
-
-    /**
-     * Registers services on the given container.
-     *
-     * This method should only be used to configure services and parameters.
-     * It should not get services.
-     *
-     * @param Container $container A container instance
-     */
-    public function register(Container $container)
+    public function getDefinitions(): array
     {
-        $container->extend(HandlerResolver::class, function($handlerResolver) use ($container) {
-            Publisher::getInstance()->addSubscriber(
-                new EventStoreSubscriber($container[EventStoreInterface::class])
-            );
-            Publisher::getInstance()->addSubscriber(
-                new RedisEventPublisher($container[Redis::class])
-            );
+        return [
+            HandlerResolver::class => DI\decorate(function (HandlerResolver $resolver, ContainerInterface $container) {
+                Publisher::getInstance()->addSubscriber($container->get(EventStoreSubscriber::class));
+                Publisher::getInstance()->addSubscriber($container->get(RedisEventPublisher::class));
 
-            return $handlerResolver;
-        });
-        $container[Redis::class] = function () {
-            $redis = new Redis();
-            if (false === $redis->connect(Environment::get('REDIS_HOST'))) {
-                throw new RuntimeException('Could not connect to redis');
-            }
+                return $resolver;
+            }),
 
-            return $redis;
-        };
-        $container[EventStoreInterface::class] = function () use ($container) {
-            return new DoctrineEventStore($container[EntityManager::class]);
-        };
+            Redis::class => DI\factory(function() {
+                $redis = new Redis();
+                if (false === $redis->connect(Environment::get('REDIS_HOST'))) {
+                    throw new RuntimeException('Could not connect to redis');
+                }
+
+                return $redis;
+            }),
+
+            EventStoreInterface::class => DI\get(DoctrineEventStore::class),
+
+            DoctrineEventStore::class => DI\autowire(),
+
+            EventStoreSubscriber::class => DI\autowire(),
+
+            RedisEventPublisher::class => DI\autowire()
+        ];
     }
 }

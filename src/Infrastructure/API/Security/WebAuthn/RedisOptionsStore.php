@@ -17,7 +17,7 @@ class RedisOptionsStore implements OptionsStoreInterface
      * @param Redis $redis
      * @param int $ttl
      */
-    public function __construct(Redis $redis, int $ttl)
+    public function __construct(Redis $redis, int $ttl = 60)
     {
         $this->redis = $redis;
         $this->ttl = $ttl;

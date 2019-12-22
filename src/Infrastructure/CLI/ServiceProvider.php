@@ -3,53 +3,30 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use GraphQL\Type\Schema;
-use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\Import\Executor;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
+use DI;
+use HexagonalPlayground\Application\Import\TeamMapperInterface;
+use HexagonalPlayground\Application\ServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
-use Symfony\Component\Console\CommandLoader\FactoryCommandLoader;
+use Symfony\Component\Console\CommandLoader\ContainerCommandLoader;
 
 class ServiceProvider implements ServiceProviderInterface
 {
-    /**
-     * Registers services on the given container.
-     *
-     * This method should only be used to configure services and parameters.
-     * It should not get services.
-     *
-     * @param Container $container A container instance
-     */
-    public function register(Container $container)
+    public function getDefinitions(): array
     {
-        $container[CommandLoaderInterface::class] = function () use ($container) {
-            return new FactoryCommandLoader([
-                'app:load-fixtures' => function () use ($container) {
-                    return new LoadFixturesCommand($container['commandBus']);
-                },
-                'app:create-user' => function () use ($container) {
-                    return new CreateUserCommand($container['commandBus']);
-                },
-                'app:import-season' => function () use ($container) {
-                    return new L98ImportCommand(
-                        $container[Executor::class],
-                        $container[TeamMapper::class]
-                    );
-                },
-                'app:send-test-mail' => function () use ($container) {
-                    return new SendTestMailCommand($container[MailerInterface::class]);
-                },
-                'app:debug-gql-schema' => function () use ($container) {
-                    return new DebugGqlSchemaCommand($container[Schema::class]);
-                },
-                'app:setup' => function () use ($container) {
-                    return new SetupCommand();
-                }
-            ]);
-        };
-        $container[TeamMapper::class] = function () use ($container) {
-            return new TeamMapper($container['orm.repository.team']);
-        };
+        return [
+            CommandLoaderInterface::class => DI\create(ContainerCommandLoader::class)
+                ->constructor(DI\get(ContainerInterface::class), [
+                    'app:setup' => SetupCommand::class,
+                    'app:debug-gql-schema' => DebugGqlSchemaCommand::class,
+                    'app:load-fixtures' => LoadFixturesCommand::class,
+                    'app:create-user' => CreateUserCommand::class,
+                    'app:import-season' => L98ImportCommand::class,
+                    'app:send-test-mail' => SendTestMailCommand::class
+                ]),
+
+            TeamMapperInterface::class => DI\get(TeamMapper::class),
+            TeamMapper::class => DI\autowire()
+        ];
     }
 }

@@ -7,6 +7,7 @@ use HexagonalPlayground\Infrastructure\API\Routing\RouteProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use Middlewares\TrailingSlash;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Log\LoggerInterface;
 use Slim\App;
 
 class Bootstrap
@@ -23,7 +24,7 @@ class Bootstrap
         $app->add(new JsonParserMiddleware());
         $errorMiddleware = $app->addErrorMiddleware(false, false, false);
         $errorMiddleware->setDefaultErrorHandler(new ErrorHandler(
-            $container->get('logger'),
+            $container->get(LoggerInterface::class),
             new Psr17Factory()
         ));
 
