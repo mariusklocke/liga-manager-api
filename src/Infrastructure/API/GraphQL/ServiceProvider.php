@@ -17,7 +17,9 @@ class ServiceProvider implements ServiceProviderInterface
                     'mutation' => DI\get(MutationType::class)
                 ]),
 
-            __NAMESPACE__ . '\Loader\*Loader' => DI\autowire()
+            __NAMESPACE__ . '\Loader\*Loader' => DI\autowire(),
+
+            Controller::class => DI\autowire()
         ];
     }
 }
