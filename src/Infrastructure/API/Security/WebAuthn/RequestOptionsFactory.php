@@ -17,7 +17,7 @@ class RequestOptionsFactory
      * @param ChallengeGenerator $challengeGenerator
      * @param int $timeout
      */
-    public function __construct(ChallengeGenerator $challengeGenerator, int $timeout)
+    public function __construct(ChallengeGenerator $challengeGenerator, int $timeout = 30000)
     {
         $this->challengeGenerator = $challengeGenerator;
         $this->timeout = $timeout;

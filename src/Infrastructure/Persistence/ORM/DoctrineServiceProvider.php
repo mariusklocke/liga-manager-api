@@ -3,14 +3,17 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
-use Doctrine\Common\Proxy\AbstractProxyFactory;
-use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Types\Type;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Events;
-use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
-use Doctrine\ORM\Tools\Setup;
+use DI;
+use Doctrine\ORM\EntityManagerInterface;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
+use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
+use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
+use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
+use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
+use HexagonalPlayground\Application\Security\UserRepositoryInterface;
+use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\MatchDay;
 use HexagonalPlayground\Domain\Pitch;
@@ -19,86 +22,44 @@ use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
-use HexagonalPlayground\Infrastructure\Environment;
-use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
-use PDO;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
+use Psr\Log\LoggerInterface;
 
 class DoctrineServiceProvider implements ServiceProviderInterface
 {
-
-    /**
-     * Registers services on the given container.
-     *
-     * This method should only be used to configure services and parameters.
-     * It should not get services.
-     *
-     * @param Container $container A container instance
-     */
-    public function register(Container $container)
+    public function getDefinitions(): array
     {
-        $container[EntityManager::class] = function() use ($container) {
-            $config = Setup::createConfiguration(false);
-            $driver = new SimplifiedXmlDriver([
-                Environment::get('APP_HOME') . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
-                    => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",
-                Environment::get('APP_HOME') . "/config/doctrine/Domain"
-                    => "HexagonalPlayground\\Domain",
-                Environment::get('APP_HOME') . "/config/doctrine/Domain/Event"
-                    => "HexagonalPlayground\\Domain\\Event",
-                Environment::get('APP_HOME') . "/config/doctrine/Domain/Value"
-                => "HexagonalPlayground\\Domain\\Value"
-            ]);
-            $driver->setGlobalBasename('global');
-            $config->setMetadataDriverImpl($driver);
-            $config->setSQLLogger(new QueryLogger($container['logger']));
-            $config->setDefaultRepositoryClassName(BaseRepository::class);
-            $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-            $pdo = new PDO(
-                'mysql:host=' . Environment::get('MYSQL_HOST') . ';dbname=' . Environment::get('MYSQL_DATABASE'),
-                Environment::get('MYSQL_USER'),
-                Environment::get('MYSQL_PASSWORD'),
-                [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
-            );
-            $connection = DriverManager::getConnection(['pdo' => $pdo], $config);
-            if (!Type::hasType(CustomBinaryType::NAME)) {
-                Type::addType(CustomBinaryType::NAME, CustomBinaryType::class);
-            }
-            $connection->getDatabasePlatform()->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
-            $em = EntityManager::create($connection, $config);
-            $em->getEventManager()->addEventListener(
-                [Events::postLoad],
-                new DoctrineEmbeddableListener($em, $container['logger'])
-            );
-            return $em;
-        };
-        $container[OrmTransactionWrapperInterface::class] = function() use ($container) {
-            return new DoctrineTransactionWrapper($container[EntityManager::class]);
-        };
-        $container['orm.repository.user'] = function () use ($container) {
-            return $container[EntityManager::class]->getRepository(User::class);
-        };
-        $container['orm.repository.team'] = function () use ($container) {
-            return $container[EntityManager::class]->getRepository(Team::class);
-        };
-        $container['orm.repository.match'] = function () use ($container) {
-            return $container[EntityManager::class]->getRepository(Match::class);
-        };
-        $container['orm.repository.season'] = function () use ($container) {
-            return $container[EntityManager::class]->getRepository(Season::class);
-        };
-        $container['orm.repository.tournament'] = function () use ($container) {
-            return $container[EntityManager::class]->getRepository(Tournament::class);
-        };
-        $container['orm.repository.pitch'] = function () use ($container) {
-            return $container[EntityManager::class]->getRepository(Pitch::class);
-        };
-        $container['orm.repository.matchDay'] = function () use ($container) {
-            return $container[EntityManager::class]->getRepository(MatchDay::class);
-        };
-        $container['orm.repository.publicKeyCredential'] = function () use ($container) {
-            return $container[EntityManager::class]->getRepository(PublicKeyCredential::class);
-        };
+        return [
+            EntityManagerInterface::class => DI\factory(EntityManagerFactory::class)
+                ->parameter('logger', DI\get(LoggerInterface::class)),
+
+            OrmTransactionWrapperInterface::class => DI\get(DoctrineTransactionWrapper::class),
+
+            DoctrineTransactionWrapper::class => DI\autowire(),
+
+            UserRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
+                ->parameter('entityName', User::class),
+
+            TeamRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
+                ->parameter('entityName', Team::class),
+
+            MatchRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
+                ->parameter('entityName', Match::class),
+
+            SeasonRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
+                ->parameter('entityName', Season::class),
+
+            TournamentRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
+                ->parameter('entityName', Tournament::class),
+
+            PitchRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
+                ->parameter('entityName', Pitch::class),
+
+            MatchDayRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
+                ->parameter('entityName', MatchDay::class),
+
+            PublicKeyCredentialSourceRepository::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
+                ->parameter('entityName', PublicKeyCredential::class),
+        ];
     }
 }

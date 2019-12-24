@@ -42,7 +42,7 @@ class MutationMapper
                     }
 
                     /** @var CommandBus $commandBus */
-                    $commandBus = $context->getContainer()->get('commandBus');
+                    $commandBus = $context->getContainer()->get(CommandBus::class);
                     $commandBus->execute($command);
                     return true;
                 }

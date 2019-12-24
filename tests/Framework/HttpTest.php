@@ -27,15 +27,12 @@ abstract class HttpTest extends TestCase
     /** @var RequestHandlerInterface */
     private static $app;
 
-    public static function setUpBeforeClass(): void
+    protected function setUp(): void
     {
         if (null === self::$app) {
             self::$app = Bootstrap::bootstrap();
         }
-    }
 
-    protected function setUp(): void
-    {
         $this->client = new PsrSlimClient(self::$app);
         $this->parser = new JsonResponseParser();
         $this->authenticator = new RequestAuthenticator();

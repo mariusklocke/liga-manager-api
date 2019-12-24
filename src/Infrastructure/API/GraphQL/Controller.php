@@ -10,6 +10,7 @@ use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 
 class Controller
 {
@@ -41,7 +42,7 @@ class Controller
         TypeAssert::assertArray($variables, 'variables');
 
         $context = new AppContext($request, $this->container);
-        $errorHandler = new ErrorHandler($this->container->get('logger'), $request);
+        $errorHandler = new ErrorHandler($this->container->get(LoggerInterface::class), $request);
         $schema = $this->container->get(Schema::class);
 
         $result = GraphQL::executeQuery($schema, $query, null, $context, $variables)

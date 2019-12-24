@@ -30,9 +30,9 @@
         "webonyx/graphql-php": "^0.13.0",
         "web-auth/webauthn-lib": "^2.1",
         "slim/slim": "^4.3",
-        "pimple/pimple": "^3.2",
         "nyholm/psr7": "^1.2",
         "middlewares/trailing-slash": "^2.0",
-        "nyholm/psr7-server": "^0.4.1"
+        "nyholm/psr7-server": "^0.4.1",
+        "php-di/php-di": "^6.0"
     }
 }

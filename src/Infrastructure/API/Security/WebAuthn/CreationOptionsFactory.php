@@ -26,11 +26,11 @@ class CreationOptionsFactory
      * @param int $timeout
      * @param Manager $algorithmManager
      */
-    public function __construct(ChallengeGenerator $challengeGenerator, int $timeout, Manager $algorithmManager)
+    public function __construct(ChallengeGenerator $challengeGenerator, Manager $algorithmManager, int $timeout = 30000)
     {
         $this->challengeGenerator = $challengeGenerator;
-        $this->timeout = $timeout;
         $this->algorithmManager = $algorithmManager;
+        $this->timeout = $timeout;
     }
 
     /**

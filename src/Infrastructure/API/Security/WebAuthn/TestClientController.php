@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
 use HexagonalPlayground\Application\TemplateRendererInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class TestClientController
@@ -19,9 +20,11 @@ class TestClientController
     }
 
     /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function show(ResponseInterface $response): ResponseInterface
+    public function show(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $response->getBody()->write($this->templateRenderer->render('WebAuthnClient.html.php', []));
 

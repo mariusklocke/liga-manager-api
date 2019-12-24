@@ -3,26 +3,30 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure;
 
+use DI;
+use HexagonalPlayground\Application\ServiceProviderInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
-use Pimple\Container;
-use Pimple\ServiceProviderInterface;
+use Psr\Log\LoggerInterface;
 
 class LoggerProvider implements ServiceProviderInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function register(Container $container)
+    public function getDefinitions(): array
     {
-        $container['logger'] = function() {
-            $level    = Logger::toMonologLevel(Environment::get('LOG_LEVEL'));
-            $handler  = new StreamHandler(fopen('php://stdout', 'w'), $level);
-            $handler->setFormatter(new LineFormatter(
-                "[%datetime%] %channel%.%level_name%: %message% %context%\n"
-            ));
-            return new Logger('logger', [$handler]);
-        };
+        return [
+            LoggerInterface::class => DI\get(Logger::class),
+
+            Logger::class => DI\create()
+                ->constructor('logger')
+                ->method('pushHandler', DI\get(StreamHandler::class)),
+
+            StreamHandler::class => DI\create()
+                ->constructor('php://stdout', DI\env('LOG_LEVEL'))
+                ->method('setFormatter', DI\get(LineFormatter::class)),
+
+            LineFormatter::class => DI\create()
+                ->constructor("[%datetime%] %channel%.%level_name%: %message% %context%\n")
+        ];
     }
 }
