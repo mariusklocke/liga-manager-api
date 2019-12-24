@@ -25,15 +25,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /** @var EmailClientInterface */
     private static $emailClient;
 
-    public static function setUpBeforeClass(): void
+    protected function setUp(): void
     {
         if (null === self::$app) {
             self::$app = Bootstrap::bootstrap();
         }
-    }
-
-    protected function setUp(): void
-    {
         $this->client = new Client(new SlimClient(self::$app, new Psr17Factory()));
     }
 
