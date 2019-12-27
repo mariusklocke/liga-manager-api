@@ -6,7 +6,7 @@
     <entity name="HexagonalPlayground\Domain\Team" table="teams">
         <id name="id" type="string" />
         <field name="name" type="string" />
-        <field name="createdAt" column="created_at" type="datetime_immutable"/>
+        <field name="createdAt" column="created_at" type="custom_datetime"/>
         <embedded name="contact" class="HexagonalPlayground\Domain\Value\ContactPerson" />
     </entity>
 </doctrine-mapping>

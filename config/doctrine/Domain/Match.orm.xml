@@ -5,8 +5,8 @@
 
     <entity name="HexagonalPlayground\Domain\Match" table="matches">
         <id name="id" type="string" />
-        <field name="kickoff" type="datetime_immutable" nullable="true" />
-        <field name="cancelledAt" column="cancelled_at" type="datetime_immutable" nullable="true"/>
+        <field name="kickoff" type="custom_datetime" nullable="true" />
+        <field name="cancelledAt" column="cancelled_at" type="custom_datetime" nullable="true"/>
         <field name="cancellationReason" column="cancellation_reason" type="string" nullable="true" />
         <embedded name="matchResult" class="HexagonalPlayground\Domain\Value\MatchResult" use-column-prefix="false" />
         <many-to-one field="matchDay" target-entity="HexagonalPlayground\Domain\MatchDay" inversed-by="matches">

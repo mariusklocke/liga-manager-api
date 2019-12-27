@@ -26,7 +26,7 @@
             <discriminator-mapping value="team:contact:updated" class="TeamContactUpdated"/>
             <discriminator-mapping value="tournament:created" class="TournamentCreated"/>
         </discriminator-map>
-        <field name="occurredAt" column="occurred_at" type="datetime_immutable" />
+        <field name="occurredAt" column="occurred_at" type="custom_datetime" />
         <field name="payload" type="array" />
     </entity>
 </doctrine-mapping>

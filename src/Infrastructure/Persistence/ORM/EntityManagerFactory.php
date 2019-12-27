@@ -45,7 +45,11 @@ class EntityManagerFactory
         if (!Type::hasType(CustomBinaryType::NAME)) {
             Type::addType(CustomBinaryType::NAME, CustomBinaryType::class);
         }
+        if (!Type::hasType(CustomDateTimeType::NAME)) {
+            Type::addType(CustomDateTimeType::NAME, CustomDateTimeType::class);
+        }
         $connection->getDatabasePlatform()->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
+        $connection->getDatabasePlatform()->registerDoctrineTypeMapping('CustomDateTime', CustomDateTimeType::NAME);
         $em = EntityManager::create($connection, $config);
         $em->getEventManager()->addEventListener(
             [Events::postLoad],

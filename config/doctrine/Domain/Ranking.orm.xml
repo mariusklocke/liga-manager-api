@@ -5,7 +5,7 @@
 
     <entity name="HexagonalPlayground\Domain\Ranking" table="rankings">
         <id name="season" association-key="true" />
-        <field name="updatedAt" column="updated_at" type="datetime_immutable" nullable="true" />
+        <field name="updatedAt" column="updated_at" type="custom_datetime" nullable="true" />
         <one-to-one field="season" target-entity="HexagonalPlayground\Domain\Season" inversed-by="ranking">
             <join-column name="season_id" referenced-column-name="id" />
         </one-to-one>
