@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\CLI;
 
 use HexagonalPlayground\Infrastructure\CLI\Bootstrap;
+use HexagonalPlayground\Infrastructure\CLI\CreateUserCommand;
+use HexagonalPlayground\Infrastructure\CLI\L98ImportCommand;
+use HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -20,7 +23,7 @@ class CliTest extends TestCase
 
     public function testCreatingUser(): void
     {
-        $tester = $this->getCommandTester('app:create-user');
+        $tester = $this->getCommandTester(CreateUserCommand::NAME);
         $tester->setInputs(['mary.poppins@example.com', '123456', 'Mary', 'Poppins', 'admin']);
 
         self::assertExecutionSuccess($tester->execute([]));
@@ -28,13 +31,13 @@ class CliTest extends TestCase
 
     public function testLoadingFixtures(): void
     {
-        $tester = $this->getCommandTester('app:load-fixtures');
+        $tester = $this->getCommandTester(LoadFixturesCommand::NAME);
         self::assertExecutionSuccess($tester->execute([]));
     }
 
     public function testSeasonsCanBeImportedFromLegacyFiles(): void
     {
-        $tester = $this->getCommandTester('app:import-season');
+        $tester = $this->getCommandTester(L98ImportCommand::NAME);
 
         $exitCode = $tester->execute(['path' => __DIR__ . '/data/*.l98'], ['interactive' => false]);
         $output = $tester->getDisplay();

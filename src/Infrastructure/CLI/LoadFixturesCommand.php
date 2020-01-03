@@ -25,6 +25,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LoadFixturesCommand extends Command
 {
+    public const NAME = 'app:load-fixtures';
+
     /** @var CommandBus */
     private $commandBus;
 
@@ -35,11 +37,6 @@ class LoadFixturesCommand extends Command
     {
         $this->commandBus = $commandBus;
         parent::__construct();
-    }
-
-    protected function configure()
-    {
-        $this->setName('app:load-fixtures');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

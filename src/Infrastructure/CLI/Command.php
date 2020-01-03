@@ -12,6 +12,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 abstract class Command extends SymfonyCommand
 {
+    public const NAME = null;
+
     /** @var float */
     private $startTime;
 
@@ -20,7 +22,7 @@ abstract class Command extends SymfonyCommand
 
     public function __construct()
     {
-        parent::__construct(null);
+        parent::__construct(static::NAME);
     }
 
     /**

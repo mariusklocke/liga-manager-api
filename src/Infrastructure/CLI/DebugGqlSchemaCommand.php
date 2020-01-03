@@ -9,6 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DebugGqlSchemaCommand extends Command
 {
+    public const NAME = 'app:debug-gql-schema';
+
     /** @var Schema */
     private $schema;
 
@@ -16,11 +18,6 @@ class DebugGqlSchemaCommand extends Command
     {
         parent::__construct();
         $this->schema = $schema;
-    }
-
-    protected function configure()
-    {
-        $this->setName('app:debug-gql-schema');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

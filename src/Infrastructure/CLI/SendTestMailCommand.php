@@ -9,6 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendTestMailCommand extends Command
 {
+    public const NAME = 'app:send-test-mail';
+
     /** @var MailerInterface */
     private $mailer;
 
@@ -23,7 +25,6 @@ class SendTestMailCommand extends Command
 
     protected function configure()
     {
-        $this->setName('app:send-test-mail');
         $this->addArgument('recipient', InputArgument::REQUIRED, 'Sends a test email');
     }
 

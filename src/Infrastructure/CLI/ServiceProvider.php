@@ -17,12 +17,12 @@ class ServiceProvider implements ServiceProviderInterface
         return [
             CommandLoaderInterface::class => DI\create(ContainerCommandLoader::class)
                 ->constructor(DI\get(ContainerInterface::class), [
-                    'app:setup' => SetupCommand::class,
-                    'app:debug-gql-schema' => DebugGqlSchemaCommand::class,
-                    'app:load-fixtures' => LoadFixturesCommand::class,
-                    'app:create-user' => CreateUserCommand::class,
-                    'app:import-season' => L98ImportCommand::class,
-                    'app:send-test-mail' => SendTestMailCommand::class
+                    SetupCommand::NAME => SetupCommand::class,
+                    DebugGqlSchemaCommand::NAME => DebugGqlSchemaCommand::class,
+                    LoadFixturesCommand::NAME => LoadFixturesCommand::class,
+                    CreateUserCommand::NAME => CreateUserCommand::class,
+                    L98ImportCommand::NAME => L98ImportCommand::class,
+                    SendTestMailCommand::NAME => SendTestMailCommand::class
                 ]),
 
             TeamMapperInterface::class => DI\get(TeamMapper::class),

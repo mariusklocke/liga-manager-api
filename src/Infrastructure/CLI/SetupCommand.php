@@ -9,10 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SetupCommand extends Command
 {
-    protected function configure()
-    {
-        $this->setName('app:setup');
-    }
+    public const NAME = 'app:setup';
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {

@@ -16,6 +16,8 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 class L98ImportCommand extends Command
 {
+    public const NAME = 'app:import-season';
+
     /** @var Executor */
     private $executor;
 
@@ -36,7 +38,6 @@ class L98ImportCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('app:import-season')
             ->setDefinition([
                 new InputArgument('path', InputArgument::REQUIRED, 'Path to L98 season files (wildcards allowed)')
             ]);
