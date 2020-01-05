@@ -6,7 +6,7 @@ use HexagonalPlayground\Application\Command\InvalidateAccessTokensCommand;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
-class InvalidateAccessTokensHandler
+class InvalidateAccessTokensHandler implements AuthAwareHandler
 {
     /** @var UserRepositoryInterface */
     private $userRepository;

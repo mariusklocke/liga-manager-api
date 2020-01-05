@@ -16,7 +16,7 @@ use HexagonalPlayground\Domain\MatchDay;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Util\Assert;
 
-class ScheduleAllMatchesForSeasonHandler
+class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;

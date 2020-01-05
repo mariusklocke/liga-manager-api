@@ -7,7 +7,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class DeletePitchHandler
+class DeletePitchHandler implements AuthAwareHandler
 {
     /** @var PitchRepositoryInterface */
     private $pitchRepository;

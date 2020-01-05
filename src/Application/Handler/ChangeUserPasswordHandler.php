@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class ChangeUserPasswordHandler
+class ChangeUserPasswordHandler implements AuthAwareHandler
 {
     /**
      * @param ChangeUserPasswordCommand $command

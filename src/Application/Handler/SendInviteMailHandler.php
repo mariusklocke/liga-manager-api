@@ -14,7 +14,7 @@ use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Domain\User;
 use Psr\Http\Message\UriInterface;
 
-class SendInviteMailHandler
+class SendInviteMailHandler implements AuthAwareHandler
 {
     /** @var TokenFactoryInterface */
     private $tokenFactory;

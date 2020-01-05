@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
-class UpdateUserHandler
+class UpdateUserHandler implements AuthAwareHandler
 {
     /** @var UserRepositoryInterface */
     private $userRepository;

@@ -8,7 +8,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class RescheduleMatchDayHandler
+class RescheduleMatchDayHandler implements AuthAwareHandler
 {
     /** @var MatchDayRepositoryInterface */
     private $matchDayRepository;

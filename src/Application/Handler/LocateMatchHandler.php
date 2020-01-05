@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class LocateMatchHandler
+class LocateMatchHandler implements AuthAwareHandler
 {
     /** @var MatchRepositoryInterface */
     private $matchRepository;

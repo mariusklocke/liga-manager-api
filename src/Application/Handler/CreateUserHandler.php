@@ -11,7 +11,7 @@ use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\User;
 
-class CreateUserHandler
+class CreateUserHandler implements AuthAwareHandler
 {
     /** @var UserRepositoryInterface */
     private $userRepository;

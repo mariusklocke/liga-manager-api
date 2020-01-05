@@ -10,7 +10,7 @@ use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class AddTeamToSeasonHandler
+class AddTeamToSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;

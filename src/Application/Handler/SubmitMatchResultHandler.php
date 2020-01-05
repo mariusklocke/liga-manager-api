@@ -10,7 +10,7 @@ use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
-class SubmitMatchResultHandler
+class SubmitMatchResultHandler implements AuthAwareHandler
 {
     /** @var MatchRepositoryInterface */
     private $matchRepository;

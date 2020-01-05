@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Season;
 
-class StartSeasonHandler
+class StartSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;

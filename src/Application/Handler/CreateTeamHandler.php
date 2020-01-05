@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Team;
 
-class CreateTeamHandler
+class CreateTeamHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
     private $teamRepository;

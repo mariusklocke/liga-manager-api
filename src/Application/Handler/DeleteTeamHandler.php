@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class DeleteTeamHandler
+class DeleteTeamHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
     private $teamRepository;

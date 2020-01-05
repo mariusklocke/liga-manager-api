@@ -10,7 +10,7 @@ use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 
-class UpdatePitchContactHandler
+class UpdatePitchContactHandler implements AuthAwareHandler
 {
     /** @var PitchRepositoryInterface */
     private $pitchRepository;

@@ -10,7 +10,7 @@ use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class RemoveTeamFromSeasonHandler
+class RemoveTeamFromSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;

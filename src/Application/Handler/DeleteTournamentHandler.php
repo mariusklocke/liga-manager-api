@@ -8,7 +8,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class DeleteTournamentHandler
+class DeleteTournamentHandler implements AuthAwareHandler
 {
     /** @var TournamentRepositoryInterface */
     private $repository;

@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class ScheduleMatchHandler
+class ScheduleMatchHandler implements AuthAwareHandler
 {
     /** @var MatchRepositoryInterface */
     private $matchRepository;

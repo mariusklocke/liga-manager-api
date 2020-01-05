@@ -8,7 +8,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
-class DeleteUserHandler
+class DeleteUserHandler implements AuthAwareHandler
 {
     /** @var UserRepositoryInterface */
     private $userRepository;

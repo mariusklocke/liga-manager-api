@@ -10,7 +10,7 @@ use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 
-class UpdateTeamContactHandler
+class UpdateTeamContactHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
     private $teamRepository;

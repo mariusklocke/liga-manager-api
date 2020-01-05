@@ -12,7 +12,7 @@ use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\Util\Assert;
 
-class SetTournamentRoundHandler
+class SetTournamentRoundHandler implements AuthAwareHandler
 {
     /** @var TournamentRepositoryInterface */
     private $tournamentRepository;

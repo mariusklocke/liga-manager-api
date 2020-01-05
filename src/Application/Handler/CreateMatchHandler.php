@@ -8,7 +8,7 @@ use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class CreateMatchHandler
+class CreateMatchHandler implements AuthAwareHandler
 {
     /** @var MatchDayRepositoryInterface */
     private $matchDayRepository;

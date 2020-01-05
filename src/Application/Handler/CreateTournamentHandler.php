@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Tournament;
 
-class CreateTournamentHandler
+class CreateTournamentHandler implements AuthAwareHandler
 {
     /** @var TournamentRepositoryInterface */
     private $tournamentRepository;

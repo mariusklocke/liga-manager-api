@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Pitch;
 
-class CreatePitchHandler
+class CreatePitchHandler implements AuthAwareHandler
 {
     /** @var PitchRepositoryInterface */
     private $pitchRepository;

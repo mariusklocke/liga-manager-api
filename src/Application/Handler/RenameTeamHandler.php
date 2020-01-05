@@ -8,7 +8,7 @@ use HexagonalPlayground\Application\Permission\CanManageTeam;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 
-class RenameTeamHandler
+class RenameTeamHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
     private $teamRepository;
