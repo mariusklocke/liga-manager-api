@@ -6,10 +6,10 @@ namespace HexagonalPlayground\Infrastructure\API\Security;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\TokenInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
-use HexagonalPlayground\Domain\User;
 
 class Authenticator
 {
@@ -34,10 +34,10 @@ class Authenticator
      *
      * @param string $email
      * @param string $password
-     * @return User
+     * @return AuthContext
      * @throws AuthenticationException
      */
-    public function authenticateByCredentials(string $email, string $password): User
+    public function authenticateByCredentials(string $email, string $password): AuthContext
     {
         try {
             $user = $this->userRepository->findByEmail($email);
@@ -49,7 +49,7 @@ class Authenticator
             throw $this->createException();
         }
 
-        return $user;
+        return new AuthContext($user);
     }
 
     /**
@@ -58,10 +58,10 @@ class Authenticator
      * The token will be considered invalid if the user password has been changed after the token has been issued
      *
      * @param TokenInterface $token
-     * @return User
+     * @return AuthContext
      * @throws AuthenticationException
      */
-    public function authenticateByToken(TokenInterface $token): User
+    public function authenticateByToken(TokenInterface $token): AuthContext
     {
         try {
             $user = $this->userRepository->findById($token->getUserId());
@@ -82,7 +82,7 @@ class Authenticator
             throw $this->createException('Token has been invalidated');
         }
 
-        return $user;
+        return new AuthContext($user);
     }
 
     /**
