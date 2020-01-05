@@ -7,26 +7,20 @@ use DateTimeImmutable;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\AuthContext;
-use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\TokenInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
 class Authenticator
 {
-    /** @var TokenFactoryInterface */
-    private $tokenFactory;
-
     /** @var UserRepositoryInterface */
     private $userRepository;
 
     /**
-     * @param TokenFactoryInterface $tokenFactory
      * @param UserRepositoryInterface $userRepository
      */
-    public function __construct(TokenFactoryInterface $tokenFactory, UserRepositoryInterface $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository)
     {
-        $this->tokenFactory       = $tokenFactory;
-        $this->userRepository     = $userRepository;
+        $this->userRepository = $userRepository;
     }
 
     /**
