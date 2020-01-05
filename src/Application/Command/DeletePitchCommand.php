@@ -5,8 +5,6 @@ namespace HexagonalPlayground\Application\Command;
 
 class DeletePitchCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $pitchId;
 

@@ -8,7 +8,7 @@ use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
-use HexagonalPlayground\Infrastructure\API\Security\UserAware;
+use HexagonalPlayground\Infrastructure\API\Security\AuthAware;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,7 +20,7 @@ use Webauthn\PublicKeyCredentialRpEntity;
 
 class CredentialController
 {
-    use UserAware;
+    use AuthAware;
     use JsonEncodingTrait;
 
     /** @var PublicKeyCredentialSourceRepository */
@@ -61,7 +61,7 @@ class CredentialController
      */
     public function options(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $user = $this->getUserFromRequest($request);
+        $user = $this->requireAuthContext($request)->getUser();
 
         $rpEntity = new PublicKeyCredentialRpEntity(
             $request->getUri()->getHost(),
@@ -101,7 +101,7 @@ class CredentialController
             throw new InvalidInputException('Not an authenticator attestation response');
         }
 
-        $user = $this->getUserFromRequest($request);
+        $user = $this->requireAuthContext($request)->getUser();
         $options = $this->creationOptionsStore->get($user->getId());
         if (!$options instanceof PublicKeyCredentialCreationOptions) {
             throw new InvalidInputException('Cannot find creation options for current user');
@@ -126,7 +126,7 @@ class CredentialController
      */
     public function findAll(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $user = UserConverter::convert($this->getUserFromRequest($request));
+        $user = UserConverter::convert($this->requireAuthContext($request)->getUser());
 
         $credentials = $this->credentialRepository->findAllForUserEntity($user);
 
@@ -147,7 +147,7 @@ class CredentialController
             throw new InvalidInputException('Malformed parameter "id" in request URI');
         }
 
-        $user = UserConverter::convert($this->getUserFromRequest($request));
+        $user = UserConverter::convert($this->requireAuthContext($request)->getUser());
 
         /** @var PublicKeyCredential $credential */
         $credential = $this->credentialRepository->findOneByCredentialId($id);
@@ -167,7 +167,7 @@ class CredentialController
      */
     public function deleteAll(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $user = UserConverter::convert($this->getUserFromRequest($request));
+        $user = UserConverter::convert($this->requireAuthContext($request)->getUser());
 
         $credentials = $this->credentialRepository->findAllForUserEntity($user);
         foreach ($credentials as $credential) {

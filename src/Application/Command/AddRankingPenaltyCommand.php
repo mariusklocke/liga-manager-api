@@ -7,7 +7,6 @@ use HexagonalPlayground\Application\TypeAssert;
 
 class AddRankingPenaltyCommand implements CommandInterface
 {
-    use AuthenticationAware;
     use IdAware;
 
     /** @var string */

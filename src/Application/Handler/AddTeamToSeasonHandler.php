@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
 class AddTeamToSeasonHandler
 {
@@ -29,11 +30,12 @@ class AddTeamToSeasonHandler
 
     /**
      * @param AddTeamToSeasonCommand $command
+     * @param AuthContext $authContext
      * @throws NotFoundException
      */
-    public function __invoke(AddTeamToSeasonCommand $command)
+    public function __invoke(AddTeamToSeasonCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         $season = $this->seasonRepository->find($command->getSeasonId());
         $team   = $this->teamRepository->find($command->getTeamId());
 

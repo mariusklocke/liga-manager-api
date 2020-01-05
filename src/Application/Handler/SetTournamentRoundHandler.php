@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\Util\Assert;
@@ -31,10 +32,11 @@ class SetTournamentRoundHandler
 
     /**
      * @param SetTournamentRoundCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(SetTournamentRoundCommand $command)
+    public function __invoke(SetTournamentRoundCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         Assert::false(empty($command->getTeamIdPairs()), 'Team pairs cannot be empty');
         Assert::false(count($command->getTeamIdPairs()) > 64, 'Request exceeds maximum amount of 64 team pairs');
 

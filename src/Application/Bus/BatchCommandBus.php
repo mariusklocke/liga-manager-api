@@ -2,7 +2,9 @@
 
 namespace HexagonalPlayground\Application\Bus;
 
+use HexagonalPlayground\Application\Handler\AuthAwareHandler;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
 class BatchCommandBus
 {
@@ -24,13 +26,18 @@ class BatchCommandBus
 
     /**
      * @param CommandQueue $commandQueue
+     * @param AuthContext|null $authContext
      */
-    public function execute(CommandQueue $commandQueue): void
+    public function execute(CommandQueue $commandQueue, ?AuthContext $authContext): void
     {
-        $this->transactionWrapper->transactional(function () use ($commandQueue) {
+        $this->transactionWrapper->transactional(function () use ($commandQueue, $authContext) {
             foreach ($commandQueue->getIterator() as $command) {
                 $handler = $this->resolver->resolve($command);
-                $handler($command);
+                if ($handler instanceof AuthAwareHandler) {
+                    $handler($command, $authContext);
+                } else {
+                    $handler($command);
+                }
             }
         });
     }

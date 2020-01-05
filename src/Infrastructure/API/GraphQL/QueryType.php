@@ -157,7 +157,9 @@ class QueryType extends ObjectType
                     'authenticatedUser' => [
                         'type' => UserType::getInstance(),
                         'resolve' => function ($root, $args, AppContext $context) {
-                            return $context->getAuthenticatedUser()->getPublicProperties();
+                            $user = $context->requireAuthContext($context->getRequest())->getUser();
+
+                            return $user->getPublicProperties();
                         }
                     ],
                     'allUsers' => [
@@ -165,7 +167,8 @@ class QueryType extends ObjectType
                         'resolve' => function ($root, array $args, AppContext $context) {
                             /** @var UserRepository $repo */
                             $repo = $context->getContainer()->get(UserRepository::class);
-                            IsAdmin::check($context->getAuthenticatedUser());
+                            $user = $context->requireAuthContext($context->getRequest())->getUser();
+                            IsAdmin::check($user);
 
                             return $repo->findAllUsers();
                         }

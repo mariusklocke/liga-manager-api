@@ -3,7 +3,9 @@
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateMatchDayForSeasonCommand;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
 class CreateMatchDayForSeasonHandler
 {
@@ -20,9 +22,11 @@ class CreateMatchDayForSeasonHandler
 
     /**
      * @param CreateMatchDayForSeasonCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(CreateMatchDayForSeasonCommand $command)
+    public function __invoke(CreateMatchDayForSeasonCommand $command, AuthContext $authContext)
     {
+        IsAdmin::check($authContext->getUser());
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->createMatchDay(
             $command->getId(),

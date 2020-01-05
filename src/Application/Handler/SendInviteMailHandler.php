@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Email\MessageInterface;
 use HexagonalPlayground\Application\Permission\IsAdmin;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
@@ -43,10 +44,11 @@ class SendInviteMailHandler
 
     /**
      * @param SendInviteMailCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(SendInviteMailCommand $command)
+    public function __invoke(SendInviteMailCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
 
         $user    = $this->userRepository->findById($command->getUserId());
         $message = $this->buildMessage($user, $command->getBaseUri(), $command->getTargetPath());

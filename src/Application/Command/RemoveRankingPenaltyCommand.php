@@ -5,8 +5,6 @@ namespace HexagonalPlayground\Application\Command;
 
 class RemoveRankingPenaltyCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $rankingPenaltyId;
 

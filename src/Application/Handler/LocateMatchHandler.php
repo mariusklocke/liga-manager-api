@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
 class LocateMatchHandler
 {
@@ -26,11 +27,15 @@ class LocateMatchHandler
         $this->pitchRepository = $pitchRepository;
     }
 
-    public function __invoke(LocateMatchCommand $command)
+    /**
+     * @param LocateMatchCommand $command
+     * @param AuthContext $authContext
+     */
+    public function __invoke(LocateMatchCommand $command, AuthContext $authContext)
     {
         $match = $this->matchRepository->find($command->getMatchId());
         $pitch = $this->pitchRepository->find($command->getPitchId());
-        CanChangeMatch::check($command->getAuthenticatedUser(), $match);
+        CanChangeMatch::check($authContext->getUser(), $match);
         $match->locate($pitch);
     }
 }

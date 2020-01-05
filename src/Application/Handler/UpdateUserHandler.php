@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\UpdateUserCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
 class UpdateUserHandler
@@ -28,19 +29,20 @@ class UpdateUserHandler
 
     /**
      * @param UpdateUserCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(UpdateUserCommand $command)
+    public function __invoke(UpdateUserCommand $command, AuthContext $authContext)
     {
         $user = $this->userRepository->findById($command->getUserId());
 
         // Changing other users than oneself requires admin rights
-        if (!$user->equals($command->getAuthenticatedUser())) {
-            IsAdmin::check($command->getAuthenticatedUser());
+        if (!$user->equals($authContext->getUser())) {
+            IsAdmin::check($authContext->getUser());
         }
 
         // Changing user role requires admin rights
         if (null !== $command->getRole() && !$user->hasRole($command->getRole())) {
-            IsAdmin::check($command->getAuthenticatedUser());
+            IsAdmin::check($authContext->getUser());
             $user->setRole($command->getRole());
         }
 
@@ -58,7 +60,7 @@ class UpdateUserHandler
         }
 
         if (null !== $command->getTeamIds()) {
-            IsAdmin::check($command->getAuthenticatedUser());
+            IsAdmin::check($authContext->getUser());
 
             $user->clearTeams();
             foreach ($command->getTeamIds() as $teamId) {

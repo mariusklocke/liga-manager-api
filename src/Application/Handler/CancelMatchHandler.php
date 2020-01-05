@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
 class CancelMatchHandler
 {
@@ -23,12 +24,13 @@ class CancelMatchHandler
 
     /**
      * @param CancelMatchCommand $command
+     * @param AuthContext $authContext
      * @throws NotFoundException
      */
-    public function __invoke(CancelMatchCommand $command)
+    public function __invoke(CancelMatchCommand $command, AuthContext $authContext)
     {
         $match = $this->matchRepository->find($command->getMatchId());
-        CanChangeMatch::check($command->getAuthenticatedUser(), $match);
+        CanChangeMatch::check($authContext->getUser(), $match);
         $match->cancel($command->getReason());
     }
 }

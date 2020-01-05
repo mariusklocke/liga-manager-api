@@ -5,8 +5,6 @@ namespace HexagonalPlayground\Application\Command;
 
 class DeleteUserCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $userId;
 

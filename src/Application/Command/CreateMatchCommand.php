@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Command;
 class CreateMatchCommand implements CommandInterface
 {
     use IdAware;
-    use AuthenticationAware;
 
     /** @var string */
     private $matchDayId;

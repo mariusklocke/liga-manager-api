@@ -6,8 +6,6 @@ use HexagonalPlayground\Domain\Value\MatchAppointment;
 
 class ScheduleAllMatchesForSeasonCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $seasonId;
 

@@ -34,6 +34,8 @@ class UserTest extends TestCase
 
     public function testPasswordResetSendsAnEmail()
     {
+        $this->client->clearAuth();
+
         self::getEmailClient()->deleteAllEmails();
         $user = $this->getUserData();
         $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');

@@ -6,8 +6,6 @@ use Psr\Http\Message\UriInterface;
 
 class SendInviteMailCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $userId;
 

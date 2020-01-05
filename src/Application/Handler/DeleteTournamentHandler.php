@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
 class DeleteTournamentHandler
 {
@@ -22,10 +23,11 @@ class DeleteTournamentHandler
 
     /**
      * @param DeleteTournamentCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(DeleteTournamentCommand $command)
+    public function __invoke(DeleteTournamentCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         $tournament = $this->repository->find($command->getTournamentId());
         $tournament->clearMatches();
         $this->repository->delete($tournament);

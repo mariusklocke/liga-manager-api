@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\InvalidateAccessTokensCommand;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
 class InvalidateAccessTokensHandler
@@ -20,10 +21,11 @@ class InvalidateAccessTokensHandler
 
     /**
      * @param InvalidateAccessTokensCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(InvalidateAccessTokensCommand $command): void
+    public function __invoke(InvalidateAccessTokensCommand $command, AuthContext $authContext): void
     {
-        $user = $command->getAuthenticatedUser();
+        $user = $authContext->getUser();
         $user->invalidateAccessTokens();
 
         $this->userRepository->save($user);

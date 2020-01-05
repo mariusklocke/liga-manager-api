@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Bus;
 
 use HexagonalPlayground\Application\Command\CommandInterface;
+use HexagonalPlayground\Application\Handler\AuthAwareHandler;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
 class CommandBus
 {
@@ -26,12 +28,17 @@ class CommandBus
 
     /**
      * @param CommandInterface $command
+     * @param AuthContext|null $authContext
      */
-    public function execute(CommandInterface $command): void
+    public function execute(CommandInterface $command, ?AuthContext $authContext = null): void
     {
         $handler = $this->resolver->resolve($command);
-        $this->transactionWrapper->transactional(function() use ($handler, $command) {
-            $handler($command);
+        $this->transactionWrapper->transactional(function() use ($handler, $command, $authContext) {
+            if ($handler instanceof AuthAwareHandler) {
+                $handler($command, $authContext);
+            } else {
+                $handler($command);
+            }
         });
     }
 }

@@ -7,8 +7,6 @@ use HexagonalPlayground\Application\TypeAssert;
 
 class ChangeUserPasswordCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $newPassword;
 

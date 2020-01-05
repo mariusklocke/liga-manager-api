@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
-use HexagonalPlayground\Application\Exception\AuthenticationException;
-use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\API\Security\AuthAware;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class AppContext
 {
+    use AuthAware;
+
     /** @var ServerRequestInterface */
     private $request;
 
@@ -32,21 +33,6 @@ class AppContext
     public function getRequest(): ServerRequestInterface
     {
         return $this->request;
-    }
-
-    public function isAuthenticated(): bool
-    {
-        return $this->request->getAttribute('user') !== null;
-    }
-
-    public function getAuthenticatedUser(): User
-    {
-        $user = $this->request->getAttribute('user');
-        if ($user instanceof User) {
-            return $user;
-        }
-
-        throw new AuthenticationException('Unauthenticated request');
     }
 
     /**
