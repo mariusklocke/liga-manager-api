@@ -8,8 +8,9 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
-class RemoveTeamFromSeasonHandler
+class RemoveTeamFromSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;
@@ -29,11 +30,12 @@ class RemoveTeamFromSeasonHandler
 
     /**
      * @param RemoveTeamFromSeasonCommand $command
+     * @param AuthContext $authContext
      * @throws NotFoundException
      */
-    public function __invoke(RemoveTeamFromSeasonCommand $command)
+    public function __invoke(RemoveTeamFromSeasonCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         $season = $this->seasonRepository->find($command->getSeasonId());
         $team   = $this->teamRepository->find($command->getTeamId());
 

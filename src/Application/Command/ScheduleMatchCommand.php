@@ -8,8 +8,6 @@ use HexagonalPlayground\Application\TypeAssert;
 
 class ScheduleMatchCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $matchId;
     /** @var DateTimeImmutable */

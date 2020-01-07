@@ -6,8 +6,9 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\RescheduleMatchDayCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
-class RescheduleMatchDayHandler
+class RescheduleMatchDayHandler implements AuthAwareHandler
 {
     /** @var MatchDayRepositoryInterface */
     private $matchDayRepository;
@@ -20,9 +21,13 @@ class RescheduleMatchDayHandler
         $this->matchDayRepository = $matchDayRepository;
     }
 
-    public function __invoke(RescheduleMatchDayCommand $command)
+    /**
+     * @param RescheduleMatchDayCommand $command
+     * @param AuthContext $authContext
+     */
+    public function __invoke(RescheduleMatchDayCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         $matchDay = $this->matchDayRepository->find($command->getMatchDayId());
         $matchDay->reschedule($command->getDatePeriod()->getStartDate(), $command->getDatePeriod()->getEndDate());
         $this->matchDayRepository->save($matchDay);

@@ -7,8 +7,9 @@ use HexagonalPlayground\Application\Command\AddRankingPenaltyCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
-class AddRankingPenaltyHandler
+class AddRankingPenaltyHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;
@@ -28,10 +29,11 @@ class AddRankingPenaltyHandler
 
     /**
      * @param AddRankingPenaltyCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(AddRankingPenaltyCommand $command)
+    public function __invoke(AddRankingPenaltyCommand $command, AuthContext $authContext): void
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
 
         $season = $this->seasonRepository->find($command->getSeasonId());
         $team   = $this->teamRepository->find($command->getTeamId());
@@ -41,7 +43,7 @@ class AddRankingPenaltyHandler
             $team,
             $command->getReason(),
             $command->getPoints(),
-            $command->getAuthenticatedUser()
+            $authContext->getUser()
         );
 
         $this->seasonRepository->save($season);

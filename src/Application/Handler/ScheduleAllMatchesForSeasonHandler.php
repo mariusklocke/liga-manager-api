@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Command\ScheduleAllMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Value\MatchAppointment;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Match;
@@ -15,7 +16,7 @@ use HexagonalPlayground\Domain\MatchDay;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Util\Assert;
 
-class ScheduleAllMatchesForSeasonHandler
+class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;
@@ -39,10 +40,11 @@ class ScheduleAllMatchesForSeasonHandler
 
     /**
      * @param ScheduleAllMatchesForSeasonCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(ScheduleAllMatchesForSeasonCommand $command): void
+    public function __invoke(ScheduleAllMatchesForSeasonCommand $command, AuthContext $authContext): void
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
 
         $season = $this->seasonRepository->find($command->getSeasonId());
 

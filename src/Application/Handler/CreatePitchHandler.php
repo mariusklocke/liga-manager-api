@@ -6,9 +6,10 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Pitch;
 
-class CreatePitchHandler
+class CreatePitchHandler implements AuthAwareHandler
 {
     /** @var PitchRepositoryInterface */
     private $pitchRepository;
@@ -23,10 +24,11 @@ class CreatePitchHandler
 
     /**
      * @param CreatePitchCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(CreatePitchCommand $command)
+    public function __invoke(CreatePitchCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         $pitch = new Pitch($command->getId(), $command->getLabel(), $command->getLocation());
         $this->pitchRepository->save($pitch);
     }

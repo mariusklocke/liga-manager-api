@@ -73,7 +73,7 @@ class CreateUserCommand extends Command
             []
         );
 
-        $this->commandBus->execute($command->withAuthenticatedUser($this->getCliUser()));
+        $this->commandBus->execute($command, $this->getAuthContext());
 
         $output->writeln('User successfully created. ID: ' . $command->getId());
         return 0;

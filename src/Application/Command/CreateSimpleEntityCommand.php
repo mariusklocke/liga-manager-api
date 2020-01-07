@@ -6,7 +6,6 @@ use HexagonalPlayground\Application\TypeAssert;
 
 abstract class CreateSimpleEntityCommand implements CommandInterface
 {
-    use AuthenticationAware;
     use IdAware;
 
     /** @var string */

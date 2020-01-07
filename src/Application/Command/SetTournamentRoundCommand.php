@@ -9,8 +9,6 @@ use HexagonalPlayground\Domain\Value\TeamIdPair;
 
 class SetTournamentRoundCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $tournamentId;
 

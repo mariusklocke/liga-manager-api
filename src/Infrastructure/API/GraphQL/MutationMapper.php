@@ -34,16 +34,13 @@ class MutationMapper
                 'type' => Type::boolean(),
                 'resolve' => function ($val, $argValues, AppContext $context) use ($commandClass, $argTypes) {
                     $command = $this->createCommand($commandClass, $argTypes, $argValues);
-                    if (method_exists($command, 'withAuthenticatedUser')) {
-                        $command = $command->withAuthenticatedUser($context->getAuthenticatedUser());
-                    }
                     if (method_exists($command, 'withBaseUri')) {
                         $command = $command->withBaseUri($context->getRequest()->getUri());
                     }
 
                     /** @var CommandBus $commandBus */
                     $commandBus = $context->getContainer()->get(CommandBus::class);
-                    $commandBus->execute($command);
+                    $commandBus->execute($command, $context->getAuthContext($context->getRequest()));
                     return true;
                 }
             ]

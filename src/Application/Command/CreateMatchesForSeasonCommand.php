@@ -7,8 +7,6 @@ use HexagonalPlayground\Domain\Value\DatePeriod;
 
 class CreateMatchesForSeasonCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $seasonId;
 

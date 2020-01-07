@@ -6,9 +6,7 @@ namespace HexagonalPlayground\Infrastructure\API\Security;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
-use HexagonalPlayground\Domain\User;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -25,41 +23,6 @@ class AuthenticationMiddleware implements MiddlewareInterface
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-    }
-
-    /**
-     * @return Authenticator
-     */
-    private function getAuthenticator(): Authenticator
-    {
-        return $this->container->get(Authenticator::class);
-    }
-
-    /**
-     * @return TokenFactoryInterface
-     */
-    private function getTokenFactory(): TokenFactoryInterface
-    {
-        return $this->container->get(TokenFactoryInterface::class);
-    }
-
-    private function setUser(ServerRequestInterface $request, User $user): ServerRequestInterface
-    {
-        return $request->withAttribute('user', $user);
-    }
-
-    /**
-     * @param RequestInterface $request
-     * @return string|null
-     */
-    private function getAuthHeader(RequestInterface $request)
-    {
-        $headerValues = $request->getHeader('Authorization');
-        if (count($headerValues) === 0) {
-            return null;
-        }
-
-        return array_shift($headerValues);
     }
 
     /**
@@ -103,7 +66,7 @@ class AuthenticationMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $rawHeaderValue = $this->getAuthHeader($request);
+        $rawHeaderValue = $request->getHeader('Authorization')[0] ?? null;
         if (!is_string($rawHeaderValue)) {
             return $handler->handle($request);
         }
@@ -112,29 +75,29 @@ class AuthenticationMiddleware implements MiddlewareInterface
         switch (strtolower($type)) {
             case 'basic':
                 list($email, $password) = $this->parseCredentials($secret);
-                $user = $this->getAuthenticator()->authenticateByCredentials($email, $password);
-                $request = $this->setUser($request, $user);
-
-                $response = $handler->handle($request);
+                $context  = $this->container->get(PasswordAuthenticator::class)->authenticate($email, $password);
+                $response = $handler->handle($request->withAttribute('auth', $context));
 
                 /**
                  * Creating the token after the controller is important when changing a user password
                  * In this case the token has to be created *AFTER* the password has been changed, because otherwise
                  * it would be considered invalid for the next request
                  *
-                 * @see Authenticator::authenticateByToken()
+                 * @see TokenAuthenticator::authenticate()
                  */
 
-                $token = $this->getTokenFactory()->create(
-                    $user,
+                $token = $this->container->get(TokenFactoryInterface::class)->create(
+                    $context->getUser(),
                     new DateTimeImmutable('now + 1 year')
                 );
+
                 return $response->withHeader('X-Token', $token->encode());
 
             case 'bearer':
-                $user = $this->getAuthenticator()->authenticateByToken(JsonWebToken::decode($secret));
-                $request = $this->setUser($request, $user);
-                return $handler->handle($request);
+                $token   = JsonWebToken::decode($secret);
+                $context = $this->container->get(TokenAuthenticator::class)->authenticate($token);
+
+                return $handler->handle($request->withAttribute('auth', $context));
         }
 
         throw new AuthenticationException('Unsupported authentication type');

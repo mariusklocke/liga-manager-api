@@ -6,9 +6,10 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Team;
 
-class CreateTeamHandler
+class CreateTeamHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
     private $teamRepository;
@@ -23,10 +24,11 @@ class CreateTeamHandler
 
     /**
      * @param CreateTeamCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(CreateTeamCommand $command)
+    public function __invoke(CreateTeamCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         $team = new Team($command->getId(), $command->getName());
         $this->teamRepository->save($team);
     }

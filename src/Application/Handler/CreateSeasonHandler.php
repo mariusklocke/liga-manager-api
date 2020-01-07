@@ -6,9 +6,10 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Season;
 
-class CreateSeasonHandler
+class CreateSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;
@@ -23,10 +24,11 @@ class CreateSeasonHandler
 
     /**
      * @param CreateSeasonCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(CreateSeasonCommand $command)
+    public function __invoke(CreateSeasonCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         $season = new Season($command->getId(), $command->getName());
         $this->seasonRepository->save($season);
     }

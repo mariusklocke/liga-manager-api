@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Handler\ServiceProvider as CommandHandlerPro
 use HexagonalPlayground\Application\Import\L98ImportProvider;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLProvider;
+use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
 use HexagonalPlayground\Infrastructure\CLI\ServiceProvider as CliServiceProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;

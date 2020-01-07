@@ -4,14 +4,16 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
+use HexagonalPlayground\Application\Security\AuthContext;
 
-class ChangeUserPasswordHandler
+class ChangeUserPasswordHandler implements AuthAwareHandler
 {
     /**
      * @param ChangeUserPasswordCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(ChangeUserPasswordCommand $command)
+    public function __invoke(ChangeUserPasswordCommand $command, AuthContext $authContext)
     {
-        $command->getAuthenticatedUser()->setPassword($command->getNewPassword());
+        $authContext->getUser()->setPassword($command->getNewPassword());
     }
 }

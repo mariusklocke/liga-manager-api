@@ -6,10 +6,11 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 
-class UpdatePitchContactHandler
+class UpdatePitchContactHandler implements AuthAwareHandler
 {
     /** @var PitchRepositoryInterface */
     private $pitchRepository;
@@ -24,10 +25,11 @@ class UpdatePitchContactHandler
 
     /**
      * @param UpdatePitchContactCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(UpdatePitchContactCommand $command)
+    public function __invoke(UpdatePitchContactCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
         /** @var Pitch $pitch */
         $pitch = $this->pitchRepository->find($command->getPitchId());
         $contact = new ContactPerson(

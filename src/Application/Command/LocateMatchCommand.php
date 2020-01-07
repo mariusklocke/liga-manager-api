@@ -7,8 +7,6 @@ use HexagonalPlayground\Application\TypeAssert;
 
 class LocateMatchCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     private $matchId;
     /** @var string */

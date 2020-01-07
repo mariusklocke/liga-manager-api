@@ -6,10 +6,11 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
-class SubmitMatchResultHandler
+class SubmitMatchResultHandler implements AuthAwareHandler
 {
     /** @var MatchRepositoryInterface */
     private $matchRepository;
@@ -24,13 +25,14 @@ class SubmitMatchResultHandler
 
     /**
      * @param SubmitMatchResultCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(SubmitMatchResultCommand $command)
+    public function __invoke(SubmitMatchResultCommand $command, AuthContext $authContext)
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());
-        CanChangeMatch::check($command->getAuthenticatedUser(), $match);
+        CanChangeMatch::check($authContext->getUser(), $match);
         $result = new MatchResult($command->getHomeScore(), $command->getGuestScore());
-        $match->submitResult($result, $command->getAuthenticatedUser());
+        $match->submitResult($result, $authContext->getUser());
     }
 }

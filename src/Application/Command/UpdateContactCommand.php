@@ -5,8 +5,6 @@ namespace HexagonalPlayground\Application\Command;
 
 abstract class UpdateContactCommand implements CommandInterface
 {
-    use AuthenticationAware;
-
     /** @var string */
     protected $firstName;
 

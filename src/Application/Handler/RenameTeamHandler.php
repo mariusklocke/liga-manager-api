@@ -6,8 +6,9 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\RenameTeamCommand;
 use HexagonalPlayground\Application\Permission\CanManageTeam;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
-class RenameTeamHandler
+class RenameTeamHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
     private $teamRepository;
@@ -22,11 +23,12 @@ class RenameTeamHandler
 
     /**
      * @param RenameTeamCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(RenameTeamCommand $command)
+    public function __invoke(RenameTeamCommand $command, AuthContext $authContext)
     {
         $team = $this->teamRepository->find($command->getTeamId());
-        CanManageTeam::check($team, $command->getAuthenticatedUser());
+        CanManageTeam::check($team, $authContext->getUser());
         $team->rename($command->getNewName());
     }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\User;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,8 +18,8 @@ abstract class Command extends SymfonyCommand
     /** @var float */
     private $startTime;
 
-    /** @var User */
-    private $user;
+    /** @var AuthContext|null */
+    private $authContext;
 
     public function __construct()
     {
@@ -46,19 +47,21 @@ abstract class Command extends SymfonyCommand
         $output->writeln(sprintf('Peak memory usage: %.1f MiB', $memory));
     }
 
-    protected function getCliUser(): User
+    protected function getAuthContext(): AuthContext
     {
-        if (null === $this->user) {
-            $this->user = new User(
+        if (null === $this->authContext) {
+            $user = new User(
                 'cli',
                 'cli@example.com',
                 '123456',
                 'CLI',
-                $this->getName()
+                $this->getName(),
+                User::ROLE_ADMIN
             );
-            $this->user->setRole(User::ROLE_ADMIN);
+            $this->authContext = new AuthContext($user);
         }
-        return $this->user;
+
+        return $this->authContext;
     }
 
     protected function getStyledIO(InputInterface $input, OutputInterface $output): StyleInterface

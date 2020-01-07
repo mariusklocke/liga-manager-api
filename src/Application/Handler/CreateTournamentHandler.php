@@ -6,9 +6,10 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Tournament;
 
-class CreateTournamentHandler
+class CreateTournamentHandler implements AuthAwareHandler
 {
     /** @var TournamentRepositoryInterface */
     private $tournamentRepository;
@@ -23,10 +24,11 @@ class CreateTournamentHandler
 
     /**
      * @param CreateTournamentCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(CreateTournamentCommand $command)
+    public function __invoke(CreateTournamentCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($command->getAuthenticatedUser());
+        IsAdmin::check($authContext->getUser());
 
         $tournament = new Tournament($command->getId(), $command->getName());
         $this->tournamentRepository->save($tournament);

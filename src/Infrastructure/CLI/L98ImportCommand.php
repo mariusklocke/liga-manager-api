@@ -84,7 +84,7 @@ class L98ImportCommand extends Command
 
         $this->executor->__invoke(
             new FileStream($path),
-            $this->getCliUser(),
+            $this->getAuthContext(),
             $this->teamMapper
         );
 

@@ -8,7 +8,6 @@ use HexagonalPlayground\Domain\Value\GeographicLocation;
 
 class CreatePitchCommand implements CommandInterface
 {
-    use AuthenticationAware;
     use IdAware;
 
     /** @var string */

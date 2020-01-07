@@ -6,7 +6,6 @@ use HexagonalPlayground\Domain\Value\DatePeriod;
 
 class CreateMatchDayForSeasonCommand implements CommandInterface
 {
-    use AuthenticationAware;
     use IdAware;
 
     /** @var string */

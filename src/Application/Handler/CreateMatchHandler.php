@@ -3,10 +3,12 @@
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\CreateMatchCommand;
+use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\Security\AuthContext;
 
-class CreateMatchHandler
+class CreateMatchHandler implements AuthAwareHandler
 {
     /** @var MatchDayRepositoryInterface */
     private $matchDayRepository;
@@ -26,9 +28,11 @@ class CreateMatchHandler
 
     /**
      * @param CreateMatchCommand $command
+     * @param AuthContext $authContext
      */
-    public function __invoke(CreateMatchCommand $command): void
+    public function __invoke(CreateMatchCommand $command, AuthContext $authContext): void
     {
+        IsAdmin::check($authContext->getUser());
         $matchDay = $this->matchDayRepository->find($command->getMatchDayId());
         $homeTeam = $this->teamRepository->find($command->getHomeTeamId());
         $guestTeam = $this->teamRepository->find($command->getGuestTeamId());

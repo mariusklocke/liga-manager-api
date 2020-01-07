@@ -4,5 +4,5 @@ namespace HexagonalPlayground\Application\Command;
 
 class InvalidateAccessTokensCommand implements CommandInterface
 {
-    use AuthenticationAware;
+    // empty
 }
