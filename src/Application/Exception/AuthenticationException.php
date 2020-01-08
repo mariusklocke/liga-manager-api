@@ -8,6 +8,9 @@ use HexagonalPlayground\Domain\ExceptionInterface;
 
 class AuthenticationException extends Exception implements ExceptionInterface
 {
+    /** @var string */
+    protected $code = 'ERR-AUTHENTICATION';
+
     /**
      * Returns the appropriate HTTP response status code
      *

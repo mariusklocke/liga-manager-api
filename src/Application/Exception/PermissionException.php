@@ -8,6 +8,9 @@ use HexagonalPlayground\Domain\ExceptionInterface;
 
 class PermissionException extends Exception implements ExceptionInterface
 {
+    /** @var string */
+    protected $code = 'ERR-PERMISSION';
+
     /**
      * Returns the appropriate HTTP response status code
      *

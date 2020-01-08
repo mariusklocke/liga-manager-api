@@ -7,6 +7,9 @@ use RuntimeException;
 
 class IoException extends RuntimeException implements ExceptionInterface
 {
+    /** @var string */
+    protected $code = 'ERR-IO';
+
     /**
      * Returns the appropriate HTTP response status code
      *

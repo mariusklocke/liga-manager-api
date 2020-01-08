@@ -8,6 +8,9 @@ use HexagonalPlayground\Domain\ExceptionInterface;
 
 class NotFoundException extends Exception implements ExceptionInterface
 {
+    /** @var string */
+    protected $code = 'ERR-NOT-FOUND';
+
     /**
      * Returns the appropriate HTTP response status code
      *

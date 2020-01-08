@@ -7,6 +7,9 @@ use Exception;
 
 class DomainException extends Exception implements ExceptionInterface
 {
+    /** @var string */
+    protected $code = 'ERR-DOMAIN';
+
     /**
      * Returns the appropriate HTTP response status code
      *
