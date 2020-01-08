@@ -7,6 +7,8 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\MatchDay;
+use HexagonalPlayground\Domain\Team;
 
 class CreateMatchHandler implements AuthAwareHandler
 {
@@ -33,8 +35,12 @@ class CreateMatchHandler implements AuthAwareHandler
     public function __invoke(CreateMatchCommand $command, AuthContext $authContext): void
     {
         IsAdmin::check($authContext->getUser());
+
+        /** @var MatchDay $matchDay */
         $matchDay = $this->matchDayRepository->find($command->getMatchDayId());
+        /** @var Team $homeTeam */
         $homeTeam = $this->teamRepository->find($command->getHomeTeamId());
+        /** @var Team $guestTeam */
         $guestTeam = $this->teamRepository->find($command->getGuestTeamId());
         $matchDay->createMatch($command->getId(), $homeTeam, $guestTeam);
 

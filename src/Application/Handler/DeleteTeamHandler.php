@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Team;
 
 class DeleteTeamHandler implements AuthAwareHandler
 {
@@ -30,6 +31,8 @@ class DeleteTeamHandler implements AuthAwareHandler
     public function __invoke(DeleteTeamCommand $command, AuthContext $authContext)
     {
         IsAdmin::check($authContext->getUser());
+
+        /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());
         $this->teamRepository->delete($team);
     }

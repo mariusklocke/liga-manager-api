@@ -50,7 +50,8 @@ class SendInviteMailHandler implements AuthAwareHandler
     {
         IsAdmin::check($authContext->getUser());
 
-        $user    = $this->userRepository->findById($command->getUserId());
+        /** @var User $user */
+        $user    = $this->userRepository->find($command->getUserId());
         $message = $this->buildMessage($user, $command->getBaseUri(), $command->getTargetPath());
 
         $this->mailer->send($message);

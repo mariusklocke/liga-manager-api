@@ -33,7 +33,6 @@ class EntityManagerFactory
         $driver->setGlobalBasename('global');
         $config->setMetadataDriverImpl($driver);
         $config->setSQLLogger(new QueryLogger($logger));
-        $config->setDefaultRepositoryClassName(BaseRepository::class);
         $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
         $pdo = new PDO(
             'mysql:host=' . Environment::get('MYSQL_HOST') . ';dbname=' . Environment::get('MYSQL_DATABASE'),

@@ -8,6 +8,8 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
+use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Domain\User;
 
 class UpdateUserHandler implements AuthAwareHandler
 {
@@ -33,7 +35,8 @@ class UpdateUserHandler implements AuthAwareHandler
      */
     public function __invoke(UpdateUserCommand $command, AuthContext $authContext)
     {
-        $user = $this->userRepository->findById($command->getUserId());
+        /** @var User $user */
+        $user = $this->userRepository->find($command->getUserId());
 
         // Changing other users than oneself requires admin rights
         if (!$user->equals($authContext->getUser())) {
@@ -64,7 +67,9 @@ class UpdateUserHandler implements AuthAwareHandler
 
             $user->clearTeams();
             foreach ($command->getTeamIds() as $teamId) {
-                $user->addTeam($this->teamRepository->find($teamId));
+                /** @var Team $team */
+                $team = $this->teamRepository->find($teamId);
+                $user->addTeam($team);
             }
         }
 

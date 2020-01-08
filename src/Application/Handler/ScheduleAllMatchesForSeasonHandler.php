@@ -9,6 +9,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Value\MatchAppointment;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Match;
@@ -46,6 +47,7 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
     {
         IsAdmin::check($authContext->getUser());
 
+        /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
 
         foreach ($season->getMatchDays() as $matchDay) {

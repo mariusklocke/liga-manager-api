@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use DI;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectManager;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
@@ -14,15 +15,15 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Domain\Match;
-use HexagonalPlayground\Domain\MatchDay;
-use HexagonalPlayground\Domain\Pitch;
-use HexagonalPlayground\Domain\Season;
-use HexagonalPlayground\Domain\Team;
-use HexagonalPlayground\Domain\Tournament;
-use HexagonalPlayground\Domain\User;
-use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\PitchRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\PublicKeyCredentialRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\UserRepository;
 use Psr\Log\LoggerInterface;
 
 class DoctrineServiceProvider implements ServiceProviderInterface
@@ -33,33 +34,35 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             EntityManagerInterface::class => DI\factory(EntityManagerFactory::class)
                 ->parameter('logger', DI\get(LoggerInterface::class)),
 
+            ObjectManager::class => DI\get(EntityManagerInterface::class),
+
             OrmTransactionWrapperInterface::class => DI\get(DoctrineTransactionWrapper::class),
 
             DoctrineTransactionWrapper::class => DI\autowire(),
 
-            UserRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
-                ->parameter('entityName', User::class),
+            MatchRepositoryInterface::class => DI\get(MatchRepository::class),
+            MatchRepository::class => DI\autowire(),
 
-            TeamRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
-                ->parameter('entityName', Team::class),
+            MatchDayRepositoryInterface::class => DI\get(MatchDayRepository::class),
+            MatchDayRepository::class => DI\autowire(),
 
-            MatchRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
-                ->parameter('entityName', Match::class),
+            PitchRepositoryInterface::class => DI\get(PitchRepository::class),
+            PitchRepository::class => DI\autowire(),
 
-            SeasonRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
-                ->parameter('entityName', Season::class),
+            SeasonRepositoryInterface::class => DI\get(SeasonRepository::class),
+            SeasonRepository::class => DI\autowire(),
 
-            TournamentRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
-                ->parameter('entityName', Tournament::class),
+            TeamRepositoryInterface::class => DI\get(TeamRepository::class),
+            TeamRepository::class => DI\autowire(),
 
-            PitchRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
-                ->parameter('entityName', Pitch::class),
+            TournamentRepositoryInterface::class => DI\get(TournamentRepository::class),
+            TournamentRepository::class => DI\autowire(),
 
-            MatchDayRepositoryInterface::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
-                ->parameter('entityName', MatchDay::class),
+            UserRepositoryInterface::class => DI\get(UserRepository::class),
+            UserRepository::class => DI\autowire(),
 
-            PublicKeyCredentialSourceRepository::class => DI\factory([EntityManagerInterface::class, 'getRepository'])
-                ->parameter('entityName', PublicKeyCredential::class),
+            PublicKeyCredentialSourceRepository::class => DI\get(PublicKeyCredentialRepository::class),
+            PublicKeyCredentialRepository::class => DI\autowire()
         ];
     }
 }

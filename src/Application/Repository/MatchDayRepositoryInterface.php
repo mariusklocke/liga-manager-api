@@ -3,20 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Repository;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Domain\MatchDay;
-
-interface MatchDayRepositoryInterface
+interface MatchDayRepositoryInterface extends EntityRepositoryInterface
 {
-    /**
-     * @param string $id
-     * @return MatchDay
-     * @throws NotFoundException
-     */
-    public function find($id);
 
-    /**
-     * @param MatchDay $matchDay
-     */
-    public function save($matchDay): void;
 }

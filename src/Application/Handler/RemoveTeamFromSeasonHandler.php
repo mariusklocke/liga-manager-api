@@ -9,6 +9,8 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Domain\Team;
 
 class RemoveTeamFromSeasonHandler implements AuthAwareHandler
 {
@@ -36,7 +38,10 @@ class RemoveTeamFromSeasonHandler implements AuthAwareHandler
     public function __invoke(RemoveTeamFromSeasonCommand $command, AuthContext $authContext)
     {
         IsAdmin::check($authContext->getUser());
+
+        /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
+        /** @var Team $team */
         $team   = $this->teamRepository->find($command->getTeamId());
 
         $season->removeTeam($team);

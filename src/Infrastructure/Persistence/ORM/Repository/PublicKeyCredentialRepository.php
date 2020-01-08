@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
+namespace HexagonalPlayground\Infrastructure\Persistence\ORM\Repository;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialSource;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-class PublicKeyCredentialRepository extends BaseRepository implements PublicKeyCredentialSourceRepository
+class PublicKeyCredentialRepository extends EntityRepository implements PublicKeyCredentialSourceRepository
 {
     /**
      * @param string $publicKeyCredentialId
@@ -16,13 +15,10 @@ class PublicKeyCredentialRepository extends BaseRepository implements PublicKeyC
      */
     public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
     {
-        try {
-            /** @var PublicKeyCredential $result */
-            $result = $this->find($publicKeyCredentialId);
-            return $result;
-        } catch (NotFoundException $e) {
-            return null;
-        }
+        /** @var PublicKeyCredential $result */
+        $result = $this->find($publicKeyCredentialId);
+
+        return $result;
     }
 
     /**
@@ -39,14 +35,24 @@ class PublicKeyCredentialRepository extends BaseRepository implements PublicKeyC
      */
     public function saveCredentialSource(PublicKeyCredentialSource $publicKeyCredentialSource): void
     {
-        $this->_em->persist($publicKeyCredentialSource);
-        $this->_em->flush();
+        $this->manager->persist($publicKeyCredentialSource);
+        $this->manager->flush();
     }
 
+    /**
+     * @param PublicKeyCredential $entity
+     */
     public function delete($entity): void
     {
         parent::delete($entity);
-        $this->_em->flush();
+        $this->manager->flush();
     }
 
+    /**
+     * @inheritDoc
+     */
+    protected static function getEntityClass(): string
+    {
+        return PublicKeyCredential::class;
+    }
 }

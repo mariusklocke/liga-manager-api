@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Command\EndSeasonCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Season;
 
 class EndSeasonHandler implements AuthAwareHandler
 {
@@ -28,6 +29,8 @@ class EndSeasonHandler implements AuthAwareHandler
     public function __invoke(EndSeasonCommand $command, AuthContext $authContext)
     {
         IsAdmin::check($authContext->getUser());
+
+        /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
         $season->end();
     }

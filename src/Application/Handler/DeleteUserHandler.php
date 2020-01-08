@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Command\DeleteUserCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
+use HexagonalPlayground\Domain\User;
 
 class DeleteUserHandler implements AuthAwareHandler
 {
@@ -28,7 +29,9 @@ class DeleteUserHandler implements AuthAwareHandler
     public function __invoke(DeleteUserCommand $command, AuthContext $authContext)
     {
         IsAdmin::check($authContext->getUser());
-        $user = $this->userRepository->findById($command->getUserId());
+
+        /** @var User $user */
+        $user = $this->userRepository->find($command->getUserId());
         $this->userRepository->delete($user);
     }
 }

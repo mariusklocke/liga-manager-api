@@ -1,31 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
+namespace HexagonalPlayground\Infrastructure\Persistence\ORM\Repository;
 
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Exception\UniquenessException;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
-class UserRepository extends BaseRepository implements UserRepositoryInterface
+class UserRepository extends EntityRepository implements UserRepositoryInterface
 {
-    /**
-     * @param string $id
-     * @return User
-     * @throws NotFoundException
-     */
-    public function findById(string $id): User
-    {
-        /** @var User $user */
-        $user = $this->find($id);
-        if (null === $user) {
-            throw new NotFoundException('Cannot find User with Id ' . $id);
-        }
-
-        return $user;
-    }
-
     /**
      * @param string $email
      * @return User
@@ -33,10 +17,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      */
     public function findByEmail(string $email): User
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->findOneBy(['email' => $email]);
+
         if (null === $user) {
-            throw new NotFoundException('Cannot find User with email "' . $email . '"');
+            throw new NotFoundException('Cannot find user with email "' . $email . '"');
         }
 
         return $user;
@@ -57,5 +42,13 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         throw new UniquenessException(
             sprintf("A user with email address %s already exists", $email)
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected static function getEntityClass(): string
+    {
+        return User::class;
     }
 }
