@@ -20,11 +20,4 @@ interface ExceptionInterface
      * @return string
      */
     public function getCode();
-
-    /**
-     * Returns the appropriate HTTP response status code
-     *
-     * @return int
-     */
-    public function getHttpStatusCode(): int;
 }

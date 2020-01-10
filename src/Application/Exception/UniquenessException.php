@@ -10,12 +10,4 @@ class UniquenessException extends Exception implements ExceptionInterface
 {
     /** @var string */
     protected $code = 'ERR-UNIQUENESS';
-
-    /**
-     * @inheritdoc
-     */
-    public function getHttpStatusCode(): int
-    {
-        return 400;
-    }
 }

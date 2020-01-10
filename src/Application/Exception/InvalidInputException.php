@@ -10,9 +10,4 @@ class InvalidInputException extends Exception implements ExceptionInterface
 {
     /** @var string */
     protected $code = 'ERR-INVALID-INPUT';
-
-    public function getHttpStatusCode(): int
-    {
-        return 400;
-    }
 }
