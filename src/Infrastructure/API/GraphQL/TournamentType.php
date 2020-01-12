@@ -6,8 +6,9 @@ use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchDayLoader;
+use HexagonalPlayground\Infrastructure\Persistence\Read\TournamentRepository;
 
-class TournamentType extends ObjectType
+class TournamentType extends ObjectType implements QueryTypeInterface
 {
     use SingletonTrait;
 
@@ -37,5 +38,32 @@ class TournamentType extends ObjectType
             }
         ];
         parent::__construct($config);
+    }
+
+    public function getQueries(): array
+    {
+        return [
+            'tournament' => [
+                'type' => static::getInstance(),
+                'args' => [
+                    'id' => Type::nonNull(Type::string())
+                ],
+                'resolve' => function ($root, array $args, AppContext $context) {
+                    /** @var TournamentRepository $repo */
+                    $repo = $context->getContainer()->get(TournamentRepository::class);
+
+                    return $repo->findTournamentById($args['id']);
+                }
+            ],
+            'allTournaments' => [
+                'type' => Type::listOf(static::getInstance()),
+                'resolve' => function ($root, $args, AppContext $context) {
+                    /** @var TournamentRepository $repo */
+                    $repo = $context->getContainer()->get(TournamentRepository::class);
+
+                    return $repo->findAllTournaments();
+                }
+            ]
+        ];
     }
 }

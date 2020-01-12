@@ -10,7 +10,7 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchDayLoader
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 
-class SeasonType extends ObjectType
+class SeasonType extends ObjectType implements QueryTypeInterface
 {
     use SingletonTrait;
 
@@ -69,5 +69,34 @@ class SeasonType extends ObjectType
             }
         ];
         parent::__construct($config);
+    }
+
+    public function getQueries(): array
+    {
+        return [
+            'season' => [
+                'type' => static::getInstance(),
+                'description' => 'Get a single season',
+                'args' => [
+                    'id' => Type::nonNull(Type::string())
+                ],
+                'resolve' => function ($root, array $args, AppContext $context) {
+                    /** @var SeasonRepository $repo */
+                    $repo = $context->getContainer()->get(SeasonRepository::class);
+
+                    return $repo->findSeasonById($args['id']);
+                }
+            ],
+            'allSeasons' => [
+                'type' => Type::listOf(static::getInstance()),
+                'description' => 'Get a list of all seasons',
+                'resolve' => function ($root, $args, AppContext $context) {
+                    /** @var SeasonRepository $repo */
+                    $repo = $context->getContainer()->get(SeasonRepository::class);
+
+                    return $repo->findAllSeasons();
+                }
+            ]
+        ];
     }
 }

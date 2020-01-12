@@ -4,8 +4,9 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 
-class PitchType extends ObjectType
+class PitchType extends ObjectType implements QueryTypeInterface
 {
     use SingletonTrait;
 
@@ -33,5 +34,32 @@ class PitchType extends ObjectType
             }
         ];
         parent::__construct($config);
+    }
+
+    public function getQueries(): array
+    {
+        return [
+            'pitch' => [
+                'type' => static::getInstance(),
+                'args' => [
+                    'id' => Type::nonNull(Type::string())
+                ],
+                'resolve' => function ($root, array $args, AppContext $context) {
+                    /** @var PitchRepository $repo */
+                    $repo = $context->getContainer()->get(PitchRepository::class);
+
+                    return $repo->findPitchById($args['id']);
+                }
+            ],
+            'allPitches' => [
+                'type' => Type::listOf(static::getInstance()),
+                'resolve' => function ($root, $args, AppContext $context) {
+                    /** @var PitchRepository $repo */
+                    $repo = $context->getContainer()->get(PitchRepository::class);
+
+                    return $repo->findAllPitches();
+                }
+            ]
+        ];
     }
 }

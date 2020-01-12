@@ -2,9 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure;
 
-use HexagonalPlayground\Application\Bus\ServiceProvider as CommandBusProvider;
-use HexagonalPlayground\Application\Handler\ServiceProvider as CommandHandlerProvider;
-use HexagonalPlayground\Application\Import\L98ImportProvider;
+use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLProvider;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
@@ -40,8 +38,7 @@ class ContainerBuilder
     private static function getServiceProvider(): array
     {
         return [
-            new CommandBusProvider(),
-            new CommandHandlerProvider(),
+            new ApplicationServiceProvider(),
             new LoggerProvider(),
             new DoctrineServiceProvider(),
             new ReadRepositoryProvider(),
@@ -50,8 +47,7 @@ class ContainerBuilder
             new EventServiceProvider(),
             new GraphQLProvider(),
             new WebAuthnServiceProvider(),
-            new CliServiceProvider(),
-            new L98ImportProvider()
+            new CliServiceProvider()
         ];
     }
 }

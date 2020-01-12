@@ -5,8 +5,9 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 
-class TeamType extends ObjectType
+class TeamType extends ObjectType implements QueryTypeInterface
 {
     use SingletonTrait;
 
@@ -31,5 +32,32 @@ class TeamType extends ObjectType
             }
         ];
         parent::__construct($config);
+    }
+
+    public function getQueries(): array
+    {
+        return [
+            'allTeams' => [
+                'type' => Type::listOf(static::getInstance()),
+                'resolve' => function ($root, $args, AppContext $context) {
+                    /** @var TeamRepository $repo */
+                    $repo = $context->getContainer()->get(TeamRepository::class);
+
+                    return $repo->findAllTeams();
+                }
+            ],
+            'team' => [
+                'type' => static::getInstance(),
+                'args' => [
+                    'id' => Type::nonNull(Type::string())
+                ],
+                'resolve' => function ($root, array $args, AppContext $context) {
+                    /** @var TeamRepository $repo */
+                    $repo = $context->getContainer()->get(TeamRepository::class);
+
+                    return $repo->findTeamById($args['id']);
+                }
+            ]
+        ];
     }
 }

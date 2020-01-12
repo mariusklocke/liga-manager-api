@@ -8,8 +8,9 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedPitchLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
+use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 
-class MatchType extends ObjectType
+class MatchType extends ObjectType implements QueryTypeInterface
 {
     use SingletonTrait;
 
@@ -77,5 +78,23 @@ class MatchType extends ObjectType
         return new Deferred(function() use ($loader, $teamId) {
             return $loader->getByTeam($teamId);
         });
+    }
+
+    public function getQueries(): array
+    {
+        return [
+            'match' => [
+                'type' => static::getInstance(),
+                'args' => [
+                    'id' => Type::nonNull(Type::string())
+                ],
+                'resolve' => function ($root, array $args, AppContext $context) {
+                    /** @var MatchRepository $repo */
+                    $repo = $context->getContainer()->get(MatchRepository::class);
+
+                    return $repo->findMatchById($args['id']);
+                }
+            ]
+        ];
     }
 }
