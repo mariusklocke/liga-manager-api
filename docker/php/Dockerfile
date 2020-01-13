@@ -1,21 +1,23 @@
 FROM php:7.4-fpm-alpine
 
-# Simplify local development by adding developer user with id 1000
-RUN set -xe \
-    && apk add --no-cache shadow \
-    && useradd -u 1000 dev \
-    && apk del shadow
-
-# persistent / runtime deps
-RUN apk add --no-cache --virtual .persistent-deps gmp ncurses gnupg
+ENV RUN_DEPS="gmp ncurses gnupg" \
+    BUILD_DEPS="${PHPIZE_DEPS} gmp-dev shadow" \
+    PHP_EXTS="bcmath gmp mysqli pcntl pdo_mysql opcache"
 
 # Install PHP extensions
 RUN set -xe \
-    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS gmp-dev \
-    && docker-php-ext-install bcmath gmp mysqli pcntl pdo_mysql opcache \
+    && apk update \
+    && apk upgrade \
+    && apk add --no-cache $RUN_DEPS \
+    && apk add --no-cache --virtual .build-deps $BUILD_DEPS \
+    && useradd -u 1000 dev \
+    && docker-php-ext-install $PHP_EXTS \
+    && pecl channel-update pecl.php.net \
     && pecl install apcu \
     && pecl install redis \
     && pecl install xdebug-beta \
+    && docker-php-ext-enable apcu redis \
+    && pecl clear-cache \
     && apk del .build-deps \
     && rm -rf /tmp/*
 
@@ -23,7 +25,7 @@ RUN set -xe \
 ARG XDEBUG=0
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
-RUN if [ "$XDEBUG" = "1" ] ; then echo "zend_extension=xdebug.so" >> /usr/local/etc/php/php.ini ; fi
+RUN if [ "$XDEBUG" = "1" ] ; then docker-php-ext-enable xdebug ; fi
 
 # Override entrypoint
 COPY docker/php/docker-php-entrypoint.sh /usr/local/bin/docker-php-entrypoint
