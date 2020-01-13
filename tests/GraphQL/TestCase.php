@@ -49,6 +49,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function useAdminAuth(): void
     {
         $this->client->useCredentials(Environment::get('ADMIN_EMAIL'), Environment::get('ADMIN_PASSWORD'));
+        $token = $this->client->createToken();
+        $this->client->useToken($token);
     }
 
     protected function expectClientException(): void

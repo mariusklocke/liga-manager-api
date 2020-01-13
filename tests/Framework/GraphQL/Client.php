@@ -2,7 +2,10 @@
 
 namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
+use HexagonalPlayground\Tests\Framework\JsonResponseParser;
 use HexagonalPlayground\Tests\Framework\SlimClient;
+use Psr\Http\Message\ResponseInterface;
+use stdClass;
 
 class Client
 {
@@ -12,6 +15,9 @@ class Client
     /** @var array */
     private $headers;
 
+    /** @var JsonResponseParser */
+    private $parser;
+
     /**
      * @param SlimClient $slimClient
      */
@@ -19,11 +25,17 @@ class Client
     {
         $this->slimClient = $slimClient;
         $this->headers    = [];
+        $this->parser     = new JsonResponseParser();
     }
 
-    public function useCredentials(string $email, string $password)
+    public function useCredentials(string $email, string $password): void
     {
         $this->headers['Authorization'] = 'Basic ' . base64_encode($email . ':' . $password);
+    }
+
+    public function useToken(string $token): void
+    {
+        $this->headers['Authorization'] = 'Bearer ' . $token;
     }
 
     public function clearAuth(): void
@@ -41,7 +53,7 @@ class Client
       }
     }
 GRAPHQL;
-        $data = $this->request($query);
+        $data = $this->requestAndParse($query);
         return $data->allSeasons;
     }
 
@@ -53,7 +65,7 @@ mutation createPitch($id: String, $label: String!, $longitude: Float!, $latitude
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'id'        => $id,
             'label'     => $label,
             'longitude' => $longitude,
@@ -61,7 +73,7 @@ GRAPHQL;
         ]);
     }
 
-    public function getPitchById($id): ?\stdClass
+    public function getPitchById($id): ?stdClass
     {
         $query = <<<'GRAPHQL'
 query pitch($id: String!) {
@@ -80,7 +92,7 @@ query pitch($id: String!) {
 }
 GRAPHQL;
 
-        $data = $this->request($query, ['id' => $id]);
+        $data = $this->requestAndParse($query, ['id' => $id]);
         return $data->pitch ?? null;
     }
 
@@ -92,7 +104,7 @@ mutation updatePitchContact($pitchId: String!, $firstName: String!, $lastName: S
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'pitchId' => $pitchId,
             'firstName' => $contact['first_name'],
             'lastName' => $contact['last_name'],
@@ -109,7 +121,7 @@ mutation deletePitch($pitchId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'pitchId' => $pitchId
         ]);
     }
@@ -122,13 +134,13 @@ mutation createTeam($id: String!, $name: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'id'   => $id,
             'name' => $name
         ]);
     }
 
-    public function getTeamById($id): ?\stdClass
+    public function getTeamById($id): ?stdClass
     {
         $query = <<<'GRAPHQL'
 query team($id: String!) {
@@ -146,7 +158,7 @@ query team($id: String!) {
 }
 GRAPHQL;
 
-        $data = $this->request($query, ['id' => $id]);
+        $data = $this->requestAndParse($query, ['id' => $id]);
         return $data->team ?? null;
     }
 
@@ -158,7 +170,7 @@ mutation renameTeam($teamId: String!, $newName: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'teamId' => $teamId,
             'newName' => $newName
         ]);
@@ -172,7 +184,7 @@ mutation updateTeamContact($teamId: String!, $firstName: String!, $lastName: Str
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'teamId' => $teamId,
             'firstName' => $contact['first_name'],
             'lastName' => $contact['last_name'],
@@ -189,7 +201,7 @@ mutation deleteTeam($teamId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'teamId' => $teamId
         ]);
     }
@@ -211,7 +223,7 @@ GRAPHQL;
       }
     }
 GRAPHQL;
-        $data = $this->request($query);
+        $data = $this->requestAndParse($query);
         return $data->allTeams;
     }
 
@@ -223,13 +235,13 @@ mutation createSeason($id: String!, $name: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'id' => $id,
             'name' => $name
         ]);
     }
 
-    public function getSeasonById($id): ?\stdClass
+    public function getSeasonById($id): ?stdClass
     {
         $query = <<<'GRAPHQL'
 query season($id: String!) {
@@ -261,11 +273,11 @@ query season($id: String!) {
 }
 GRAPHQL;
 
-        $data = $this->request($query, ['id' => $id]);
+        $data = $this->requestAndParse($query, ['id' => $id]);
         return $data->season ?? null;
     }
 
-    public function getSeasonByIdWithMatchDays($id): ?\stdClass
+    public function getSeasonByIdWithMatchDays($id): ?stdClass
     {
         $query = <<<'GRAPHQL'
 query season($id: String!) {
@@ -306,7 +318,7 @@ query season($id: String!) {
 }
 GRAPHQL;
 
-        $data = $this->request($query, ['id' => $id]);
+        $data = $this->requestAndParse($query, ['id' => $id]);
         return $data->season ?? null;
     }
 
@@ -318,7 +330,7 @@ mutation addTeamToSeason($seasonId: String!, $teamId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'teamId' => $teamId,
             'seasonId' => $seasonId
         ]);
@@ -332,7 +344,7 @@ mutation removeTeamFromSeason($seasonId: String!, $teamId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'teamId' => $teamId,
             'seasonId' => $seasonId
         ]);
@@ -346,7 +358,7 @@ mutation startSeason($seasonId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'seasonId' => $seasonId
         ]);
     }
@@ -359,7 +371,7 @@ mutation createMatchesForSeason($seasonId: String!, $dates: [DatePeriod]!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'seasonId' => $seasonId,
             'dates' => $dates
         ]);
@@ -373,10 +385,10 @@ mutation createUser($id: String, $email: String!, $password: String!, $first_nam
 }
 GRAPHQL;
 
-        $this->request($query, $user);
+        $this->requestAndParse($query, $user);
     }
 
-    public function getMatchById($id): ?\stdClass
+    public function getMatchById($id): ?stdClass
     {
         $query = <<<'GRAPHQL'
 query match($id: String!) {
@@ -403,7 +415,7 @@ query match($id: String!) {
 }
 GRAPHQL;
 
-        $data = $this->request($query, ['id' => $id]);
+        $data = $this->requestAndParse($query, ['id' => $id]);
         return $data->match;
     }
 
@@ -415,20 +427,16 @@ mutation submitMatchResult($matchId: String!, $homeScore: Int!, $guestScore: Int
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'matchId' => $matchId,
             'homeScore' => $homeScore,
             'guestScore' => $guestScore
         ]);
     }
 
-    private function request(string $query, array $variables = [])
+    private function requestAndParse(string $query, array $variables = []): stdClass
     {
-        $response = $this->slimClient->post(
-            '/api/graphql/',
-            ['query' => $query, 'variables' => $variables],
-            $this->headers
-        );
+        $response = $this->request($query, $variables);
 
         $body = json_decode($response->getBody()->__toString());
 
@@ -439,6 +447,15 @@ GRAPHQL;
         return $body->data;
     }
 
+    private function request(string $query, array $variables = []): ResponseInterface
+    {
+        return $this->slimClient->post(
+            '/api/graphql/',
+            ['query' => $query, 'variables' => $variables],
+            $this->headers
+        );
+    }
+
     public function cancelMatch($matchId, $reason): void
     {
         $query = <<<'GRAPHQL'
@@ -447,7 +464,7 @@ mutation cancelMatch($matchId: String!, $reason: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'matchId' => $matchId,
             'reason'  => $reason
         ]);
@@ -461,7 +478,7 @@ mutation endSeason($seasonId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'seasonId' => $seasonId
         ]);
     }
@@ -474,7 +491,7 @@ mutation addRankingPenalty($id: String, $seasonId: String!, $teamId: String!, $r
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'id' => $id,
             'seasonId' => $seasonId,
             'teamId' => $teamId,
@@ -491,7 +508,7 @@ mutation removeRankingPenalty($rankingPenaltyId: String!, $seasonId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'rankingPenaltyId' => $rankingPenaltyId,
             'seasonId' => $seasonId
         ]);
@@ -505,7 +522,7 @@ mutation rescheduleMatchDay($matchDayId: String!, $datePeriod: DatePeriod!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'matchDayId' => $matchDayId,
             'datePeriod' => $datePeriod
         ]);
@@ -519,7 +536,7 @@ mutation deleteSeason($seasonId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'seasonId' => $seasonId
         ]);
     }
@@ -532,13 +549,13 @@ mutation createTournament($id: String, $name: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'id' => $id,
             'name' => $name
         ]);
     }
 
-    public function getTournamentById($id): ?\stdClass
+    public function getTournamentById($id): ?stdClass
     {
         $query = <<<'GRAPHQL'
 query tournament($id: String!) {
@@ -549,11 +566,11 @@ query tournament($id: String!) {
 }
 GRAPHQL;
 
-        $data = $this->request($query, ['id' => $id]);
+        $data = $this->requestAndParse($query, ['id' => $id]);
         return $data->tournament;
     }
 
-    public function getTournamentByIdWithRounds($id): ?\stdClass
+    public function getTournamentByIdWithRounds($id): ?stdClass
     {
         $query = <<<'GRAPHQL'
 query tournament($id: String!) {
@@ -586,7 +603,7 @@ query tournament($id: String!) {
 }
 GRAPHQL;
 
-        $data = $this->request($query, ['id' => $id]);
+        $data = $this->requestAndParse($query, ['id' => $id]);
         return $data->tournament;
     }
 
@@ -600,7 +617,7 @@ GRAPHQL;
       }
     }
 GRAPHQL;
-        $data = $this->request($query);
+        $data = $this->requestAndParse($query);
         return $data->allTournaments;
     }
 
@@ -612,7 +629,7 @@ mutation setTournamentRound($tournamentId: String!, $round: Int!, $teamIdPairs: 
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'tournamentId' => $tournamentId,
             'round' => $round,
             'teamIdPairs' => $teamIdPairs,
@@ -628,7 +645,7 @@ mutation deleteTournament($tournamentId: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'tournamentId' => $tournamentId
         ]);
     }
@@ -646,11 +663,31 @@ query allUsers {
   }
 }
 GRAPHQL;
-        $data = $this->request($query);
+        $data = $this->requestAndParse($query);
         return $data->allUsers;
     }
 
-    public function getAuthenticatedUser(): \stdClass
+    public function createToken(): string
+    {
+        $query = <<<GRAPHQL
+query authenticatedUser {
+  authenticatedUser {
+    id
+  }
+}
+GRAPHQL;
+        $response = $this->request($query);
+
+        $token = $response->getHeader('X-Token')[0] ?? null;
+
+        if (null === $token) {
+            throw new Exception(['Could not create token']);
+        }
+
+        return $token;
+    }
+
+    public function getAuthenticatedUser(): stdClass
     {
         $query = <<<GRAPHQL
 query authenticatedUser {
@@ -663,7 +700,7 @@ query authenticatedUser {
   }
 }
 GRAPHQL;
-        $data = $this->request($query);
+        $data = $this->requestAndParse($query);
         return $data->authenticatedUser;
     }
 
@@ -675,7 +712,7 @@ mutation changeUserPassword($newPassword: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'newPassword' => $newPassword
         ]);
     }
@@ -688,7 +725,7 @@ mutation updateUser($id: String!, $email: String, $first_name: String, $last_nam
 }
 GRAPHQL;
 
-        $this->request($query, $user);
+        $this->requestAndParse($query, $user);
     }
 
     public function deleteUser($id): void
@@ -699,7 +736,7 @@ mutation deleteUser($id: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'id' => $id
         ]);
     }
@@ -712,7 +749,7 @@ mutation sendPasswordResetMail($email: String!, $target_path: String!){
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'email' => $email,
             'target_path' => $targetPath
         ]);
@@ -726,7 +763,7 @@ mutation locateMatch($match_id: String!, $pitch_id: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'match_id' => $matchId,
             'pitch_id' => $pitchId
         ]);
@@ -740,7 +777,7 @@ mutation sendInviteMail($user_id: String!, $target_path: String!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'user_id' => $userId,
             'target_path' => $targetPath
         ]);
@@ -754,7 +791,7 @@ mutation scheduleMatch($match_id: String!, $kickoff: DateTime!) {
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'match_id' => $matchId,
             'kickoff' => $kickoff
         ]);
@@ -768,7 +805,7 @@ mutation invalidateAccessTokens{
 }
 GRAPHQL;
 
-        $this->request($query);
+        $this->requestAndParse($query);
     }
 
     public function scheduleAllMatchesForSeason($seasonId, $matchAppointments): void
@@ -779,7 +816,7 @@ mutation scheduleAllMatchesForSeason($season_id: String!, $match_appointments: [
 }
 GRAPHQL;
 
-        $this->request($query, [
+        $this->requestAndParse($query, [
             'season_id' => $seasonId,
             'match_appointments' => $matchAppointments
         ]);
