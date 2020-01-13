@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\TokenInterface;
+use HexagonalPlayground\Domain\User;
 
 class TokenAuthenticator extends Authenticator
 {
@@ -22,7 +23,8 @@ class TokenAuthenticator extends Authenticator
     public function authenticate(TokenInterface $token): AuthContext
     {
         try {
-            $user = $this->userRepository->findById($token->getUserId());
+            /** @var User $user */
+            $user = $this->userRepository->find($token->getUserId());
         } catch (NotFoundException $e) {
             throw $this->createException();
         }
