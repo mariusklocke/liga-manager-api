@@ -28,8 +28,6 @@ docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} ${DOCKER_REPO}:${TAG
     sh -c "init-db.sh && phpunit.phar --testdox"
 
 if [[ $1 = "-c" ]]; then
-    # Create temporary volume
-    docker volume create tmp-vol
 
     # Run tests with coverage
     docker run \
@@ -37,8 +35,6 @@ if [[ $1 = "-c" ]]; then
         ${DOCKER_REPO}:${TAG} \
         sh -c "docker-php-ext-enable xdebug && init-db.sh && phpunit.phar --coverage-clover /tmp/clover.xml && php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json"
 
-    # Remove temporary volume
-    docker volume rm tmp-vol
 fi
 
 # Cleanup
