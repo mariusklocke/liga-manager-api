@@ -4,7 +4,6 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Filter\EventFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\EventRepository;
 
 class EventType extends ObjectType implements QueryTypeInterface
@@ -57,13 +56,10 @@ class EventType extends ObjectType implements QueryTypeInterface
                     /** @var EventRepository $repo */
                     $repo = $context->getContainer()->get(EventRepository::class);
 
-                    $filter = new EventFilter(
+                    return $repo->findLatestEvents(
                         $args['start_date'] ?? null,
                         $args['end_date'] ?? null,
-                        $args['type'] ?? null
-                    );
-
-                    return $repo->findLatestEvents($filter);
+                        $args['type'] ?? null);
                 }
             ]
         ];

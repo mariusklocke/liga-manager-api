@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Application\Filter\EventFilter;
+use DateTimeImmutable;
 
 class EventRepository extends AbstractRepository
 {
@@ -23,13 +23,15 @@ class EventRepository extends AbstractRepository
     }
 
     /**
-     * @param EventFilter $filter
+     * @param DateTimeImmutable|null $startDate
+     * @param DateTimeImmutable|null $endDate
+     * @param string|null $type
      * @return array
      */
-    public function findLatestEvents(EventFilter $filter): array
+    public function findLatestEvents(?DateTimeImmutable $startDate = null, ?DateTimeImmutable $endDate = null, ?string $type = null): array
     {
         $query = $this->getBaseQuery();
-        list($conditions, $params) = $this->buildConditions($filter);
+        list($conditions, $params) = $this->buildConditions($startDate, $endDate, $type);
         if (strlen($conditions) > 0 && count($params) > 0) {
             $query .= ' WHERE ' . $conditions;
         }
@@ -39,24 +41,26 @@ class EventRepository extends AbstractRepository
     }
 
     /**
-     * @param EventFilter $filter
+     * @param DateTimeImmutable|null $startDate
+     * @param DateTimeImmutable|null $endDate
+     * @param string|null $type
      * @return array
      */
-    private function buildConditions(EventFilter $filter): array
+    private function buildConditions(?DateTimeImmutable $startDate = null, ?DateTimeImmutable $endDate = null, ?string $type = null): array
     {
         $conditions = [];
         $parameters = [];
-        if ($filter->getStartDate() !== null) {
+        if ($startDate !== null) {
             $conditions[] = "occurred_at >= ?";
-            $parameters[] = $filter->getStartDate()->format(self::MYSQL_DATE_FORMAT);
+            $parameters[] = $startDate->format(self::MYSQL_DATE_FORMAT);
         }
-        if ($filter->getEndDate() !== null) {
+        if ($endDate !== null) {
             $conditions[] = "occurred_at <= ?";
-            $parameters[] = $filter->getEndDate()->format(self::MYSQL_DATE_FORMAT);
+            $parameters[] = $endDate->format(self::MYSQL_DATE_FORMAT);
         }
-        if ($filter->getType() !== null) {
+        if ($type !== null) {
             $conditions[] = "type = ?";
-            $parameters[] = $filter->getType();
+            $parameters[] = $type;
         }
 
         return [
