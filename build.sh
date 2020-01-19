@@ -13,27 +13,20 @@ trap 'rc=$?' ERR
 # Build image
 docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG .
 
-# Define environment
-MYSQL_ENV_ARGS="-e MYSQL_ALLOW_EMPTY_PASSWORD=yes -e MYSQL_HOST=mariadb -e MYSQL_DATABASE=test -e MYSQL_USER=test -e MYSQL_PASSWORD=test"
-EMAIL_ENV_ARGS="-e EMAIL_URL=null://localhost -e EMAIL_SENDER_ADDRESS=noreply@example.com -e EMAIL_SENDER_NAME=noreply"
-APP_ENV_ARGS="$MYSQL_ENV_ARGS $EMAIL_ENV_ARGS -e LOG_LEVEL=warning -e REDIS_HOST=redis -e JWT_SECRET=a194be3811fc"
-APP_ENV_ARGS="$APP_ENV_ARGS -e ADMIN_EMAIL=admin@example.com -e ADMIN_PASSWORD=123456 -e TEST_MODE=1"
-
 # Launch MariaDB and Redis containers
-docker run -d --name mariadb ${MYSQL_ENV_ARGS} mariadb > /dev/null
+docker run -d --name mariadb --env-file .env.test mariadb > /dev/null
 docker run -d --name redis redis:4-alpine > /dev/null
 
 # Run tests
-docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} ${DOCKER_REPO}:${TAG} \
-    sh -c "init-db.sh && phpunit.phar --testdox"
+docker run --link mariadb --link redis --rm --env-file .env.test ${DOCKER_REPO}:${TAG} run-tests.sh
 
 if [[ $1 = "-c" ]]; then
 
     # Run tests with coverage
     docker run \
-        --link mariadb --link redis --rm ${APP_ENV_ARGS} -e TRAVIS -e TRAVIS_JOB_ID \
+        --link mariadb --link redis --rm --env-file .env.test -e COVERAGE=1 -e TRAVIS -e TRAVIS_JOB_ID \
         ${DOCKER_REPO}:${TAG} \
-        sh -c "docker-php-ext-enable xdebug && init-db.sh && phpunit.phar --coverage-clover /tmp/clover.xml && php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json"
+        run-tests.sh
 
 fi
 
