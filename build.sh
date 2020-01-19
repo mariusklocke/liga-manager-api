@@ -11,7 +11,7 @@ fi
 trap 'rc=$?' ERR
 
 # Build image
-docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG .
+docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG . > /dev/null
 
 # Launch MariaDB and Redis containers
 docker run -d --name mariadb --env-file .env.test mariadb > /dev/null
