@@ -32,12 +32,10 @@ if [[ $1 = "-c" ]]; then
     docker volume create tmp-vol
 
     # Run tests with coverage
-    docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} -v tmp-vol:/tmp ${DOCKER_REPO}:${TAG} \
-        sh -c "docker-php-ext-enable xdebug && init-db.sh && phpunit.phar --coverage-clover /tmp/clover.xml"
-
-    # Upload coverage data
-    docker run --rm -v $PWD:/var/www/api -v tmp-vol:/tmp -e TRAVIS -e TRAVIS_JOB_ID \
-        kielabokkie/coveralls-phpcov sh -c "cd /var/www/api && php-coveralls -v -x /tmp/clover.xml -o /tmp/coveralls.json"
+    docker run \
+        --link mariadb --link redis --rm ${APP_ENV_ARGS} -e TRAVIS -e TRAVIS_JOB_ID \
+        ${DOCKER_REPO}:${TAG} \
+        sh -c "docker-php-ext-enable xdebug && init-db.sh && phpunit.phar --coverage-clover /tmp/clover.xml && php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json"
 
     # Remove temporary volume
     docker volume rm tmp-vol
