@@ -1,6 +1,7 @@
 FROM php:7.4-fpm-alpine
 
-ENV RUN_DEPS="gmp ncurses gnupg" \
+# git: required by php-coveralls.phar
+ENV RUN_DEPS="gmp ncurses gnupg git" \
     BUILD_DEPS="${PHPIZE_DEPS} gmp-dev shadow" \
     PHP_EXTS="bcmath gmp mysqli pcntl pdo_mysql opcache"
 
