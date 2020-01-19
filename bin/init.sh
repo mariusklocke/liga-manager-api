@@ -18,11 +18,7 @@ wait_for() {
   done
 }
 
-# first arg is `-f` or `--some-option`
-if [ "${1#-}" != "$1" ]; then
-	set -- php-fpm "$@"
-fi
-
+bin/install
 wait_for ${MYSQL_HOST} 3306
-php vendor/bin/doctrine orm:generate-proxies --quiet
-exec "$@"
+doctrine orm:generate-proxies --quiet
+doctrine-migrations migrations:migrate -n

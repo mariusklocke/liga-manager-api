@@ -11,6 +11,8 @@ RUN set -xe \
     && apk add --no-cache $RUN_DEPS \
     && apk add --no-cache --virtual .build-deps $BUILD_DEPS \
     && useradd -u 1000 dev \
+    && mkdir /home/dev \
+    && chown dev:dev /home/dev \
     && docker-php-ext-install $PHP_EXTS \
     && pecl channel-update pecl.php.net \
     && pecl install apcu \
@@ -22,22 +24,17 @@ RUN set -xe \
     && rm -rf /tmp/*
 
 # Configure PHP
-ARG XDEBUG=0
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
-RUN if [ "$XDEBUG" = "1" ] ; then docker-php-ext-enable xdebug ; fi
-
-# Override entrypoint
-COPY docker/php/docker-php-entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
 # Install application sources
 ENV APP_HOME="/var/www/api"
-RUN mkdir -p ${APP_HOME}
+RUN mkdir -p ${APP_HOME} && chown www-data:www-data ${APP_HOME}
 WORKDIR ${APP_HOME}
-COPY . .
+COPY --chown=www-data:www-data . .
+ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 RUN chmod +x bin/* \
-    && bin/install.sh \
-    && rm -r docker
-
-USER www-data
-CMD php-fpm
+    && rm -r docker \
+    && bin/install
+HEALTHCHECK CMD bin/lima app:health
+CMD init.sh && php-fpm

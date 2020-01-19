@@ -19,7 +19,7 @@ $ docker-compose up -d
 
 To setup your `.env` file follow the instructions given from
 ```bash
-$ docker-compose exec php bin/console.php app:setup
+$ docker-compose exec php bin/lima app:setup
 ```
 
 To initialize the database you need to run `bin/init-db.sh`

@@ -1,0 +1,11 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+if (!file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    die('Missing autoloader. Please run bin/install.');
+}
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+\HexagonalPlayground\Infrastructure\CLI\Bootstrap::bootstrap()->run();

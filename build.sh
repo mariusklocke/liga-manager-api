@@ -24,19 +24,16 @@ docker run -d --name mariadb ${MYSQL_ENV_ARGS} mariadb > /dev/null
 docker run -d --name redis redis:4-alpine > /dev/null
 
 # Run tests
-docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} \
-    mklocke/liga-manager-api:${TAG} sh -c "bin/init-db.sh && tools/phpunit.phar --testdox"
+docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} ${DOCKER_REPO}:${TAG} \
+    sh -c "init-db.sh && phpunit.phar --testdox"
 
 if [[ $1 = "-c" ]]; then
-    # Build image with xdebug
-    docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG-xdebug --build-arg XDEBUG=1 .
-
     # Create temporary volume
     docker volume create tmp-vol
 
     # Run tests with coverage
-    docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} -v tmp-vol:/tmp \
-        mklocke/liga-manager-api:${TAG}-xdebug sh -c "bin/init-db.sh && tools/phpunit.phar --coverage-clover /tmp/clover.xml"
+    docker run --link mariadb --link redis --rm ${APP_ENV_ARGS} -v tmp-vol:/tmp ${DOCKER_REPO}:${TAG} \
+        sh -c "docker-php-ext-enable xdebug && init-db.sh && phpunit.phar --coverage-clover /tmp/clover.xml"
 
     # Upload coverage data
     docker run --rm -v $PWD:/var/www/api -v tmp-vol:/tmp -e TRAVIS -e TRAVIS_JOB_ID \
