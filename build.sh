@@ -15,7 +15,7 @@ docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG . > /dev/null
 
 # Launch MariaDB and Redis containers
 docker run -d --name mariadb --env-file .env.test mariadb > /dev/null
-docker run -d --name redis redis:4-alpine > /dev/null
+docker run -d --name redis redis:5-alpine > /dev/null
 
 # Run tests
 docker run --link mariadb --link redis --rm --env-file .env.test ${DOCKER_REPO}:${TAG} run-tests.sh
