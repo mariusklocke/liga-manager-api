@@ -28,7 +28,12 @@ class PitchType extends ObjectType implements QueryTypeInterface
                         'type' => Type::nonNull(Type::float())
                     ],
                     'contact' => [
-                        'type' => ContactType::getInstance()
+                        'type' => ContactType::getInstance(),
+                        'resolve' => function (array $root, $args, AppContext $context) {
+                            $context->requireAuthContext($context->getRequest())->getUser();
+
+                            return $root['contact'] ?? null;
+                        }
                     ]
                 ];
             }
