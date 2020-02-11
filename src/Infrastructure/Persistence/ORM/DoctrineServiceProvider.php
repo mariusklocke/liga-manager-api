@@ -16,6 +16,7 @@ use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
+use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\PitchRepository;
@@ -62,7 +63,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             UserRepository::class => DI\autowire(),
 
             PublicKeyCredentialSourceRepository::class => DI\get(PublicKeyCredentialRepository::class),
-            PublicKeyCredentialRepository::class => DI\autowire()
+            PublicKeyCredentialRepository::class => DI\autowire(),
+
+            HealthCheckInterface::class => DI\add(DI\get(DoctrineHealthCheck::class))
         ];
     }
 }

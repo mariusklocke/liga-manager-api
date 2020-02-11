@@ -14,5 +14,5 @@ interface HealthCheckInterface
     /**
      * @return string
      */
-    public function getDescription(): string;
+    public function getName(): string;
 }

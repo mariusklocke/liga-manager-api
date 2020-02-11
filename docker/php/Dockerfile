@@ -37,5 +37,4 @@ ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 RUN chmod +x bin/* \
     && rm -r docker \
     && bin/install
-HEALTHCHECK CMD bin/lima app:health
 CMD init.sh && php-fpm

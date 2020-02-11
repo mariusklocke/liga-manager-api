@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure;
 use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLProvider;
+use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
 use HexagonalPlayground\Infrastructure\CLI\ServiceProvider as CliServiceProvider;
@@ -27,9 +28,8 @@ class ContainerBuilder
         foreach (self::getServiceProvider() as $provider) {
             $builder->addDefinitions($provider->getDefinitions());
         }
-        $container = $builder->build();
 
-        return $container;
+        return $builder->build();
     }
 
     /**
@@ -38,6 +38,7 @@ class ContainerBuilder
     private static function getServiceProvider(): array
     {
         return [
+            new HealthServiceProvider(),
             new ApplicationServiceProvider(),
             new LoggerProvider(),
             new DoctrineServiceProvider(),
@@ -47,7 +48,7 @@ class ContainerBuilder
             new EventServiceProvider(),
             new GraphQLProvider(),
             new WebAuthnServiceProvider(),
-            new CliServiceProvider()
+            new CliServiceProvider(),
         ];
     }
 }

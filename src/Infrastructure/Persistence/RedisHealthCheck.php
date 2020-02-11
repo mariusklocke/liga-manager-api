@@ -4,19 +4,20 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use Exception;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
+use Psr\Container\ContainerInterface;
 use Redis;
 
 class RedisHealthCheck implements HealthCheckInterface
 {
-    /** @var Redis */
-    private $redis;
+    /** @var ContainerInterface */
+    private $container;
 
     /**
-     * @param Redis $redis A connected redis instance
+     * @param ContainerInterface $container
      */
-    public function __construct(Redis $redis)
+    public function __construct(ContainerInterface $container)
     {
-        $this->redis = $redis;
+        $this->container = $container;
     }
 
     /**
@@ -24,14 +25,14 @@ class RedisHealthCheck implements HealthCheckInterface
      */
     public function __invoke(): void
     {
-        $this->redis->ping();
+        $this->container->get(Redis::class)->ping();
     }
 
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getName(): string
     {
-        return 'Redis connection';
+        return 'redis';
     }
 }

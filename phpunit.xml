@@ -13,6 +13,9 @@
         <testsuite name="GraphQL">
             <directory>tests/GraphQL</directory>
         </testsuite>
+        <testsuite name="Health">
+            <directory>tests/Health</directory>
+        </testsuite>
         <testsuite name="WebAuthn">
             <directory>tests/WebAuthn</directory>
         </testsuite>

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRouteProvider;
+use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RouteProvider as WebAuthnRouteProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
@@ -49,7 +50,8 @@ class Bootstrap
     {
         return [
             new GraphQLRouteProvider(),
-            new WebAuthnRouteProvider()
+            new WebAuthnRouteProvider(),
+            new HealthRouteProvider()
         ];
     }
 }

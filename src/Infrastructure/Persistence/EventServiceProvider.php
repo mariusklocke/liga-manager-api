@@ -10,6 +10,7 @@ use HexagonalPlayground\Application\EventStoreSubscriber;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineEventStore;
 use Psr\Container\ContainerInterface;
 use Redis;
@@ -26,6 +27,8 @@ class EventServiceProvider implements ServiceProviderInterface
 
                 return $resolver;
             }),
+
+            HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
 
             Redis::class => DI\factory(function() {
                 $redis = new Redis();

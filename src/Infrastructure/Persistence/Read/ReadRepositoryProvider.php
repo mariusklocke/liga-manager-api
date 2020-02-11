@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use mysqli;
 
@@ -23,6 +24,8 @@ class ReadRepositoryProvider implements ServiceProviderInterface
                     null
                 )
                 ->method('set_charset', 'utf8'),
+
+            HealthCheckInterface::class => DI\add(DI\get(MysqliHealthCheck::class)),
 
             MysqliReadDbAdapter::class => DI\autowire()
                 ->method('setLogger', DI\get(QueryLogger::class)),

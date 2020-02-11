@@ -37,8 +37,8 @@ class MysqliHealthCheck implements HealthCheckInterface
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getName(): string
     {
-        return 'Database connection via mysqli';
+        return 'mysqli';
     }
 }

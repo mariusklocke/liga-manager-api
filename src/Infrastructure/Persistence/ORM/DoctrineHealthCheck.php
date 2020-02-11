@@ -5,18 +5,19 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
+use Psr\Container\ContainerInterface;
 
 class DoctrineHealthCheck implements HealthCheckInterface
 {
-    /** @var EntityManagerInterface */
-    private $em;
+    /** @var ContainerInterface */
+    private $container;
 
     /**
-     * @param EntityManagerInterface $em
+     * @param ContainerInterface $container
      */
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(ContainerInterface $container)
     {
-        $this->em = $em;
+        $this->container = $container;
     }
 
     /**
@@ -24,14 +25,14 @@ class DoctrineHealthCheck implements HealthCheckInterface
      */
     public function __invoke(): void
     {
-        $this->em->getConnection()->executeQuery('SELECT 1');
+        $this->container->get(EntityManagerInterface::class)->getConnection()->executeQuery('SELECT 1');
     }
 
     /**
      * @return string
      */
-    public function getDescription(): string
+    public function getName(): string
     {
-        return 'Database connection via Doctrine';
+        return 'doctrine';
     }
 }
