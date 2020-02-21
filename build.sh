@@ -17,6 +17,9 @@ docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG . > /dev/null
 docker run -d --name mariadb --env-file .env.test mariadb > /dev/null
 docker run -d --name redis redis:5-alpine > /dev/null
 
+# Run deptrac
+docker run --link mariadb --link redis --rm --env-file .env.test ${DOCKER_REPO}:${TAG} bin/deptrac.phar --no-progress
+
 # Run tests
 docker run --link mariadb --link redis --rm --env-file .env.test ${DOCKER_REPO}:${TAG} run-tests.sh
 
