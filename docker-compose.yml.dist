@@ -20,7 +20,7 @@ services:
       dockerfile: docker/php/Dockerfile
       args:
         XDEBUG: 0
-    user: dev
+    user: 1000:1000
     volumes:
       - .:/var/www/api
     depends_on:

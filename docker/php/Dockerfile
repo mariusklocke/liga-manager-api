@@ -2,18 +2,15 @@ FROM php:7.4-fpm-alpine
 
 # git: required by php-coveralls.phar
 ENV RUN_DEPS="gmp ncurses gnupg git" \
-    BUILD_DEPS="${PHPIZE_DEPS} gmp-dev shadow" \
+    BUILD_DEPS="${PHPIZE_DEPS} gmp-dev" \
     PHP_EXTS="bcmath gmp mysqli pcntl pdo_mysql opcache"
 
-# Install PHP extensions
+# Install packages & PHP extensions
 RUN set -xe \
     && apk update \
     && apk upgrade \
     && apk add --no-cache $RUN_DEPS \
     && apk add --no-cache --virtual .build-deps $BUILD_DEPS \
-    && useradd -u 1000 dev \
-    && mkdir /home/dev \
-    && chown dev:dev /home/dev \
     && docker-php-ext-install $PHP_EXTS \
     && pecl channel-update pecl.php.net \
     && pecl install apcu \
