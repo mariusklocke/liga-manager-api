@@ -28,7 +28,8 @@ class DeleteUserHandler implements AuthAwareHandler
      */
     public function __invoke(DeleteUserCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
 
         /** @var User $user */
         $user = $this->userRepository->find($command->getUserId());

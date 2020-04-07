@@ -37,15 +37,16 @@ class UpdateUserHandler implements AuthAwareHandler
     {
         /** @var User $user */
         $user = $this->userRepository->find($command->getUserId());
+        $isAdmin = new IsAdmin($authContext->getUser());
 
         // Changing other users than oneself requires admin rights
         if (!$user->equals($authContext->getUser())) {
-            IsAdmin::check($authContext->getUser());
+            $isAdmin->check();
         }
 
         // Changing user role requires admin rights
         if (null !== $command->getRole() && !$user->hasRole($command->getRole())) {
-            IsAdmin::check($authContext->getUser());
+            $isAdmin->check();
             $user->setRole($command->getRole());
         }
 
@@ -63,7 +64,7 @@ class UpdateUserHandler implements AuthAwareHandler
         }
 
         if (null !== $command->getTeamIds()) {
-            IsAdmin::check($authContext->getUser());
+            $isAdmin->check();
 
             $user->clearTeams();
             foreach ($command->getTeamIds() as $teamId) {

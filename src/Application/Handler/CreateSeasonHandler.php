@@ -28,7 +28,8 @@ class CreateSeasonHandler implements AuthAwareHandler
      */
     public function __invoke(CreateSeasonCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
         $season = new Season($command->getId(), $command->getName());
         $this->seasonRepository->save($season);
     }

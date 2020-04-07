@@ -30,7 +30,8 @@ class RenameTeamHandler implements AuthAwareHandler
     {
         /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());
-        CanManageTeam::check($team, $authContext->getUser());
+        $canManageTeam = new CanManageTeam($team, $authContext->getUser());
+        $canManageTeam->check();
         $team->rename($command->getNewName());
     }
 }

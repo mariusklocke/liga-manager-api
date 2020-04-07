@@ -36,7 +36,8 @@ class SetTournamentRoundHandler implements AuthAwareHandler
      */
     public function __invoke(SetTournamentRoundCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
         Assert::false(empty($command->getTeamIdPairs()), 'Team pairs cannot be empty');
         Assert::false(count($command->getTeamIdPairs()) > 64, 'Request exceeds maximum amount of 64 team pairs');
 

@@ -35,7 +35,8 @@ class CreateUserHandler implements AuthAwareHandler
      */
     public function __invoke(CreateUserCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
 
         $this->userRepository->assertEmailDoesNotExist($command->getEmail());
         $user = new User($command->getId(), $command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());

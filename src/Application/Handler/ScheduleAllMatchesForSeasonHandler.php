@@ -45,7 +45,8 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
      */
     public function __invoke(ScheduleAllMatchesForSeasonCommand $command, AuthContext $authContext): void
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
 
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

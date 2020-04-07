@@ -8,13 +8,30 @@ use HexagonalPlayground\Domain\User;
 
 class CanChangeMatch extends Permission
 {
-    public static function check(User $user, Match $match): void
+    /** @var User */
+    private $user;
+
+    /** @var Match */
+    private $match;
+
+    /**
+     * @param User $user
+     * @param Match $match
+     */
+    public function __construct(User $user, Match $match)
     {
-        self::assertTrue(
-            $user->hasRole(User::ROLE_ADMIN)
-                || $user->isInTeam($match->getHomeTeam())
-                || $user->isInTeam($match->getGuestTeam()),
-            'User is not permitted to change this match'
-        );
+        $this->user = $user;
+        $this->match = $match;
+    }
+
+    public function check(): void
+    {
+        if ($this->user->hasRole(User::ROLE_ADMIN)
+            || $this->user->isInTeam($this->match->getHomeTeam())
+            || $this->user->isInTeam($this->match->getGuestTeam())) {
+            return;
+        }
+
+        $this->fail('User is not permitted to change this match');
     }
 }

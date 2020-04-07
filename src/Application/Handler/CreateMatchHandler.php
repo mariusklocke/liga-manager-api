@@ -34,7 +34,8 @@ class CreateMatchHandler implements AuthAwareHandler
      */
     public function __invoke(CreateMatchCommand $command, AuthContext $authContext): void
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
 
         /** @var MatchDay $matchDay */
         $matchDay = $this->matchDayRepository->find($command->getMatchDayId());

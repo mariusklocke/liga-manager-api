@@ -31,7 +31,8 @@ class SubmitMatchResultHandler implements AuthAwareHandler
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());
-        CanChangeMatch::check($authContext->getUser(), $match);
+        $canChangeMatch = new CanChangeMatch($authContext->getUser(), $match);
+        $canChangeMatch->check();
         $result = new MatchResult($command->getHomeScore(), $command->getGuestScore());
         $match->submitResult($result, $authContext->getUser());
     }

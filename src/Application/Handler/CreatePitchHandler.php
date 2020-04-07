@@ -28,7 +28,8 @@ class CreatePitchHandler implements AuthAwareHandler
      */
     public function __invoke(CreatePitchCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
         $pitch = new Pitch($command->getId(), $command->getLabel(), $command->getLocation());
         $this->pitchRepository->save($pitch);
     }

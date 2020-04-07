@@ -39,7 +39,8 @@ class LocateMatchHandler implements AuthAwareHandler
         $match = $this->matchRepository->find($command->getMatchId());
         /** @var Pitch $pitch */
         $pitch = $this->pitchRepository->find($command->getPitchId());
-        CanChangeMatch::check($authContext->getUser(), $match);
+        $canChangeMatch = new CanChangeMatch($authContext->getUser(), $match);
+        $canChangeMatch->check();
         $match->locate($pitch);
     }
 }

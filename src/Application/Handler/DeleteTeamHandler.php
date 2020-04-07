@@ -30,7 +30,8 @@ class DeleteTeamHandler implements AuthAwareHandler
      */
     public function __invoke(DeleteTeamCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
 
         /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());

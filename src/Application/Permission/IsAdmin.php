@@ -7,11 +7,23 @@ use HexagonalPlayground\Domain\User;
 
 class IsAdmin extends Permission
 {
-    public static function check(User $user): void
+    /** @var User */
+    private $user;
+
+    /**
+     * @param User $user
+     */
+    public function __construct(User $user)
     {
-        self::assertTrue(
-            $user->hasRole(User::ROLE_ADMIN),
-            'This action requires admin rights'
-        );
+        $this->user = $user;
+    }
+
+    public function check(): void
+    {
+        if ($this->user->hasRole(User::ROLE_ADMIN)) {
+            return;
+        }
+
+        $this->fail('This action requires admin rights');
     }
 }

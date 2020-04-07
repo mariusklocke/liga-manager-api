@@ -32,7 +32,9 @@ class CancelMatchHandler implements AuthAwareHandler
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());
-        CanChangeMatch::check($authContext->getUser(), $match);
+        $canChangeMatch = new CanChangeMatch($authContext->getUser(), $match);
+
+        $canChangeMatch->check();
         $match->cancel($command->getReason());
     }
 }

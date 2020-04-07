@@ -8,11 +8,28 @@ use HexagonalPlayground\Domain\User;
 
 class CanManageTeam extends Permission
 {
-    public static function check(Team $team, User $user): void
+    /** @var Team */
+    private $team;
+
+    /** @var User */
+    private $user;
+
+    /**
+     * @param Team $team
+     * @param User $user
+     */
+    public function __construct(Team $team, User $user)
     {
-        self::assertTrue(
-            $user->hasRole(User::ROLE_ADMIN) || $user->isInTeam($team),
-            'User is not permitted to manage this team'
-        );
+        $this->team = $team;
+        $this->user = $user;
+    }
+
+    public function check(): void
+    {
+        if ($this->user->hasRole(User::ROLE_ADMIN) || $this->user->isInTeam($this->team)) {
+            return;
+        }
+
+        $this->fail('User is not permitted to manage this team');
     }
 }

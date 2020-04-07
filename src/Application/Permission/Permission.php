@@ -6,10 +6,17 @@ use HexagonalPlayground\Application\Exception\PermissionException;
 
 abstract class Permission
 {
-    protected static function assertTrue(bool $value, string $message)
+    /**
+     * @throws PermissionException if permission is not granted
+     */
+    abstract public function check(): void;
+
+    /**
+     * @param string $message
+     * @throws PermissionException
+     */
+    protected function fail(string $message): void
     {
-        if (!$value) {
-            throw new PermissionException($message);
-        }
+        throw new PermissionException($message);
     }
 }

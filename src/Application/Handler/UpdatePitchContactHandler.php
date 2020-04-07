@@ -29,7 +29,8 @@ class UpdatePitchContactHandler implements AuthAwareHandler
      */
     public function __invoke(UpdatePitchContactCommand $command, AuthContext $authContext)
     {
-        IsAdmin::check($authContext->getUser());
+        $isAdmin = new IsAdmin($authContext->getUser());
+        $isAdmin->check();
         /** @var Pitch $pitch */
         $pitch = $this->pitchRepository->find($command->getPitchId());
         $contact = new ContactPerson(
