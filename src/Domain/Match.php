@@ -65,7 +65,12 @@ class Match extends Entity
             return;
         }
 
-        $this->setResult($matchResult);
+        if ($this->matchResult !== null) {
+            $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+        }
+        $this->matchDay->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
+        $this->matchResult = $matchResult;
+
         $this->cancelledAt = null;
         $this->cancellationReason = null;
         Publisher::getInstance()->publish(MatchResultSubmitted::create(
@@ -92,7 +97,12 @@ class Match extends Entity
     {
         Assert::maxLength($reason, 255, 'Cancellation reason exceeds maximum length of 255');
         $previousResult = $this->matchResult;
-        $this->setResult(null);
+
+        if ($this->matchResult !== null) {
+            $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+        }
+        $this->matchResult = null;
+
         $this->cancelledAt = new DateTimeImmutable();
         $this->cancellationReason = $reason;
         Publisher::getInstance()->publish(MatchCancelled::create(
@@ -142,19 +152,5 @@ class Match extends Entity
     public function hasResult(): bool
     {
         return (null !== $this->matchResult);
-    }
-
-    /**
-     * @param MatchResult|null $matchResult
-     */
-    private function setResult(?MatchResult $matchResult): void
-    {
-        if ($this->matchResult !== null) {
-            $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
-        }
-        if ($matchResult !== null) {
-            $this->matchDay->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
-        }
-        $this->matchResult = $matchResult;
     }
 }
