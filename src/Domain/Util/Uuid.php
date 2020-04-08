@@ -12,7 +12,10 @@ class Uuid
         // Cannot be instantiated - static methods only
     }
 
-    public static function create()
+    /**
+     * @return string
+     */
+    public static function create(): string
     {
         return RamseyUuid::uuid4()->toString();
     }
