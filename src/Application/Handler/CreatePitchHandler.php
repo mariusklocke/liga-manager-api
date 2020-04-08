@@ -26,7 +26,7 @@ class CreatePitchHandler implements AuthAwareHandler
      * @param CreatePitchCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(CreatePitchCommand $command, AuthContext $authContext)
+    public function __invoke(CreatePitchCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

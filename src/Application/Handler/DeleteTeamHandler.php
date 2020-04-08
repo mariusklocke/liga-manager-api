@@ -28,7 +28,7 @@ class DeleteTeamHandler implements AuthAwareHandler
      * @param AuthContext $authContext
      * @throws NotFoundException
      */
-    public function __invoke(DeleteTeamCommand $command, AuthContext $authContext)
+    public function __invoke(DeleteTeamCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

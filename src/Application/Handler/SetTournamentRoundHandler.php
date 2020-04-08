@@ -34,7 +34,7 @@ class SetTournamentRoundHandler implements AuthAwareHandler
      * @param SetTournamentRoundCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(SetTournamentRoundCommand $command, AuthContext $authContext)
+    public function __invoke(SetTournamentRoundCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

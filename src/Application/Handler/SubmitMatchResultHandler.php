@@ -27,7 +27,7 @@ class SubmitMatchResultHandler implements AuthAwareHandler
      * @param SubmitMatchResultCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(SubmitMatchResultCommand $command, AuthContext $authContext)
+    public function __invoke(SubmitMatchResultCommand $command, AuthContext $authContext): void
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());

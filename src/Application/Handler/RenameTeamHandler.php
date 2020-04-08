@@ -26,7 +26,7 @@ class RenameTeamHandler implements AuthAwareHandler
      * @param RenameTeamCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(RenameTeamCommand $command, AuthContext $authContext)
+    public function __invoke(RenameTeamCommand $command, AuthContext $authContext): void
     {
         /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());

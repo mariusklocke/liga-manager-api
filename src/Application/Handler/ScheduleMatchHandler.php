@@ -28,7 +28,7 @@ class ScheduleMatchHandler implements AuthAwareHandler
      * @param AuthContext $authContext
      * @throws NotFoundException
      */
-    public function __invoke(ScheduleMatchCommand $command, AuthContext $authContext)
+    public function __invoke(ScheduleMatchCommand $command, AuthContext $authContext): void
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());

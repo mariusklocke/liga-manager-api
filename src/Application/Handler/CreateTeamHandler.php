@@ -26,7 +26,7 @@ class CreateTeamHandler implements AuthAwareHandler
      * @param CreateTeamCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(CreateTeamCommand $command, AuthContext $authContext)
+    public function __invoke(CreateTeamCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

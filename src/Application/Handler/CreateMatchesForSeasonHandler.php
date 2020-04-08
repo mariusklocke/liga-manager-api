@@ -29,7 +29,7 @@ class CreateMatchesForSeasonHandler implements AuthAwareHandler
      * @param AuthContext $authContext
      * @throws NotFoundException
      */
-    public function __invoke(CreateMatchesForSeasonCommand $command, AuthContext $authContext)
+    public function __invoke(CreateMatchesForSeasonCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

@@ -35,7 +35,7 @@ class RemoveTeamFromSeasonHandler implements AuthAwareHandler
      * @param AuthContext $authContext
      * @throws NotFoundException
      */
-    public function __invoke(RemoveTeamFromSeasonCommand $command, AuthContext $authContext)
+    public function __invoke(RemoveTeamFromSeasonCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

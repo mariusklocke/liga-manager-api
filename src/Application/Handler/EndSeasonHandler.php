@@ -26,7 +26,7 @@ class EndSeasonHandler implements AuthAwareHandler
      * @param EndSeasonCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(EndSeasonCommand $command, AuthContext $authContext)
+    public function __invoke(EndSeasonCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

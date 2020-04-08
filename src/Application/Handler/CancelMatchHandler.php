@@ -28,7 +28,7 @@ class CancelMatchHandler implements AuthAwareHandler
      * @param AuthContext $authContext
      * @throws NotFoundException
      */
-    public function __invoke(CancelMatchCommand $command, AuthContext $authContext)
+    public function __invoke(CancelMatchCommand $command, AuthContext $authContext): void
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());

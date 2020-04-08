@@ -33,7 +33,7 @@ class LocateMatchHandler implements AuthAwareHandler
      * @param LocateMatchCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(LocateMatchCommand $command, AuthContext $authContext)
+    public function __invoke(LocateMatchCommand $command, AuthContext $authContext): void
     {
         /** @var Match $match */
         $match = $this->matchRepository->find($command->getMatchId());

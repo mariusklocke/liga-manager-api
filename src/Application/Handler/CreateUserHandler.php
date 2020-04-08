@@ -33,7 +33,7 @@ class CreateUserHandler implements AuthAwareHandler
      * @param CreateUserCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(CreateUserCommand $command, AuthContext $authContext)
+    public function __invoke(CreateUserCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

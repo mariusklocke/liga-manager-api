@@ -25,7 +25,7 @@ class CreateMatchDayForSeasonHandler implements AuthAwareHandler
      * @param CreateMatchDayForSeasonCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(CreateMatchDayForSeasonCommand $command, AuthContext $authContext)
+    public function __invoke(CreateMatchDayForSeasonCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

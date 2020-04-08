@@ -27,7 +27,7 @@ class DeleteSeasonHandler implements AuthAwareHandler
      * @param DeleteSeasonCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(DeleteSeasonCommand $command, AuthContext $authContext)
+    public function __invoke(DeleteSeasonCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

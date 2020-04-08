@@ -46,7 +46,7 @@ class SendInviteMailHandler implements AuthAwareHandler
      * @param SendInviteMailCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(SendInviteMailCommand $command, AuthContext $authContext)
+    public function __invoke(SendInviteMailCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

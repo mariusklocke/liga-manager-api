@@ -26,7 +26,7 @@ class DeleteTournamentHandler implements AuthAwareHandler
      * @param DeleteTournamentCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(DeleteTournamentCommand $command, AuthContext $authContext)
+    public function __invoke(DeleteTournamentCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

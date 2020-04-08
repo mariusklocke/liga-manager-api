@@ -26,7 +26,7 @@ class RemoveRankingPenaltyHandler implements AuthAwareHandler
      * @param RemoveRankingPenaltyCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(RemoveRankingPenaltyCommand $command, AuthContext $authContext)
+    public function __invoke(RemoveRankingPenaltyCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

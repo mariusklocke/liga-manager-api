@@ -33,7 +33,7 @@ class UpdateUserHandler implements AuthAwareHandler
      * @param UpdateUserCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(UpdateUserCommand $command, AuthContext $authContext)
+    public function __invoke(UpdateUserCommand $command, AuthContext $authContext): void
     {
         /** @var User $user */
         $user = $this->userRepository->find($command->getUserId());

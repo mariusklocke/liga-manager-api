@@ -27,7 +27,7 @@ class UpdateTeamContactHandler implements AuthAwareHandler
      * @param UpdateTeamContactCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(UpdateTeamContactCommand $command, AuthContext $authContext)
+    public function __invoke(UpdateTeamContactCommand $command, AuthContext $authContext): void
     {
         /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());

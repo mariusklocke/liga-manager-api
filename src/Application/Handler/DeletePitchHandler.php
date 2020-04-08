@@ -25,7 +25,7 @@ class DeletePitchHandler implements AuthAwareHandler
      * @param DeletePitchCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(DeletePitchCommand $command, AuthContext $authContext)
+    public function __invoke(DeletePitchCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

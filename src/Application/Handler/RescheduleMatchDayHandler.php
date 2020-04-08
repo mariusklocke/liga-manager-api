@@ -26,7 +26,7 @@ class RescheduleMatchDayHandler implements AuthAwareHandler
      * @param RescheduleMatchDayCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(RescheduleMatchDayCommand $command, AuthContext $authContext)
+    public function __invoke(RescheduleMatchDayCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();

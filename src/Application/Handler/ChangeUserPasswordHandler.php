@@ -12,7 +12,7 @@ class ChangeUserPasswordHandler implements AuthAwareHandler
      * @param ChangeUserPasswordCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(ChangeUserPasswordCommand $command, AuthContext $authContext)
+    public function __invoke(ChangeUserPasswordCommand $command, AuthContext $authContext): void
     {
         $authContext->getUser()->setPassword($command->getNewPassword());
     }

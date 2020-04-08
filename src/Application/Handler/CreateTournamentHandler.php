@@ -26,7 +26,7 @@ class CreateTournamentHandler implements AuthAwareHandler
      * @param CreateTournamentCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(CreateTournamentCommand $command, AuthContext $authContext)
+    public function __invoke(CreateTournamentCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
