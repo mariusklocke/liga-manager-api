@@ -14,7 +14,6 @@ use HexagonalPlayground\Domain\Value\MatchAppointment;
 use HexagonalPlayground\Domain\DomainException;
 use HexagonalPlayground\Domain\Match;
 use HexagonalPlayground\Domain\MatchDay;
-use HexagonalPlayground\Domain\Pitch;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
@@ -25,9 +24,6 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
     /** @var PitchRepositoryInterface */
     private $pitchRepository;
 
-    /** @var Pitch[] */
-    private $pitchCache;
-
     /**
      * @param SeasonRepositoryInterface $seasonRepository
      * @param PitchRepositoryInterface $pitchRepository
@@ -36,7 +32,6 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
     {
         $this->seasonRepository = $seasonRepository;
         $this->pitchRepository  = $pitchRepository;
-        $this->pitchCache       = [];
     }
 
     /**
@@ -50,6 +45,7 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
 
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());
+        $pitches = [];
 
         foreach ($season->getMatchDays() as $matchDay) {
             $appointments = $command->getMatchAppointments();
@@ -66,24 +62,15 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
                 $appointment = $this->findAppointment($match, $appointments);
 
                 $kickoff = $this->calcKickoff($matchDay, $appointment);
-                $pitch   = $this->getPitch($appointment->getPitchId());
-
                 $match->schedule($kickoff);
-                $match->locate($pitch);
+
+                $pitchId = $appointment->getPitchId();
+                if (!isset($pitches[$pitchId])) {
+                    $pitches[$pitchId] = $this->pitchRepository->find($pitchId);
+                }
+                $match->locate($pitches[$pitchId]);
             }
         }
-    }
-
-    /**
-     * @param string $pitchId
-     * @return Pitch
-     */
-    private function getPitch(string $pitchId): Pitch
-    {
-        if (!isset($this->pitchCache[$pitchId])) {
-            $this->pitchCache[$pitchId] = $this->pitchRepository->find($pitchId);
-        }
-        return $this->pitchCache[$pitchId];
     }
 
     /**
