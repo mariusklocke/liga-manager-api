@@ -19,24 +19,10 @@ class TypeAssert
         }
     }
 
-    public static function assertNumberOrNull($value, string $name): void
-    {
-        if (!is_null($value) && !is_int($value) && !is_float($value)) {
-            throw self::createException($name, $value, 'int|float|null');
-        }
-    }
-
     public static function assertInteger($value, string $name): void
     {
         if (!is_int($value)) {
             throw self::createException($name, $value, 'int');
-        }
-    }
-
-    public static function assertIntegerOrNull($value, string $name): void
-    {
-        if (!is_null($value) && !is_int($value)) {
-            throw self::createException($name, $value, 'int|null');
         }
     }
 
@@ -51,20 +37,6 @@ class TypeAssert
     {
         if (!is_null($value) && !is_string($value)) {
             throw self::createException($name, $value, 'string|null');
-        }
-    }
-
-    public static function assertBoolean($value, string $name): void
-    {
-        if (!is_bool($value)) {
-            throw self::createException($name, $value, 'bool');
-        }
-    }
-
-    public static function assertBooleanOrNull($value, string $name): void
-    {
-        if (!is_null($value) && !is_bool($value)) {
-            throw self::createException($name, $value, 'bool|null');
         }
     }
 
