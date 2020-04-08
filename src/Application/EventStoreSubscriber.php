@@ -22,7 +22,7 @@ class EventStoreSubscriber implements Subscriber
     /**
      * @param Event $event
      */
-    public function handle(Event $event)
+    public function handle(Event $event): void
     {
         $this->store->append($event);
     }
