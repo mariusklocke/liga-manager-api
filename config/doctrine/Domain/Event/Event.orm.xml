@@ -3,29 +3,12 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
-    <entity name="HexagonalPlayground\Domain\Event\Event" table="events" inheritance-type="SINGLE_TABLE">
+    <entity name="HexagonalPlayground\Domain\Event\Event" table="events">
         <indexes>
             <index columns="occurred_at"/>
         </indexes>
         <id name="id" type="string" />
-        <discriminator-column name="type" type="string" />
-        <discriminator-map>
-            <discriminator-mapping value="match:located" class="MatchLocated"/>
-            <discriminator-mapping value="match:result:submitted" class="MatchResultSubmitted"/>
-            <discriminator-mapping value="match:scheduled" class="MatchScheduled"/>
-            <discriminator-mapping value="match:cancelled" class="MatchCancelled"/>
-            <discriminator-mapping value="match:day:rescheduled" class="MatchDayRescheduled"/>
-            <discriminator-mapping value="pitch:contact:updated" class="PitchContactUpdated"/>
-            <discriminator-mapping value="ranking:penalty:added" class="RankingPenaltyAdded"/>
-            <discriminator-mapping value="ranking:penalty:removed" class="RankingPenaltyRemoved"/>
-            <discriminator-mapping value="season:created" class="SeasonCreated"/>
-            <discriminator-mapping value="season:started" class="SeasonStarted"/>
-            <discriminator-mapping value="season:ended" class="SeasonEnded"/>
-            <discriminator-mapping value="team:created" class="TeamCreated"/>
-            <discriminator-mapping value="team:renamed" class="TeamRenamed"/>
-            <discriminator-mapping value="team:contact:updated" class="TeamContactUpdated"/>
-            <discriminator-mapping value="tournament:created" class="TournamentCreated"/>
-        </discriminator-map>
+        <field name="type" type="string" />
         <field name="occurredAt" column="occurred_at" type="custom_datetime" />
         <field name="payload" type="array" />
     </entity>

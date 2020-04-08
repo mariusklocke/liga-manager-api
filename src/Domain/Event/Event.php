@@ -4,15 +4,18 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain\Event;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Util\Uuid;
 use JsonSerializable;
-use stdClass;
 
-abstract class Event implements JsonSerializable
+class Event implements JsonSerializable
 {
+    public const DATE_FORMAT = 'Y-m-d';
+
     /** @var string */
     private $id;
+
+    /** @var string */
+    private $type;
 
     /** @var DateTimeImmutable */
     private $occurredAt;
@@ -21,45 +24,35 @@ abstract class Event implements JsonSerializable
     private $payload;
 
     /**
-     * @param string $id
-     * @param DateTimeImmutable $occurredAt
+     * @param string $type
      * @param array $payload
      */
-    private function __construct(string $id, DateTimeImmutable $occurredAt, array $payload)
+    public function __construct(string $type, array $payload)
     {
-        $this->id         = $id;
-        $this->occurredAt = $occurredAt;
+        $this->id         = Uuid::create();
+        $this->type       = $type;
+        $this->occurredAt = new DateTimeImmutable();
         $this->payload    = $payload;
-    }
-
-    /**
-     * @param array $payload
-     * @return static
-     */
-    protected static function createFromPayload(array $payload)
-    {
-        return new static(Uuid::create(), new DateTimeImmutable(), $payload);
     }
 
     /**
      * @return string
      */
-    public static function getName(): string
+    public function getType(): string
     {
-        $className = StringUtils::stripNamespace(static::class);
-        return StringUtils::camelCaseToSeparatedLowercase($className);
+        return $this->type;
     }
 
     /**
-     * @return stdClass
+     * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        $object             = new stdClass();
-        $object->id         = $this->id;
-        $object->occurredAt = $this->occurredAt->getTimestamp();
-        $object->payload    = $this->payload;
-        $object->type       = static::getName();
-        return $object;
+        return [
+            'id' => $this->id,
+            'type' => $this->type,
+            'occurredAt' => $this->occurredAt->getTimestamp(),
+            'payload' => $this->payload
+        ];
     }
 }

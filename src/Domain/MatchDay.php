@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use HexagonalPlayground\Domain\Event\MatchDayRescheduled;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
@@ -106,7 +106,13 @@ class MatchDay extends Entity
         Assert::true($startDate <= $endDate, 'Invalid date range: Start date cannot be after end date');
         $this->startDate = $startDate;
         $this->endDate   = $endDate;
-        Publisher::getInstance()->publish(MatchDayRescheduled::create($this->id, $this->startDate, $this->endDate));
+        Publisher::getInstance()->publish(new Event('match:day:rescheduled', [
+            'matchDayId' => $this->id,
+            'datePeriod' => [
+                'from' => $this->startDate->format(Event::DATE_FORMAT),
+                'to'   => $this->endDate->format(Event::DATE_FORMAT)
+            ]
+        ]));
     }
 
     /**

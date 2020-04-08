@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Publisher;
-use HexagonalPlayground\Domain\Event\TeamContactUpdated;
-use HexagonalPlayground\Domain\Event\TeamCreated;
-use HexagonalPlayground\Domain\Event\TeamRenamed;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 
@@ -27,7 +25,10 @@ class Team extends Entity
         parent::__construct($id);
         $this->setName($name);
         $this->createdAt = new DateTimeImmutable();
-        Publisher::getInstance()->publish(TeamCreated::create($this->id));
+
+        Publisher::getInstance()->publish(new Event('team:created', [
+            'teamId' => $this->id
+        ]));
     }
 
     /**
@@ -46,7 +47,11 @@ class Team extends Entity
         $oldName = $this->name;
         if ($newName !== $oldName) {
             $this->setName($newName);
-            Publisher::getInstance()->publish(TeamRenamed::create($this->id, $oldName, $newName));
+            Publisher::getInstance()->publish(new Event('team:renamed', [
+                'teamId' => $this->id,
+                'oldName' => $oldName,
+                'newName' => $newName
+            ]));
         }
     }
 
@@ -56,7 +61,11 @@ class Team extends Entity
     public function setContact(ContactPerson $contact): void
     {
         if (null === $this->contact || !$this->contact->equals($contact)) {
-            Publisher::getInstance()->publish(TeamContactUpdated::create($this->id, $this->contact, $contact));
+            Publisher::getInstance()->publish(new Event('team:contact:updated', [
+                'teamId' => $this->id,
+                'oldContact' => $this->contact !== null ? $this->contact->toArray() : null,
+                'newContact' => $contact->toArray()
+            ]));
             $this->contact = $contact;
         }
     }

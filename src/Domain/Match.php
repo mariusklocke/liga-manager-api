@@ -4,11 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Domain\Event\MatchCancelled;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Publisher;
-use HexagonalPlayground\Domain\Event\MatchLocated;
-use HexagonalPlayground\Domain\Event\MatchResultSubmitted;
-use HexagonalPlayground\Domain\Event\MatchScheduled;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
@@ -61,24 +58,24 @@ class Match extends Entity
      */
     public function submitResult(MatchResult $matchResult, User $user)
     {
-        if (null !== $this->matchResult && $this->matchResult->equals($matchResult)) {
-            return;
-        }
-
-        if ($this->matchResult !== null) {
+        if ($this->hasResult()) {
+            if ($this->matchResult->equals($matchResult)) {
+                return;
+            }
             $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
         }
+
         $this->matchDay->addResult($this->homeTeam->getId(), $this->guestTeam->getId(), $matchResult);
         $this->matchResult = $matchResult;
 
         $this->cancelledAt = null;
         $this->cancellationReason = null;
-        Publisher::getInstance()->publish(MatchResultSubmitted::create(
-            $this->id,
-            $matchResult->getHomeScore(),
-            $matchResult->getGuestScore(),
-            $user->getId()
-        ));
+        Publisher::getInstance()->publish(new Event('match:result:submitted', [
+            'matchId'    => $this->id,
+            'homeScore'  => $this->matchResult->getHomeScore(),
+            'guestScore' => $this->matchResult->getGuestScore(),
+            'userId'     => $user->getId()
+        ]));
     }
 
     /**
@@ -87,7 +84,10 @@ class Match extends Entity
     public function schedule(DateTimeImmutable $kickoff): void
     {
         $this->kickoff = $kickoff;
-        Publisher::getInstance()->publish(MatchScheduled::create($this->id, $kickoff));
+        Publisher::getInstance()->publish(new Event('match:scheduled', [
+            'matchId' => $this->id,
+            'kickoff' => $this->kickoff->getTimestamp()
+        ]));
     }
 
     /**
@@ -98,18 +98,20 @@ class Match extends Entity
         Assert::maxLength($reason, 255, 'Cancellation reason exceeds maximum length of 255');
         $previousResult = $this->matchResult;
 
-        if ($this->matchResult !== null) {
+        if ($this->hasResult()) {
             $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
         }
         $this->matchResult = null;
 
         $this->cancelledAt = new DateTimeImmutable();
         $this->cancellationReason = $reason;
-        Publisher::getInstance()->publish(MatchCancelled::create(
-            $this->id,
-            $this->cancellationReason,
-            $previousResult
-        ));
+
+        Publisher::getInstance()->publish(new Event('match:cancelled', [
+            'id' => $this->id,
+            'reason' => $this->cancellationReason,
+            'homeScore' => null !== $previousResult ? $previousResult->getHomeScore() : null,
+            'guestScore' => null !== $previousResult ? $previousResult->getGuestScore() : null
+        ]));
     }
 
     /**
@@ -127,7 +129,10 @@ class Match extends Entity
 
         $pitch->addMatch($this);
         $this->pitch = $pitch;
-        Publisher::getInstance()->publish(MatchLocated::create($this->id, $pitch->getId()));
+        Publisher::getInstance()->publish(new Event('match:located', [
+            'matchId' => $this->id,
+            'pitchId' => $this->pitch->getId()
+        ]));
     }
 
     /**

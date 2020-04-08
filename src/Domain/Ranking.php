@@ -6,9 +6,8 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Publisher;
-use HexagonalPlayground\Domain\Event\RankingPenaltyAdded;
-use HexagonalPlayground\Domain\Event\RankingPenaltyRemoved;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
@@ -82,13 +81,14 @@ class Ranking
         $this->getPositionForTeam($team->getId())->subtractPoints($points);
         $this->penalties[$penalty->getId()] = $penalty;
         $this->reorder();
-        Publisher::getInstance()->publish(RankingPenaltyAdded::create(
-            $this->season->getId(),
-            $penalty->getTeam()->getId(),
-            $penalty->getReason(),
-            $penalty->getPoints(),
-            $user->getId()
-        ));
+
+        Publisher::getInstance()->publish(new Event('ranking:penalty:added', [
+            'seasonId'   => $this->season->getId(),
+            'teamId'     => $team->getId(),
+            'reason'     => $reason,
+            'points'     => $points,
+            'userId'     => $user->getId()
+        ]));
     }
 
     /**
@@ -106,13 +106,14 @@ class Ranking
         $this->getPositionForTeam($penalty->getTeam()->getId())->addPoints($penalty->getPoints());
         $this->penalties->removeElement($penalty);
         $this->reorder();
-        Publisher::getInstance()->publish(RankingPenaltyRemoved::create(
-            $this->season->getId(),
-            $penalty->getTeam()->getId(),
-            $penalty->getReason(),
-            $penalty->getPoints(),
-            $user->getId()
-        ));
+
+        Publisher::getInstance()->publish(new Event('ranking:penalty:removed', [
+            'seasonId'   => $this->season->getId(),
+            'teamId'     => $penalty->getTeam()->getId(),
+            'reason'     => $penalty->getReason(),
+            'points'     => $penalty->getPoints(),
+            'userId'     => $user->getId()
+        ]));
     }
 
     /**

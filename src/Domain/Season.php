@@ -6,10 +6,8 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Publisher;
-use HexagonalPlayground\Domain\Event\SeasonCreated;
-use HexagonalPlayground\Domain\Event\SeasonEnded;
-use HexagonalPlayground\Domain\Event\SeasonStarted;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
@@ -49,7 +47,10 @@ class Season extends Competition
         $this->state = self::STATE_PREPARATION;
         $this->teamCount = 0;
         $this->updateMatchDayCount();
-        Publisher::getInstance()->publish(SeasonCreated::create($this->id));
+
+        Publisher::getInstance()->publish(new Event('season:created', [
+            'seasonId' => $this->id
+        ]));
     }
 
     /**
@@ -149,7 +150,10 @@ class Season extends Competition
         Assert::true($this->hasMatches(), 'Cannot start a season which has no matches');
         $this->ranking = new Ranking($this);
         $this->state = self::STATE_PROGRESS;
-        Publisher::getInstance()->publish(SeasonStarted::create($this->id));
+
+        Publisher::getInstance()->publish(new Event('season:started', [
+            'seasonId' => $this->id
+        ]));
     }
 
     /**
@@ -159,7 +163,10 @@ class Season extends Competition
     {
         Assert::true($this->hasStarted(), 'Cannot end a season which has not been started');
         $this->state = self::STATE_ENDED;
-        Publisher::getInstance()->publish(SeasonEnded::create($this->id));
+
+        Publisher::getInstance()->publish(new Event('season:ended', [
+            'seasonId' => $this->id
+        ]));
     }
 
     /**
