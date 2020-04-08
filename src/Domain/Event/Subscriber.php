@@ -5,5 +5,8 @@ namespace HexagonalPlayground\Domain\Event;
 
 interface Subscriber
 {
-    public function handle(Event $event);
+    /**
+     * @param Event $event
+     */
+    public function handle(Event $event): void;
 }
