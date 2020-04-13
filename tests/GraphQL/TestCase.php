@@ -6,11 +6,11 @@ use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
 use HexagonalPlayground\Infrastructure\Email\SwiftMailer;
 use HexagonalPlayground\Infrastructure\Environment;
-use HexagonalPlayground\Tests\Framework\EmailClientInterface;
+use HexagonalPlayground\Tests\Framework\EmailListenerInterface;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\SlimClient;
-use HexagonalPlayground\Tests\Framework\SwiftClient;
+use HexagonalPlayground\Tests\Framework\SwiftMailListener;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Slim\App;
 
@@ -22,8 +22,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /** @var App */
     private static $app;
 
-    /** @var EmailClientInterface */
-    private static $emailClient;
+    /** @var EmailListenerInterface */
+    private static $emailListener;
 
     protected function setUp(): void
     {
@@ -33,17 +33,17 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->client = new Client(new SlimClient(self::$app, new Psr17Factory()));
     }
 
-    protected static function getEmailClient(): EmailClientInterface
+    protected static function getEmailListener(): EmailListenerInterface
     {
-        if (null === self::$emailClient) {
+        if (null === self::$emailListener) {
             /** @var MailerInterface $mailer */
             $mailer = self::$app->getContainer()->get(MailerInterface::class);
             if (!($mailer instanceof SwiftMailer)) {
                 throw new \Exception('Unsupported Mailer Type: ' . get_class($mailer));
             }
-            self::$emailClient = new SwiftClient($mailer);
+            self::$emailListener = new SwiftMailListener($mailer);
         }
-        return self::$emailClient;
+        return self::$emailListener;
     }
 
     protected function useAdminAuth(): void

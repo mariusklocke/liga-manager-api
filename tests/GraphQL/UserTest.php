@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 
 class UserTest extends TestCase
 {
@@ -16,8 +17,14 @@ class UserTest extends TestCase
     {
         $this->client->clearAuth();
 
-        $this->expectClientException();
-        $this->client->getAllUsers();
+        $exception = null;
+        try {
+            $this->client->getAllUsers();
+        } catch (Exception $e) {
+            $exception = $e;
+        }
+
+        self::assertInstanceOf(Exception::class, $exception);
     }
 
     public function testUserCanBeCreated()
@@ -36,19 +43,21 @@ class UserTest extends TestCase
     {
         $this->client->clearAuth();
 
-        self::getEmailClient()->deleteAllEmails();
         $user = $this->getUserData();
-        $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
+        $emails = self::getEmailListener()->listen(function () use ($user) {
+            $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
+        });
 
-        self::assertCount(1, self::getEmailClient()->getAllEmails());
+        self::assertCount(1, $emails);
     }
 
     public function testPasswordResetDoesNotErrorWithUnknownEmail(): void
     {
-        self::getEmailClient()->deleteAllEmails();
-        $this->client->sendPasswordResetMail('mister.secret@example.com', '/nowhere');
+        $emails = self::getEmailListener()->listen(function () {
+            $this->client->sendPasswordResetMail('mister.secret@example.com', '/nowhere');
+        });
 
-        self::assertCount(0, self::getEmailClient()->getAllEmails());
+        self::assertCount(0, $emails);
     }
 
     /**
@@ -106,9 +115,11 @@ class UserTest extends TestCase
      */
     public function testSendingInviteEmail(array $user): array
     {
-        self::getEmailClient()->deleteAllEmails();
-        $this->client->sendInviteMail($user['id'], '/straight/to/hell');
-        self::assertCount(1, self::getEmailClient()->getAllEmails());
+        $emails = self::getEmailListener()->listen(function () use ($user) {
+            $this->client->sendInviteMail($user['id'], '/straight/to/hell');
+        });
+        self::assertCount(1, $emails);
+
         return $user;
     }
 
