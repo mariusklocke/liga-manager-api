@@ -3,12 +3,13 @@
 namespace HexagonalPlayground\Infrastructure\API\Health;
 
 use Exception;
+use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
-class Controller
+class QueryAction implements ActionInterface
 {
     use JsonEncodingTrait;
 
@@ -24,11 +25,9 @@ class Controller
     }
 
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @inheritDoc
      */
-    public function __invoke(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $result = [];
 

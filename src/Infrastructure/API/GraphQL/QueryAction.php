@@ -1,18 +1,18 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class Controller
+class QueryAction implements ActionInterface
 {
     use JsonEncodingTrait;
 
@@ -28,11 +28,9 @@ class Controller
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @inheritDoc
      */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $parsedBody = $request->getParsedBody();
         $query = $parsedBody['query'] ?? null;

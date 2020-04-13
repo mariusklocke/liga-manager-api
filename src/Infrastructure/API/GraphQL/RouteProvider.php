@@ -9,6 +9,6 @@ class RouteProvider implements RouteProviderInterface
 {
     public function register(RouteCollectorProxyInterface $routeCollectorProxy): void
     {
-        $routeCollectorProxy->post('/graphql', Controller::class);
+        $routeCollectorProxy->post('/graphql', QueryAction::class);
     }
 }

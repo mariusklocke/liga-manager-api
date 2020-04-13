@@ -36,8 +36,6 @@ class ServiceProvider implements ServiceProviderInterface
             }),
 
             __NAMESPACE__ . '\Loader\*Loader' => DI\autowire(),
-
-            Controller::class => DI\autowire()
         ];
     }
 }

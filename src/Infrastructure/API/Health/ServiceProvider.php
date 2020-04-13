@@ -12,7 +12,7 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             HealthCheckInterface::class => [],
-            Controller::class => DI\create()->constructor(DI\get(HealthCheckInterface::class))
+            QueryAction::class => DI\create()->constructor(DI\get(HealthCheckInterface::class))
         ];
     }
 }
