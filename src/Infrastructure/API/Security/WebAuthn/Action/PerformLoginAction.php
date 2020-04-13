@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
+namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use DateTimeImmutable;
 use Exception;
@@ -10,25 +10,19 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
+use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\AuthenticatorAssertionResponse;
 use Webauthn\AuthenticatorAssertionResponseValidator;
-use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialRequestOptions;
-use Webauthn\PublicKeyCredentialSourceRepository;
 
-class AuthController
+class PerformLoginAction implements ActionInterface
 {
     use JsonEncodingTrait;
-
-    /** @var PublicKeyCredentialSourceRepository */
-    private $credentialRepository;
-
-    /** @var RequestOptionsFactory */
-    private $requestOptionsFactory;
 
     /** @var OptionsStoreInterface */
     private $optionsStore;
@@ -39,9 +33,6 @@ class AuthController
     /** @var AuthenticatorAssertionResponseValidator */
     private $authenticatorAssertionResponseValidator;
 
-    /** @var FakeCredentialDescriptorFactory */
-    private $fakeCredentialDescriptorFactory;
-
     /** @var UserRepositoryInterface */
     private $userRepository;
 
@@ -49,56 +40,25 @@ class AuthController
     private $tokenFactory;
 
     /**
-     * @param PublicKeyCredentialSourceRepository $credentialRepository
-     * @param RequestOptionsFactory $requestOptionsFactory
      * @param OptionsStoreInterface $optionsStore
      * @param PublicKeyCredentialLoader $credentialLoader
      * @param AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator
-     * @param FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory
      * @param UserRepositoryInterface $userRepository
      * @param TokenFactoryInterface $tokenFactory
      */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, RequestOptionsFactory $requestOptionsFactory, OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory, UserRepositoryInterface $userRepository, TokenFactoryInterface $tokenFactory)
+    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenFactoryInterface $tokenFactory)
     {
-        $this->credentialRepository = $credentialRepository;
-        $this->requestOptionsFactory = $requestOptionsFactory;
         $this->optionsStore = $optionsStore;
         $this->credentialLoader = $credentialLoader;
         $this->authenticatorAssertionResponseValidator = $authenticatorAssertionResponseValidator;
-        $this->fakeCredentialDescriptorFactory = $fakeCredentialDescriptorFactory;
         $this->userRepository = $userRepository;
         $this->tokenFactory = $tokenFactory;
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @inheritDoc
      */
-    public function options(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
-    {
-        $parsedBody = $request->getParsedBody();
-        $email = $parsedBody['email'] ?? null;
-
-        /** @var string $email */
-        TypeAssert::assertString($email, 'email');
-
-        $options = $this->requestOptionsFactory->create(
-            $request->getUri()->getHost(),
-            $this->getCredentialDescriptors($email)
-        );
-
-        $this->optionsStore->save($email, $options);
-
-        return $this->toJson($response->withStatus(200), $options);
-    }
-
-    /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
-     */
-    public function login(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $parsedBody = $request->getParsedBody();
         $email = $parsedBody['email'] ?? null;
@@ -146,26 +106,5 @@ class AuthController
             ->withHeader('X-Token', $token->encode());
 
         return $this->toJson($response, $user->getPublicProperties());
-    }
-
-    /**
-     * @param string $email
-     * @return PublicKeyCredentialDescriptor[]
-     */
-    private function getCredentialDescriptors(string $email): array
-    {
-        $credentialDescriptors = [];
-
-        try {
-            $user = $this->userRepository->findByEmail($email);
-            $credentials = $this->credentialRepository->findAllForUserEntity(UserConverter::convert($user));
-            foreach ($credentials as $credentialSource) {
-                $credentialDescriptors[] = $credentialSource->getPublicKeyCredentialDescriptor();
-            }
-        } catch (NotFoundException $e) {
-            $credentialDescriptors[] = $this->fakeCredentialDescriptorFactory->create($email);
-        }
-
-        return $credentialDescriptors;
     }
 }

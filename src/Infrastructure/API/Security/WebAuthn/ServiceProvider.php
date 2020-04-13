@@ -31,9 +31,6 @@ class ServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            TestClientController::class => DI\autowire(),
-            AuthController::class => DI\autowire(),
-            CredentialController::class => DI\autowire(),
             FakeCredentialDescriptorFactory::class => DI\create()
                 ->constructor(DI\env('JWT_SECRET')),
             AuthenticatorAssertionResponseValidator::class => DI\autowire(),

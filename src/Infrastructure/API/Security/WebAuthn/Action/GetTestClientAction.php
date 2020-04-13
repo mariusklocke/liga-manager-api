@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
+namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use HexagonalPlayground\Application\TemplateRendererInterface;
-use Psr\Http\Message\RequestInterface;
+use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
-class TestClientController
+class GetTestClientAction implements ActionInterface
 {
     /** @var TemplateRendererInterface */
     private $templateRenderer;
@@ -20,11 +21,9 @@ class TestClientController
     }
 
     /**
-     * @param RequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @inheritDoc
      */
-    public function show(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $response->getBody()->write($this->templateRenderer->render('WebAuthnClient.html.php', []));
 
