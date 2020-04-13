@@ -16,7 +16,7 @@ class PublicKeyCredentialRepository extends EntityRepository implements PublicKe
     public function findOneByCredentialId(string $publicKeyCredentialId): ?PublicKeyCredentialSource
     {
         /** @var PublicKeyCredential $result */
-        $result = $this->find($publicKeyCredentialId);
+        $result = $this->get($publicKeyCredentialId);
 
         return $result;
     }
