@@ -78,7 +78,6 @@ class RegisterCredentialAction implements ActionInterface
         try {
             $credentialSource = $this->authenticatorAttestationResponseValidator->check($authenticatorResponse, $options, $request);
         } catch (Exception $e) {
-            fwrite(fopen('php://stdout', 'w'), $e->getMessage());
             throw new InvalidInputException($e->getMessage());
         }
 
