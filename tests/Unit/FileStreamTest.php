@@ -30,6 +30,7 @@ class FileStreamTest extends TestCase
         self::assertSame(0, $stream->getSize());
         self::assertSame(\strlen(self::$fileData), $stream->write(self::$fileData));
         self::assertSame(\strlen(self::$fileData), $stream->tell());
+        self::assertSame(\strlen(self::$fileData), $stream->getSize());
         $stream->close();
     }
 

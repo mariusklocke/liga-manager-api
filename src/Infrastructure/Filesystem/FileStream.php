@@ -145,6 +145,8 @@ class FileStream implements StreamInterface
             throw new IoException('Failed writing to stream.');
         }
 
+        $this->size += $written;
+
         return $written;
     }
 
