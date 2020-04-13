@@ -13,7 +13,7 @@ trait JsonEncodingTrait
      */
     public function toJson(ResponseInterface $response, $data): ResponseInterface
     {
-        $response->getBody()->write(json_encode($data));
+        $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
 
         return $response->withHeader('Content-Type', 'application/json');
     }
