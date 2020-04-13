@@ -224,21 +224,54 @@
                 }
 
                 window.fetch('/api/webauthn/credential', {
-                    method: 'DELETE',
+                    method: 'GET',
                     cache: 'no-cache',
                     headers: new Headers({
                         'Authorization': 'Bearer ' + token
                     })
                 }).then(function(response) {
                     if (!response.ok) {
-                        throw new Error('Request failed');
+                        throw new Error('Failed to retrieve credentials.');
                     }
 
                     return response.json();
                 }).then(function(data) {
-                    window.alert("Successfully deleted " + data.count + " credentials!");
+                    if (!data instanceof Array) {
+                        throw new Error('Invalid response when retrieving credentials.');
+                    }
+
+                    if (data.length === 0) {
+                        window.alert('Nothing to delete!');
+                    }
+
+                    let total = data.length;
+                    let count = 0;
+                    data.forEach(function (credential) {
+                        deleteOne(credential.publicKeyCredentialId, token).then(function (response) {
+                            if (!response.ok) {
+                                throw new Error('Failed to delete credential.');
+                            }
+                            count++;
+                            console.log([count, total]);
+                            if (count === total) {
+                                window.alert("Successfully deleted " + count + " credentials!");
+                            }
+                        });
+
+                    });
+
                 }).catch(function(err) {
                     window.alert(err.message || 'unknown error occurred');
+                });
+            }
+
+            function deleteOne(id, token) {
+                return window.fetch(`/api/webauthn/credential/${id}`, {
+                    method: 'DELETE',
+                    cache: 'no-cache',
+                    headers: new Headers({
+                        'Authorization': 'Bearer ' + token
+                    })
                 });
             }
 
