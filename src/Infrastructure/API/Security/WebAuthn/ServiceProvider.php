@@ -3,7 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
 use CBOR\Decoder;
-use Cose\Algorithm\Manager;
+use Cose\Algorithm\Manager as CoseManager;
 use Cose\Algorithm\Signature\ECDSA\ES256;
 use Cose\Algorithm\Signature\ECDSA\ES384;
 use Cose\Algorithm\Signature\ECDSA\ES512;
@@ -13,11 +13,13 @@ use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use Psr\Container\ContainerInterface;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 use Webauthn\AttestationStatement\FidoU2FAttestationStatementSupport;
 use Webauthn\AttestationStatement\NoneAttestationStatementSupport;
+use Webauthn\AttestationStatement\PackedAttestationStatementSupport;
 use Webauthn\AttestationStatement\TPMAttestationStatementSupport;
 use Webauthn\AuthenticationExtensions\ExtensionOutputCheckerHandler;
 use Webauthn\AuthenticatorAssertionResponseValidator;
@@ -37,20 +39,24 @@ class ServiceProvider implements ServiceProviderInterface
 
             AuthenticatorAttestationResponseValidator::class => DI\autowire(),
 
-            AttestationStatementSupportManager::class => DI\factory(function() {
+            PackedAttestationStatementSupport::class => DI\create()
+                ->constructor(null, DI\get(CoseManager::class)),
+
+            AttestationStatementSupportManager::class => DI\factory(function (ContainerInterface $container) {
                 $manager = new AttestationStatementSupportManager();
                 $manager->add(new FidoU2FAttestationStatementSupport());
                 $manager->add(new AndroidKeyAttestationStatementSupport());
                 $manager->add(new NoneAttestationStatementSupport());
                 $manager->add(new TPMAttestationStatementSupport());
+                $manager->add($container->get(PackedAttestationStatementSupport::class));
 
                 return $manager;
             }),
 
             PublicKeyCredentialLoader::class => DI\autowire(),
 
-            Manager::class => DI\factory(function() {
-                $manager = new Manager();
+            CoseManager::class => DI\factory(function() {
+                $manager = new CoseManager();
                 $manager->add(new ES256());
                 $manager->add(new ES384());
                 $manager->add(new ES512());
