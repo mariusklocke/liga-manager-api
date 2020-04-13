@@ -32,7 +32,7 @@ class Controller
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function query(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $parsedBody = $request->getParsedBody();
         $query = $parsedBody['query'] ?? null;

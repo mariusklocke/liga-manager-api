@@ -28,7 +28,7 @@ class Controller
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function health(RequestInterface $request, ResponseInterface $response): ResponseInterface
+    public function __invoke(RequestInterface $request, ResponseInterface $response): ResponseInterface
     {
         $result = [];
 
