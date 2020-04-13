@@ -6,7 +6,7 @@ use Exception;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\Security\AuthAware;
+use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
@@ -19,8 +19,6 @@ use Webauthn\PublicKeyCredentialLoader;
 
 class RegisterCredentialAction implements ActionInterface
 {
-    use AuthAware;
-
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
 
@@ -33,18 +31,23 @@ class RegisterCredentialAction implements ActionInterface
     /** @var OptionsStoreInterface */
     private $creationOptionsStore;
 
+    /** @var AuthReader */
+    private $authReader;
+
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
      * @param PublicKeyCredentialLoader $credentialLoader
      * @param AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator
      * @param OptionsStoreInterface $creationOptionsStore
+     * @param AuthReader $authReader
      */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, OptionsStoreInterface $creationOptionsStore)
+    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, OptionsStoreInterface $creationOptionsStore, AuthReader $authReader)
     {
         $this->credentialRepository = $credentialRepository;
         $this->credentialLoader = $credentialLoader;
         $this->authenticatorAttestationResponseValidator = $authenticatorAttestationResponseValidator;
         $this->creationOptionsStore = $creationOptionsStore;
+        $this->authReader = $authReader;
     }
 
     /**
@@ -69,7 +72,7 @@ class RegisterCredentialAction implements ActionInterface
             throw new InvalidInputException('Not an authenticator attestation response');
         }
 
-        $user = $this->requireAuthContext($request)->getUser();
+        $user = $this->authReader->requireAuthContext($request)->getUser();
         $options = $this->creationOptionsStore->get($user->getId());
         if (!$options instanceof PublicKeyCredentialCreationOptions) {
             throw new InvalidInputException('Cannot find creation options for current user');

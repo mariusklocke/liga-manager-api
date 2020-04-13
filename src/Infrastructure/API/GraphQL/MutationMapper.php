@@ -9,15 +9,24 @@ use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Domain\Util\StringUtils;
+use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 
 class MutationMapper
 {
     /** @var TypeMapper */
     private $typeMapper;
 
-    public function __construct()
+    /** @var AuthReader */
+    private $authReader;
+
+    /**
+     * @param TypeMapper $typeMapper
+     * @param AuthReader $authReader
+     */
+    public function __construct(TypeMapper $typeMapper, AuthReader $authReader)
     {
-        $this->typeMapper = new TypeMapper();
+        $this->typeMapper = $typeMapper;
+        $this->authReader = $authReader;
     }
 
     public function getDefinition(string $commandClass): array
@@ -38,9 +47,14 @@ class MutationMapper
                         $command = $command->withBaseUri($context->getRequest()->getUri());
                     }
 
+                    $authContext = null;
+                    if ($this->authReader->hasAuthContext($context->getRequest())) {
+                        $authContext = $this->authReader->requireAuthContext($context->getRequest());
+                    }
+
                     /** @var CommandBus $commandBus */
                     $commandBus = $context->getContainer()->get(CommandBus::class);
-                    $commandBus->execute($command, $context->getAuthContext($context->getRequest()));
+                    $commandBus->execute($command, $authContext);
                     return true;
                 }
             ]

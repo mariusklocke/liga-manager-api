@@ -6,7 +6,7 @@ use Base64Url\Base64Url;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\Security\AuthAware;
+use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\UserConverter;
@@ -16,17 +16,20 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class DeleteCredentialAction implements ActionInterface
 {
-    use AuthAware;
-
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
 
+    /** @var AuthReader */
+    private $authReader;
+
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
+     * @param AuthReader $authReader
      */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository)
+    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, AuthReader $authReader)
     {
         $this->credentialRepository = $credentialRepository;
+        $this->authReader = $authReader;
     }
 
     /**
@@ -40,7 +43,7 @@ class DeleteCredentialAction implements ActionInterface
             throw new InvalidInputException('Failed to decode credential id. Please use base64url encoding.');
         }
 
-        $user = UserConverter::convert($this->requireAuthContext($request)->getUser());
+        $user = UserConverter::convert($this->authReader->requireAuthContext($request)->getUser());
 
         /** @var PublicKeyCredential $credential */
         $credential = $this->credentialRepository->findOneByCredentialId($id);

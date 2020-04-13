@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
-use HexagonalPlayground\Infrastructure\API\Security\AuthAware;
+use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\CreationOptionsFactory;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\UserConverter;
@@ -14,7 +14,7 @@ use Webauthn\PublicKeyCredentialRpEntity;
 
 class GetRegisterOptionsAction implements ActionInterface
 {
-    use AuthAware, JsonEncodingTrait;
+    use JsonEncodingTrait;
 
     /** @var OptionsStoreInterface */
     private $optionsStore;
@@ -22,14 +22,19 @@ class GetRegisterOptionsAction implements ActionInterface
     /** @var CreationOptionsFactory */
     private $optionsFactory;
 
+    /** @var AuthReader */
+    private $authReader;
+
     /**
      * @param OptionsStoreInterface $optionsStore
      * @param CreationOptionsFactory $optionsFactory
+     * @param AuthReader $authReader
      */
-    public function __construct(OptionsStoreInterface $optionsStore, CreationOptionsFactory $optionsFactory)
+    public function __construct(OptionsStoreInterface $optionsStore, CreationOptionsFactory $optionsFactory, AuthReader $authReader)
     {
         $this->optionsStore = $optionsStore;
         $this->optionsFactory = $optionsFactory;
+        $this->authReader = $authReader;
     }
 
     /**
@@ -37,7 +42,7 @@ class GetRegisterOptionsAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $user = $this->requireAuthContext($request)->getUser();
+        $user = $this->authReader->requireAuthContext($request)->getUser();
 
         $rpEntity = new PublicKeyCredentialRpEntity(
             $request->getUri()->getHost(),

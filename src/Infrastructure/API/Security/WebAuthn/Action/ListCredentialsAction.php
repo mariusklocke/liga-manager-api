@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
-use HexagonalPlayground\Infrastructure\API\Security\AuthAware;
+use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\UserConverter;
 use Psr\Http\Message\ResponseInterface;
@@ -12,17 +12,22 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ListCredentialsAction implements ActionInterface
 {
-    use AuthAware, JsonEncodingTrait;
+    use JsonEncodingTrait;
 
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
 
+    /** @var AuthReader */
+    private $authReader;
+
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
+     * @param AuthReader $authReader
      */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository)
+    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, AuthReader $authReader)
     {
         $this->credentialRepository = $credentialRepository;
+        $this->authReader = $authReader;
     }
 
     /**
@@ -30,7 +35,7 @@ class ListCredentialsAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $user = UserConverter::convert($this->requireAuthContext($request)->getUser());
+        $user = UserConverter::convert($this->authReader->requireAuthContext($request)->getUser());
 
         $credentials = $this->credentialRepository->findAllForUserEntity($user);
 

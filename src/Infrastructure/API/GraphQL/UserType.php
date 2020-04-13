@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Permission\IsAdmin;
+use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\UserRepository;
 
@@ -54,7 +55,7 @@ class UserType extends ObjectType implements QueryTypeInterface
             'authenticatedUser' => [
                 'type' => static::getInstance(),
                 'resolve' => function ($root, $args, AppContext $context) {
-                    $user = $context->requireAuthContext($context->getRequest())->getUser();
+                    $user = (new AuthReader())->requireAuthContext($context->getRequest())->getUser();
 
                     return $user->getPublicProperties();
                 }
@@ -64,7 +65,7 @@ class UserType extends ObjectType implements QueryTypeInterface
                 'resolve' => function ($root, array $args, AppContext $context) {
                     /** @var UserRepository $repo */
                     $repo = $context->getContainer()->get(UserRepository::class);
-                    $user = $context->requireAuthContext($context->getRequest())->getUser();
+                    $user = (new AuthReader())->requireAuthContext($context->getRequest())->getUser();
                     IsAdmin::check($user);
 
                     return $repo->findAllUsers();
