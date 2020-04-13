@@ -3,7 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
+use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\CreationOptionsFactory;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
@@ -14,8 +14,6 @@ use Webauthn\PublicKeyCredentialRpEntity;
 
 class GetRegisterOptionsAction implements ActionInterface
 {
-    use JsonEncodingTrait;
-
     /** @var OptionsStoreInterface */
     private $optionsStore;
 
@@ -25,16 +23,21 @@ class GetRegisterOptionsAction implements ActionInterface
     /** @var AuthReader */
     private $authReader;
 
+    /** @var JsonResponseWriter */
+    private $responseWriter;
+
     /**
      * @param OptionsStoreInterface $optionsStore
      * @param CreationOptionsFactory $optionsFactory
      * @param AuthReader $authReader
+     * @param JsonResponseWriter $responseWriter
      */
-    public function __construct(OptionsStoreInterface $optionsStore, CreationOptionsFactory $optionsFactory, AuthReader $authReader)
+    public function __construct(OptionsStoreInterface $optionsStore, CreationOptionsFactory $optionsFactory, AuthReader $authReader, JsonResponseWriter $responseWriter)
     {
         $this->optionsStore = $optionsStore;
         $this->optionsFactory = $optionsFactory;
         $this->authReader = $authReader;
+        $this->responseWriter = $responseWriter;
     }
 
     /**
@@ -55,6 +58,6 @@ class GetRegisterOptionsAction implements ActionInterface
 
         $this->optionsStore->save($user->getId(), $options);
 
-        return $this->toJson($response->withStatus(200), $options);
+        return $this->responseWriter->write($response->withStatus(200), $options);
     }
 }

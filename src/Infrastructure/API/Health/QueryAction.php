@@ -4,24 +4,27 @@ namespace HexagonalPlayground\Infrastructure\API\Health;
 
 use Exception;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
+use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class QueryAction implements ActionInterface
 {
-    use JsonEncodingTrait;
-
     /** @var HealthCheckInterface[] */
     private $checks;
 
+    /** @var JsonResponseWriter */
+    private $responseWriter;
+
     /**
      * @param HealthCheckInterface[] $checks
+     * @param JsonResponseWriter $responseWriter
      */
-    public function __construct(array $checks)
+    public function __construct(array $checks, JsonResponseWriter $responseWriter)
     {
         $this->checks = $checks;
+        $this->responseWriter = $responseWriter;
     }
 
     /**
@@ -41,6 +44,6 @@ class QueryAction implements ActionInterface
             }
         }
 
-        return $this->toJson($response, $result);
+        return $this->responseWriter->write($response, $result);
     }
 }

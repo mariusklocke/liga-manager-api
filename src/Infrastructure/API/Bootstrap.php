@@ -31,7 +31,8 @@ class Bootstrap
         $errorMiddleware = $app->addErrorMiddleware(false, false, false);
         $errorMiddleware->setDefaultErrorHandler(new ErrorHandler(
             $container->get(LoggerInterface::class),
-            new Psr17Factory()
+            new Psr17Factory(),
+            $container->get(JsonResponseWriter::class)
         ));
 
         $app->group('/api', function (RouteCollectorProxyInterface $group) {

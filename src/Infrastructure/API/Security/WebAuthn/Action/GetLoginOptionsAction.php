@@ -6,7 +6,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
+use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\FakeCredentialDescriptorFactory;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RequestOptionsFactory;
@@ -18,8 +18,6 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 class GetLoginOptionsAction implements ActionInterface
 {
-    use JsonEncodingTrait;
-
     /** @var PublicKeyCredentialSourceRepository */
     private $credentialRepository;
 
@@ -35,20 +33,25 @@ class GetLoginOptionsAction implements ActionInterface
     /** @var UserRepositoryInterface */
     private $userRepository;
 
+    /** @var JsonResponseWriter */
+    private $responseWriter;
+
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
      * @param RequestOptionsFactory $requestOptionsFactory
      * @param OptionsStoreInterface $optionsStore
      * @param FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory
      * @param UserRepositoryInterface $userRepository
+     * @param JsonResponseWriter $responseWriter
      */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, RequestOptionsFactory $requestOptionsFactory, OptionsStoreInterface $optionsStore, FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory, UserRepositoryInterface $userRepository)
+    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, RequestOptionsFactory $requestOptionsFactory, OptionsStoreInterface $optionsStore, FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory, UserRepositoryInterface $userRepository, JsonResponseWriter $responseWriter)
     {
         $this->credentialRepository = $credentialRepository;
         $this->requestOptionsFactory = $requestOptionsFactory;
         $this->optionsStore = $optionsStore;
         $this->fakeCredentialDescriptorFactory = $fakeCredentialDescriptorFactory;
         $this->userRepository = $userRepository;
+        $this->responseWriter = $responseWriter;
     }
 
     /**
@@ -69,7 +72,7 @@ class GetLoginOptionsAction implements ActionInterface
 
         $this->optionsStore->save($email, $options);
 
-        return $this->toJson($response->withStatus(200), $options);
+        return $this->responseWriter->write($response->withStatus(200), $options);
     }
 
     /**

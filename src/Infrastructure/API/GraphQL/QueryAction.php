@@ -6,7 +6,7 @@ use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
+use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,17 +14,20 @@ use Psr\Log\LoggerInterface;
 
 class QueryAction implements ActionInterface
 {
-    use JsonEncodingTrait;
-
     /** @var ContainerInterface */
     private $container;
 
+    /** @var JsonResponseWriter */
+    private $responseWriter;
+
     /**
      * @param ContainerInterface $container
+     * @param JsonResponseWriter $responseWriter
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, JsonResponseWriter $responseWriter)
     {
         $this->container = $container;
+        $this->responseWriter = $responseWriter;
     }
 
     /**
@@ -48,6 +51,6 @@ class QueryAction implements ActionInterface
 
         $response = $response->withStatus(count($result->errors) ? 400 : 200);
 
-        return $this->toJson($response, $result->toArray());
+        return $this->responseWriter->write($response, $result->toArray());
     }
 }

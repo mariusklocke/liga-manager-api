@@ -16,21 +16,25 @@ use Throwable;
 
 class ErrorHandler implements ErrorHandlerInterface
 {
-    use JsonEncodingTrait;
-
     /** @var LoggerInterface */
     private $logger;
 
     /** @var ResponseFactoryInterface */
     private $responseFactory;
 
+    /** @var JsonResponseWriter */
+    private $responseWriter;
+
     /**
      * @param LoggerInterface $logger
+     * @param ResponseFactoryInterface $responseFactory
+     * @param JsonResponseWriter $responseWriter
      */
-    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory)
+    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory, JsonResponseWriter $responseWriter)
     {
         $this->logger = $logger;
         $this->responseFactory = $responseFactory;
+        $this->responseWriter = $responseWriter;
     }
 
     /**
@@ -116,9 +120,8 @@ class ErrorHandler implements ErrorHandlerInterface
     private function createResponse(int $statusCode, string $message): ResponseInterface
     {
         $response = $this->responseFactory->createResponse($statusCode);
-        $response = $response->withHeader('Content-Type', 'application/json');
 
-        return $this->toJson($response, [
+        return $this->responseWriter->write($response, [
             'errors' => [
                 [
                     'message' => $message

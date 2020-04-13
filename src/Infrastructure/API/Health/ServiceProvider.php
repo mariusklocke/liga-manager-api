@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Infrastructure\API\Health;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 
 class ServiceProvider implements ServiceProviderInterface
@@ -12,7 +13,7 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             HealthCheckInterface::class => [],
-            QueryAction::class => DI\create()->constructor(DI\get(HealthCheckInterface::class))
+            QueryAction::class => DI\create()->constructor(DI\get(HealthCheckInterface::class), DI\get(JsonResponseWriter::class))
         ];
     }
 }

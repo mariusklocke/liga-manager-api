@@ -11,7 +11,7 @@ use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonEncodingTrait;
+use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,8 +22,6 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 class PerformLoginAction implements ActionInterface
 {
-    use JsonEncodingTrait;
-
     /** @var OptionsStoreInterface */
     private $optionsStore;
 
@@ -39,20 +37,25 @@ class PerformLoginAction implements ActionInterface
     /** @var TokenFactoryInterface */
     private $tokenFactory;
 
+    /** @var JsonResponseWriter */
+    private $responseWriter;
+
     /**
      * @param OptionsStoreInterface $optionsStore
      * @param PublicKeyCredentialLoader $credentialLoader
      * @param AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator
      * @param UserRepositoryInterface $userRepository
      * @param TokenFactoryInterface $tokenFactory
+     * @param JsonResponseWriter $responseWriter
      */
-    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenFactoryInterface $tokenFactory)
+    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenFactoryInterface $tokenFactory, JsonResponseWriter $responseWriter)
     {
         $this->optionsStore = $optionsStore;
         $this->credentialLoader = $credentialLoader;
         $this->authenticatorAssertionResponseValidator = $authenticatorAssertionResponseValidator;
         $this->userRepository = $userRepository;
         $this->tokenFactory = $tokenFactory;
+        $this->responseWriter = $responseWriter;
     }
 
     /**
@@ -105,6 +108,6 @@ class PerformLoginAction implements ActionInterface
         $response = $response->withStatus(200)
             ->withHeader('X-Token', $token->encode());
 
-        return $this->toJson($response, $user->getPublicProperties());
+        return $this->responseWriter->write($response, $user->getPublicProperties());
     }
 }
