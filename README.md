@@ -19,15 +19,20 @@ $ docker-compose up -d
 
 To setup your `.env` file follow the instructions given from
 ```bash
-$ docker-compose exec php bin/lima app:setup
-```
-
-To initialize the database you need to run `bin/init-db.sh`
-```bash
-$ docker-compose exec php bin/init-db.sh
+$ docker-compose exec php lima app:setup
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
+
+## Useful commands
+
+```bash
+# Drop schema and run all migrations (empty table state)
+$ docker-compose exec php init-db.sh
+
+# Create a new user (any role)
+$ docker-compose exec php lima app:create-user
+```
 
 ## Enable HTTPS
 
@@ -47,7 +52,7 @@ If you need to change paths, make your sure to reflect the changes in `docker-co
 
 ## OS users & file permissions
 
-Configure `user: dev` in `docker-compose.yml` if you want to mount the project files into the container.
+Configure `user: 1000:1000` in `docker-compose.yml` if you want to mount the project files into the container.
 
 ## Naming Conventions
 
