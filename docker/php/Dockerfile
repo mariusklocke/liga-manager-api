@@ -34,4 +34,4 @@ ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 RUN chmod +x bin/* \
     && rm -r docker \
     && bin/install
-CMD init.sh && php-fpm
+CMD init-container.sh && php-fpm

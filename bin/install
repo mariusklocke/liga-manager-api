@@ -2,45 +2,61 @@
 <?php
 declare(strict_types=1);
 
-echo 'Installing dependencies ...' . PHP_EOL;
+$installer = new class {
 
-$tools = [
-    'bin/composer.phar' => 'https://github.com/composer/composer/releases/download/1.9.1/composer.phar',
-    'bin/phpunit.phar' => 'https://phar.phpunit.de/phpunit-8.4.3.phar',
-    'bin/php-coveralls.phar' => 'https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar',
-    'bin/deptrac.phar' => 'https://github.com/sensiolabs-de/deptrac/releases/download/0.6.0/deptrac.phar'
-];
+    /** @var array */
+    private $tools = [
+        'bin/composer.phar' => 'https://github.com/composer/composer/releases/download/1.9.1/composer.phar',
+        'bin/phpunit.phar' => 'https://phar.phpunit.de/phpunit-8.4.3.phar',
+        'bin/php-coveralls.phar' => 'https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar',
+        'bin/deptrac.phar' => 'https://github.com/sensiolabs-de/deptrac/releases/download/0.6.0/deptrac.phar'
+    ];
 
-$homeDir = getenv('APP_HOME');
-if (!$homeDir) {
-    throw new RuntimeException('Missing environment var: APP_HOME');
-}
+    public function __invoke(): void
+    {
+        $this->output('Installing PHAR dependencies ...');
 
-foreach ($tools as $target => $source) {
-    if (file_exists($target)) {
-        continue;
+        foreach ($this->tools as $target => $source) {
+            if (file_exists($target)) {
+                continue;
+            }
+
+            $this->installTool($target, $source);
+        }
+
+        $this->output('Installing composer dependencies ...');
+        $this->installComposerDeps();
     }
 
-    echo sprintf('Installing %s  ...', $target) . PHP_EOL;
-    $result = stream_copy_to_stream(
-        fopen($source, 'r'),
-        fopen($target, 'w')
-    );
-    if (false === $result) {
-        throw new RuntimeException(sprintf('Failed to install %s', $target));
+    private function output(string $message): void
+    {
+        echo $message . PHP_EOL;
     }
-    chmod($target, 0755);
-}
 
-system(
-    'composer.phar install --prefer-dist --no-dev --optimize-autoloader --no-cache',
-    $exitCode
-);
+    private function installTool(string $target, string $source): void
+    {
+        $this->output(sprintf('Installing %s ...', $target));
+        $result = stream_copy_to_stream(
+            fopen($source, 'r'),
+            fopen($target, 'w')
+        );
+        if (false === $result) {
+            throw new RuntimeException(sprintf('Failed to install %s', $target));
+        }
+        chmod($target, 0755);
+    }
 
-if ($exitCode === 0) {
-    echo 'Installation complete.' . PHP_EOL;
-} else {
-    echo 'Installation failed!' . PHP_EOL;
-}
+    private function installComposerDeps(): void
+    {
+        system(
+            'composer.phar install --prefer-dist --no-dev --optimize-autoloader --no-cache',
+            $exitCode
+        );
 
-exit($exitCode);
+        if ($exitCode !== 0) {
+            throw new RuntimeException('Failed to install composer dependencies. Code: ' . $exitCode);
+        }
+    }
+};
+
+$installer();
