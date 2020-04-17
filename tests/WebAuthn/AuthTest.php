@@ -13,6 +13,9 @@ class AuthTest extends HttpTest
             'POST',
             '/api/webauthn/credential/options',
         );
+        $response = $this->client->sendRequest($request);
+        self::assertSame(401, $response->getStatusCode());
+
         $request = $this->authenticator->withAdminAuth($request);
 
         $response = $this->client->sendRequest($request);
