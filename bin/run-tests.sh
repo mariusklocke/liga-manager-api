@@ -5,6 +5,9 @@ set -e
 # Make sure container is ready for action
 init-container.sh
 
+# Make sure we have a clean database
+init-db.sh
+
 # Create default admin user
 lima app:create-user --email=$ADMIN_EMAIL --password=$ADMIN_PASSWORD
 
