@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 
 class Bootstrap
 {
@@ -18,7 +17,14 @@ class Bootstrap
 
         $app = new Application();
         $app->setCatchExceptions(true);
-        $app->setCommandLoader($container->get(CommandLoaderInterface::class));
+        $app->addCommands([
+            new CreateUserCommand($container),
+            new DebugGqlSchemaCommand($container),
+            new L98ImportCommand($container),
+            new LoadFixturesCommand($container),
+            new SendTestMailCommand($container),
+            new SetupCommand($container)
+        ]);
 
         return $app;
     }

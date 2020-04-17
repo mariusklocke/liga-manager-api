@@ -11,17 +11,8 @@ class DebugGqlSchemaCommand extends Command
 {
     public const NAME = 'app:debug-gql-schema';
 
-    /** @var Schema */
-    private $schema;
-
-    public function __construct(Schema $schema)
-    {
-        parent::__construct();
-        $this->schema = $schema;
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getStyledIO($input, $output)->text(SchemaPrinter::doPrint($this->schema));
+        $this->getStyledIO($input, $output)->text(SchemaPrinter::doPrint($this->container->get(Schema::class)));
     }
 }

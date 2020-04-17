@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\User;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -21,9 +22,13 @@ abstract class Command extends SymfonyCommand
     /** @var AuthContext|null */
     private $authContext;
 
-    public function __construct()
+    /** @var ContainerInterface */
+    protected $container;
+
+    public function __construct(ContainerInterface $container)
     {
         parent::__construct(static::NAME);
+        $this->container = $container;
     }
 
     /**

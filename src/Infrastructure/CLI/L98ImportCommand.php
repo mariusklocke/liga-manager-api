@@ -18,23 +18,6 @@ class L98ImportCommand extends Command
 {
     public const NAME = 'app:import-season';
 
-    /** @var Executor */
-    private $executor;
-
-    /** @var TeamMapper */
-    private $teamMapper;
-
-    /**
-     * @param Executor $executor
-     * @param TeamMapper $teamMapper
-     */
-    public function __construct(Executor $executor, TeamMapper $teamMapper)
-    {
-        parent::__construct();
-        $this->executor = $executor;
-        $this->teamMapper = $teamMapper;
-    }
-
     protected function configure()
     {
         $this
@@ -48,7 +31,7 @@ class L98ImportCommand extends Command
         $styledIo = $this->getStyledIO($input, $output);
 
         if ($input->isInteractive()) {
-            $this->teamMapper->setStyledIo($styledIo);
+            $this->container->get(TeamMapper::class)->setStyledIo($styledIo);
         }
 
         /** @var SplFileInfo $fileInfo */
@@ -82,10 +65,10 @@ class L98ImportCommand extends Command
     {
         $styledIo->text('Started processing ' . $path);
 
-        $this->executor->__invoke(
+        $this->container->get(Executor::class)->__invoke(
             new FileStream($path),
             $this->getAuthContext(),
-            $this->teamMapper
+            $this->container->get(TeamMapper::class)
         );
 
         $styledIo->text('Finished processing ' . $path);

@@ -27,18 +27,6 @@ class LoadFixturesCommand extends Command
 {
     public const NAME = 'app:load-fixtures';
 
-    /** @var CommandBus */
-    private $commandBus;
-
-    /**
-     * @param CommandBus $commandBus
-     */
-    public function __construct(CommandBus $commandBus)
-    {
-        $this->commandBus = $commandBus;
-        parent::__construct();
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $seasonIds = [];
@@ -79,7 +67,7 @@ class LoadFixturesCommand extends Command
     {
         foreach (['A', 'B', 'C'] as $char) {
             $command = new CreateTournamentCommand(null, 'Tournament ' . $char);
-            $this->commandBus->execute($command, $this->getAuthContext());
+            $this->getCommandBus()->execute($command, $this->getAuthContext());
             yield $command->getId();
         }
     }
@@ -96,7 +84,7 @@ class LoadFixturesCommand extends Command
             $start   = new DateTimeImmutable('next saturday');
             $period  = new DatePeriod($start, $start->modify('next sunday'));
             $command = new SetTournamentRoundCommand($tournamentId, 1, $pairs, $period);
-            $this->commandBus->execute($command, $this->getAuthContext());
+            $this->getCommandBus()->execute($command, $this->getAuthContext());
         }
     }
 
@@ -108,7 +96,7 @@ class LoadFixturesCommand extends Command
         $years = ['17/18', '18/19', '19/20'];
         foreach ($years as $year) {
             $command = new CreateSeasonCommand(null, 'Season ' . $year);
-            $this->commandBus->execute($command, $this->getAuthContext());
+            $this->getCommandBus()->execute($command, $this->getAuthContext());
             yield $command->getId();
         }
     }
@@ -121,7 +109,7 @@ class LoadFixturesCommand extends Command
         $colors = ['Red', 'Blue'];
         foreach ($colors as $color) {
             $command = new CreatePitchCommand(null, 'Pitch ' . $color, 12.34, 23.45);
-            $this->commandBus->execute($command, $this->getAuthContext());
+            $this->getCommandBus()->execute($command, $this->getAuthContext());
             yield $command->getId();
         }
     }
@@ -134,7 +122,7 @@ class LoadFixturesCommand extends Command
         for ($i = 1; $i <= 8; $i++) {
             $teamName = sprintf('Team No. %02d', $i);
             $command  = new CreateTeamCommand(null, $teamName);
-            $this->commandBus->execute($command, $this->getAuthContext());
+            $this->getCommandBus()->execute($command, $this->getAuthContext());
             yield $command->getId();
         }
     }
@@ -155,7 +143,7 @@ class LoadFixturesCommand extends Command
                 [array_shift($teamIds)]
             );
 
-            $this->commandBus->execute($command, $this->getAuthContext());
+            $this->getCommandBus()->execute($command, $this->getAuthContext());
         }
     }
 
@@ -168,7 +156,7 @@ class LoadFixturesCommand extends Command
         foreach ($seasonIds as $seasonId) {
             foreach ($teamIds as $teamId) {
                 $command = new AddTeamToSeasonCommand($seasonId, $teamId);
-                $this->commandBus->execute($command, $this->getAuthContext());
+                $this->getCommandBus()->execute($command, $this->getAuthContext());
             }
         }
     }
@@ -180,9 +168,9 @@ class LoadFixturesCommand extends Command
     private function startSeason(string $seasonId, int $teamCount): void
     {
         $command = new CreateMatchesForSeasonCommand($seasonId, $this->generateMatchDayDates($teamCount));
-        $this->commandBus->execute($command, $this->getAuthContext());
+        $this->getCommandBus()->execute($command, $this->getAuthContext());
         $command = new StartSeasonCommand($seasonId);
-        $this->commandBus->execute($command, $this->getAuthContext());
+        $this->getCommandBus()->execute($command, $this->getAuthContext());
     }
 
     /**
@@ -196,7 +184,7 @@ class LoadFixturesCommand extends Command
             $seasonId,
             $this->generateMatchAppointments($teamIds, $pitchIds)
         );
-        $this->commandBus->execute($command, $this->getAuthContext());
+        $this->getCommandBus()->execute($command, $this->getAuthContext());
     }
 
     /**
@@ -254,5 +242,10 @@ class LoadFixturesCommand extends Command
         );
 
         return $appointments;
+    }
+
+    private function getCommandBus(): CommandBus
+    {
+        return $this->container->get(CommandBus::class);
     }
 }

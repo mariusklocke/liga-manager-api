@@ -14,15 +14,6 @@ class CreateUserCommand extends Command
 {
     public const NAME = 'app:create-user';
 
-    /** @var CommandBus */
-    private $commandBus;
-
-    public function __construct(CommandBus $commandBus)
-    {
-        $this->commandBus = $commandBus;
-        parent::__construct();
-    }
-
     protected function configure()
     {
         $this->addOption('email',null, InputOption::VALUE_REQUIRED);
@@ -73,7 +64,7 @@ class CreateUserCommand extends Command
             []
         );
 
-        $this->commandBus->execute($command, $this->getAuthContext());
+        $this->container->get(CommandBus::class)->execute($command, $this->getAuthContext());
 
         $output->writeln('User successfully created. ID: ' . $command->getId());
         return 0;

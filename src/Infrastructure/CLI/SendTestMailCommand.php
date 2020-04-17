@@ -11,18 +11,6 @@ class SendTestMailCommand extends Command
 {
     public const NAME = 'app:send-test-mail';
 
-    /** @var MailerInterface */
-    private $mailer;
-
-    /**
-     * @param MailerInterface $mailer
-     */
-    public function __construct(MailerInterface $mailer)
-    {
-        parent::__construct();
-        $this->mailer = $mailer;
-    }
-
     protected function configure()
     {
         $this->addArgument('recipient', InputArgument::REQUIRED, 'Sends a test email');
@@ -30,12 +18,15 @@ class SendTestMailCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $message = $this->mailer->createMessage();
+        /** @var MailerInterface $mailer */
+        $mailer = $this->container->get(MailerInterface::class);
+
+        $message = $mailer->createMessage();
         $message->setSubject('Test');
         $message->setBody('This is just a test', 'text/plain');
         $message->setTo([$input->getArgument('recipient')]);
 
-        $this->mailer->send($message);
+        $mailer->send($message);
 
         $this->getStyledIO($input, $output)->success('Test email has been sent successfully');
     }
