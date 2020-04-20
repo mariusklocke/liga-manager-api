@@ -4,3 +4,4 @@
 docker/_volumes
 .travis.yml
 build.sh
+build.env
