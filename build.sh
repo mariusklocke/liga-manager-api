@@ -10,32 +10,21 @@ if [[ -z "${TAG}" ]]; then
 fi
 
 cleanup() {
-    echo 'Cleaning temporary containers ...'
-    docker rm -f mariadb redis > /dev/null
+    echo 'Cleanup: Removing containers ...'
+    DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml down -v
 }
 
 # Build image
-docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG . > /dev/null
-
-# Run deptrac
-docker run --rm ${DOCKER_REPO}:${TAG} bin/deptrac.phar --no-progress
+docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG -q .
 
 # Make sure we clean up running containers in case of error
 trap cleanup EXIT
 
-# Launch MariaDB and Redis containers
-docker run -d --name mariadb --env-file .env.test mariadb > /dev/null
-docker run -d --name redis redis:5-alpine > /dev/null
+# Launch containers
+DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml up -d
+
+# Run deptrac
+docker-compose exec php bin/deptrac.phar --no-progress
 
 # Run tests
-docker run --link mariadb --link redis --rm --env-file .env.test ${DOCKER_REPO}:${TAG} run-tests.sh
-
-if [[ $1 = "-c" ]]; then
-
-    # Run tests with coverage
-    docker run \
-        --link mariadb --link redis --rm --env-file .env.test -e COVERAGE=1 -e TRAVIS -e TRAVIS_JOB_ID \
-        ${DOCKER_REPO}:${TAG} \
-        run-tests.sh
-
-fi
+docker-compose exec -e TRAVIS -e TRAVIS_JOB_ID php run-tests.sh
