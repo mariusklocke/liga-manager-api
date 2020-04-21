@@ -9,7 +9,7 @@ services:
       - build.env
 
   mariadb:
-    image: mariadb
+    image: mariadb:10.4
     env_file:
       - build.env
 

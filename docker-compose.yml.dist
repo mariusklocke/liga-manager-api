@@ -25,7 +25,7 @@ services:
       - .env
 
   mariadb:
-    image: mariadb
+    image: mariadb:10.4
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
@@ -39,7 +39,7 @@ services:
       - "6379:6379"
 
   maildev:
-    image: djfarrelly/maildev
+    image: djfarrelly/maildev:latest
     ports:
       - "1080:80"
 
