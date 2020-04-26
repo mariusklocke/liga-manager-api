@@ -12,14 +12,9 @@ services:
     depends_on:
       - php
       - ui
-      - subscriptions
 
   php:
-    build:
-      context: .
-      dockerfile: docker/php/Dockerfile
-      args:
-        XDEBUG: 0
+    image: mklocke/liga-manager-api:latest
     user: 1000:1000
     volumes:
       - .:/var/www/api
@@ -30,7 +25,7 @@ services:
       - .env
 
   mariadb:
-    image: mariadb
+    image: mariadb:10.4
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
@@ -44,16 +39,16 @@ services:
       - "6379:6379"
 
   maildev:
-    image: djfarrelly/maildev
+    image: djfarrelly/maildev:latest
     ports:
       - "1080:80"
 
   ui:
-    image: robertkitzing/liga-manager-ui:4.0.0-210
+    image: robertkitzing/liga-manager-ui:latest
     environment:
       - EXPRESS_PORT=3098
       - GRAPHQL_URL=api/graphql
-      - GRAPHQL_WS_URL=ws://localhost:4000
+      #- GRAPHQL_WS_URL=ws://localhost:4000
       - GOOGLE_MAPS_API_KEY=INSERT-KEY-HERE
 
   subscriptions:

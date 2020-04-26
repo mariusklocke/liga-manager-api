@@ -1,0 +1,17 @@
+version: '3'
+services:
+  php:
+    image: $DOCKER_REPO:$TAG
+    depends_on:
+      - mariadb
+      - redis
+    env_file:
+      - build.env
+
+  mariadb:
+    image: mariadb:10.4
+    env_file:
+      - build.env
+
+  redis:
+    image: redis:5-alpine
