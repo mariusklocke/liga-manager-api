@@ -106,14 +106,15 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
             SimplifiedXmlDriver::class => DI\factory(function () {
+                $basePath = Environment::get('APP_HOME');
                 $driver = new SimplifiedXmlDriver([
-                    Environment::get('APP_HOME') . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
+                    $basePath . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
                     => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",
-                    Environment::get('APP_HOME') . "/config/doctrine/Domain"
+                    $basePath . "/config/doctrine/Domain"
                     => "HexagonalPlayground\\Domain",
-                    Environment::get('APP_HOME') . "/config/doctrine/Domain/Event"
+                    $basePath . "/config/doctrine/Domain/Event"
                     => "HexagonalPlayground\\Domain\\Event",
-                    Environment::get('APP_HOME') . "/config/doctrine/Domain/Value"
+                    $basePath . "/config/doctrine/Domain/Value"
                     => "HexagonalPlayground\\Domain\\Value"
                 ]);
                 $driver->setGlobalBasename('global');
@@ -123,31 +124,14 @@ class DoctrineServiceProvider implements ServiceProviderInterface
 
             OrmTransactionWrapperInterface::class => DI\get(DoctrineTransactionWrapper::class),
 
-            DoctrineTransactionWrapper::class => DI\autowire(),
-
             MatchRepositoryInterface::class => DI\get(MatchRepository::class),
-            MatchRepository::class => DI\autowire(),
-
             MatchDayRepositoryInterface::class => DI\get(MatchDayRepository::class),
-            MatchDayRepository::class => DI\autowire(),
-
             PitchRepositoryInterface::class => DI\get(PitchRepository::class),
-            PitchRepository::class => DI\autowire(),
-
             SeasonRepositoryInterface::class => DI\get(SeasonRepository::class),
-            SeasonRepository::class => DI\autowire(),
-
             TeamRepositoryInterface::class => DI\get(TeamRepository::class),
-            TeamRepository::class => DI\autowire(),
-
             TournamentRepositoryInterface::class => DI\get(TournamentRepository::class),
-            TournamentRepository::class => DI\autowire(),
-
             UserRepositoryInterface::class => DI\get(UserRepository::class),
-            UserRepository::class => DI\autowire(),
-
             PublicKeyCredentialSourceRepository::class => DI\get(PublicKeyCredentialRepository::class),
-            PublicKeyCredentialRepository::class => DI\autowire(),
 
             HealthCheckInterface::class => DI\add(DI\get(DoctrineHealthCheck::class))
         ];
