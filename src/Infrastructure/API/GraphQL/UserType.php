@@ -66,7 +66,7 @@ class UserType extends ObjectType implements QueryTypeInterface
                     /** @var UserRepository $repo */
                     $repo = $context->getContainer()->get(UserRepository::class);
                     $user = (new AuthReader())->requireAuthContext($context->getRequest())->getUser();
-                    IsAdmin::check($user);
+                    (new IsAdmin($user))->check();
 
                     return $repo->findAllUsers();
                 }
