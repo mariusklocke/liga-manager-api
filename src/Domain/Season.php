@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Value\MatchResult;
+use HexagonalPlayground\Domain\Value\DatePeriod;
 
 class Season extends Competition
 {
@@ -120,14 +120,6 @@ class Season extends Competition
     /**
      * @return bool
      */
-    public function hasEnded() : bool
-    {
-        return $this->state === self::STATE_ENDED;
-    }
-
-    /**
-     * @return bool
-     */
     public function isInProgress(): bool
     {
         return $this->state === self::STATE_PROGRESS;
@@ -203,28 +195,32 @@ class Season extends Competition
         return $this->matchDays->toArray();
     }
 
-    /**
-     * @param string $homeTeamId
-     * @param string $guestTeamId
-     * @param MatchResult $matchResult
-     */
-    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
-    {
-        $this->getRanking()->addResult($homeTeamId, $guestTeamId, $matchResult);
-    }
-
-    /**
-     * @param string $homeTeamId
-     * @param string $guestTeamId
-     * @param MatchResult $matchResult
-     */
-    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
-    {
-        $this->getRanking()->revertResult($homeTeamId, $guestTeamId, $matchResult);
-    }
-
     private function updateMatchDayCount(): void
     {
         $this->matchDayCount = $this->matchDays->count();
+    }
+
+    /**
+     * @param array|DatePeriod[] $matchDayDates
+     */
+    public function createSecondHalf(array $matchDayDates): void
+    {
+        Assert::true($this->matchDays->count() === count($matchDayDates), sprintf(
+            'Count of MatchDay dates does not match. Expected %d. Got %d',
+            $this->matchDays->count(),
+            count($matchDayDates)
+        ));
+
+        $firstHalfNumber = 1;
+        $secondHalfNumber = max(...$this->matchDays->getKeys()) + 1;
+        foreach ($matchDayDates as $datePeriod) {
+            $firstHalfMatchDay = $this->matchDays->get($firstHalfNumber);
+            $secondHalfMatchDay = $this->createMatchDay(null, $secondHalfNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
+            foreach ($firstHalfMatchDay->getMatches() as $match) {
+                $secondHalfMatchDay->createMatch(null, $match->getGuestTeam(), $match->getHomeTeam());
+            }
+            $firstHalfNumber++;
+            $secondHalfNumber++;
+        }
     }
 }

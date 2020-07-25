@@ -140,7 +140,7 @@ class MatchDay extends Entity
     {
         $competition = $this->getCompetition();
         if ($competition instanceof Season) {
-            $competition->addResult($homeTeamId, $guestTeamId, $matchResult);
+            $competition->getRanking()->addResult($homeTeamId, $guestTeamId, $matchResult);
         }
     }
 
@@ -153,7 +153,7 @@ class MatchDay extends Entity
     {
         $competition = $this->getCompetition();
         if ($competition instanceof Season) {
-            $competition->revertResult($homeTeamId, $guestTeamId, $matchResult);
+            $competition->getRanking()->revertResult($homeTeamId, $guestTeamId, $matchResult);
         }
     }
 

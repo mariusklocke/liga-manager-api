@@ -26,19 +26,30 @@ class MatchFactory
             $teams[] = null;
         }
         shuffle($teams);
-        $expectedMatchDayCount = count($teams) - 1;
 
-        Assert::true(count($matchDayDates) === $expectedMatchDayCount, sprintf(
-            'Count of MatchDay dates does not match. Expected %d. Got %d',
-            $expectedMatchDayCount,
-            count($matchDayDates)
-        ));
+        $matchDaysPerHalf = count($teams) - 1;
+        $possibleMatchDayCounts = [$matchDaysPerHalf, $matchDaysPerHalf * 2];
+
+        Assert::oneOf(
+            count($matchDayDates),
+            $possibleMatchDayCounts,
+            'Count of MatchDay dates does not match. Expected: [%s]. Got: %s',
+        );
+
+        $secondHalfMatchDayDates = [];
+        if (count($matchDayDates) > $matchDaysPerHalf) {
+            $secondHalfMatchDayDates = array_splice($matchDayDates, $matchDaysPerHalf, $matchDaysPerHalf);
+        }
 
         $matchDayNumber = 1;
         foreach ($matchDayDates as $datePeriod) {
             $matchDay = $season->createMatchDay(null, $matchDayNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
             $this->generateMatchesForMatchDay($matchDay, $teams);
             $matchDayNumber++;
+        }
+
+        if (!empty($secondHalfMatchDayDates)) {
+            $season->createSecondHalf($secondHalfMatchDayDates);
         }
     }
 
