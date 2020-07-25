@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Value\DatePeriod;
 
 class Season extends Competition
 {
@@ -198,29 +197,5 @@ class Season extends Competition
     private function updateMatchDayCount(): void
     {
         $this->matchDayCount = $this->matchDays->count();
-    }
-
-    /**
-     * @param array|DatePeriod[] $matchDayDates
-     */
-    public function createSecondHalf(array $matchDayDates): void
-    {
-        Assert::true($this->matchDays->count() === count($matchDayDates), sprintf(
-            'Count of MatchDay dates does not match. Expected %d. Got %d',
-            $this->matchDays->count(),
-            count($matchDayDates)
-        ));
-
-        $firstHalfNumber = 1;
-        $secondHalfNumber = max(...$this->matchDays->getKeys()) + 1;
-        foreach ($matchDayDates as $datePeriod) {
-            $firstHalfMatchDay = $this->matchDays->get($firstHalfNumber);
-            $secondHalfMatchDay = $this->createMatchDay(null, $secondHalfNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
-            foreach ($firstHalfMatchDay->getMatches() as $match) {
-                $secondHalfMatchDay->createMatch(null, $match->getGuestTeam(), $match->getHomeTeam());
-            }
-            $firstHalfNumber++;
-            $secondHalfNumber++;
-        }
     }
 }
