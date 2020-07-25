@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Value\MatchResult;
 
 class Season extends Competition
 {
@@ -120,14 +119,6 @@ class Season extends Competition
     /**
      * @return bool
      */
-    public function hasEnded() : bool
-    {
-        return $this->state === self::STATE_ENDED;
-    }
-
-    /**
-     * @return bool
-     */
     public function isInProgress(): bool
     {
         return $this->state === self::STATE_PROGRESS;
@@ -201,26 +192,6 @@ class Season extends Competition
     public function getMatchDays(): array
     {
         return $this->matchDays->toArray();
-    }
-
-    /**
-     * @param string $homeTeamId
-     * @param string $guestTeamId
-     * @param MatchResult $matchResult
-     */
-    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
-    {
-        $this->getRanking()->addResult($homeTeamId, $guestTeamId, $matchResult);
-    }
-
-    /**
-     * @param string $homeTeamId
-     * @param string $guestTeamId
-     * @param MatchResult $matchResult
-     */
-    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
-    {
-        $this->getRanking()->revertResult($homeTeamId, $guestTeamId, $matchResult);
     }
 
     private function updateMatchDayCount(): void

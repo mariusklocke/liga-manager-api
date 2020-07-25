@@ -90,14 +90,6 @@ class MatchDay extends Entity
     }
 
     /**
-     * @return Competition
-     */
-    public function getCompetition(): Competition
-    {
-        return $this->season ?? $this->tournament;
-    }
-
-    /**
      * @param DateTimeImmutable $startDate
      * @param DateTimeImmutable $endDate
      */
@@ -138,9 +130,8 @@ class MatchDay extends Entity
      */
     public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
     {
-        $competition = $this->getCompetition();
-        if ($competition instanceof Season) {
-            $competition->addResult($homeTeamId, $guestTeamId, $matchResult);
+        if ($this->season !== null) {
+            $this->season->getRanking()->addResult($homeTeamId, $guestTeamId, $matchResult);
         }
     }
 
@@ -151,9 +142,8 @@ class MatchDay extends Entity
      */
     public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
     {
-        $competition = $this->getCompetition();
-        if ($competition instanceof Season) {
-            $competition->revertResult($homeTeamId, $guestTeamId, $matchResult);
+        if ($this->season !== null) {
+            $this->season->getRanking()->revertResult($homeTeamId, $guestTeamId, $matchResult);
         }
     }
 

@@ -69,7 +69,7 @@ class SeasonTest extends CompetitionTestCase
             $this->client->addTeamToSeason($seasonId, $teamId);
         }
 
-        $dates = self::createMatchDayDates(count(self::$teamIds) - 1);
+        $dates = self::createMatchDayDates(2 * (count(self::$teamIds) - 1));
         $this->client->createMatchesForSeason($seasonId, $dates);
 
         $events = EventCapturer::getInstance()->capture(function() use ($seasonId) {

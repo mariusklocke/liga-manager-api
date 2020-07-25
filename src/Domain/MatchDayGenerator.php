@@ -7,17 +7,17 @@ use HexagonalPlayground\Domain\Value\DatePeriod;
 use HexagonalPlayground\Domain\Util\Assert;
 
 /**
- * A factory which constructs Match objects and implements a match day generation algorithm
+ * Generates MatchDays and Matches for a Season
  */
-class MatchFactory
+class MatchDayGenerator
 {
     /**
-     * Create all matches for a given season
+     * Generates all MatchDays for a Season
      *
      * @param Season $season
      * @param array|DatePeriod[] $matchDayDates
      */
-    public function createMatchDaysForSeason(Season $season, array $matchDayDates): void
+    public function generateMatchDaysForSeason(Season $season, array $matchDayDates): void
     {
         $teams = array_values($season->getTeams());
         Assert::true(count($teams) >= 2, 'Cannot create matches for season with less than 2 teams');
@@ -26,19 +26,44 @@ class MatchFactory
             $teams[] = null;
         }
         shuffle($teams);
-        $expectedMatchDayCount = count($teams) - 1;
 
-        Assert::true(count($matchDayDates) === $expectedMatchDayCount, sprintf(
-            'Count of MatchDay dates does not match. Expected %d. Got %d',
-            $expectedMatchDayCount,
-            count($matchDayDates)
-        ));
+        $matchDaysPerHalf = count($teams) - 1;
+        $possibleMatchDayCounts = [$matchDaysPerHalf, $matchDaysPerHalf * 2];
+
+        Assert::oneOf(
+            count($matchDayDates),
+            $possibleMatchDayCounts,
+            'Count of MatchDay dates does not match. Expected: [%s]. Got: %s',
+        );
+
+        /** @var DatePeriod[] $secondHalfMatchDayDates */
+        $secondHalfMatchDayDates = [];
+        if (count($matchDayDates) > $matchDaysPerHalf) {
+            $secondHalfMatchDayDates = array_splice($matchDayDates, $matchDaysPerHalf, $matchDaysPerHalf);
+        }
 
         $matchDayNumber = 1;
         foreach ($matchDayDates as $datePeriod) {
             $matchDay = $season->createMatchDay(null, $matchDayNumber, $datePeriod->getStartDate(), $datePeriod->getEndDate());
             $this->generateMatchesForMatchDay($matchDay, $teams);
             $matchDayNumber++;
+        }
+
+        if (!empty($secondHalfMatchDayDates)) {
+            $i = 0;
+            foreach ($season->getMatchDays() as $firstHalfMatchDay) {
+                $secondHalfMatchDay = $season->createMatchDay(
+                    null,
+                    $matchDayNumber,
+                    $secondHalfMatchDayDates[$i]->getStartDate(),
+                    $secondHalfMatchDayDates[$i]->getEndDate()
+                );
+                foreach ($firstHalfMatchDay->getMatches() as $match) {
+                    $secondHalfMatchDay->createMatch(null, $match->getGuestTeam(), $match->getHomeTeam());
+                }
+                $i++;
+                $matchDayNumber++;
+            }
         }
     }
 
