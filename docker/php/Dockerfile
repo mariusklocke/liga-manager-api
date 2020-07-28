@@ -30,9 +30,9 @@ ENV APP_HOME="/var/www/api"
 RUN mkdir -p ${APP_HOME} && chown www-data:www-data ${APP_HOME}
 WORKDIR ${APP_HOME}
 COPY --chown=www-data:www-data . .
-USER www-data
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 RUN chmod +x bin/* \
     && rm -r docker \
     && bin/install
+RUN chown -R www-data:www-data ${APP_HOME}
 CMD init-container.sh && php-fpm
