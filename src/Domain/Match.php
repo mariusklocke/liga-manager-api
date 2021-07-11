@@ -152,6 +152,22 @@ class Match extends Entity
     }
 
     /**
+     * @param Team $homeTeam
+     */
+    public function setHomeTeam(Team $homeTeam): void
+    {
+        $this->homeTeam = $homeTeam;
+    }
+
+    /**
+     * @param Team $guestTeam
+     */
+    public function setGuestTeam(Team $guestTeam): void
+    {
+        $this->guestTeam = $guestTeam;
+    }
+
+    /**
      * @return bool
      */
     public function hasResult(): bool

@@ -159,6 +159,14 @@ class RankingPosition
     }
 
     /**
+     * @param Team $team
+     */
+    public function setTeam(Team $team): void
+    {
+        $this->team = $team;
+    }
+
+    /**
      * @return int
      */
     private function getGoalDifference() : int

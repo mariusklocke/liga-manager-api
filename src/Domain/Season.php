@@ -194,6 +194,31 @@ class Season extends Competition
         return $this->matchDays->toArray();
     }
 
+    /**
+     * Replaces a team by another team
+     * 
+     * @param Team $from
+     * @param Team $to
+     */
+    public function replaceTeam(Team $from, Team $to): void
+    {
+        foreach ($this->matchDays as $matchDay) {
+            foreach ($matchDay->getMatches() as $match) {
+                if ($match->getHomeTeam()->equals($from)) {
+                    $match->setHomeTeam($to);
+                }
+
+                if ($match->getGuestTeam()->equals($from)) {
+                    $match->setGuestTeam($to);
+                }
+            }
+        }
+
+        if ($this->ranking) {
+            $this->ranking->replaceTeam($from, $to);
+        }
+    }
+
     private function updateMatchDayCount(): void
     {
         $this->matchDayCount = $this->matchDays->count();

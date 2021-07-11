@@ -142,6 +142,18 @@ class Ranking
         $this->updatedAt = new DateTimeImmutable();
     }
 
+    public function replaceTeam(Team $from, Team $to): void
+    {
+        $rankingPosition = $this->getPositionForTeam($from->getId());
+        $rankingPosition->setTeam($to);
+
+        foreach ($this->penalties as $penalty) {
+            if ($penalty->getTeam()->equals($from)) {
+                $penalty->setTeam($to);
+            }
+        }
+    }
+
     /**
      * @param string $teamId
      * @return RankingPosition

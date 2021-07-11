@@ -25,7 +25,8 @@ $installer = new class {
         }
 
         $this->output('Installing composer dependencies ...');
-        $this->installComposerDeps();
+        $this->runCommand('composer.phar install --prefer-dist --no-dev --optimize-autoloader --no-cache');
+        $this->output('Installation complete.');
     }
 
     private function output(string $message): void
@@ -46,15 +47,12 @@ $installer = new class {
         chmod($target, 0755);
     }
 
-    private function installComposerDeps(): void
+    private function runCommand(string $command): void
     {
-        system(
-            'composer.phar install --prefer-dist --no-dev --optimize-autoloader --no-cache',
-            $exitCode
-        );
+        system($command, $exitCode);
 
         if ($exitCode !== 0) {
-            throw new RuntimeException('Failed to install composer dependencies. Code: ' . $exitCode);
+            throw new RuntimeException("Failed to run command '$command'. Exit-Code: $exitCode");
         }
     }
 };
