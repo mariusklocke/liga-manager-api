@@ -25,8 +25,10 @@ trap cleanup EXIT
 # Launch containers
 DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml up -d
 
+docker-compose -f docker-compose.build.yml ps
+
 # Run deptrac
-DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec php bin/deptrac.phar --no-progress
+#DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec php bin/deptrac.phar --no-progress
 
 # Run tests
-DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec -e CI php run-tests.sh
+#DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec -e CI php run-tests.sh
