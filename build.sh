@@ -4,7 +4,7 @@ set -e
 if [[ -z "${GITHUB_REF}" ]]; then
   TAG="latest"
 else
-  TAG="github-actions"
+  TAG=$(sed 's#refs/heads/##' <<< "${GITHUB_REF}")
 fi
 
 cleanup() {
