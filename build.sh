@@ -8,7 +8,7 @@ fi
 if [[ -z "${GITHUB_REF}" ]]; then
   TAG="latest"
 else
-  TAG="${${GITHUB_REF}/refs\/heads\//}"
+  TAG="github-actions"
 fi
 
 cleanup() {
