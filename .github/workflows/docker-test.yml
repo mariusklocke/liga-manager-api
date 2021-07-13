@@ -6,4 +6,5 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+      - run: env
       - run: bash build.sh -c
