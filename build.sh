@@ -5,8 +5,10 @@ if [[ -z "${DOCKER_REPO}" ]]; then
   DOCKER_REPO="mklocke/liga-manager-api"
 fi
 
-if [[ -z "${TAG}" ]]; then
+if [[ -z "${GITHUB_REF}" ]]; then
   TAG="latest"
+else
+  TAG="${${GITHUB_REF}/refs\/heads\//}"
 fi
 
 cleanup() {
@@ -27,4 +29,4 @@ DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml up 
 DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec php bin/deptrac.phar --no-progress
 
 # Run tests
-DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec -e TRAVIS -e TRAVIS_JOB_ID php run-tests.sh
+DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec -e CI php run-tests.sh

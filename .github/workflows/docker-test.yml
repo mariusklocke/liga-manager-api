@@ -7,4 +7,5 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: env
+      - run: export ALLOW_TESTS=1
       - run: bash build.sh -c

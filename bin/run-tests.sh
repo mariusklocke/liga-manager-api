@@ -17,8 +17,8 @@ init-db.sh
 # Run tests regularly
 phpunit.phar --testdox
 
-# In case variable $TRAVIS has been set, run tests with coverage and send report to coveralls.io
-if [ -n "$TRAVIS" ]; then
+# In case variable $CI has been set, run tests with coverage and send report to coveralls.io
+if [ -n "$CI" ]; then
     # Make sure we have a clean database
     init-db.sh
 
