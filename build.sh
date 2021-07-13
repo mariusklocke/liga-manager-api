@@ -7,6 +7,12 @@ else
   TAG=$(sed 's#refs/heads/##' <<< "${GITHUB_REF}")
 fi
 
+# Pull images
+TAG=$TAG docker-compose -f docker-compose.build.yml pull -q
+
+# Build images
+TAG=$TAG docker-compose -f docker-compose.build.yml build
+
 cleanup() {
     echo 'Cleanup: Removing containers ...'
     TAG=$TAG docker-compose -f docker-compose.build.yml down -v
@@ -16,7 +22,7 @@ cleanup() {
 trap cleanup EXIT
 
 # Launch containers
-TAG=$TAG docker-compose -f docker-compose.build.yml up -d --build
+TAG=$TAG docker-compose -f docker-compose.build.yml up -d
 
 # Run deptrac
 TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php bin/deptrac.phar --no-progress
