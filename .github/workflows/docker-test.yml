@@ -6,6 +6,9 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
-      - run: env
-      - run: export ALLOW_TESTS=1
-      - run: bash build.sh -c
+      - name: Build, Test & Publish
+        run: bash build.sh -c
+        env:
+          ALLOW_TESTS: 1
+          COVERALLS_RUN_LOCALLY: 1
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
