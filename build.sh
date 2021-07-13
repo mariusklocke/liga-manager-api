@@ -32,7 +32,7 @@ if [[ ! -z "${CI}" ]]; then
     TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -e COVERAGE_REPORT=1 -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php run-tests.sh
 
     # Login to docker hub
-    docker login -u $DOCKER_USER -p "$DOCKER_PASS"
+    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
 
     # Push image to docker hub
     docker push mklocke/liga-manager-api:$TAG
