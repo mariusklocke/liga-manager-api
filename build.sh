@@ -7,6 +7,10 @@ else
   TAG=$(sed 's#refs/heads/##' <<< "${GITHUB_REF}")
 fi
 
+if [[ "$TAG" == "master" ]]; then
+    TAG="latest"
+fi
+
 # Pull images
 TAG=$TAG docker-compose -f docker-compose.build.yml pull -q
 
