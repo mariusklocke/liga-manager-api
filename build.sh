@@ -24,8 +24,9 @@ TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php bin/deptrac.phar
 # Run tests without coverage
 TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php run-tests.sh
 
-# Enable xdebug
-TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -u root php docker-php-ext-enable xdebug
-
-# Run tests with coverage
-TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -e COVERAGE_REPORT=1 php run-tests.sh
+if [[ ! -z "${CI}" ]]; then
+    # Enable xdebug
+    TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -u root php docker-php-ext-enable xdebug
+    # Run tests with coverage
+    TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -e COVERAGE_REPORT=1 php run-tests.sh
+fi

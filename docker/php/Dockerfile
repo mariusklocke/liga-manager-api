@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine
+FROM php:7.4-fpm-alpine3.13
 
 # git: required by php-coveralls.phar
 ENV RUN_DEPS="gmp ncurses gnupg git" \
@@ -15,7 +15,7 @@ RUN set -xe \
     && pecl channel-update pecl.php.net \
     && pecl install apcu \
     && pecl install redis \
-    && pecl install xdebug-beta \
+    && pecl install xdebug \
     && docker-php-ext-enable apcu redis \
     && pecl clear-cache \
     && apk del .build-deps \
