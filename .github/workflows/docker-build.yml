@@ -1,7 +1,7 @@
 name: Build & Publish with Docker
 on: [push]
 jobs:
-  Docker-Test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code

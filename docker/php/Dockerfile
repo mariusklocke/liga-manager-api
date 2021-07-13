@@ -11,11 +11,11 @@ RUN set -xe \
     && apk upgrade \
     && apk add --no-cache $RUN_DEPS \
     && apk add --no-cache --virtual .build-deps $BUILD_DEPS \
-    && docker-php-ext-install $PHP_EXTS \
+    && docker-php-ext-install $PHP_EXTS > /dev/null \
     && pecl channel-update pecl.php.net \
-    && pecl install apcu \
-    && pecl install redis \
-    && pecl install xdebug \
+    && pecl install apcu > /dev/null \
+    && pecl install redis > /dev/null \
+    && pecl install xdebug > /dev/null \
     && docker-php-ext-enable apcu redis \
     && pecl clear-cache \
     && apk del .build-deps \
