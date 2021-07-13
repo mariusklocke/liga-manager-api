@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-if [[ -z "${DOCKER_REPO}" ]]; then
-  DOCKER_REPO="mklocke/liga-manager-api"
-fi
-
 if [[ -z "${GITHUB_REF}" ]]; then
   TAG="latest"
 else
@@ -13,22 +9,17 @@ fi
 
 cleanup() {
     echo 'Cleanup: Removing containers ...'
-    DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml down -v
+    TAG=$TAG docker-compose -f docker-compose.build.yml down -v
 }
-
-# Build image
-docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG -q .
 
 # Make sure we clean up running containers in case of error
 trap cleanup EXIT
 
 # Launch containers
-DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml up -d
-
-docker-compose -f docker-compose.build.yml ps
+TAG=$TAG docker-compose -f docker-compose.build.yml up -d --build
 
 # Run deptrac
-#DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec php bin/deptrac.phar --no-progress
+TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php bin/deptrac.phar --no-progress
 
 # Run tests
-#DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec -e CI php run-tests.sh
+TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -e CI php run-tests.sh
