@@ -4,4 +4,4 @@ jobs:
   Docker-Test:
     runs-on: ubuntu-latest
     steps:
-      - run: docker run hello-world
+      - run: build.sh -c
