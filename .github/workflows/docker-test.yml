@@ -4,4 +4,4 @@ jobs:
   Docker-Test:
     runs-on: ubuntu-latest
     steps:
-      - run: build.sh -c
+      - run: bash build.sh -c
