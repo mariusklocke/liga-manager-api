@@ -27,6 +27,7 @@ use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
 use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\RenameTeamCommand;
+use HexagonalPlayground\Application\Command\ReplaceTeamInSeasonCommand;
 use HexagonalPlayground\Application\Command\RescheduleMatchDayCommand;
 use HexagonalPlayground\Application\Command\ScheduleAllMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
@@ -66,6 +67,7 @@ class ServiceProvider implements ServiceProviderInterface
                 RemoveRankingPenaltyCommand::class,
                 RemoveTeamFromSeasonCommand::class,
                 RenameTeamCommand::class,
+                ReplaceTeamInSeasonCommand::class,
                 RescheduleMatchDayCommand::class,
                 ScheduleAllMatchesForSeasonCommand::class,
                 ScheduleMatchCommand::class,
