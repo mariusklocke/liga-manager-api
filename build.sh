@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "GITHUB_REF: ${GITHUB_REF}"
+IMAGE="mklocke/liga-manager-api"
 
 if [[ $GITHUB_REF == *"refs/tags"* ]]; then
   TAG=$(sed 's#refs/tags/##' <<< "${GITHUB_REF}")
@@ -9,15 +9,17 @@ else
   TAG="latest"
 fi
 
+echo "GITHUB_REF: ${GITHUB_REF}"
+echo "IMAGE: ${IMAGE}"
 echo "TAG: ${TAG}"
 
 # Pull images
 docker pull mariadb:10.4
 docker pull redis:5-alpine
-docker pull mklocke/liga-manager-api:$TAG
+docker pull $IMAGE:$TAG
 
 # Build images
-docker build -f docker/php/Dockerfile .
+docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --cache-from $IMAGE:$TAG .
 
 cleanup() {
     echo 'Cleanup: Removing containers ...'
@@ -32,7 +34,7 @@ trap cleanup EXIT
 docker network create build
 docker run -d --name=mariadb --network=build --env-file=build.env mariadb:10.4
 docker run -d --name=redis --network=build redis:5-alpine
-docker run -d --name=php --network=build --env-file=build.env mklocke/liga-manager-api
+docker run -d --name=php --network=build --env-file=build.env $IMAGE:$TAG
 
 # Run deptrac
 docker exec -t php bin/deptrac.phar --no-progress
@@ -51,5 +53,5 @@ if [[ ! -z "${CI}" ]]; then
     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
 
     # Push image to docker hub
-    docker push mklocke/liga-manager-api:$TAG
+    docker push $IMAGE:$TAG
 fi
