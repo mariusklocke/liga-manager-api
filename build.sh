@@ -12,7 +12,7 @@ if [[ "$TAG" == "master" ]]; then
 fi
 
 # Pull images
-TAG=$TAG docker-compose -f docker-compose.build.yml pull -q
+TAG=$TAG docker-compose -f docker-compose.build.yml pull
 
 # Build images
 TAG=$TAG docker-compose -f docker-compose.build.yml build
