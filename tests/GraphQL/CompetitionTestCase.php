@@ -10,6 +10,7 @@ abstract class CompetitionTestCase extends TestCase
     protected static $teamIds = [];
     protected static $pitchIds = [];
     protected static $teamManagers = [];
+    protected static $spareTeamIds = [];
 
     protected function setUp(): void
     {
@@ -18,6 +19,10 @@ abstract class CompetitionTestCase extends TestCase
 
         if (empty(self::$teamIds)) {
             $this->createTeams();
+        }
+
+        if (empty(self::$spareTeamIds)) {
+            $this->createSpareTeams();
         }
 
         if (empty(self::$pitchIds)) {
@@ -32,15 +37,20 @@ abstract class CompetitionTestCase extends TestCase
             $this->client->createTeam($teamId, $teamId);
             self::$teamIds[] = $teamId;
 
-            $manager = [
-                'id' => 'TeamManager' . $i,
-                'email' => 'team' . $i . '@example.com',
-                'password' => '123456',
-                'first_name' => 'Foo',
-                'last_name' => 'Bar',
-                'role' => User::ROLE_TEAM_MANAGER,
-                'team_ids' => [$teamId]
-            ];
+            $manager = $this->generateTeamManager($teamId, $i);
+            $this->client->createUser($manager);
+            self::$teamManagers[$teamId] = $manager;
+        }
+    }
+
+    private function createSpareTeams(): void
+    {
+        for ($i = 1; $i <= 2; $i++) {
+            $teamId = 'Spare-Team' . $i;
+            $this->client->createTeam($teamId, $teamId);
+            self::$spareTeamIds[] = $teamId;
+
+            $manager = $this->generateTeamManager($teamId, $i);
             $this->client->createUser($manager);
             self::$teamManagers[$teamId] = $manager;
         }
@@ -109,5 +119,18 @@ abstract class CompetitionTestCase extends TestCase
     {
         $user = self::$teamManagers[$teamId];
         $this->client->useCredentials($user['email'], $user['password']);
+    }
+
+    private function generateTeamManager(string $teamId, int $i): array
+    {
+        return [
+            'id' => 'Manager-For-' . $teamId,
+            'email' => 'Manager-For-' . $teamId . '@example.com',
+            'password' => '123456',
+            'first_name' => 'Foo',
+            'last_name' => 'Bar',
+            'role' => User::ROLE_TEAM_MANAGER,
+            'team_ids' => [$teamId]
+        ];
     }
 }

@@ -358,6 +358,27 @@ class SeasonTest extends CompetitionTestCase
     /**
      * @depends testMatchDayCanBeRescheduled
      * @param string $seasonId
+     * @return string
+     */
+    public function testTeamCanBeReplacedWhileSeasonInProgress(string $seasonId): string
+    {
+        $seasonBefore = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        self::assertSame(Season::STATE_PROGRESS, $seasonBefore->state);
+        $retiringTeamId = $seasonBefore->ranking->positions[0]->team->id;
+        $spareTeamId = self::$spareTeamIds[0];
+        self::assertNotEquals($spareTeamId, $retiringTeamId);
+
+        $this->client->replaceTeamInSeason($seasonId, $retiringTeamId, $spareTeamId);
+
+        $seasonAfter = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        self::assertSame($spareTeamId, $seasonAfter->ranking->positions[0]->team->id);
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testTeamCanBeReplacedWhileSeasonInProgress
+     * @param string $seasonId
      */
     public function testEndedSeasonsRankingIsFinal(string $seasonId): void
     {

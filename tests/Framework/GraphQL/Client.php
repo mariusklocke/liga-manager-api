@@ -409,7 +409,7 @@ query match($id: String!) {
     cancellation_reason
     pitch {
       id,
-      label    
+      label
     }
   }
 }
@@ -819,6 +819,21 @@ GRAPHQL;
         $this->requestAndParse($query, [
             'season_id' => $seasonId,
             'match_appointments' => $matchAppointments
+        ]);
+    }
+
+    public function replaceTeamInSeason($seasonId, $currentTeamId, $replacementTeamId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation replaceTeamInSeason($season_id: String!, $current_team_id: String!, $replacement_team_id: String!) {
+  replaceTeamInSeason(season_id: $season_id, current_team_id: $current_team_id, replacement_team_id: $replacement_team_id)
+}
+GRAPHQL;
+
+        $this->requestAndParse($query, [
+            'season_id' => $seasonId,
+            'current_team_id' => $currentTeamId,
+            'replacement_team_id' => $replacementTeamId
         ]);
     }
 }
