@@ -4,3 +4,4 @@ docker/_volumes
 /*.sh
 /.env
 /*.env
+/vendor
