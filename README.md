@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/mariusklocke/liga-manager-api.svg?branch=master)](https://travis-ci.org/mariusklocke/liga-manager-api)
+![Build Status](https://github.com/mariusklocke/liga-manager-api/actions/workflows/docker-build.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/mariusklocke/liga-manager-api/badge.svg?branch=master)](https://coveralls.io/github/mariusklocke/liga-manager-api?branch=master)
 
 ## Requirements
