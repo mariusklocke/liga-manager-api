@@ -49,7 +49,7 @@ $installer = new class {
     private function installComposerDeps(): void
     {
         system(
-            'composer.phar install --prefer-dist --no-dev --optimize-autoloader --no-cache',
+            'composer.phar install --prefer-dist --no-dev --optimize-autoloader --no-cache --no-progress',
             $exitCode
         );
 

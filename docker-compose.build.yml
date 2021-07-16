@@ -1,7 +1,10 @@
 version: '3'
 services:
   php:
-    image: $DOCKER_REPO:$TAG
+    image: mklocke/liga-manager-api:$TAG
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
     depends_on:
       - mariadb
       - redis
