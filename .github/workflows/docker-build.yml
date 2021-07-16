@@ -1,0 +1,16 @@
+name: Build & Publish with Docker
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Build, Test & Publish
+        run: bash build.sh
+        env:
+          ALLOW_TESTS: 1
+          COVERALLS_RUN_LOCALLY: 1
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}

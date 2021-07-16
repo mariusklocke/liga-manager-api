@@ -1,30 +1,49 @@
 #!/usr/bin/env bash
 set -e
 
-if [[ -z "${DOCKER_REPO}" ]]; then
-  DOCKER_REPO="mklocke/liga-manager-api"
+if [[ -z "${GITHUB_REF}" ]]; then
+  TAG="latest"
+else
+  TAG=$(sed 's#refs/heads/##' <<< "${GITHUB_REF}")
 fi
 
-if [[ -z "${TAG}" ]]; then
-  TAG="latest"
+if [[ "$TAG" == "master" ]]; then
+    TAG="latest"
 fi
+
+# Pull images
+TAG=$TAG docker-compose -f docker-compose.build.yml pull
+
+# Build images
+TAG=$TAG docker-compose -f docker-compose.build.yml build
 
 cleanup() {
     echo 'Cleanup: Removing containers ...'
-    DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml down -v
+    TAG=$TAG docker-compose -f docker-compose.build.yml down -v
 }
-
-# Build image
-docker build -f docker/php/Dockerfile -t $DOCKER_REPO:$TAG -q .
 
 # Make sure we clean up running containers in case of error
 trap cleanup EXIT
 
 # Launch containers
-DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml up -d
+TAG=$TAG docker-compose -f docker-compose.build.yml up -d
 
 # Run deptrac
-DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec php bin/deptrac.phar --no-progress
+TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php bin/deptrac.phar --no-progress
 
-# Run tests
-DOCKER_REPO=$DOCKER_REPO TAG=$TAG docker-compose -f docker-compose.build.yml exec -e TRAVIS -e TRAVIS_JOB_ID php run-tests.sh
+# Run tests without coverage
+TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php run-tests.sh
+
+if [[ ! -z "${CI}" ]]; then
+    # Enable xdebug
+    TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -u root php docker-php-ext-enable xdebug
+
+    # Run tests with coverage
+    TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -e COVERAGE_REPORT=1 -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php run-tests.sh
+
+    # Login to docker hub
+    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+
+    # Push image to docker hub
+    docker push mklocke/liga-manager-api:$TAG
+fi
