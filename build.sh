@@ -12,34 +12,40 @@ fi
 echo "TAG: ${TAG}"
 
 # Pull images
-TAG=$TAG docker-compose -f docker-compose.build.yml pull
+docker pull mariadb:10.4
+docker pull redis:5-alpine
+docker pull mklocke/liga-manager-api:$TAG
 
 # Build images
-TAG=$TAG docker-compose -f docker-compose.build.yml build
+docker build -f docker/php/Dockerfile .
 
 cleanup() {
     echo 'Cleanup: Removing containers ...'
-    TAG=$TAG docker-compose -f docker-compose.build.yml down -v
+    docker rm -f php mariadb redis
+    docker network rm build
 }
 
 # Make sure we clean up running containers in case of error
 trap cleanup EXIT
 
 # Launch containers
-TAG=$TAG docker-compose -f docker-compose.build.yml up -d
+docker network create build
+docker run -d --name=mariadb --network=build --env-file=build.env mariadb:10.4
+docker run -d --name=redis --network=build redis:5-alpine
+docker run -d --name=php --network=build --env-file=build.env mklocke/liga-manager-api
 
 # Run deptrac
-TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php bin/deptrac.phar --no-progress
+docker exec -t php bin/deptrac.phar --no-progress
 
 # Run tests without coverage
-TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php run-tests.sh
+docker exec -t php run-tests.sh
 
 if [[ ! -z "${CI}" ]]; then
     # Enable xdebug
-    TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -u root php docker-php-ext-enable xdebug
+    docker exec -t -u root php docker-php-ext-enable xdebug
 
     # Run tests with coverage
-    TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -e COVERAGE_REPORT=1 -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php run-tests.sh
+    docker exec -t -e COVERAGE_REPORT=1 -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php run-tests.sh
 
     # Login to docker hub
     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
