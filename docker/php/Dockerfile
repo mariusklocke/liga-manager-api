@@ -25,14 +25,28 @@ RUN set -xe \
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
 
-# Install application sources
+# Prepare application source directory
 ENV APP_HOME="/var/www/api"
 RUN mkdir -p ${APP_HOME} && chown www-data:www-data ${APP_HOME}
 WORKDIR ${APP_HOME}
-COPY --chown=www-data:www-data . .
+
+# Install dependencies first
+COPY --chown=www-data:www-data bin bin/
+COPY --chown=www-data:www-data composer.lock composer.json depfile.yml migrations.php phpunit.xml ./
+RUN chmod +x bin/*
+USER www-data
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
-RUN chmod +x bin/* \
-    && rm -r docker \
-    && bin/install
-RUN chown -R www-data:www-data ${APP_HOME}
+RUN bin/install
+
+# Install own application sources
+COPY --chown=www-data:www-data tests tests/
+COPY --chown=www-data:www-data templates templates/
+COPY --chown=www-data:www-data src src/
+COPY --chown=www-data:www-data public public/
+COPY --chown=www-data:www-data migrations migrations/
+COPY --chown=www-data:www-data config config/
+
+# Add .git folder for php-coversall.phar
+COPY --chown=www-data:www-data .git .git/
+
 CMD init-container.sh && php-fpm
