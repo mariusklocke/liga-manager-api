@@ -29,10 +29,17 @@ COPY docker/php/php.ini /usr/local/etc/php/php.ini
 ENV APP_HOME="/var/www/api"
 RUN mkdir -p ${APP_HOME} && chown www-data:www-data ${APP_HOME}
 WORKDIR ${APP_HOME}
-COPY --chown=www-data:www-data . .
+COPY --chown=www-data:www-data vendor vendor/
+COPY --chown=www-data:www-data composer.lock composer.json depfile.yml migrations.php phpunit.xml ./
+COPY --chown=www-data:www-data tests tests/
+COPY --chown=www-data:www-data templates templates/
+COPY --chown=www-data:www-data src src/
+COPY --chown=www-data:www-data public public/
+COPY --chown=www-data:www-data migrations migrations/
+COPY --chown=www-data:www-data config config/
+COPY --chown=www-data:www-data bin bin/
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
-RUN chmod +x bin/* \
-    && rm -r docker \
-    && bin/install
-RUN chown -R www-data:www-data ${APP_HOME}
+RUN chmod +x bin/*
+USER www-data
+RUN bin/install
 CMD init-container.sh && php-fpm
