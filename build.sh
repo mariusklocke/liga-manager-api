@@ -9,9 +9,7 @@ else
   TAG="latest"
 fi
 
-if [[ "$TAG" == "master" ]]; then
-    TAG="latest"
-fi
+echo "TAG: ${TAG}"
 
 # Pull images
 TAG=$TAG docker-compose -f docker-compose.build.yml pull
