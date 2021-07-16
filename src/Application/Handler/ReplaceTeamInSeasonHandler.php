@@ -18,6 +18,12 @@ class ReplaceTeamInSeasonHandler implements AuthAwareHandler
     /** @var SeasonRepositoryInterface */
     private $seasonRepository;
 
+    public function __construct(TeamRepositoryInterface $teamRepository, SeasonRepositoryInterface $seasonRepository)
+    {
+        $this->teamRepository = $teamRepository;
+        $this->seasonRepository = $seasonRepository;
+    }
+
     /**
      * @param ReplaceTeamInSeasonCommand $command
      * @param AuthContext $authContext
