@@ -3,10 +3,10 @@ set -e
 
 echo "GITHUB_REF: ${GITHUB_REF}"
 
-if [[ -z "${GITHUB_REF}" ]]; then
-  TAG="latest"
+if [[ $GITHUB_REF == *"refs/tags"* ]]; then
+  TAG=$(sed 's#refs/tags/##' <<< "${GITHUB_REF}")
 else
-  TAG=$(sed 's#refs/heads/##' <<< "${GITHUB_REF}")
+  TAG="latest"
 fi
 
 if [[ "$TAG" == "master" ]]; then
