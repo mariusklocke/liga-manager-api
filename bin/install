@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 $installer = new class {
 
-    /** @var array */
-    private $tools = [
-        'bin/composer.phar' => 'https://github.com/composer/composer/releases/download/1.9.1/composer.phar',
-        'bin/phpunit.phar' => 'https://phar.phpunit.de/phpunit-8.4.3.phar',
-        'bin/php-coveralls.phar' => 'https://github.com/php-coveralls/php-coveralls/releases/download/v2.2.0/php-coveralls.phar',
-        'bin/deptrac.phar' => 'https://github.com/sensiolabs-de/deptrac/releases/download/0.6.0/deptrac.phar'
-    ];
-
     public function __invoke(): void
     {
         $this->output('Installing PHAR dependencies ...');
 
-        foreach ($this->tools as $target => $source) {
+        foreach ($this->getTools() as $filename => $source) {
+            $target = __DIR__ . '/' . $filename;
+
             if (file_exists($target)) {
                 continue;
             }
@@ -32,6 +26,16 @@ $installer = new class {
     private function output(string $message): void
     {
         echo $message . PHP_EOL;
+    }
+
+    private function getTools(): Iterator
+    {
+        $composerJsonPath = realpath(__DIR__ . '/../composer.json');
+        $composerConfig = json_decode(file_get_contents($composerJsonPath), true);
+
+        if (isset($composerConfig['extra']['phar-tools'])) {
+            yield from $composerConfig['extra']['phar-tools'];
+        }
     }
 
     private function installTool(string $target, string $source): void
