@@ -46,4 +46,7 @@ COPY --chown=www-data:www-data public public/
 COPY --chown=www-data:www-data migrations migrations/
 COPY --chown=www-data:www-data config config/
 
+# Add .git folder for php-coversall.phar
+COPY --chown=www-data:www-data .git .git/
+
 CMD init-container.sh && php-fpm
