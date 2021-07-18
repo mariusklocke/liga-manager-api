@@ -19,7 +19,7 @@ docker pull redis:5-alpine
 docker pull $IMAGE:$TAG
 
 # Build images
-docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --cache-from $IMAGE:$TAG .
+docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --cache-from $IMAGE:latest .
 
 cleanup() {
     echo 'Cleanup: Removing containers ...'
