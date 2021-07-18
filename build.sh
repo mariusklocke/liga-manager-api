@@ -16,7 +16,7 @@ echo "TAG: ${TAG}"
 # Pull images
 docker pull mariadb:10.4
 docker pull redis:5-alpine
-docker pull $IMAGE:$TAG
+docker pull $IMAGE:latest
 
 # Build images
 docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --cache-from $IMAGE:latest .
