@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "GITHUB_REF: ${GITHUB_REF}"
+IMAGE="mklocke/liga-manager-api"
 
 if [[ $GITHUB_REF == *"refs/tags"* ]]; then
   TAG=$(sed 's#refs/tags/##' <<< "${GITHUB_REF}")
@@ -9,41 +9,49 @@ else
   TAG="latest"
 fi
 
+echo "GITHUB_REF: ${GITHUB_REF}"
+echo "IMAGE: ${IMAGE}"
 echo "TAG: ${TAG}"
 
 # Pull images
-TAG=$TAG docker-compose -f docker-compose.build.yml pull
+docker pull mariadb:10.4
+docker pull redis:5-alpine
+docker pull $IMAGE:latest
 
 # Build images
-TAG=$TAG docker-compose -f docker-compose.build.yml build
+docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --cache-from $IMAGE:latest .
 
 cleanup() {
     echo 'Cleanup: Removing containers ...'
-    TAG=$TAG docker-compose -f docker-compose.build.yml down -v
+    docker rm -f php mariadb redis
+    docker network rm build
 }
 
 # Make sure we clean up running containers in case of error
 trap cleanup EXIT
 
 # Launch containers
-TAG=$TAG docker-compose -f docker-compose.build.yml up -d
+docker network create build
+docker run -d --name=mariadb --network=build --env-file=build.env mariadb:10.4
+docker run -d --name=redis --network=build redis:5-alpine
+docker run -d --name=php --network=build --env-file=build.env $IMAGE:$TAG
 
 # Run deptrac
-TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php bin/deptrac.phar --no-progress
+docker exec -t php bin/deptrac.phar --no-progress
 
 # Run tests without coverage
-TAG=$TAG docker-compose -f docker-compose.build.yml exec -T php run-tests.sh
+docker exec -t php run-tests.sh
 
 if [[ ! -z "${CI}" ]]; then
     # Enable xdebug
-    TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -u root php docker-php-ext-enable xdebug
+    docker exec -t -u root php docker-php-ext-enable xdebug
 
     # Run tests with coverage
-    TAG=$TAG docker-compose -f docker-compose.build.yml exec -T -e COVERAGE_REPORT=1 -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php run-tests.sh
+    docker exec -t -e COVERAGE_REPORT=1 -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php run-tests.sh
 
     # Login to docker hub
     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
 
     # Push image to docker hub
-    docker push mklocke/liga-manager-api:$TAG
+    docker push $IMAGE:$TAG
 fi
