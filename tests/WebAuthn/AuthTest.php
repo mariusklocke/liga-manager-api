@@ -43,7 +43,7 @@ class AuthTest extends HttpTest
         $options = $this->parser->parse($response);
         self::assertIsObject($options);
         self::assertObjectHasAttribute('challenge', $options);
-        self::assertObjectHasAttribute('rpId', $options);
+        self::assertObjectHasAttribute('timeout', $options);
     }
 
     public function testCredentialsCanBeFound(): void

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 return [
-    'migrations_directory' => getenv('APP_HOME') . '/migrations',
-    'migrations_namespace' => 'Migrations'
+    'migrations_paths' => [
+        'Migrations' => getenv('APP_HOME') . '/migrations'
+    ]
 ];

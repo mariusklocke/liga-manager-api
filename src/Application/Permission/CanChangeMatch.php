@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Permission;
 
-use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\MatchEntity;
 use HexagonalPlayground\Domain\User;
 
 class CanChangeMatch extends Permission
@@ -11,14 +11,14 @@ class CanChangeMatch extends Permission
     /** @var User */
     private $user;
 
-    /** @var Match */
+    /** @var MatchEntity */
     private $match;
 
     /**
      * @param User $user
-     * @param Match $match
+     * @param MatchEntity $match
      */
-    public function __construct(User $user, Match $match)
+    public function __construct(User $user, MatchEntity $match)
     {
         $this->user = $user;
         $this->match = $match;

@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine3.13
+FROM php:8.0-fpm-alpine3.13
 
 # git: required by php-coveralls.phar
 ENV RUN_DEPS="gmp ncurses gnupg git" \

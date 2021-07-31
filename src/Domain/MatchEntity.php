@@ -9,7 +9,7 @@ use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
-class Match extends Entity
+class MatchEntity extends Entity
 {
     /** @var MatchDay */
     private $matchDay;
