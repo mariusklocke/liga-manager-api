@@ -12,7 +12,7 @@ use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Value\MatchAppointment;
 use HexagonalPlayground\Domain\DomainException;
-use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\MatchEntity;
 use HexagonalPlayground\Domain\MatchDay;
 use HexagonalPlayground\Domain\Util\Assert;
 
@@ -81,7 +81,7 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
      */
     private function getMatchSortingClosure(array $appointments): Closure
     {
-        return function(Match $a, Match $b) use ($appointments) {
+        return function(MatchEntity $a, MatchEntity $b) use ($appointments) {
             $countA = 0;
             $countB = 0;
             foreach ($appointments as $appointment) {
@@ -126,11 +126,11 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
     }
 
     /**
-     * @param Match $match
+     * @param MatchEntity $match
      * @param MatchAppointment[] $appointments
      * @return MatchAppointment
      */
-    private function findAppointment(Match $match, array &$appointments): MatchAppointment
+    private function findAppointment(MatchEntity $match, array &$appointments): MatchAppointment
     {
         foreach ($appointments as $key => $appointment) {
             if ($this->isPossible($match, $appointment)) {
@@ -143,11 +143,11 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
     }
 
     /**
-     * @param Match $match
+     * @param MatchEntity $match
      * @param MatchAppointment $appointment
      * @return bool
      */
-    private function isPossible(Match $match, MatchAppointment $appointment): bool
+    private function isPossible(MatchEntity $match, MatchAppointment $appointment): bool
     {
         foreach ($appointment->getUnavailableTeamIds() as $unavailableTeamId) {
             if ($unavailableTeamId === $match->getHomeTeam()->getId() || $unavailableTeamId === $match->getGuestTeam()->getId()) {

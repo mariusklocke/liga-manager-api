@@ -3,7 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM\Repository;
 
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
-use HexagonalPlayground\Domain\Match;
+use HexagonalPlayground\Domain\MatchEntity;
 
 class MatchRepository extends EntityRepository implements MatchRepositoryInterface
 {
@@ -12,6 +12,6 @@ class MatchRepository extends EntityRepository implements MatchRepositoryInterfa
      */
     protected static function getEntityClass(): string
     {
-        return Match::class;
+        return MatchEntity::class;
     }
 }

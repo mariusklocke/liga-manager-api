@@ -8,7 +8,7 @@
         <field name="number" type="integer" />
         <field name="startDate" column="start_date" type="date_immutable" />
         <field name="endDate" column="end_date" type="date_immutable" />
-        <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\Match" mapped-by="matchDay" orphan-removal="true">
+        <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\MatchEntity" mapped-by="matchDay" orphan-removal="true">
             <cascade>
                 <cascade-all/>
             </cascade>

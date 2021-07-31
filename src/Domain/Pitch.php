@@ -22,7 +22,7 @@ class Pitch extends Entity
     /** @var ContactPerson|null */
     private $contact;
 
-    /** @var Collection|Match[] */
+    /** @var Collection|MatchEntity[] */
     private $matches;
 
     public function __construct(string $id, string $label, GeographicLocation $location)
@@ -51,9 +51,9 @@ class Pitch extends Entity
     }
 
     /**
-     * @param Match $match
+     * @param MatchEntity $match
      */
-    public function addMatch(Match $match): void
+    public function addMatch(MatchEntity $match): void
     {
         if (!$this->matches->containsKey($match->getId())) {
             $this->matches->add($match);
@@ -61,9 +61,9 @@ class Pitch extends Entity
     }
 
     /**
-     * @param Match $match
+     * @param MatchEntity $match
      */
-    public function removeMatch(Match $match): void
+    public function removeMatch(MatchEntity $match): void
     {
         $this->matches->remove($match->getId());
     }

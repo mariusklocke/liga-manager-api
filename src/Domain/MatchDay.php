@@ -28,7 +28,7 @@ class MatchDay extends Entity
     /** @var DateTimeImmutable */
     private $endDate;
 
-    /** @var Collection|Match[] */
+    /** @var Collection|MatchEntity[] */
     private $matches;
 
     /**
@@ -57,12 +57,12 @@ class MatchDay extends Entity
      */
     public function createMatch(?string $id, Team $homeTeam, Team $guestTeam): void
     {
-        $match = new Match($id, $this, $homeTeam, $guestTeam);
+        $match = new MatchEntity($id, $this, $homeTeam, $guestTeam);
         $this->matches[] = $match;
     }
 
     /**
-     * @return Match[]
+     * @return MatchEntity[]
      */
     public function getMatches(): array
     {
