@@ -2,19 +2,19 @@
 
 namespace HexagonalPlayground\Application\Handler;
 
-use HexagonalPlayground\Application\Command\ScheduleAllMatchesForSeasonCommand;
+use HexagonalPlayground\Application\Command\ScheduleAllMatchesForMatchDayCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
+use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
-use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\MatchDay;
 use HexagonalPlayground\Domain\MatchScheduler;
 use HexagonalPlayground\Domain\Pitch;
-use HexagonalPlayground\Domain\Season;
 
-class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
+class ScheduleAllMatchesForMatchDayHandler implements AuthAwareHandler
 {
-    /** @var SeasonRepositoryInterface */
-    private $seasonRepository;
+    /** @var MatchDayRepositoryInterface */
+    private $matchDayRepository;
 
     /** @var MatchScheduler */
     private $matchScheduler;
@@ -23,31 +23,31 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
     private $pitchRepository;
 
     /**
-     * @param SeasonRepositoryInterface $seasonRepository
+     * @param MatchDayRepositoryInterface $matchDayRepository
      * @param MatchScheduler $matchScheduler
      * @param PitchRepositoryInterface $pitchRepository
      */
     public function __construct(
-        SeasonRepositoryInterface $seasonRepository,
+        MatchDayRepositoryInterface $matchDayRepository,
         MatchScheduler $matchScheduler,
         PitchRepositoryInterface $pitchRepository
     ) {
-        $this->seasonRepository = $seasonRepository;
+        $this->matchDayRepository = $matchDayRepository;
         $this->matchScheduler = $matchScheduler;
         $this->pitchRepository = $pitchRepository;
     }
 
     /**
-     * @param ScheduleAllMatchesForSeasonCommand $command
+     * @param ScheduleAllMatchesForMatchDayCommand $command
      * @param AuthContext $authContext
      */
-    public function __invoke(ScheduleAllMatchesForSeasonCommand $command, AuthContext $authContext): void
+    public function __invoke(ScheduleAllMatchesForMatchDayCommand $command, AuthContext $authContext): void
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
 
-        /** @var Season $season */
-        $season = $this->seasonRepository->find($command->getSeasonId());
+        /** @var MatchDay $matchDay */
+        $matchDay = $this->matchDayRepository->find($command->getMatchDayId());
 
         /** @var Pitch[] $pitches */
         $pitches = [];
@@ -58,8 +58,6 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
             }
         }
 
-        foreach ($season->getMatchDays() as $matchDay) {
-            $this->matchScheduler->scheduleMatchesForMatchDay($matchDay, $command->getMatchAppointments(), $pitches);
-        }
+        $this->matchScheduler->scheduleMatchesForMatchDay($matchDay, $command->getMatchAppointments(), $pitches);
     }
 }

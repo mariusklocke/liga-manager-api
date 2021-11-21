@@ -99,9 +99,35 @@ class SeasonTest extends CompetitionTestCase
      * @param string $seasonId
      * @return string
      */
+    public function testMatchesCanBeScheduledPerMatchDay(string $seasonId): string
+    {
+        $appointments = $this->createMatchAppointments();
+
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        foreach ($season->match_days as $matchDay) {
+            $this->client->scheduleAllMatchesForMatchDay($matchDay->id, $appointments);
+
+            foreach ($matchDay->matches as $match) {
+                $match = $this->client->getMatchById($match->id);
+
+                self::assertNotNull($match);
+                self::assertNotNull($match->pitch);
+                self::assertNotNull($match->kickoff);
+            }
+        }
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testMatchesCanBeScheduledPerMatchDay
+     * @param string $seasonId
+     * @return string
+     */
     public function testAllMatchesCanBeScheduledAtOnce(string $seasonId): string
     {
         $appointments = $this->createMatchAppointments();
+
         $this->client->scheduleAllMatchesForSeason($seasonId, $appointments);
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
