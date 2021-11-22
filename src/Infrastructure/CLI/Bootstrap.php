@@ -22,6 +22,7 @@ class Bootstrap
             new DebugGqlSchemaCommand($container),
             new L98ImportCommand($container),
             new LoadFixturesCommand($container),
+            new MaintenanceModeCommand($container),
             new SendTestMailCommand($container),
             new SetupDbCommand($container),
             new SetupEnvCommand($container),

@@ -23,7 +23,9 @@ RUN set -xe \
 
 # Configure PHP
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
+COPY docker/php/init-container.sh /usr/local/bin/init-container
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
+COPY docker/php/wait-for.sh /usr/local/bin/wait-for
 
 # Prepare application source directory
 ENV APP_HOME="/var/www/api"
@@ -49,4 +51,4 @@ COPY --chown=www-data:www-data config config/
 # Add .git folder for php-coversall.phar
 COPY --chown=www-data:www-data .git .git/
 
-CMD init-container.sh && php-fpm
+CMD init-container && php-fpm

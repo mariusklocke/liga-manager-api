@@ -27,6 +27,7 @@ class Bootstrap
         $app->add(new TrailingSlash());
         $app->add(new JsonParserMiddleware());
         $app->add(new AuthenticationMiddleware($container));
+        $app->add(new MaintenanceModeMiddleware());
 
         $errorMiddleware = $app->addErrorMiddleware(false, false, false);
         $errorMiddleware->setDefaultErrorHandler(new ErrorHandler(

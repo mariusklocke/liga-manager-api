@@ -14,8 +14,7 @@ else
 fi
 
 # Wait until container is ready
-source wait-for.sh
-wait_for 127.0.0.1 9000
+wait-for 127.0.0.1 9000
 
 # Make sure we have a clean database
 lima app:setup:db -n

@@ -97,6 +97,8 @@ class ErrorHandler implements ErrorHandlerInterface
     private function mapCode(ExceptionInterface $exception): int
     {
         switch ($exception->getCode()) {
+            case 'ERR-MAINTENANCE-MODE':
+                return 503;
             case 'ERR-NOT-FOUND':
                 return 404;
             case 'ERR-PERMISSION':
