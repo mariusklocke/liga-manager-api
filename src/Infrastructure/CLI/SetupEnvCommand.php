@@ -4,14 +4,15 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Infrastructure\API\Security\JsonWebToken;
+use HexagonalPlayground\Infrastructure\Filesystem\FileStream;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SetupCommand extends Command
+class SetupEnvCommand extends Command
 {
-    public const NAME = 'app:setup';
+    public const NAME = 'app:setup:env';
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->getStyledIO($input, $output);
 
@@ -27,9 +28,32 @@ class SetupCommand extends Command
         $env['EMAIL_URL'] = $io->ask('Enter URL to use for sending email', 'smtp://maildev:25');
         $env['JWT_SECRET'] = JsonWebToken::generateSecret();
 
+        $envPath = getenv('APP_HOME') . '/.env';
+
+        if (is_writeable($envPath)) {
+            $confirmed = $io->confirm(
+                'Your .env file seems to be writeable. Do want to write your configuration directly?',
+                false
+            );
+
+            if ($confirmed) {
+                $stream = new FileStream($envPath, 'w');
+
+                foreach ($env as $name => $value) {
+                    //$stream->write("$name=$value\n");
+                }
+
+                $stream->close();
+
+                return 0;
+            }
+        }
+
         $io->section('Add the following lines to your .env file');
         foreach ($env as $name => $value) {
             $io->text("$name=$value");
         }
+
+        return 0;
     }
 }

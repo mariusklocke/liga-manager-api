@@ -18,7 +18,7 @@ source wait-for.sh
 wait_for 127.0.0.1 9000
 
 # Make sure we have a clean database
-init-db.sh
+lima app:setup:db -n
 
 # Run tests
 phpunit.phar $PHPUNIT_OPTIONS

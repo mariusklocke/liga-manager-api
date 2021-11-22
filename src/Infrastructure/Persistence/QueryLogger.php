@@ -31,7 +31,7 @@ class QueryLogger implements SQLLogger
     public function startQuery($sql, array $params = null, array $types = null)
     {
         $this->startTime = microtime(true);
-        $this->logger->info('Executing SQL query', [
+        $this->logger->debug('Executing SQL query', [
             'sql' => $sql,
             'types' => $types
         ]);
@@ -46,7 +46,7 @@ class QueryLogger implements SQLLogger
     {
         if ($this->startTime !== null) {
             $time = microtime(true) - $this->startTime;
-            $this->logger->info(sprintf('Finished query after %.3f ms', $time * 1000));
+            $this->logger->debug(sprintf('Finished query after %.3f ms', $time * 1000));
             $this->startTime = null;
         }
     }
