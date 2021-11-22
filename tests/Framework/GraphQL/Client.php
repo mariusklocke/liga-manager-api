@@ -822,6 +822,20 @@ GRAPHQL;
         ]);
     }
 
+    public function scheduleAllMatchesForMatchDay($matchDayId, $matchAppointments): void
+    {
+        $query = <<<'GRAPHQL'
+mutation scheduleAllMatchesForMatchDay($match_day_id: String!, $match_appointments: [MatchAppointment]!) {
+  scheduleAllMatchesForMatchDay(match_day_id: $match_day_id, match_appointments: $match_appointments)
+}
+GRAPHQL;
+
+        $this->requestAndParse($query, [
+            'match_day_id' => $matchDayId,
+            'match_appointments' => $matchAppointments
+        ]);
+    }
+
     public function replaceTeamInSeason($seasonId, $currentTeamId, $replacementTeamId): void
     {
         $query = <<<'GRAPHQL'

@@ -29,6 +29,7 @@ use HexagonalPlayground\Application\Command\RemoveTeamFromSeasonCommand;
 use HexagonalPlayground\Application\Command\RenameTeamCommand;
 use HexagonalPlayground\Application\Command\ReplaceTeamInSeasonCommand;
 use HexagonalPlayground\Application\Command\RescheduleMatchDayCommand;
+use HexagonalPlayground\Application\Command\ScheduleAllMatchesForMatchDayCommand;
 use HexagonalPlayground\Application\Command\ScheduleAllMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
@@ -69,6 +70,7 @@ class ServiceProvider implements ServiceProviderInterface
                 RenameTeamCommand::class,
                 ReplaceTeamInSeasonCommand::class,
                 RescheduleMatchDayCommand::class,
+                ScheduleAllMatchesForMatchDayCommand::class,
                 ScheduleAllMatchesForSeasonCommand::class,
                 ScheduleMatchCommand::class,
                 SendInviteMailCommand::class,
