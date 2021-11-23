@@ -11,8 +11,10 @@ class DebugGqlSchemaCommand extends Command
 {
     public const NAME = 'app:debug-gql-schema';
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->getStyledIO($input, $output)->text(SchemaPrinter::doPrint($this->container->get(Schema::class)));
+
+        return 0;
     }
 }
