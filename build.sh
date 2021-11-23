@@ -39,18 +39,24 @@ docker run -d --name=php --network=build --env-file=build.env $IMAGE:$TAG
 # Run deptrac
 docker exec -t php bin/deptrac.phar --no-progress
 
-# Run tests without coverage
-docker exec -t php run-tests.sh
+# Wait until FPM is ready
+docker exec -t php wait-for 127.0.0.1 9000
+
+# Run phpunit without coverage
+docker exec -t php phpunit.phar --testdox
 
 if [[ ! -z "${CI}" ]]; then
     # Enable xdebug
     docker exec -t -u root php docker-php-ext-enable xdebug
 
     # Run tests with coverage
-    docker exec -t -e COVERAGE_REPORT=1 -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php run-tests.sh
+    docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml
+
+    # Upload coverage report to coveralls.io
+    docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
 
     # Login to docker hub
-    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+    echo "$DOCKER_PASS" | docker login -u "$DOCKER_PASS" --password-stdin
 
     # Push image to docker hub
     docker push $IMAGE:$TAG
