@@ -56,7 +56,7 @@ if [[ ! -z "${CI}" ]]; then
     docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
 
     # Login to docker hub
-    echo "$DOCKER_PASS" | docker login -u "$DOCKER_PASS" --password-stdin
+    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
     # Push image to docker hub
     docker push $IMAGE:$TAG
