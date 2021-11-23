@@ -38,7 +38,7 @@ COPY --chown=www-data:www-data composer.lock composer.json depfile.yaml migratio
 RUN chmod +x bin/*
 USER www-data
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
-RUN bin/install
+RUN bin/lima install
 
 # Install own application sources
 COPY --chown=www-data:www-data tests tests/
