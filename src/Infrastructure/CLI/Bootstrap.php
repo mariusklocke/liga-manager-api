@@ -23,6 +23,7 @@ class Bootstrap
             new L98ImportCommand($container),
             new LoadFixturesCommand($container),
             new MaintenanceModeCommand($container),
+            new RunServerCommand($container),
             new SendTestMailCommand($container),
             new SetupDbCommand($container),
             new SetupEnvCommand($container),
