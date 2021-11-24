@@ -94,6 +94,22 @@ class MatchType extends ObjectType implements QueryTypeInterface
 
                     return $repo->findMatchById($args['id']);
                 }
+            ],
+            'matchesByKickoff' => [
+                'type' => Type::listOf(static::getInstance()),
+                'args' => [
+                    'min_date' => DateTimeType::getInstance(),
+                    'max_date' => DateTimeType::getInstance(),
+                ],
+                'resolve' => function ($root, array $args, AppContext $context) {
+                    /** @var MatchRepository $repo */
+                    $repo = $context->getContainer()->get(MatchRepository::class);
+
+                    return $repo->findMatchesByKickoff(
+                        $args['min_date'] ?? null,
+                        $args['max_date'] ?? null
+                    );
+                }
             ]
         ];
     }
