@@ -1,17 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
+namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Infrastructure\Persistence\Read\AbstractRepository;
-
-class MatchDayLoader extends AbstractRepository
+class MatchDayRepository extends AbstractRepository
 {
     /**
      * @param array $seasonIds
      * @return array
      */
-    public function loadBySeasonId(array $seasonIds): array
+    public function findBySeasonIds(array $seasonIds): array
     {
         if (empty($seasonIds)) {
             return [];
@@ -38,7 +36,7 @@ SQL;
      * @param array $tournamentIds
      * @return array
      */
-    public function loadByTournamentId(array $tournamentIds): array
+    public function findByTournamentIds(array $tournamentIds): array
     {
         if (empty($tournamentIds)) {
             return [];

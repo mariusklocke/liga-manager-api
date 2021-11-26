@@ -3,20 +3,22 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
+
 class BufferedMatchLoader
 {
-    /** @var MatchLoader */
-    private $matchLoader;
+    /** @var MatchRepository */
+    private $matchRepository;
 
     /** @var array */
     private $byMatchDayId = [];
 
     /**
-     * @param MatchLoader $matchLoader
+     * @param MatchRepository $matchRepository
      */
-    public function __construct(MatchLoader $matchLoader)
+    public function __construct(MatchRepository $matchRepository)
     {
-        $this->matchLoader = $matchLoader;
+        $this->matchRepository = $matchRepository;
     }
 
     /**
@@ -34,7 +36,7 @@ class BufferedMatchLoader
     public function getByMatchDay(string $matchDayId): ?array
     {
         $matchDayIds = array_keys($this->byMatchDayId, null, true);
-        foreach ($this->matchLoader->loadByMatchDayId($matchDayIds) as $id => $matches) {
+        foreach ($this->matchRepository->findMatchesByMatchDayIds($matchDayIds) as $id => $matches) {
             $this->byMatchDayId[$id] = $matches;
         }
         return $this->byMatchDayId[$matchDayId] ?? null;

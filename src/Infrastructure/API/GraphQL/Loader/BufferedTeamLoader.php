@@ -3,10 +3,12 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
+
 class BufferedTeamLoader
 {
-    /** @var TeamLoader */
-    private $teamLoader;
+    /** @var TeamRepository */
+    private $teamRepository;
 
     /** @var array */
     private $bySeasonId = [];
@@ -18,11 +20,11 @@ class BufferedTeamLoader
     private $byTeamId = [];
 
     /**
-     * @param TeamLoader $teamLoader
+     * @param TeamRepository $teamRepository
      */
-    public function __construct(TeamLoader $teamLoader)
+    public function __construct(TeamRepository $teamRepository)
     {
-        $this->teamLoader = $teamLoader;
+        $this->teamRepository = $teamRepository;
     }
 
     /**
@@ -56,7 +58,7 @@ class BufferedTeamLoader
     public function getByTeam(string $teamId): ?array
     {
         $teamIds = array_keys($this->byTeamId, null, true);
-        foreach ($this->teamLoader->loadTeamsById($teamIds) as $id => $team) {
+        foreach ($this->teamRepository->findTeamsById($teamIds) as $id => $team) {
             $this->byTeamId[$id] = $team;
         }
         return $this->byTeamId[$teamId] ?? null;
@@ -69,7 +71,7 @@ class BufferedTeamLoader
     public function getByUser(string $userId): ?array
     {
         $userIds = array_keys($this->byUserId, null, true);
-        foreach ($this->teamLoader->loadTeamsByUserId($userIds) as $id => $teams) {
+        foreach ($this->teamRepository->findTeamsByUserIds($userIds) as $id => $teams) {
             $this->byUserId[$id] = $teams;
         }
         return $this->byUserId[$userId] ?? null;
@@ -82,7 +84,7 @@ class BufferedTeamLoader
     public function getBySeason(string $seasonId): ?array
     {
         $seasonIds = array_keys($this->bySeasonId, null, true);
-        foreach ($this->teamLoader->loadTeamsBySeasonId($seasonIds) as $id => $teams) {
+        foreach ($this->teamRepository->findTeamsBySeasonIds($seasonIds) as $id => $teams) {
             $this->bySeasonId[$id] = $teams;
         }
         return $this->bySeasonId[$seasonId] ?? null;

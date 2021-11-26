@@ -2,20 +2,22 @@
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
+
 class BufferedPitchLoader
 {
-    /** @var PitchLoader */
-    private $pitchLoader;
+    /** @var PitchRepository */
+    private $pitchRepository;
 
     /** @var array */
     private $byPitchId = [];
 
     /**
-     * @param PitchLoader $pitchLoader
+     * @param PitchRepository $pitchRepository
      */
-    public function __construct(PitchLoader $pitchLoader)
+    public function __construct(PitchRepository $pitchRepository)
     {
-        $this->pitchLoader = $pitchLoader;
+        $this->pitchRepository = $pitchRepository;
     }
 
     public function addPitch(string $pitchId): void
@@ -26,7 +28,8 @@ class BufferedPitchLoader
     public function getByPitch(string $pitchId): ?array
     {
         $pitchIds = array_keys($this->byPitchId, null, true);
-        foreach ($this->pitchLoader->loadPitchesById($pitchIds) as $id => $pitch) {
+
+        foreach ($this->pitchRepository->findPitchesById($pitchIds) as $id => $pitch) {
             $this->byPitchId[$id] = $pitch;
         }
 

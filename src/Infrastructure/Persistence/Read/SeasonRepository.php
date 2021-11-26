@@ -24,18 +24,6 @@ class SeasonRepository extends AbstractRepository
 
     /**
      * @param string $seasonId
-     * @return array
-     */
-    public function findMatchDays(string $seasonId): array
-    {
-        return $this->getDb()->fetchAll(
-            'SELECT * FROM `match_days` WHERE season_id = ? ORDER BY number ASC',
-            [$seasonId]
-        );
-    }
-
-    /**
-     * @param string $seasonId
      * @return array|null
      */
     public function findRanking(string $seasonId): ?array
