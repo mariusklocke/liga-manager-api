@@ -149,6 +149,54 @@ class SeasonTest extends CompetitionTestCase
      * @param string $seasonId
      * @return string
      */
+    public function testMatchesCanBeQueriedByKickoff(string $seasonId): string
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+
+        $minDate = null;
+        $maxDate = null;
+
+        foreach ($season->match_days as $matchDay) {
+            $startDate = new DateTimeImmutable($matchDay->start_date);
+            $endDate = new DateTimeImmutable($matchDay->end_date);
+
+            if ($minDate === null || $startDate < $minDate) {
+                $minDate = $startDate;
+            }
+
+            if ($maxDate === null || $endDate > $maxDate) {
+                $maxDate = $endDate;
+            }
+        }
+
+        $minDate = $minDate->modify('+ 7 days')->setTime(0, 0, 0);
+        $maxDate = $maxDate->modify('- 7 days')->setTime(23, 59, 59);
+
+        self::assertTrue($minDate < $maxDate);
+
+        $matches = $this->client->getMatchesByKickoff($minDate->format(DATE_ATOM), $maxDate->format(DATE_ATOM));
+
+        $matches = array_filter($matches, function ($match) {
+            return $match->kickoff !== null;
+        });
+
+        self::assertNotEmpty($matches);
+
+        foreach ($matches as $match) {
+            $kickoff = new DateTimeImmutable($match->kickoff);
+
+            self::assertGreaterThanOrEqual($minDate, $kickoff);
+            self::assertLessThanOrEqual($maxDate, $kickoff);
+        }
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testMatchesCanBeQueriedByKickoff
+     * @param string $seasonId
+     * @return string
+     */
     public function testMatchCanBeLocated(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);

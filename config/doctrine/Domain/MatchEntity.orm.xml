@@ -4,6 +4,9 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\MatchEntity" table="matches">
+        <indexes>
+            <index columns="kickoff"/>
+        </indexes>
         <id name="id" type="string" />
         <field name="kickoff" type="custom_datetime" nullable="true" />
         <field name="cancelledAt" column="cancelled_at" type="custom_datetime" nullable="true"/>

@@ -850,4 +850,20 @@ GRAPHQL;
             'replacement_team_id' => $replacementTeamId
         ]);
     }
+
+    public function getMatchesByKickoff($minDate, $maxDate): array
+    {
+        $query = <<<'GRAPHQL'
+query matchesByKickoff($min_date: DateTime, $max_date: DateTime) {
+  matchesByKickoff(min_date: $min_date, max_date: $max_date) {
+    id,
+    kickoff
+  }
+}
+GRAPHQL;
+
+        $data = $this->requestAndParse($query, ['min_date' => $minDate, 'max_date' => $maxDate]);
+
+        return $data->matchesByKickoff;
+    }
 }
