@@ -8,7 +8,7 @@ class TeamRepository extends AbstractRepository
     /**
      * @return array
      */
-    public function findAllTeams()
+    public function findAllTeams(): array
     {
         return array_map([$this, 'hydrate'], $this->getDb()->fetchAll($this->getBaseQuery()));
     }
