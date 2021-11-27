@@ -38,7 +38,7 @@ class PitchRepository extends AbstractRepository
         }
 
         $placeholder = $this->getPlaceholders($pitchIds);
-        $query = "SELECT id, label, location_longitude, location_latitude, contact_email, contact_first_name, contact_last_name, contact_phone FROM pitches WHERE id IN ($placeholder)";
+        $query = "SELECT * FROM pitches WHERE id IN ($placeholder)";
         $result = [];
         foreach ($this->getDb()->fetchAll($query, $pitchIds) as $row) {
             $result[$row['id']] = $this->hydrate($row);
@@ -47,8 +47,14 @@ class PitchRepository extends AbstractRepository
         return $result;
     }
 
-    private function hydrate(array $row): array
+    protected function hydrate(array $row): array
     {
-        return $this->reconstructEmbeddedObject($row, 'contact');
+        return [
+            'id' => $this->hydrator->string($row['id']),
+            'label' => $this->hydrator->string($row['label']),
+            'location_longitude' => $this->hydrator->float($row['location_longitude']),
+            'location_latitude' => $this->hydrator->float($row['location_latitude']),
+            'contact' => $this->hydrator->contact($row)
+        ];
     }
 }

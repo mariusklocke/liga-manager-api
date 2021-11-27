@@ -10,7 +10,7 @@ class TournamentRepository extends AbstractRepository
      */
     public function findAllTournaments() : array
     {
-        return $this->getDb()->fetchAll('SELECT * FROM tournaments');
+        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll('SELECT * FROM tournaments'));
     }
 
     /**
@@ -19,6 +19,17 @@ class TournamentRepository extends AbstractRepository
      */
     public function findTournamentById(string $id): ?array
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM tournaments WHERE id = ?', [$id]);
+        $row = $this->getDb()->fetchFirstRow('SELECT * FROM tournaments WHERE id = ?', [$id]);
+
+        return $row !== null ? $this->hydrate($row) : null;
+    }
+
+    protected function hydrate(array $row): array
+    {
+        return [
+            'id' => $this->hydrator->string($row['id']),
+            'name' => $this->hydrator->string($row['name']),
+            'rounds' => $this->hydrator->int($row['rounds'])
+        ];
     }
 }

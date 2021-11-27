@@ -15,6 +15,7 @@ class EventRepository extends AbstractRepository
     {
         $query = $this->getBaseQuery() . ' WHERE id = ?';
         $row   = $this->getDb()->fetchFirstRow($query, [$id]);
+
         if (null === $row) {
             return null;
         }
@@ -74,17 +75,20 @@ class EventRepository extends AbstractRepository
      */
     private function getBaseQuery(): string
     {
-        $occurredAt = $this->getDateFormat('occurred_at');
-        return "SELECT id, $occurredAt, payload, type FROM events";
+        return "SELECT * FROM events";
     }
 
     /**
      * @param array $row
      * @return array
      */
-    private function hydrate(array $row): array
+    protected function hydrate(array $row): array
     {
-        $row['payload'] = unserialize($row['payload']);
-        return $row;
+        return [
+            'id' => $this->hydrator->string($row['id']),
+            'occurred_at' => $this->hydrator->string($row['occurred_at']),
+            'payload' => unserialize($row['payload']),
+            'type' => $this->hydrator->string($row['type'])
+        ];
     }
 }

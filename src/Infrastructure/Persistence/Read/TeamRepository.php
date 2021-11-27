@@ -39,8 +39,7 @@ class TeamRepository extends AbstractRepository
         }
 
         $placeholder = $this->getPlaceholders($teamIds);
-        $createdAt   = $this->getDateFormat('created_at');
-        $query = "SELECT id, name, $createdAt, contact_email, contact_first_name, contact_last_name, contact_phone FROM teams WHERE id IN ($placeholder)";
+        $query = $this->getBaseQuery() . " WHERE id IN ($placeholder)";
         $result = [];
         foreach ($this->getDb()->fetchAll($query, $teamIds) as $row) {
             $result[$row['id']] = $this->hydrate($row);
@@ -60,9 +59,8 @@ class TeamRepository extends AbstractRepository
         }
 
         $placeholder = $this->getPlaceholders($seasonIds);
-        $createdAt   = $this->getDateFormat('created_at');
         $query = <<<SQL
-  SELECT id, name, $createdAt, contact_email, contact_first_name, contact_last_name, contact_phone, season_id
+  SELECT id, name, created_at, contact_email, contact_first_name, contact_last_name, contact_phone, season_id
   FROM teams
     JOIN seasons_teams_link ON id=team_id
   WHERE season_id IN ($placeholder)
@@ -98,9 +96,8 @@ SQL;
         }
 
         $placeholder = $this->getPlaceholders($userIds);
-        $createdAt   = $this->getDateFormat('created_at');
         $query = <<<SQL
-  SELECT id, name, $createdAt, contact_email, contact_first_name, contact_last_name, contact_phone, user_id
+  SELECT id, name, created_at, contact_email, contact_first_name, contact_last_name, contact_phone, user_id
   FROM teams
     JOIN users_teams_link ON id=team_id
   WHERE user_id IN ($placeholder)
@@ -120,15 +117,19 @@ SQL;
      */
     private function getBaseQuery(): string
     {
-        $createdAt = $this->getDateFormat('created_at');
         $query = <<<SQL
-  SELECT id, name, $createdAt, contact_email, contact_first_name, contact_last_name, contact_phone FROM teams
+  SELECT id, name, created_at, contact_email, contact_first_name, contact_last_name, contact_phone FROM teams
 SQL;
         return $query;
     }
 
-    private function hydrate(array $row): array
+    protected function hydrate(array $row): array
     {
-        return $this->reconstructEmbeddedObject($row, 'contact');
+        return [
+            'id' => $this->hydrator->string($row['id']),
+            'name' => $this->hydrator->string($row['name']),
+            'created_at' => $this->hydrator->dateTime($row['created_at']),
+            'contact' => $this->hydrator->contact($row)
+        ];
     }
 }
