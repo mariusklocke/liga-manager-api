@@ -5,12 +5,38 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 class PitchRepository extends AbstractRepository
 {
+    protected function getFieldDefinitions(): array
+    {
+        return [
+            'id' => Hydrator::TYPE_STRING,
+            'label' => Hydrator::TYPE_STRING,
+            'location_longitude' => Hydrator::TYPE_FLOAT,
+            'location_latitude' => Hydrator::TYPE_FLOAT,
+            'contact' => function (array $row): ?array {
+                $contact = [
+                    'email' => $row['contact_email'],
+                    'first_name' => $row['contact_first_name'],
+                    'last_name' => $row['contact_last_name'],
+                    'phone' => $row['contact_phone']
+                ];
+
+                foreach ($contact as $value) {
+                    if ($value !== null) {
+                        return $contact;
+                    }
+                }
+
+                return null;
+            }
+        ];
+    }
+
     /**
      * @return array
      */
-    public function findAllPitches()
+    public function findAllPitches(): array
     {
-        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll('SELECT * FROM `pitches`'));
+        return $this->hydrateMany($this->getDb()->fetchAll('SELECT * FROM `pitches`'));
     }
 
     /**
@@ -20,11 +46,8 @@ class PitchRepository extends AbstractRepository
     public function findPitchById(string $id): ?array
     {
         $pitch = $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = ?', [$id]);
-        if (null === $pitch) {
-            return null;
-        }
 
-        return $this->hydrate($pitch);
+        return $pitch !== null ? $this->hydrateOne($pitch) : null;
     }
 
     /**
@@ -39,22 +62,12 @@ class PitchRepository extends AbstractRepository
 
         $placeholder = $this->getPlaceholders($pitchIds);
         $query = "SELECT * FROM pitches WHERE id IN ($placeholder)";
+
         $result = [];
         foreach ($this->getDb()->fetchAll($query, $pitchIds) as $row) {
-            $result[$row['id']] = $this->hydrate($row);
+            $result[$row['id']] = $this->hydrateOne($row);
         }
 
         return $result;
-    }
-
-    protected function hydrate(array $row): array
-    {
-        return [
-            'id' => $this->hydrator->string($row['id']),
-            'label' => $this->hydrator->string($row['label']),
-            'location_longitude' => $this->hydrator->float($row['location_longitude']),
-            'location_latitude' => $this->hydrator->float($row['location_latitude']),
-            'contact' => $this->hydrator->contact($row)
-        ];
     }
 }

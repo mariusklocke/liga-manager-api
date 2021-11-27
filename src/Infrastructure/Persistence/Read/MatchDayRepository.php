@@ -5,6 +5,18 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 class MatchDayRepository extends AbstractRepository
 {
+    protected function getFieldDefinitions(): array
+    {
+        return [
+            'id' => Hydrator::TYPE_STRING,
+            'season_id' => Hydrator::TYPE_STRING,
+            'tournament_id' => Hydrator::TYPE_STRING,
+            'number' => Hydrator::TYPE_INT,
+            'start_date' => Hydrator::TYPE_STRING,
+            'end_date' => Hydrator::TYPE_STRING
+        ];
+    }
+
     /**
      * @param array $seasonIds
      * @return array
@@ -24,12 +36,7 @@ class MatchDayRepository extends AbstractRepository
   ORDER BY number ASC
 SQL;
 
-        $result = [];
-        foreach ($this->getDb()->fetchAll($query, $seasonIds) as $row) {
-            $result[$row['season_id']][] = $this->hydrate($row);
-        }
-
-        return $result;
+        return $this->hydrateMany($this->getDb()->fetchAll($query, $seasonIds), 'season_id');
     }
 
     /**
@@ -51,23 +58,6 @@ SQL;
   ORDER BY number ASC
 SQL;
 
-        $result = [];
-        foreach ($this->getDb()->fetchAll($query, $tournamentIds) as $row) {
-            $result[$row['tournament_id']][] = $this->hydrate($row);
-        }
-
-        return $result;
-    }
-
-    protected function hydrate(array $row): array
-    {
-        return [
-            'id' => $this->hydrator->string($row['id']),
-            'season_id' => $this->hydrator->string($row['season_id']),
-            'tournament_id' => $this->hydrator->string($row['tournament_id']),
-            'number' => $this->hydrator->int($row['number']),
-            'start_date' => $this->hydrator->string($row['start_date']),
-            'end_date' => $this->hydrator->string($row['end_date'])
-        ];
+        return $this->hydrateMany($this->getDb()->fetchAll($query, $tournamentIds), 'tournament_id');
     }
 }

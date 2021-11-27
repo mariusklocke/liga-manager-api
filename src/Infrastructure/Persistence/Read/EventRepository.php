@@ -7,6 +7,16 @@ use DateTimeImmutable;
 
 class EventRepository extends AbstractRepository
 {
+    protected function getFieldDefinitions(): array
+    {
+        return [
+            'id' => Hydrator::TYPE_STRING,
+            'occurred_at' => Hydrator::TYPE_STRING,
+            'payload' => Hydrator::TYPE_SERIALIZED_ARRAY,
+            'type' => Hydrator::TYPE_STRING
+        ];
+    }
+
     /**
      * @param string $id
      * @return array|null
@@ -20,7 +30,7 @@ class EventRepository extends AbstractRepository
             return null;
         }
 
-        return $this->hydrate($row);
+        return $this->hydrateOne($row);
     }
 
     /**
@@ -38,7 +48,8 @@ class EventRepository extends AbstractRepository
         }
         $query .= ' ORDER BY occurred_at DESC LIMIT 50';
         $result = $this->getDb()->fetchAll($query, $params);
-        return array_map([$this, 'hydrate'], $result);
+
+        return $this->hydrateMany($result);
     }
 
     /**
@@ -76,19 +87,5 @@ class EventRepository extends AbstractRepository
     private function getBaseQuery(): string
     {
         return "SELECT * FROM events";
-    }
-
-    /**
-     * @param array $row
-     * @return array
-     */
-    protected function hydrate(array $row): array
-    {
-        return [
-            'id' => $this->hydrator->string($row['id']),
-            'occurred_at' => $this->hydrator->string($row['occurred_at']),
-            'payload' => unserialize($row['payload']),
-            'type' => $this->hydrator->string($row['type'])
-        ];
     }
 }

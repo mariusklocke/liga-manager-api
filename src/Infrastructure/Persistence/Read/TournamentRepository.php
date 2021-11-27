@@ -5,12 +5,21 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 class TournamentRepository extends AbstractRepository
 {
+    protected function getFieldDefinitions(): array
+    {
+        return [
+            'id' => Hydrator::TYPE_STRING,
+            'name' => Hydrator::TYPE_STRING,
+            'rounds' => Hydrator::TYPE_INT
+        ];
+    }
+
     /**
      * @return array
      */
     public function findAllTournaments() : array
     {
-        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll('SELECT * FROM tournaments'));
+        return $this->hydrateMany($this->getDb()->fetchAll('SELECT * FROM tournaments'));
     }
 
     /**
@@ -21,15 +30,6 @@ class TournamentRepository extends AbstractRepository
     {
         $row = $this->getDb()->fetchFirstRow('SELECT * FROM tournaments WHERE id = ?', [$id]);
 
-        return $row !== null ? $this->hydrate($row) : null;
-    }
-
-    protected function hydrate(array $row): array
-    {
-        return [
-            'id' => $this->hydrator->string($row['id']),
-            'name' => $this->hydrator->string($row['name']),
-            'rounds' => $this->hydrator->int($row['rounds'])
-        ];
+        return $row !== null ? $this->hydrateOne($row) : null;
     }
 }

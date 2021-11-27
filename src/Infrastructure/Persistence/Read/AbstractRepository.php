@@ -11,12 +11,12 @@ class AbstractRepository
     private $db;
 
     /** @var Hydrator */
-    protected $hydrator;
+    private $hydrator;
 
-    public function __construct(ReadDbAdapterInterface $readDbAdapter, Hydrator $hydrator)
+    public function __construct(ReadDbAdapterInterface $readDbAdapter)
     {
         $this->db = $readDbAdapter;
-        $this->hydrator = $hydrator;
+        $this->hydrator = new Hydrator($this->getFieldDefinitions());
     }
 
     /**
@@ -25,6 +25,38 @@ class AbstractRepository
     protected function getDb(): ReadDbAdapterInterface
     {
         return $this->db;
+    }
+
+    /**
+     * @param array $row
+     * @return array
+     */
+    protected function hydrateOne(array $row): array
+    {
+        return $this->hydrator->hydrate($row);
+    }
+
+    /**
+     * @param array $rows
+     * @param string|null $groupBy
+     * @return array
+     */
+    protected function hydrateMany(array $rows, ?string $groupBy = null): array
+    {
+        $result = [];
+
+        foreach ($rows as $row) {
+            $row = $this->hydrateOne($row);
+
+            if ($groupBy !== null) {
+                $result[$row[$groupBy]][] = $row;
+                continue;
+            }
+
+            $result[] = $row;
+        }
+
+        return $result;
     }
 
     /**
@@ -37,11 +69,10 @@ class AbstractRepository
     }
 
     /**
-     * @param array $row
      * @return array
      */
-    protected function hydrate(array $row): array
+    protected function getFieldDefinitions(): array
     {
-        return $row;
+        return [];
     }
 }
