@@ -866,4 +866,21 @@ GRAPHQL;
 
         return $data->matchesByKickoff;
     }
+
+    public function getLatestEvents(): array
+    {
+        $query = <<<'GRAPHQL'
+query latestEvents {
+  latestEvents {
+    id,
+    occurred_at,
+    type
+  }
+}
+GRAPHQL;
+
+        $data = $this->requestAndParse($query);
+
+        return $data->latestEvents;
+    }
 }

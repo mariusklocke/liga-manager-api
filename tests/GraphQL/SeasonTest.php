@@ -79,6 +79,9 @@ class SeasonTest extends CompetitionTestCase
         self::assertCount(1, $events);
         self::assertSame('season:started', $events[0]->getType());
 
+        $events = $this->client->getLatestEvents();
+        self::assertSame('season:started', $events[0]->type);
+
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         self::assertSame($seasonId, $season->id);
         self::assertSame(count($dates), $season->match_day_count);

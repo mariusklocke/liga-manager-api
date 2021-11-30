@@ -25,6 +25,12 @@ class UserTest extends TestCase
         }
 
         self::assertInstanceOf(Exception::class, $exception);
+
+        $this->useAdminAuth();
+
+        $users = $this->client->getAllUsers();
+
+        self::assertNotEmpty($users);
     }
 
     public function testUserCanBeCreated()
