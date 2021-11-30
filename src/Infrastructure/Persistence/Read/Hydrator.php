@@ -20,6 +20,9 @@ class Hydrator
     /** @var DateTimeZone */
     private $dateTimeZone;
 
+    /**
+     * @param iterable $fields
+     */
     public function __construct(iterable $fields)
     {
         $this->fields = [];
@@ -31,6 +34,12 @@ class Hydrator
         $this->dateTimeZone = new DateTimeZone('UTC');
     }
 
+    /**
+     * Converts a database row to API-compatible format
+     *
+     * @param array $row
+     * @return array
+     */
     public function hydrate(array $row): array
     {
         $result = [];
