@@ -28,6 +28,9 @@ class SeasonTest extends CompetitionTestCase
         $allSeasons = $this->client->getAllSeasons();
         self::assertArrayContainsObjectWithAttribute($allSeasons, 'id', $sent['id']);
 
+        $events = $this->client->getLatestEvents();
+        self::assertSame('season:created', $events[0]->type);
+
         return $sent['id'];
     }
 
@@ -78,9 +81,6 @@ class SeasonTest extends CompetitionTestCase
 
         self::assertCount(1, $events);
         self::assertSame('season:started', $events[0]->getType());
-
-        $events = $this->client->getLatestEvents();
-        self::assertSame('season:started', $events[0]->type);
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         self::assertSame($seasonId, $season->id);
