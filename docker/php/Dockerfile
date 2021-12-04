@@ -33,6 +33,7 @@ RUN mkdir -p ${APP_HOME} && chown www-data:www-data ${APP_HOME}
 WORKDIR ${APP_HOME}
 
 # Install dependencies first
+COPY --chown=www-data:www-data src/installer.php src/installer.php
 COPY --chown=www-data:www-data bin bin/
 COPY --chown=www-data:www-data composer.lock composer.json depfile.yaml migrations.php phpunit.xml ./
 RUN chmod +x bin/*
