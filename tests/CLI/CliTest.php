@@ -9,6 +9,8 @@ use HexagonalPlayground\Infrastructure\CLI\DebugGqlSchemaCommand;
 use HexagonalPlayground\Infrastructure\CLI\L98ImportCommand;
 use HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand;
 use HexagonalPlayground\Infrastructure\CLI\MaintenanceModeCommand;
+use HexagonalPlayground\Infrastructure\CLI\SendTestMailCommand;
+use HexagonalPlayground\Infrastructure\CLI\SetupDbCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -23,6 +25,16 @@ class CliTest extends TestCase
         $this->app = Bootstrap::bootstrap();
     }
 
+    public function testSetupDatabase(): void
+    {
+        $tester = $this->getCommandTester(SetupDbCommand::NAME);
+
+        self::assertExecutionSuccess($tester->execute([]));
+    }
+
+    /**
+     * @depends testSetupDatabase
+     */
     public function testCreatingUser(): void
     {
         $tester = $this->getCommandTester(CreateUserCommand::NAME);
@@ -31,12 +43,18 @@ class CliTest extends TestCase
         self::assertExecutionSuccess($tester->execute([]));
     }
 
+    /**
+     * @depends testSetupDatabase
+     */
     public function testLoadingFixtures(): void
     {
         $tester = $this->getCommandTester(LoadFixturesCommand::NAME);
         self::assertExecutionSuccess($tester->execute([]));
     }
 
+    /**
+     * @depends testSetupDatabase
+     */
     public function testSeasonsCanBeImportedFromLegacyFiles(): void
     {
         $tester = $this->getCommandTester(L98ImportCommand::NAME);
@@ -78,6 +96,13 @@ class CliTest extends TestCase
         $exitCode = $tester->execute(['--mode' => 'off']);
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('Maintenance mode has been disabled', $tester->getDisplay());
+    }
+
+    public function testSendingMail(): void
+    {
+        $tester = $this->getCommandTester(SendTestMailCommand::NAME);
+
+        self::assertExecutionSuccess($tester->execute(['recipient' => 'test@example.com']));
     }
 
     private function getCommandTester(string $commandName): CommandTester
