@@ -5,6 +5,10 @@ return new class {
 
     public function __invoke(): void
     {
+        if (!getenv('APP_HOME')) {
+            throw new RuntimeException('Missing environment variable APP_HOME');
+        }
+
         $this->output('Installing PHAR dependencies ...');
 
         foreach ($this->getTools() as $filename => $source) {
