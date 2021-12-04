@@ -8,7 +8,7 @@ return new class {
         $this->output('Installing PHAR dependencies ...');
 
         foreach ($this->getTools() as $filename => $source) {
-            $target = __DIR__ . '/' . $filename;
+            $target = getenv('APP_HOME') . '/bin/' . $filename;
 
             if (file_exists($target)) {
                 continue;
@@ -29,7 +29,7 @@ return new class {
 
     private function getTools(): Iterator
     {
-        $composerJsonPath = realpath(__DIR__ . '/../composer.json');
+        $composerJsonPath = realpath(getenv('APP_HOME') . '/composer.json');
         $composerConfig = json_decode(file_get_contents($composerJsonPath), true);
 
         if (isset($composerConfig['extra']['phar-tools'])) {
