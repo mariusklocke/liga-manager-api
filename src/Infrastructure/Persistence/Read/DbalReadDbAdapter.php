@@ -35,15 +35,6 @@ class DbalReadDbAdapter implements ReadDbAdapterInterface
         return is_array($row) ? $row : null;
     }
 
-    public function fetchSingleColumn(string $query, array $params = [])
-    {
-        $types = array_map([$this, 'getParamType'], $params);
-
-        $value = $this->connection->fetchOne($query, $params, $types);
-
-        return $value !== false ? $value : null;
-    }
-
     /**
      * Determines the DBAL parameter type for a value
      *

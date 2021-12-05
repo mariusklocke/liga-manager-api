@@ -22,13 +22,4 @@ interface ReadDbAdapterInterface
      * @return array|null
      */
     public function fetchFirstRow(string $query, array $params): ?array;
-
-    /**
-     * Fetch the first column of the first row
-     *
-     * @param string $query
-     * @param array  $params
-     * @return mixed
-     */
-    public function fetchSingleColumn(string $query, array $params = []);
 }

@@ -46,16 +46,6 @@ class MysqliReadDbAdapter implements ReadDbAdapterInterface
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function fetchSingleColumn(string $query, array $params = [])
-    {
-        $result = $this->executeQuery($query, $params);
-        $row = $result->fetch_row();
-        return is_array($row) && isset($row[0]) ? $row[0] : null;
-    }
-
-    /**
      * @param QueryLogger $logger
      * @return MysqliReadDbAdapter
      */

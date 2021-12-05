@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use DateTimeImmutable;
 use DateTimeZone;
 use LogicException;
 
@@ -101,7 +102,7 @@ class Hydrator
             return null;
         }
 
-        $string = (new \DateTimeImmutable($value))
+        $string = (new DateTimeImmutable($value))
             ->setTimezone($this->dateTimeZone)
             ->format(DATE_ATOM);
 
