@@ -12,7 +12,7 @@ class RunServerCommand extends Command
 {
     public const NAME = 'app:server:run';
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Run PHP-internal webserver for development');
         $this->addArgument('socket', InputArgument::OPTIONAL, 'Socket to bind to');

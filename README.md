@@ -32,6 +32,9 @@ $ docker-compose exec php lima app:setup:db
 
 # Create a new user (any role)
 $ docker-compose exec php lima app:create-user
+
+# Create the default admin user
+$ docker-compose exec php lima app:create-user --default
 ```
 
 ## Enable HTTPS

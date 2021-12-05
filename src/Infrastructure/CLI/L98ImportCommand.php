@@ -18,7 +18,7 @@ class L98ImportCommand extends Command
 {
     public const NAME = 'app:import-season';
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDefinition([

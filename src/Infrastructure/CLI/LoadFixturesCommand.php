@@ -27,7 +27,7 @@ class LoadFixturesCommand extends Command
 {
     public const NAME = 'app:load-fixtures';
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $seasonIds = [];
         foreach ($this->createSeasons() as $seasonId) {
@@ -57,6 +57,7 @@ class LoadFixturesCommand extends Command
 
         $this->createTournamentRounds($tournamentIds, $teamIds);
         $output->writeln('Fixtures successfully loaded');
+
         return 0;
     }
 

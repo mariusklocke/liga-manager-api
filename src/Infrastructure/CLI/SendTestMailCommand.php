@@ -11,12 +11,12 @@ class SendTestMailCommand extends Command
 {
     public const NAME = 'app:send-test-mail';
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->addArgument('recipient', InputArgument::REQUIRED, 'Sends a test email');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var MailerInterface $mailer */
         $mailer = $this->container->get(MailerInterface::class);
@@ -29,5 +29,7 @@ class SendTestMailCommand extends Command
         $mailer->send($message);
 
         $this->getStyledIO($input, $output)->success('Test email has been sent successfully');
+
+        return 0;
     }
 }

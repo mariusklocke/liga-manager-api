@@ -14,59 +14,103 @@ class CreateUserCommand extends Command
 {
     public const NAME = 'app:create-user';
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this->addOption('email',null, InputOption::VALUE_REQUIRED);
+        $this->addOption('email', null, InputOption::VALUE_REQUIRED);
         $this->addOption('password', null, InputOption::VALUE_REQUIRED);
         $this->addOption('first-name', null, InputOption::VALUE_REQUIRED);
         $this->addOption('last-name', null, InputOption::VALUE_REQUIRED);
         $this->addOption('role', null, InputOption::VALUE_REQUIRED);
+        $this->addOption('default', null, InputOption::VALUE_NONE);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $styledIo = $this->getStyledIO($input, $output);
-
-        $email = $input->getOption('email');
-        if (!$email && $input->isInteractive()) {
-            $email = $styledIo->ask('Email');
-        }
-
-        $password = $input->getOption('password');
-        if (!$password && $input->isInteractive()) {
-            $password = $styledIo->ask('Password');
-        }
-
-        $firstName = $input->getOption('first-name');
-        if (!$firstName) {
-            $firstName = $input->isInteractive() ? $styledIo->ask('First name') : '';
-        }
-
-        $lastName = $input->getOption('last-name');
-        if (!$lastName) {
-            $lastName = $input->isInteractive() ? $styledIo->ask('Last name') : '';
-        }
-
-        $role = $input->getOption('role');
-        if (!$role) {
-            $role = $input->isInteractive()
-                ? $styledIo->choice('Choose a role', [User::ROLE_ADMIN, User::ROLE_TEAM_MANAGER])
-                : User::ROLE_ADMIN;
-        }
-
         $command = new CreateUserApplicationCommand(
             null,
-            $email,
-            $password,
-            $firstName,
-            $lastName,
-            $role,
+            $this->getEmail($input, $output),
+            $this->getPassword($input, $output),
+            $this->getFirstName($input, $output),
+            $this->getLastName($input, $output),
+            $this->getRole($input, $output),
             []
         );
 
         $this->container->get(CommandBus::class)->execute($command, $this->getAuthContext());
 
-        $output->writeln('User successfully created. ID: ' . $command->getId());
+        $output->writeln('User successfully created.');
+        $output->writeln('Email: ' . $command->getEmail());
+        $output->writeln('Password: ' . $command->getPassword());
+
         return 0;
+    }
+
+    private function getEmail(InputInterface $input, OutputInterface $output): ?string
+    {
+        if ($input->getOption('default')) {
+            return getenv('ADMIN_EMAIL');
+        }
+
+        if ($input->getOption('email')) {
+            return $input->getOption('email');
+        }
+
+        return $input->isInteractive() ? $this->getStyledIO($input, $output)->ask('Please enter email address') : null;
+    }
+
+    private function getPassword(InputInterface $input, OutputInterface $output): ?string
+    {
+        if ($input->getOption('default')) {
+            return getenv('ADMIN_PASSWORD');
+        }
+
+        if ($input->getOption('password')) {
+            return $input->getOption('password');
+        }
+
+        return $input->isInteractive() ? $this->getStyledIO($input, $output)->ask('Please enter password') : null;
+    }
+
+    private function getFirstName(InputInterface $input, OutputInterface $output): ?string
+    {
+        if ($input->getOption('default')) {
+            return 'default';
+        }
+
+        if ($input->getOption('first-name')) {
+            return $input->getOption('first-name');
+        }
+
+        return $input->isInteractive() ? $this->getStyledIO($input, $output)->ask('Please enter first name') : null;
+    }
+
+    private function getLastName(InputInterface $input, OutputInterface $output): ?string
+    {
+        if ($input->getOption('default')) {
+            return 'default';
+        }
+
+        if ($input->getOption('last-name')) {
+            return $input->getOption('last-name');
+        }
+
+        return $input->isInteractive() ? $this->getStyledIO($input, $output)->ask('Please enter last name') : null;
+    }
+
+    private function getRole(InputInterface $input, OutputInterface $output): ?string
+    {
+        if ($input->getOption('default')) {
+            return User::ROLE_ADMIN;
+        }
+
+        if ($input->getOption('role')) {
+            return $input->getOption('role');
+        }
+
+        if ($input->isInteractive()) {
+            return $this->getStyledIO($input, $output)->choice('Choose a role', [User::ROLE_ADMIN, User::ROLE_TEAM_MANAGER]);
+        }
+
+        return null;
     }
 }
