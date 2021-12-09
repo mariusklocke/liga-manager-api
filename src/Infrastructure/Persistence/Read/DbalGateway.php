@@ -20,6 +20,8 @@ use Psr\Log\LoggerInterface;
 
 class DbalGateway implements ReadDbGatewayInterface
 {
+    private const MYSQL_DATE_FORMAT = 'Y-m-d H:i:s';
+
     /** @var Connection */
     private $connection;
 
@@ -234,7 +236,7 @@ class DbalGateway implements ReadDbGatewayInterface
                 break;
             case 'object':
                 if ($value instanceof DateTimeInterface) {
-                    $value = $value->format(AbstractRepository::MYSQL_DATE_FORMAT);
+                    $value = $value->format(self::MYSQL_DATE_FORMAT);
                     $type = ParameterType::STRING;
                 } else {
                     throw new InvalidInputException('Unsupported object type for query parameter');

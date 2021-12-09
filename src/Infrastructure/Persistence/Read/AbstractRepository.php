@@ -5,10 +5,8 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use Iterator;
 
-class AbstractRepository
+abstract class AbstractRepository
 {
-    const MYSQL_DATE_FORMAT = 'Y-m-d H:i:s';
-
     /** @var ReadDbGatewayInterface */
     protected $gateway;
 
@@ -59,8 +57,5 @@ class AbstractRepository
     /**
      * @return array
      */
-    protected function getFieldDefinitions(): array
-    {
-        return [];
-    }
+    abstract protected function getFieldDefinitions(): array;
 }
