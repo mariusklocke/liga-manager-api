@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+
 class PitchRepository extends AbstractRepository
 {
     protected function getFieldDefinitions(): array
@@ -32,42 +35,28 @@ class PitchRepository extends AbstractRepository
     }
 
     /**
+     * @param iterable|Filter[] $filters
      * @return array
      */
-    public function findAllPitches(): array
+    public function findMany(iterable $filters = []): array
     {
-        return $this->hydrateMany($this->getDb()->fetchAll('SELECT * FROM `pitches`'));
+        return $this->hydrateMany($this->gateway->fetch(
+            'pitches',
+            [],
+            $filters
+        ));
     }
 
     /**
      * @param string $id
      * @return array|null
      */
-    public function findPitchById(string $id): ?array
+    public function findById(string $id): ?array
     {
-        $pitch = $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = ?', [$id]);
-
-        return $pitch !== null ? $this->hydrateOne($pitch) : null;
-    }
-
-    /**
-     * @param array $pitchIds
-     * @return array
-     */
-    public function findPitchesById(array $pitchIds): array
-    {
-        if (empty($pitchIds)) {
-            return [];
-        }
-
-        $placeholder = $this->getPlaceholders($pitchIds);
-        $query = "SELECT * FROM pitches WHERE id IN ($placeholder)";
-
-        $result = [];
-        foreach ($this->getDb()->fetchAll($query, $pitchIds) as $row) {
-            $result[$row['id']] = $this->hydrateOne($row);
-        }
-
-        return $result;
+        return $this->hydrateOne($this->gateway->fetch(
+            'pitches',
+            [],
+            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
+        ));
     }
 }

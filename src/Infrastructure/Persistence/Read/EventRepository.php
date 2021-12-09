@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use DateTimeImmutable;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 
 class EventRepository extends AbstractRepository
 {
@@ -21,71 +23,32 @@ class EventRepository extends AbstractRepository
      * @param string $id
      * @return array|null
      */
-    public function findEventById(string $id): ?array
+    public function findById(string $id): ?array
     {
-        $query = $this->getBaseQuery() . ' WHERE id = ?';
-        $row   = $this->getDb()->fetchFirstRow($query, [$id]);
-
-        if (null === $row) {
-            return null;
-        }
-
-        return $this->hydrateOne($row);
+        return $this->hydrateOne($this->gateway->fetch(
+            'events',
+            [],
+            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
+        ));
     }
 
     /**
-     * @param DateTimeImmutable|null $startDate
-     * @param DateTimeImmutable|null $endDate
-     * @param string|null $type
+     * @param iterable|array $filters
+     * @param iterable|array $sortings
+     * @param Pagination|null $pagination
      * @return array
      */
-    public function findLatestEvents(?DateTimeImmutable $startDate = null, ?DateTimeImmutable $endDate = null, ?string $type = null): array
-    {
-        $query = $this->getBaseQuery();
-        list($conditions, $params) = $this->buildConditions($startDate, $endDate, $type);
-        if (strlen($conditions) > 0 && count($params) > 0) {
-            $query .= ' WHERE ' . $conditions;
-        }
-        $query .= ' ORDER BY occurred_at DESC LIMIT 50';
-        $result = $this->getDb()->fetchAll($query, $params);
-
-        return $this->hydrateMany($result);
-    }
-
-    /**
-     * @param DateTimeImmutable|null $startDate
-     * @param DateTimeImmutable|null $endDate
-     * @param string|null $type
-     * @return array
-     */
-    private function buildConditions(?DateTimeImmutable $startDate = null, ?DateTimeImmutable $endDate = null, ?string $type = null): array
-    {
-        $conditions = [];
-        $parameters = [];
-        if ($startDate !== null) {
-            $conditions[] = "occurred_at >= ?";
-            $parameters[] = $startDate->format(self::MYSQL_DATE_FORMAT);
-        }
-        if ($endDate !== null) {
-            $conditions[] = "occurred_at <= ?";
-            $parameters[] = $endDate->format(self::MYSQL_DATE_FORMAT);
-        }
-        if ($type !== null) {
-            $conditions[] = "type = ?";
-            $parameters[] = $type;
-        }
-
-        return [
-            implode(' AND ', $conditions),
-            $parameters
-        ];
-    }
-
-    /**
-     * @return string
-     */
-    private function getBaseQuery(): string
-    {
-        return "SELECT * FROM events";
+    public function findMany(
+        iterable    $filters = [],
+        iterable    $sortings = [],
+        ?Pagination $pagination = null
+    ): array {
+        return $this->hydrateMany($this->gateway->fetch(
+            'events',
+            [],
+            $filters,
+            $sortings,
+            $pagination
+        ));
     }
 }

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 
 class BufferedTeamLoader
@@ -12,9 +14,6 @@ class BufferedTeamLoader
 
     /** @var array */
     private $bySeasonId = [];
-
-    /** @var array */
-    private $byUserId = [];
 
     /** @var array */
     private $byTeamId = [];
@@ -36,14 +35,6 @@ class BufferedTeamLoader
     }
 
     /**
-     * @param string $userId
-     */
-    public function addUser(string $userId): void
-    {
-        $this->byUserId[$userId] = null;
-    }
-
-    /**
      * @param string $seasonId
      */
     public function addSeason(string $seasonId): void
@@ -58,23 +49,16 @@ class BufferedTeamLoader
     public function getByTeam(string $teamId): ?array
     {
         $teamIds = array_keys($this->byTeamId, null, true);
-        foreach ($this->teamRepository->findTeamsById($teamIds) as $id => $team) {
-            $this->byTeamId[$id] = $team;
-        }
-        return $this->byTeamId[$teamId] ?? null;
-    }
 
-    /**
-     * @param string $userId
-     * @return array|null
-     */
-    public function getByUser(string $userId): ?array
-    {
-        $userIds = array_keys($this->byUserId, null, true);
-        foreach ($this->teamRepository->findTeamsByUserIds($userIds) as $id => $teams) {
-            $this->byUserId[$id] = $teams;
+        if (count($teamIds)) {
+            $filters = [new EqualityFilter('id', Filter::MODE_INCLUDE, $teamIds)];
+
+            foreach ($this->teamRepository->findMany($filters) as $team) {
+                $this->byTeamId[$team['id']] = $team;
+            }
         }
-        return $this->byUserId[$userId] ?? null;
+
+        return $this->byTeamId[$teamId] ?? null;
     }
 
     /**
@@ -84,9 +68,13 @@ class BufferedTeamLoader
     public function getBySeason(string $seasonId): ?array
     {
         $seasonIds = array_keys($this->bySeasonId, null, true);
-        foreach ($this->teamRepository->findTeamsBySeasonIds($seasonIds) as $id => $teams) {
-            $this->bySeasonId[$id] = $teams;
+
+        if (count($seasonIds)) {
+            foreach ($this->teamRepository->findBySeasonIds($seasonIds) as $seasonId => $teams) {
+                $this->bySeasonId[$seasonId] = $teams;
+            }
         }
+
         return $this->bySeasonId[$seasonId] ?? null;
     }
 }

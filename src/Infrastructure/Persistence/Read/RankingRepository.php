@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
+
 class RankingRepository extends AbstractRepository
 {
     protected function getFieldDefinitions(): array
@@ -40,19 +44,16 @@ class RankingRepository extends AbstractRepository
      */
     public function findRanking(string $seasonId): ?array
     {
-        $ranking = $this->getDb()->fetchFirstRow(
-            "SELECT * FROM rankings WHERE season_id = ?",
-            [$seasonId]
-        );
+        $filters = [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])];
 
-        if (null === $ranking) {
-            return null;
+        foreach ($this->gateway->fetch('rankings', [], $filters) as $ranking) {
+            $ranking['positions'] = $this->findRankingPositions($seasonId);
+            $ranking['penalties'] = $this->findRankingPenalties($seasonId);
+
+            return $this->hydrator->hydrate($ranking);
         }
 
-        $ranking['positions'] = $this->findRankingPositions($seasonId);
-        $ranking['penalties'] = $this->findRankingPenalties($seasonId);
-
-        return $this->hydrateOne($ranking);
+        return null;
     }
 
     /**
@@ -61,10 +62,14 @@ class RankingRepository extends AbstractRepository
      */
     private function findRankingPositions(string $seasonId): array
     {
-        return $this->getDb()->fetchAll(
-            'SELECT * FROM ranking_positions WHERE season_id = ? ORDER BY sort_index ASC',
-            [$seasonId]
+        $result = $this->gateway->fetch(
+            'ranking_positions',
+            [],
+            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])],
+            [new Sorting('sort_index', Sorting::DIRECTION_ASCENDING)]
         );
+
+        return iterator_to_array($result);
     }
 
     /**
@@ -73,13 +78,13 @@ class RankingRepository extends AbstractRepository
      */
     private function findRankingPenalties(string $seasonId): array
     {
-        $query     = <<<SQL
-  SELECT *
-  FROM ranking_penalties
-  WHERE season_id = ?
-  ORDER BY created_at ASC
-SQL;
+        $result = $this->gateway->fetch(
+            'ranking_penalties',
+            [],
+            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])],
+            [new Sorting('created_at', Sorting::DIRECTION_ASCENDING)]
+        );
 
-        return $this->getDb()->fetchAll($query, [$seasonId]);
+        return iterator_to_array($result);
     }
 }

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+
 class TeamRepository extends AbstractRepository
 {
     protected function getFieldDefinitions(): array
@@ -31,122 +34,66 @@ class TeamRepository extends AbstractRepository
     }
 
     /**
+     * @param iterable|Filter[] $filters
      * @return array
      */
-    public function findAllTeams(): array
+    public function findMany(iterable $filters = []): array
     {
-        return $this->hydrateMany($this->getDb()->fetchAll($this->getBaseQuery()));
+        return $this->hydrateMany($this->gateway->fetch(
+            'teams',
+            [],
+            $filters
+        ));
     }
 
     /**
      * @param string $id
      * @return array|null
      */
-    public function findTeamById(string $id): ?array
+    public function findById(string $id): ?array
     {
-        $query = $this->getBaseQuery() . ' WHERE id = ?';
-        $team  = $this->getDb()->fetchFirstRow($query, [$id]);
-
-        if (null === $team) {
-            return null;
-        }
-
-        return $this->hydrateOne($team);
-    }
-
-    /**
-     * @param array $teamIds
-     * @return array
-     */
-    public function findTeamsById(array $teamIds): array
-    {
-        if (empty($teamIds)) {
-            return [];
-        }
-
-        $placeholder = $this->getPlaceholders($teamIds);
-        $query = $this->getBaseQuery() . " WHERE id IN ($placeholder)";
-        $result = [];
-        foreach ($this->getDb()->fetchAll($query, $teamIds) as $row) {
-            $result[$row['id']] = $this->hydrateOne($row);
-        }
-
-        return $result;
+        return $this->hydrateOne($this->gateway->fetch(
+            'teams',
+            [],
+            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
+        ));
     }
 
     /**
      * @param array $seasonIds
      * @return array
      */
-    public function findTeamsBySeasonIds(array $seasonIds): array
+    public function findBySeasonIds(array $seasonIds): array
     {
         if (empty($seasonIds)) {
             return [];
         }
 
-        $placeholder = $this->getPlaceholders($seasonIds);
-        $query = <<<SQL
-  SELECT id, name, created_at, contact_email, contact_first_name, contact_last_name, contact_phone, season_id
-  FROM teams
-    JOIN seasons_teams_link ON id=team_id
-  WHERE season_id IN ($placeholder)
-SQL;
-        $result = [];
-        foreach ($this->getDb()->fetchAll($query, $seasonIds) as $row) {
-            $seasonId = $row['season_id'];
-            unset($row['season_id']);
-            $result[$seasonId][] = $this->hydrateOne($row);
-        }
+        $result = $this->gateway->fetch(
+            'teams',
+            ['seasons_teams_link' => ['id = team_id']],
+            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds)]
+        );
 
-        return $result;
-    }
-
-    /**
-     * @param string $userId
-     * @return array
-     */
-    public function findTeamsByUserId(string $userId): array
-    {
-        $query = $this->getBaseQuery() . ' JOIN users_teams_link ON id = team_id WHERE user_id = ?';
-
-        return $this->hydrateMany($this->getDb()->fetchAll($query, [$userId]));
+        return $this->hydrateMany($result, 'season_id');
     }
 
     /**
      * @param array $userIds
      * @return array
      */
-    public function findTeamsByUserIds(array $userIds): array
+    public function findByUserIds(array $userIds): array
     {
         if (empty($userIds)) {
             return [];
         }
 
-        $placeholder = $this->getPlaceholders($userIds);
-        $query = <<<SQL
-  SELECT id, name, created_at, contact_email, contact_first_name, contact_last_name, contact_phone, user_id
-  FROM teams
-    JOIN users_teams_link ON id=team_id
-  WHERE user_id IN ($placeholder)
-SQL;
-        $result = [];
-        foreach ($this->getDb()->fetchAll($query, $userIds) as $row) {
-            $userId = $row['user_id'];
-            unset($row['user_id']);
-            $result[$userId][] = $this->hydrateOne($row);
-        }
+        $result = $this->gateway->fetch(
+            'teams',
+            ['users_teams_link' => ['id = team_id']],
+            [new EqualityFilter('user_id', Filter::MODE_INCLUDE, $userIds)]
+        );
 
-        return $result;
-    }
-
-    /**
-     * @return string
-     */
-    private function getBaseQuery(): string
-    {
-        $query = <<<SQL
-  SELECT id, name, created_at, contact_email, contact_first_name, contact_last_name, contact_phone FROM teams
-SQL;
-        return $query;
+        return $this->hydrateMany($result, 'user_id');
     }
 }

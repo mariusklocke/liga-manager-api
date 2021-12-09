@@ -4,6 +4,11 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\RangeFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
 use HexagonalPlayground\Infrastructure\Persistence\Read\EventRepository;
 
 class EventType extends ObjectType implements QueryTypeInterface
@@ -42,7 +47,7 @@ class EventType extends ObjectType implements QueryTypeInterface
                     /** @var EventRepository $repo */
                     $repo = $context->getContainer()->get(EventRepository::class);
 
-                    return $repo->findEventById($args['id']);
+                    return $repo->findById($args['id']);
                 }
             ],
             'latestEvents' => [
@@ -56,10 +61,30 @@ class EventType extends ObjectType implements QueryTypeInterface
                     /** @var EventRepository $repo */
                     $repo = $context->getContainer()->get(EventRepository::class);
 
-                    return $repo->findLatestEvents(
-                        $args['start_date'] ?? null,
-                        $args['end_date'] ?? null,
-                        $args['type'] ?? null);
+                    $filters = [];
+
+                    if (isset($args['start_date']) || isset($args['end_date'])) {
+                        $filters[] = new RangeFilter(
+                            'occurred_at',
+                            Filter::MODE_INCLUDE,
+                            $args['start_date'] ?? null,
+                            $args['end_date'] ?? null
+                        );
+                    }
+
+                    if (isset($args['type'])) {
+                        $filters[] = new EqualityFilter(
+                            'type',
+                            Filter::MODE_INCLUDE,
+                            [$args['type']]
+                        );
+                    }
+
+                    return $repo->findMany(
+                        $filters,
+                        [new Sorting('occurred_at', Sorting::DIRECTION_DESCENDING)],
+                        new Pagination(50, 0)
+                    );
                 }
             ]
         ];

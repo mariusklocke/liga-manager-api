@@ -43,7 +43,7 @@ class TeamType extends ObjectType implements QueryTypeInterface
                     /** @var TeamRepository $repo */
                     $repo = $context->getContainer()->get(TeamRepository::class);
 
-                    return $repo->findAllTeams();
+                    return $repo->findMany();
                 }
             ],
             'team' => [
@@ -55,7 +55,7 @@ class TeamType extends ObjectType implements QueryTypeInterface
                     /** @var TeamRepository $repo */
                     $repo = $context->getContainer()->get(TeamRepository::class);
 
-                    return $repo->findTeamById($args['id']);
+                    return $repo->findById($args['id']);
                 }
             ]
         ];

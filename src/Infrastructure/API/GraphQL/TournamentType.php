@@ -52,7 +52,7 @@ class TournamentType extends ObjectType implements QueryTypeInterface
                     /** @var TournamentRepository $repo */
                     $repo = $context->getContainer()->get(TournamentRepository::class);
 
-                    return $repo->findTournamentById($args['id']);
+                    return $repo->findById($args['id']);
                 }
             ],
             'allTournaments' => [
@@ -61,7 +61,7 @@ class TournamentType extends ObjectType implements QueryTypeInterface
                     /** @var TournamentRepository $repo */
                     $repo = $context->getContainer()->get(TournamentRepository::class);
 
-                    return $repo->findAllTournaments();
+                    return $repo->findMany();
                 }
             ]
         ];

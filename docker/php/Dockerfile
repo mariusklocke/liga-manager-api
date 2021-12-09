@@ -3,7 +3,7 @@ FROM php:8.0-fpm-alpine3.13
 # git: required by php-coveralls.phar
 ENV RUN_DEPS="gmp ncurses gnupg git" \
     BUILD_DEPS="${PHPIZE_DEPS} gmp-dev" \
-    PHP_EXTS="bcmath gmp mysqli pcntl pdo_mysql opcache"
+    PHP_EXTS="bcmath gmp pcntl pdo_mysql opcache"
 
 # Install packages & PHP extensions
 RUN set -xe \

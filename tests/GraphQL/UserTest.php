@@ -30,6 +30,18 @@ class UserTest extends TestCase
 
         $users = $this->client->getAllUsers();
 
+        $requiredAttributes = ['id', 'email', 'first_name', 'last_name', 'role'];
+        $sensitiveAttributes = ['password'];
+
+        foreach ($users as $user) {
+            foreach ($requiredAttributes as $requiredAttribute) {
+                self::assertObjectHasAttribute($requiredAttribute, $user);
+            }
+            foreach ($sensitiveAttributes as $sensitiveAttribute) {
+                self::assertObjectNotHasAttribute($sensitiveAttribute, $user);
+            }
+        }
+
         self::assertNotEmpty($users);
     }
 

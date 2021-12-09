@@ -2,6 +2,8 @@
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 
 class BufferedPitchLoader
@@ -29,8 +31,12 @@ class BufferedPitchLoader
     {
         $pitchIds = array_keys($this->byPitchId, null, true);
 
-        foreach ($this->pitchRepository->findPitchesById($pitchIds) as $id => $pitch) {
-            $this->byPitchId[$id] = $pitch;
+        if (count($pitchIds)) {
+            $filters = [new EqualityFilter('id', Filter::MODE_INCLUDE, $pitchIds)];
+
+            foreach ($this->pitchRepository->findMany($filters) as $pitch) {
+                $this->byPitchId[$pitch['id']] = $pitch;
+            }
         }
 
         return $this->byPitchId[$pitchId] ?? null;

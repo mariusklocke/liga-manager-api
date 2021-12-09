@@ -31,7 +31,7 @@ class UserType extends ObjectType implements QueryTypeInterface
                             /** @var TeamRepository $repo */
                             $repo = $context->getContainer()->get(TeamRepository::class);
 
-                            return $repo->findTeamsByUserId($root['id']);
+                            return $repo->findByUserIds([$root['id']]);
                         }
                     ],
                     'role' => [
@@ -68,7 +68,7 @@ class UserType extends ObjectType implements QueryTypeInterface
                     $user = (new AuthReader())->requireAuthContext($context->getRequest())->getUser();
                     (new IsAdmin($user))->check();
 
-                    return $repo->findAllUsers();
+                    return $repo->findMany();
                 }
             ]
         ];

@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+
 class TournamentRepository extends AbstractRepository
 {
     protected function getFieldDefinitions(): array
@@ -15,21 +18,28 @@ class TournamentRepository extends AbstractRepository
     }
 
     /**
+     * @param iterable|Filter[] $filters
      * @return array
      */
-    public function findAllTournaments() : array
+    public function findMany(iterable $filters = []) : array
     {
-        return $this->hydrateMany($this->getDb()->fetchAll('SELECT * FROM tournaments'));
+        return $this->hydrateMany($this->gateway->fetch(
+            'tournaments',
+            [],
+            $filters
+        ));
     }
 
     /**
      * @param string $id
      * @return array|null
      */
-    public function findTournamentById(string $id): ?array
+    public function findById(string $id): ?array
     {
-        $row = $this->getDb()->fetchFirstRow('SELECT * FROM tournaments WHERE id = ?', [$id]);
-
-        return $row !== null ? $this->hydrateOne($row) : null;
+        return $this->hydrateOne($this->gateway->fetch(
+            'tournaments',
+            [],
+            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
+        ));
     }
 }

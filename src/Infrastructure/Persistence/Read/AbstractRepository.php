@@ -3,69 +3,57 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use Iterator;
+
 class AbstractRepository
 {
     const MYSQL_DATE_FORMAT = 'Y-m-d H:i:s';
 
-    /** @var ReadDbAdapterInterface */
-    private $db;
+    /** @var ReadDbGatewayInterface */
+    protected $gateway;
 
     /** @var Hydrator */
-    private $hydrator;
+    protected $hydrator;
 
-    public function __construct(ReadDbAdapterInterface $readDbAdapter)
+    public function __construct(ReadDbGatewayInterface $gateway)
     {
-        $this->db = $readDbAdapter;
+        $this->gateway = $gateway;
         $this->hydrator = new Hydrator($this->getFieldDefinitions());
     }
 
     /**
-     * @return ReadDbAdapterInterface
+     * @param Iterator $iterator
+     * @return array|null
      */
-    protected function getDb(): ReadDbAdapterInterface
+    protected function hydrateOne(Iterator $iterator): ?array
     {
-        return $this->db;
+        foreach ($iterator as $row) {
+            return $this->hydrator->hydrate($row);
+        }
+
+        return null;
     }
 
     /**
-     * @param array $row
-     * @return array
-     */
-    protected function hydrateOne(array $row): array
-    {
-        return $this->hydrator->hydrate($row);
-    }
-
-    /**
-     * @param array $rows
+     * @param Iterator $iterator
      * @param string|null $groupBy
      * @return array
      */
-    protected function hydrateMany(array $rows, ?string $groupBy = null): array
+    protected function hydrateMany(Iterator $iterator, ?string $groupBy = null): array
     {
         $result = [];
 
-        foreach ($rows as $row) {
-            $row = $this->hydrateOne($row);
+        foreach ($iterator as $row) {
+            $row = $this->hydrator->hydrate($row);
 
             if ($groupBy !== null) {
                 $result[$row[$groupBy]][] = $row;
-                continue;
+            } else {
+                $result[] = $row;
             }
-
-            $result[] = $row;
         }
 
         return $result;
-    }
-
-    /**
-     * @param array $params
-     * @return string
-     */
-    protected function getPlaceholders(array $params): string
-    {
-        return implode(',', array_fill(0, count($params), '?'));
     }
 
     /**

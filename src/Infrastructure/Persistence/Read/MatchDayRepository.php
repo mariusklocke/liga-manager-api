@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+
 class MatchDayRepository extends AbstractRepository
 {
     protected function getFieldDefinitions(): array
@@ -27,16 +30,13 @@ class MatchDayRepository extends AbstractRepository
             return [];
         }
 
-        $placeholders = $this->getPlaceholders($seasonIds);
+        $result = $this->gateway->fetch(
+            'match_days',
+            [],
+            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds)]
+        );
 
-        $query = <<<SQL
-  SELECT *
-  FROM match_days
-  WHERE season_id IN ($placeholders)
-  ORDER BY number ASC
-SQL;
-
-        return $this->hydrateMany($this->getDb()->fetchAll($query, $seasonIds), 'season_id');
+        return $this->hydrateMany($result, 'season_id');
     }
 
     /**
@@ -49,15 +49,12 @@ SQL;
             return [];
         }
 
-        $placeholders = $this->getPlaceholders($tournamentIds);
+        $result = $this->gateway->fetch(
+            'match_days',
+            [],
+            [new EqualityFilter('tournament_id', Filter::MODE_INCLUDE, $tournamentIds)]
+        );
 
-        $query = <<<SQL
-  SELECT *
-  FROM match_days
-  WHERE tournament_id IN ($placeholders)
-  ORDER BY number ASC
-SQL;
-
-        return $this->hydrateMany($this->getDb()->fetchAll($query, $tournamentIds), 'tournament_id');
+        return $this->hydrateMany($result, 'tournament_id');
     }
 }

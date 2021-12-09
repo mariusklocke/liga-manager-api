@@ -5,32 +5,16 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
-use mysqli;
 
 class ReadRepositoryProvider implements ServiceProviderInterface
 {
     public function getDefinitions(): array
     {
         return [
-            mysqli::class => DI\create()
-                ->constructor(
-                    DI\env('MYSQL_HOST'),
-                    DI\env('MYSQL_USER'),
-                    DI\env('MYSQL_PASSWORD'),
-                    DI\env('MYSQL_DATABASE'),
-                    null,
-                    null
-                )
-                ->method('set_charset', 'utf8'),
+            DbalGateway::class => DI\autowire(),
 
-            HealthCheckInterface::class => DI\add(DI\get(MysqliHealthCheck::class)),
-
-            MysqliReadDbAdapter::class => DI\autowire()
-                ->method('setLogger', DI\get(QueryLogger::class)),
-
-            ReadDbAdapterInterface::class => DI\get(MysqliReadDbAdapter::class),
+            ReadDbGatewayInterface::class => DI\get(DbalGateway::class),
 
             QueryLogger::class => DI\autowire(),
 

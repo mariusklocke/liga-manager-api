@@ -85,7 +85,7 @@ class SeasonType extends ObjectType implements QueryTypeInterface
                     /** @var SeasonRepository $repo */
                     $repo = $context->getContainer()->get(SeasonRepository::class);
 
-                    return $repo->findSeasonById($args['id']);
+                    return $repo->findById($args['id']);
                 }
             ],
             'allSeasons' => [
@@ -95,7 +95,7 @@ class SeasonType extends ObjectType implements QueryTypeInterface
                     /** @var SeasonRepository $repo */
                     $repo = $context->getContainer()->get(SeasonRepository::class);
 
-                    return $repo->findAllSeasons();
+                    return $repo->findMany();
                 }
             ]
         ];

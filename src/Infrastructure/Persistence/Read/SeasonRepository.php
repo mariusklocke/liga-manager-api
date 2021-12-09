@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+
 class SeasonRepository extends AbstractRepository
 {
     protected function getFieldDefinitions(): array
@@ -17,21 +20,28 @@ class SeasonRepository extends AbstractRepository
     }
 
     /**
+     * @param iterable|Filter[] $filters
      * @return array
      */
-    public function findAllSeasons(): array
+    public function findMany(iterable $filters = []): array
     {
-        return $this->hydrateMany($this->getDb()->fetchAll('SELECT * FROM `seasons`'));
+        return $this->hydrateMany($this->gateway->fetch(
+            'seasons',
+            [],
+            $filters
+        ));
     }
 
     /**
      * @param string $id
      * @return array|null
      */
-    public function findSeasonById(string $id): ?array
+    public function findById(string $id): ?array
     {
-        $season = $this->getDb()->fetchFirstRow('SELECT * FROM `seasons` WHERE `id` = ?', [$id]);
-
-        return $season !== null ? $this->hydrateOne($season) : null;
+        return $this->hydrateOne($this->gateway->fetch(
+            'seasons',
+            [],
+            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
+        ));
     }
 }
