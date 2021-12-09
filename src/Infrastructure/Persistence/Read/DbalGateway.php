@@ -120,14 +120,6 @@ class DbalGateway implements ReadDbGatewayInterface
      */
     private function applyRangeFilter(QueryBuilder $query, RangeFilter $filter): void
     {
-        if ($filter->getMinValue() === null && $filter->getMaxValue() === null) {
-            $this->logger->warning('Ignoring empty RangeFilter', [
-                'field' => $filter->getField()
-            ]);
-
-            return;
-        }
-
         if ($filter->getMinValue() === $filter->getMaxValue()) {
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '=' : '<>';
             $paramId = $this->bindParameter($query, $filter->getMinValue());
@@ -154,14 +146,6 @@ class DbalGateway implements ReadDbGatewayInterface
      */
     private function applyEqualityFilter(QueryBuilder $query, EqualityFilter $filter): void
     {
-        if (count($filter->getValues()) === 0) {
-            $this->logger->warning('Ignoring empty EqualityFilter', [
-                'field' => $filter->getField()
-            ]);
-
-            return;
-        }
-
         // Use equals-operator if only one value
         if (count($filter->getValues()) === 1) {
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '=' : '<>';
