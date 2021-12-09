@@ -23,7 +23,7 @@ class TournamentRepository extends AbstractRepository
      */
     public function findMany(iterable $filters = []) : array
     {
-        return $this->hydrateMany($this->gateway->fetch(
+        return $this->hydrator->hydrateMany($this->gateway->fetch(
             'tournaments',
             [],
             $filters
@@ -36,7 +36,7 @@ class TournamentRepository extends AbstractRepository
      */
     public function findById(string $id): ?array
     {
-        return $this->hydrateOne($this->gateway->fetch(
+        return $this->hydrator->hydrateOne($this->gateway->fetch(
             'tournaments',
             [],
             [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]

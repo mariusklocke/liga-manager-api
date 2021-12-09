@@ -39,7 +39,7 @@ class TeamRepository extends AbstractRepository
      */
     public function findMany(iterable $filters = []): array
     {
-        return $this->hydrateMany($this->gateway->fetch(
+        return $this->hydrator->hydrateMany($this->gateway->fetch(
             'teams',
             [],
             $filters
@@ -52,7 +52,7 @@ class TeamRepository extends AbstractRepository
      */
     public function findById(string $id): ?array
     {
-        return $this->hydrateOne($this->gateway->fetch(
+        return $this->hydrator->hydrateOne($this->gateway->fetch(
             'teams',
             [],
             [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
@@ -75,7 +75,7 @@ class TeamRepository extends AbstractRepository
             [new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds)]
         );
 
-        return $this->hydrateMany($result, 'season_id');
+        return $this->hydrator->hydrateMany($result, 'season_id');
     }
 
     /**
@@ -94,6 +94,6 @@ class TeamRepository extends AbstractRepository
             [new EqualityFilter('user_id', Filter::MODE_INCLUDE, $userIds)]
         );
 
-        return $this->hydrateMany($result, 'user_id');
+        return $this->hydrator->hydrateMany($result, 'user_id');
     }
 }

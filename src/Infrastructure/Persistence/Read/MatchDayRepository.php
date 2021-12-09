@@ -36,7 +36,7 @@ class MatchDayRepository extends AbstractRepository
             [new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds)]
         );
 
-        return $this->hydrateMany($result, 'season_id');
+        return $this->hydrator->hydrateMany($result, 'season_id');
     }
 
     /**
@@ -55,6 +55,6 @@ class MatchDayRepository extends AbstractRepository
             [new EqualityFilter('tournament_id', Filter::MODE_INCLUDE, $tournamentIds)]
         );
 
-        return $this->hydrateMany($result, 'tournament_id');
+        return $this->hydrator->hydrateMany($result, 'tournament_id');
     }
 }

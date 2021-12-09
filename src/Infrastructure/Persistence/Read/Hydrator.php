@@ -36,12 +36,47 @@ class Hydrator
     }
 
     /**
+     * @param iterable|array[] $rows
+     * @return array|null
+     */
+    public function hydrateOne(iterable $rows): ?array
+    {
+        foreach ($rows as $row) {
+            return $this->hydrate($row);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param iterable|array[] $rows
+     * @param string|null $groupBy
+     * @return array
+     */
+    public function hydrateMany(iterable $rows, ?string $groupBy = null): array
+    {
+        $result = [];
+
+        foreach ($rows as $row) {
+            $row = $this->hydrate($row);
+
+            if ($groupBy !== null) {
+                $result[$row[$groupBy]][] = $row;
+            } else {
+                $result[] = $row;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Converts a database row to API-compatible format
      *
      * @param array $row
      * @return array
      */
-    public function hydrate(array $row): array
+    private function hydrate(array $row): array
     {
         $result = [];
 
@@ -53,7 +88,7 @@ class Hydrator
 
             if (is_array($fieldType)) {
                 $subHydrator = new static($fieldType);
-                $result[$fieldName] = array_map([$subHydrator, 'hydrate'], $row[$fieldName]);
+                $result[$fieldName] = $subHydrator->hydrateMany($row[$fieldName]);
                 break;
             }
 

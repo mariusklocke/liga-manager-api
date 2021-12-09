@@ -25,7 +25,7 @@ class UserRepository extends AbstractRepository
      */
     public function findMany(iterable $filters = []): array
     {
-        return $this->hydrateMany($this->gateway->fetch(
+        return $this->hydrator->hydrateMany($this->gateway->fetch(
             'users',
             [],
             $filters

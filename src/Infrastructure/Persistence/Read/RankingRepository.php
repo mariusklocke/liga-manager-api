@@ -50,7 +50,7 @@ class RankingRepository extends AbstractRepository
             $ranking['positions'] = $this->findRankingPositions($seasonId);
             $ranking['penalties'] = $this->findRankingPenalties($seasonId);
 
-            return $this->hydrator->hydrate($ranking);
+            return $this->hydrator->hydrateOne([$ranking]);
         }
 
         return null;

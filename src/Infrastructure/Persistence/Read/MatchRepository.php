@@ -32,7 +32,7 @@ class MatchRepository extends AbstractRepository
      */
     public function findById(string $matchId): ?array
     {
-        return $this->hydrateOne($this->gateway->fetch(
+        return $this->hydrator->hydrateOne($this->gateway->fetch(
             'matches',
             [],
             [new EqualityFilter('id', Filter::MODE_INCLUDE, [$matchId])]
@@ -47,7 +47,7 @@ class MatchRepository extends AbstractRepository
      */
     public function findMany(iterable $filters = [], iterable $sortings = [], ?Pagination $pagination = null): array
     {
-        return $this->hydrateMany($this->gateway->fetch(
+        return $this->hydrator->hydrateMany($this->gateway->fetch(
             'matches',
             [],
             $filters,
