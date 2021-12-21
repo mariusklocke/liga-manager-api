@@ -8,42 +8,24 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 
 class TeamRepository extends AbstractRepository
 {
+    protected function getTableName(): string
+    {
+        return 'teams';
+    }
+
     protected function getFieldDefinitions(): array
     {
         return [
             'id' => Hydrator::TYPE_STRING,
             'name' => Hydrator::TYPE_STRING,
             'created_at' => Hydrator::TYPE_DATETIME,
-            'contact' => function (array $row): ?array {
-                $contact = [
-                    'email' => $row['contact_email'],
-                    'first_name' => $row['contact_first_name'],
-                    'last_name' => $row['contact_last_name'],
-                    'phone' => $row['contact_phone']
-                ];
-
-                foreach ($contact as $value) {
-                    if ($value !== null) {
-                        return $contact;
-                    }
-                }
-
-                return null;
-            }
+            'contact' => [
+                'email' => Hydrator::TYPE_STRING,
+                'first_name' => Hydrator::TYPE_STRING,
+                'last_name' => Hydrator::TYPE_STRING,
+                'phone' => Hydrator::TYPE_STRING
+            ]
         ];
-    }
-
-    /**
-     * @param iterable|Filter[] $filters
-     * @return array
-     */
-    public function findMany(iterable $filters = []): array
-    {
-        return $this->hydrator->hydrateMany($this->gateway->fetch(
-            'teams',
-            [],
-            $filters
-        ));
     }
 
     /**
@@ -53,7 +35,7 @@ class TeamRepository extends AbstractRepository
     public function findById(string $id): ?array
     {
         return $this->hydrator->hydrateOne($this->gateway->fetch(
-            'teams',
+            $this->getTableName(),
             [],
             [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
         ));
@@ -65,12 +47,8 @@ class TeamRepository extends AbstractRepository
      */
     public function findBySeasonIds(array $seasonIds): array
     {
-        if (empty($seasonIds)) {
-            return [];
-        }
-
         $result = $this->gateway->fetch(
-            'teams',
+            $this->getTableName(),
             ['seasons_teams_link' => ['id = team_id']],
             [new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds)]
         );
@@ -84,12 +62,8 @@ class TeamRepository extends AbstractRepository
      */
     public function findByUserIds(array $userIds): array
     {
-        if (empty($userIds)) {
-            return [];
-        }
-
         $result = $this->gateway->fetch(
-            'teams',
+            $this->getTableName(),
             ['users_teams_link' => ['id = team_id']],
             [new EqualityFilter('user_id', Filter::MODE_INCLUDE, $userIds)]
         );

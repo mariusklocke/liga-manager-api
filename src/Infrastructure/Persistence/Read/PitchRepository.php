@@ -8,6 +8,11 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 
 class PitchRepository extends AbstractRepository
 {
+    protected function getTableName(): string
+    {
+        return 'pitches';
+    }
+
     protected function getFieldDefinitions(): array
     {
         return [
@@ -15,36 +20,13 @@ class PitchRepository extends AbstractRepository
             'label' => Hydrator::TYPE_STRING,
             'location_longitude' => Hydrator::TYPE_FLOAT,
             'location_latitude' => Hydrator::TYPE_FLOAT,
-            'contact' => function (array $row): ?array {
-                $contact = [
-                    'email' => $row['contact_email'],
-                    'first_name' => $row['contact_first_name'],
-                    'last_name' => $row['contact_last_name'],
-                    'phone' => $row['contact_phone']
-                ];
-
-                foreach ($contact as $value) {
-                    if ($value !== null) {
-                        return $contact;
-                    }
-                }
-
-                return null;
-            }
+            'contact' => [
+                'email' => Hydrator::TYPE_STRING,
+                'first_name' => Hydrator::TYPE_STRING,
+                'last_name' => Hydrator::TYPE_STRING,
+                'phone' => Hydrator::TYPE_STRING
+            ]
         ];
-    }
-
-    /**
-     * @param iterable|Filter[] $filters
-     * @return array
-     */
-    public function findMany(iterable $filters = []): array
-    {
-        return $this->hydrator->hydrateMany($this->gateway->fetch(
-            'pitches',
-            [],
-            $filters
-        ));
     }
 
     /**
@@ -54,7 +36,7 @@ class PitchRepository extends AbstractRepository
     public function findById(string $id): ?array
     {
         return $this->hydrator->hydrateOne($this->gateway->fetch(
-            'pitches',
+            $this->getTableName(),
             [],
             [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
         ));

@@ -18,6 +18,9 @@ class BufferedTeamLoader
     /** @var array */
     private $byTeamId = [];
 
+    /** @var array */
+    private $byUserId = [];
+
     /**
      * @param TeamRepository $teamRepository
      */
@@ -40,6 +43,14 @@ class BufferedTeamLoader
     public function addSeason(string $seasonId): void
     {
         $this->bySeasonId[$seasonId] = null;
+    }
+
+    /**
+     * @param string $userId
+     */
+    public function addUser(string $userId): void
+    {
+        $this->byUserId[$userId] = null;
     }
 
     /**
@@ -76,5 +87,22 @@ class BufferedTeamLoader
         }
 
         return $this->bySeasonId[$seasonId] ?? null;
+    }
+
+    /**
+     * @param string $userId
+     * @return array|null
+     */
+    public function getByUser(string $userId): ?array
+    {
+        $userIds = array_keys($this->byUserId, null, true);
+
+        if (count($userIds)) {
+            foreach ($this->teamRepository->findByUserIds($userIds) as $userId => $teams) {
+                $this->byUserId[$userId] = $teams;
+            }
+        }
+
+        return $this->byUserId[$userId] ?? null;
     }
 }

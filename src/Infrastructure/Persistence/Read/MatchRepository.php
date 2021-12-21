@@ -5,11 +5,14 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
-use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
-use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
 
 class MatchRepository extends AbstractRepository
 {
+    protected function getTableName(): string
+    {
+        return 'matches';
+    }
+
     protected function getFieldDefinitions(): array
     {
         return [
@@ -33,26 +36,9 @@ class MatchRepository extends AbstractRepository
     public function findById(string $matchId): ?array
     {
         return $this->hydrator->hydrateOne($this->gateway->fetch(
-            'matches',
+            $this->getTableName(),
             [],
             [new EqualityFilter('id', Filter::MODE_INCLUDE, [$matchId])]
-        ));
-    }
-
-    /**
-     * @param iterable|Filter[] $filters
-     * @param iterable|Sorting[] $sortings
-     * @param Pagination|null $pagination
-     * @return array
-     */
-    public function findMany(iterable $filters = [], iterable $sortings = [], ?Pagination $pagination = null): array
-    {
-        return $this->hydrator->hydrateMany($this->gateway->fetch(
-            'matches',
-            [],
-            $filters,
-            $sortings,
-            $pagination
         ));
     }
 }

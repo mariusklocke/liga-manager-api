@@ -3,11 +3,12 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
+use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Permission\IsAdmin;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
-use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\UserRepository;
 
 class UserType extends ObjectType implements QueryTypeInterface
@@ -28,10 +29,13 @@ class UserType extends ObjectType implements QueryTypeInterface
                     'teams' => [
                         'type' => Type::listOf(TeamType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {
-                            /** @var TeamRepository $repo */
-                            $repo = $context->getContainer()->get(TeamRepository::class);
+                            /** @var BufferedTeamLoader $loader */
+                            $loader = $context->getContainer()->get(BufferedTeamLoader::class);
+                            $loader->addUser($root['id']);
 
-                            return $repo->findByUserIds([$root['id']]);
+                            return new Deferred(function () use ($loader, $root) {
+                                return $loader->getByUser($root['id']);
+                            });
                         }
                     ],
                     'role' => [

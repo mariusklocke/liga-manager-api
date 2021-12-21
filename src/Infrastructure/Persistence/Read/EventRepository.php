@@ -5,10 +5,14 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
-use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 
 class EventRepository extends AbstractRepository
 {
+    protected function getTableName(): string
+    {
+        return 'events';
+    }
+
     protected function getFieldDefinitions(): array
     {
         return [
@@ -26,29 +30,9 @@ class EventRepository extends AbstractRepository
     public function findById(string $id): ?array
     {
         return $this->hydrator->hydrateOne($this->gateway->fetch(
-            'events',
+            $this->getTableName(),
             [],
             [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
-        ));
-    }
-
-    /**
-     * @param iterable|array $filters
-     * @param iterable|array $sortings
-     * @param Pagination|null $pagination
-     * @return array
-     */
-    public function findMany(
-        iterable    $filters = [],
-        iterable    $sortings = [],
-        ?Pagination $pagination = null
-    ): array {
-        return $this->hydrator->hydrateMany($this->gateway->fetch(
-            'events',
-            [],
-            $filters,
-            $sortings,
-            $pagination
         ));
     }
 }

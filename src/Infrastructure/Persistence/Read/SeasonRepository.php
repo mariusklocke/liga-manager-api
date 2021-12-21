@@ -8,6 +8,11 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 
 class SeasonRepository extends AbstractRepository
 {
+    protected function getTableName(): string
+    {
+        return 'seasons';
+    }
+
     protected function getFieldDefinitions(): array
     {
         return [
@@ -20,26 +25,13 @@ class SeasonRepository extends AbstractRepository
     }
 
     /**
-     * @param iterable|Filter[] $filters
-     * @return array
-     */
-    public function findMany(iterable $filters = []): array
-    {
-        return $this->hydrator->hydrateMany($this->gateway->fetch(
-            'seasons',
-            [],
-            $filters
-        ));
-    }
-
-    /**
      * @param string $id
      * @return array|null
      */
     public function findById(string $id): ?array
     {
         return $this->hydrator->hydrateOne($this->gateway->fetch(
-            'seasons',
+            $this->getTableName(),
             [],
             [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
         ));

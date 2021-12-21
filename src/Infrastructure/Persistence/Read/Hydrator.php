@@ -12,7 +12,7 @@ class Hydrator
     public const TYPE_STRING = 'string';
     public const TYPE_INT = 'int';
     public const TYPE_FLOAT = 'float';
-    public const TYPE_DATETIME = 'dateTime';
+    public const TYPE_DATETIME = DateTimeImmutable::class;
     public const TYPE_SERIALIZED_ARRAY = 'serializedArray';
 
     /** @var array */
@@ -81,14 +81,21 @@ class Hydrator
         $result = [];
 
         foreach ($this->fields as $fieldName => $fieldType) {
-            if (is_callable($fieldType)) {
-                $result[$fieldName] = $fieldType($row);
-                break;
-            }
-
             if (is_array($fieldType)) {
-                $subHydrator = new static($fieldType);
-                $result[$fieldName] = $subHydrator->hydrateMany($row[$fieldName]);
+                $embedded = [];
+
+                foreach ($row as $innerField => $innerValue) {
+                    if ($innerValue === null) {
+                        continue;
+                    }
+
+                    if (str_starts_with($innerField, $fieldName)) {
+                        $subField = str_replace($fieldName . '_', '', $innerField);
+                        $embedded[$subField] = $innerValue;
+                    }
+                }
+
+                $result[$fieldName] = count($embedded) ? (new static($fieldType))->hydrate($embedded) : null;
                 break;
             }
 

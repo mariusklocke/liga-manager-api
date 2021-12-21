@@ -41,4 +41,43 @@ class RangeFilter extends Filter
     {
         return $this->maxValue;
     }
+
+    public function validate(array $fieldDefinitions): void
+    {
+        parent::validate($fieldDefinitions);
+
+        // TODO: Use proper type definitions
+        $requiredType = $fieldDefinitions[$this->field];
+
+        $minValueType = strtolower(gettype($this->minValue));
+        $maxValueType = strtolower(gettype($this->maxValue));
+
+        if (class_exists($requiredType)) {
+            Assert::true($this->minValue === null || $this->minValue instanceof $requiredType, sprintf(
+                'Invalid RangeFilter minValue. Got type %s, but expected instance of %s',
+                is_object($this->minValue) ? get_class($this->minValue) : $minValueType,
+                $requiredType
+            ));
+
+            Assert::true($this->maxValue === null || $this->maxValue instanceof $requiredType, sprintf(
+                'Invalid RangeFilter maxValue. Got type %s, but expected instance of %s',
+                is_object($this->maxValue) ? get_class($this->maxValue) : $maxValueType,
+                $requiredType
+            ));
+
+            return;
+        }
+
+        Assert::true($this->minValue === null || $minValueType === $requiredType, sprintf(
+            'Invalid RangeFilter minValue. Got type %s, but expected %s.',
+            $minValueType,
+            $requiredType
+        ));
+
+        Assert::true($this->maxValue === null || $maxValueType === $requiredType, sprintf(
+            'Invalid RangeFilter maxValue. Got type %s, but expected %s.',
+            $maxValueType,
+            $requiredType
+        ));
+    }
 }

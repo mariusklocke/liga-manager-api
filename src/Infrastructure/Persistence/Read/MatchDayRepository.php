@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
-use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
-
 class MatchDayRepository extends AbstractRepository
 {
+    protected function getTableName(): string
+    {
+        return 'match_days';
+    }
+
     protected function getFieldDefinitions(): array
     {
         return [
@@ -18,43 +20,5 @@ class MatchDayRepository extends AbstractRepository
             'start_date' => Hydrator::TYPE_STRING,
             'end_date' => Hydrator::TYPE_STRING
         ];
-    }
-
-    /**
-     * @param array $seasonIds
-     * @return array
-     */
-    public function findBySeasonIds(array $seasonIds): array
-    {
-        if (empty($seasonIds)) {
-            return [];
-        }
-
-        $result = $this->gateway->fetch(
-            'match_days',
-            [],
-            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds)]
-        );
-
-        return $this->hydrator->hydrateMany($result, 'season_id');
-    }
-
-    /**
-     * @param array $tournamentIds
-     * @return array
-     */
-    public function findByTournamentIds(array $tournamentIds): array
-    {
-        if (empty($tournamentIds)) {
-            return [];
-        }
-
-        $result = $this->gateway->fetch(
-            'match_days',
-            [],
-            [new EqualityFilter('tournament_id', Filter::MODE_INCLUDE, $tournamentIds)]
-        );
-
-        return $this->hydrator->hydrateMany($result, 'tournament_id');
     }
 }

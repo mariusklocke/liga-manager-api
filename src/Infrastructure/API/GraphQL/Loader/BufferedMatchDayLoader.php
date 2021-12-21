@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchDayRepository;
 
 class BufferedMatchDayLoader
@@ -49,8 +51,10 @@ class BufferedMatchDayLoader
         $seasonIds = array_keys($this->bySeasonId, null, true);
 
         if (count($seasonIds)) {
-            foreach ($this->matchDayRepository->findBySeasonIds($seasonIds) as $seasonId => $matchDays) {
-                $this->bySeasonId[$seasonId] = $matchDays;
+            $filter = new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds);
+
+            foreach ($this->matchDayRepository->findMany([$filter]) as $matchDay) {
+                $this->bySeasonId[$matchDay['season_id']][] = $matchDay;
             }
         }
 
@@ -66,8 +70,10 @@ class BufferedMatchDayLoader
         $tournamentIds = array_keys($this->byTournamentId, null ,true);
 
         if (count($tournamentIds)) {
-            foreach ($this->matchDayRepository->findByTournamentIds($tournamentIds) as $tournamentId => $matchDays) {
-                $this->byTournamentId[$tournamentId] = $matchDays;
+            $filter = new EqualityFilter('tournament_id', Filter::MODE_INCLUDE, $tournamentIds);
+
+            foreach ($this->matchDayRepository->findMany([$filter]) as $matchDay) {
+                $this->byTournamentId[$matchDay['tournament_id']][] = $matchDay;
             }
         }
 

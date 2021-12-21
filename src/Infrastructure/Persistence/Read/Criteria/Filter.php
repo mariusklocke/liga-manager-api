@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Criteria;
 
+use HexagonalPlayground\Domain\Util\Assert;
+
 abstract class Filter
 {
     public const MODE_INCLUDE = 'include';
@@ -28,5 +30,10 @@ abstract class Filter
     public function getMode(): string
     {
         return $this->mode;
+    }
+
+    public function validate(array $fieldDefinitions): void
+    {
+        Assert::true(isset($fieldDefinitions[$this->getField()]), 'Invalid EqualityFilter: Unknown field.');
     }
 }
