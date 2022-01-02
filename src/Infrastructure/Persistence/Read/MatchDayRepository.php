@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
+
 class MatchDayRepository extends AbstractRepository
 {
     protected function getTableName(): string
@@ -13,12 +17,12 @@ class MatchDayRepository extends AbstractRepository
     protected function getFieldDefinitions(): array
     {
         return [
-            'id' => Hydrator::TYPE_STRING,
-            'season_id' => Hydrator::TYPE_STRING,
-            'tournament_id' => Hydrator::TYPE_STRING,
-            'number' => Hydrator::TYPE_INT,
-            'start_date' => Hydrator::TYPE_STRING,
-            'end_date' => Hydrator::TYPE_STRING
+            new StringField('id', false),
+            new StringField('season_id', false),
+            new StringField('tournament_id', false),
+            new IntegerField('number', false),
+            new DateTimeField('start_date', false),
+            new DateTimeField('end_date', false)
         ];
     }
 }

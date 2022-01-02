@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\SerializedArrayField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class EventRepository extends AbstractRepository
 {
@@ -16,10 +18,10 @@ class EventRepository extends AbstractRepository
     protected function getFieldDefinitions(): array
     {
         return [
-            'id' => Hydrator::TYPE_STRING,
-            'occurred_at' => Hydrator::TYPE_STRING,
-            'payload' => Hydrator::TYPE_SERIALIZED_ARRAY,
-            'type' => Hydrator::TYPE_STRING
+            new StringField('id', false),
+            new StringField('occurred_at', false),
+            new SerializedArrayField('payload', false),
+            new StringField('type', false)
         ];
     }
 

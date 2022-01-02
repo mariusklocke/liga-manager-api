@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class TournamentRepository extends AbstractRepository
 {
@@ -16,9 +18,9 @@ class TournamentRepository extends AbstractRepository
     protected function getFieldDefinitions(): array
     {
         return [
-            'id' => Hydrator::TYPE_STRING,
-            'name' => Hydrator::TYPE_STRING,
-            'rounds' => Hydrator::TYPE_INT
+            new StringField('id', false),
+            new StringField('name', false),
+            new IntegerField('rounds', false)
         ];
     }
 

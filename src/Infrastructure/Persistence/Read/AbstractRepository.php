@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 
 abstract class AbstractRepository
 {
@@ -33,7 +34,11 @@ abstract class AbstractRepository
         ?Pagination $pagination = null
     ): array {
         foreach ($filters as $filter) {
-            $filter->validate($this->getFieldDefinitions());
+            $fieldDefinition = current(array_filter($this->getFieldDefinitions(), function (Field $field) use ($filter): bool {
+                return $field->getName() === $filter->getField();
+            }));
+
+            $filter->validate($fieldDefinition);
         }
 
         return $this->hydrator->hydrateMany($this->gateway->fetch(
@@ -46,7 +51,7 @@ abstract class AbstractRepository
     }
 
     /**
-     * @return array
+     * @return array|Field[]
      */
     abstract protected function getFieldDefinitions(): array;
 

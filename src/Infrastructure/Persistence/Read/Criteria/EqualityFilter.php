@@ -3,56 +3,64 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Criteria;
 
-use HexagonalPlayground\Domain\Util\Assert;
+use DateTimeInterface;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class EqualityFilter extends Filter
 {
-    /** @var array */
+    /** @var array|int[]|string[]|DateTimeInterface[] */
     private $values;
 
     public function __construct(string $field, string $mode, array $values)
     {
-        Assert::true(count($values) > 0, 'Cannot use EqualityFilter with an empty array of values');
         $this->field = $field;
         $this->mode = $mode;
         $this->values = $values;
     }
 
     /**
-     * @return array
+     * @return array|int[]|string[]|DateTimeInterface[]
      */
     public function getValues(): array
     {
         return $this->values;
     }
 
-    public function validate(array $fieldDefinitions): void
+    public function validate(?Field $fieldDefinition): void
     {
-        parent::validate($fieldDefinitions);
+        parent::validate($fieldDefinition);
 
-        // TODO: Use proper type definitions
-        $requiredType = $fieldDefinitions[$this->field];
+        switch (get_class($fieldDefinition)) {
+            case IntegerField::class:
+                $validator = function ($value): void {
+                    TypeAssert::assertInteger($value, 'EqualityFilter.' . $this->field);
+                };
+                break;
+            case StringField::class:
+                $validator = function ($value): void {
+                    TypeAssert::assertString($value, 'EqualityFilter.' . $this->field);
+                };
+                break;
+            case DateTimeField::class:
+                $validator = function ($value): void {
+                    TypeAssert::assertInstanceOf($value, DateTimeInterface::class, 'EqualityFilter.' . $this->field);
+                };
+                break;
+            default:
+                throw new InvalidInputException('Unsupported field type for EqualityFilter');
+        }
 
-        foreach ($this->values as $index => $value) {
-            $type = strtolower(gettype($value));
+        if (count($this->values) === 0) {
+            throw new InvalidInputException('Invalid EqualityFilter: Array of values must not be empty');
+        }
 
-            if (class_exists($requiredType)) {
-                Assert::true($value instanceof $requiredType, sprintf(
-                    'Invalid EqualityFilter value at index %d. Got type %s, but expected instance of %s',
-                    $index,
-                    is_object($value) ? get_class($value) : $type,
-                    $requiredType
-                ));
-
-                continue;
-            }
-
-            Assert::true($type === $requiredType, sprintf(
-                'Invalid EqualityFilter value at index %d. Got type %s, but expected %s.',
-                $index,
-                $type,
-                $requiredType
-            ));
+        foreach ($this->values as $value) {
+            $validator($value);
         }
     }
 }

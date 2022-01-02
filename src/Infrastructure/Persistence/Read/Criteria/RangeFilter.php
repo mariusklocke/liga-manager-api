@@ -3,23 +3,24 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Criteria;
 
-use HexagonalPlayground\Domain\Util\Assert;
+use DateTimeInterface;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\FloatField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
 
 class RangeFilter extends Filter
 {
-    /** @var mixed */
+    /** @var null|int|float|DateTimeInterface */
     private $minValue;
 
-    /** @var mixed */
+    /** @var null|int|float|DateTimeInterface */
     private $maxValue;
 
     public function __construct(string $field, string $mode, $minValue, $maxValue)
     {
-        Assert::false(
-            $minValue === null && $maxValue === null,
-            'Cannot use RangeFilter with null for minValue and maxValue'
-        );
-
         $this->field = $field;
         $this->mode = $mode;
         $this->minValue = $minValue;
@@ -27,7 +28,7 @@ class RangeFilter extends Filter
     }
 
     /**
-     * @return mixed
+     * @return null|int|float|DateTimeInterface
      */
     public function getMinValue()
     {
@@ -35,49 +36,47 @@ class RangeFilter extends Filter
     }
 
     /**
-     * @return mixed
+     * @return null|int|float|DateTimeInterface
      */
     public function getMaxValue()
     {
         return $this->maxValue;
     }
 
-    public function validate(array $fieldDefinitions): void
+    public function validate(?Field $fieldDefinition): void
     {
-        parent::validate($fieldDefinitions);
+        parent::validate($fieldDefinition);
 
-        // TODO: Use proper type definitions
-        $requiredType = $fieldDefinitions[$this->field];
-
-        $minValueType = strtolower(gettype($this->minValue));
-        $maxValueType = strtolower(gettype($this->maxValue));
-
-        if (class_exists($requiredType)) {
-            Assert::true($this->minValue === null || $this->minValue instanceof $requiredType, sprintf(
-                'Invalid RangeFilter minValue. Got type %s, but expected instance of %s',
-                is_object($this->minValue) ? get_class($this->minValue) : $minValueType,
-                $requiredType
-            ));
-
-            Assert::true($this->maxValue === null || $this->maxValue instanceof $requiredType, sprintf(
-                'Invalid RangeFilter maxValue. Got type %s, but expected instance of %s',
-                is_object($this->maxValue) ? get_class($this->maxValue) : $maxValueType,
-                $requiredType
-            ));
-
-            return;
+        if ($this->minValue === null && $this->maxValue === null) {
+            throw new InvalidInputException('Invalid RangeFilter: Neither minValue nor maxValue given');
         }
 
-        Assert::true($this->minValue === null || $minValueType === $requiredType, sprintf(
-            'Invalid RangeFilter minValue. Got type %s, but expected %s.',
-            $minValueType,
-            $requiredType
-        ));
+        switch (get_class($fieldDefinition)) {
+            case IntegerField::class:
+                $validator = function ($value): void {
+                    TypeAssert::assertInteger($value, 'RangeFilter.' . $this->field);
+                };
+                break;
+            case FloatField::class:
+                $validator = function ($value): void {
+                    TypeAssert::assertNumber($value, 'RangeFilter.' . $this->field);
+                };
+                break;
+            case DateTimeField::class:
+                $validator = function ($value): void {
+                    TypeAssert::assertInstanceOf($value, DateTimeInterface::class, 'RangeFilter.' . $this->field);
+                };
+                break;
+            default:
+                throw new InvalidInputException('Unsupported field type for RangeFilter');
+        }
 
-        Assert::true($this->maxValue === null || $maxValueType === $requiredType, sprintf(
-            'Invalid RangeFilter maxValue. Got type %s, but expected %s.',
-            $maxValueType,
-            $requiredType
-        ));
+        if ($this->minValue !== null) {
+            $validator($this->minValue);
+        }
+
+        if ($this->maxValue !== null) {
+            $validator($this->maxValue);
+        }
     }
 }

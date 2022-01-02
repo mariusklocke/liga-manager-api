@@ -6,6 +6,9 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class RankingRepository extends AbstractRepository
 {
@@ -20,26 +23,26 @@ class RankingRepository extends AbstractRepository
         parent::__construct($gateway);
 
         $this->positionHydrator = new Hydrator([
-            'season_id' => Hydrator::TYPE_STRING,
-            'team_id' => Hydrator::TYPE_STRING,
-            'sort_index' => Hydrator::TYPE_INT,
-            'number' => Hydrator::TYPE_INT,
-            'matches' => Hydrator::TYPE_INT,
-            'wins' => Hydrator::TYPE_INT,
-            'draws' => Hydrator::TYPE_INT,
-            'losses' => Hydrator::TYPE_INT,
-            'scored_goals' => Hydrator::TYPE_INT,
-            'conceded_goals' => Hydrator::TYPE_INT,
-            'points' => Hydrator::TYPE_INT
+            new StringField('season_id', false),
+            new StringField('team_id', false),
+            new StringField('sort_index', false),
+            new IntegerField('number', false),
+            new IntegerField('matches', false),
+            new IntegerField('wins', false),
+            new IntegerField('draws', false),
+            new IntegerField('losses', false),
+            new IntegerField('scored_goals', false),
+            new IntegerField('conceded_goals', false),
+            new IntegerField('points', false)
         ]);
 
         $this->penaltyHydrator = new Hydrator([
-            'id' => Hydrator::TYPE_STRING,
-            'season_id' => Hydrator::TYPE_STRING,
-            'team_id' => Hydrator::TYPE_STRING,
-            'reason' => Hydrator::TYPE_STRING,
-            'points' => Hydrator::TYPE_INT,
-            'created_at' => Hydrator::TYPE_DATETIME
+            new StringField('id', false),
+            new StringField('season_id', false),
+            new StringField('team_id', false),
+            new StringField('reason', false),
+            new IntegerField('points', false),
+            new DateTimeField('created_at', false)
         ]);
     }
 
@@ -51,8 +54,8 @@ class RankingRepository extends AbstractRepository
     protected function getFieldDefinitions(): array
     {
         return [
-            'season_id' => Hydrator::TYPE_STRING,
-            'updated_at' => Hydrator::TYPE_DATETIME
+            new StringField('season_id', false),
+            new DateTimeField('updated_at', true)
         ];
     }
 

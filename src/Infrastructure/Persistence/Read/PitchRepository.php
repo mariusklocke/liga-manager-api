@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\EmbeddedObjectField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\FloatField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class PitchRepository extends AbstractRepository
 {
@@ -16,16 +19,16 @@ class PitchRepository extends AbstractRepository
     protected function getFieldDefinitions(): array
     {
         return [
-            'id' => Hydrator::TYPE_STRING,
-            'label' => Hydrator::TYPE_STRING,
-            'location_longitude' => Hydrator::TYPE_FLOAT,
-            'location_latitude' => Hydrator::TYPE_FLOAT,
-            'contact' => [
-                'email' => Hydrator::TYPE_STRING,
-                'first_name' => Hydrator::TYPE_STRING,
-                'last_name' => Hydrator::TYPE_STRING,
-                'phone' => Hydrator::TYPE_STRING
-            ]
+            new StringField('id', false),
+            new StringField('label', false),
+            new FloatField('location_longitude', false),
+            new FloatField('location_latitude', false),
+            new EmbeddedObjectField('contact', true, [
+                new StringField('email', false),
+                new StringField('first_name', false),
+                new StringField('last_name', false),
+                new StringField('phone', false)
+            ])
         ];
     }
 

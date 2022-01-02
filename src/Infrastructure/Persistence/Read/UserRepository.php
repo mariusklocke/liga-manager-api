@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
+
 class UserRepository extends AbstractRepository
 {
     protected function getTableName(): string
@@ -13,12 +16,12 @@ class UserRepository extends AbstractRepository
     protected function getFieldDefinitions(): array
     {
         return [
-            'id' => Hydrator::TYPE_STRING,
-            'email' => Hydrator::TYPE_STRING,
-            'last_password_change' => Hydrator::TYPE_DATETIME,
-            'role' => Hydrator::TYPE_STRING,
-            'first_name' => Hydrator::TYPE_STRING,
-            'last_name' => Hydrator::TYPE_STRING
+            new StringField('id', false),
+            new StringField('email', false),
+            new DateTimeField('last_password_change', true),
+            new StringField('role', false),
+            new StringField('first_name', false),
+            new StringField('last_name', false)
         ];
     }
 }

@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Criteria;
 
-use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 
 abstract class Filter
 {
@@ -32,8 +33,16 @@ abstract class Filter
         return $this->mode;
     }
 
-    public function validate(array $fieldDefinitions): void
+    /**
+     * @param Field|null $fieldDefinition
+     */
+    public function validate(?Field $fieldDefinition): void
     {
-        Assert::true(isset($fieldDefinitions[$this->getField()]), 'Invalid EqualityFilter: Unknown field.');
+        if ($fieldDefinition === null) {
+            throw new InvalidInputException(sprintf(
+                'Invalid Filter: Field %s is unknown',
+                $this->field
+            ));
+        }
     }
 }

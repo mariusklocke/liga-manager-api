@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class MatchRepository extends AbstractRepository
 {
@@ -16,16 +19,16 @@ class MatchRepository extends AbstractRepository
     protected function getFieldDefinitions(): array
     {
         return [
-            'id' => Hydrator::TYPE_STRING,
-            'match_day_id' => Hydrator::TYPE_STRING,
-            'home_team_id' => Hydrator::TYPE_STRING,
-            'guest_team_id' => Hydrator::TYPE_STRING,
-            'pitch_id' => Hydrator::TYPE_STRING,
-            'kickoff' => Hydrator::TYPE_DATETIME,
-            'cancelled_at' => Hydrator::TYPE_DATETIME,
-            'cancellation_reason' => Hydrator::TYPE_STRING,
-            'home_score' => Hydrator::TYPE_INT,
-            'guest_score' => Hydrator::TYPE_INT
+            new StringField('id', false),
+            new StringField('match_day_id', false),
+            new StringField('home_team_id', false),
+            new StringField('guest_team_id', false),
+            new StringField('pitch_id', true),
+            new DateTimeField('kickoff', true),
+            new DateTimeField('cancelled_at', true),
+            new StringField('cancellation_reason', true),
+            new IntegerField('home_score', true),
+            new IntegerField('guest_score', true)
         ];
     }
 

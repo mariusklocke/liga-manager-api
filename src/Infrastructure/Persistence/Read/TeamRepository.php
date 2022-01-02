@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\EmbeddedObjectField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class TeamRepository extends AbstractRepository
 {
@@ -16,15 +19,15 @@ class TeamRepository extends AbstractRepository
     protected function getFieldDefinitions(): array
     {
         return [
-            'id' => Hydrator::TYPE_STRING,
-            'name' => Hydrator::TYPE_STRING,
-            'created_at' => Hydrator::TYPE_DATETIME,
-            'contact' => [
-                'email' => Hydrator::TYPE_STRING,
-                'first_name' => Hydrator::TYPE_STRING,
-                'last_name' => Hydrator::TYPE_STRING,
-                'phone' => Hydrator::TYPE_STRING
-            ]
+            new StringField('id', false),
+            new StringField('name', false),
+            new DateTimeField('created_at', false),
+            new EmbeddedObjectField('contact', true, [
+                new StringField('email', false),
+                new StringField('first_name', false),
+                new StringField('last_name', false),
+                new StringField('phone', false)
+            ])
         ];
     }
 
