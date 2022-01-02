@@ -52,7 +52,7 @@ class EqualityFilter extends Filter
                 };
                 break;
             default:
-                throw new InvalidInputException('Unsupported field type for EqualityFilter');
+                throw new InvalidInputException('Invalid EqualityFilter: Unsupported field type');
         }
 
         if (count($this->values) === 0) {

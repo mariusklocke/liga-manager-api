@@ -39,10 +39,7 @@ abstract class Filter
     public function validate(?Field $fieldDefinition): void
     {
         if ($fieldDefinition === null) {
-            throw new InvalidInputException(sprintf(
-                'Invalid Filter: Field %s is unknown',
-                $this->field
-            ));
+            throw new InvalidInputException('Invalid Filter: Field unknown');
         }
     }
 }
