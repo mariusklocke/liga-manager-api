@@ -128,15 +128,21 @@ class DbalGateway implements ReadDbGatewayInterface
             return;
         }
 
+        $conditions = [];
+
         if ($filter->getMinValue() !== null) {
             $minParamId = $this->bindParameter($query, $filter->getMinValue());
-            $query->andWhere(sprintf('%s >= :%s', $filter->getField(), $minParamId));
+            $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '>=' : '<';
+            $conditions[] = sprintf('%s %s :%s', $filter->getField(), $operator, $minParamId);
         }
 
         if ($filter->getMaxValue() !== null) {
             $maxParamId = $this->bindParameter($query, $filter->getMaxValue());
-            $query->andWhere(sprintf('%s <= :%s', $filter->getField(), $maxParamId));
+            $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '<=' : '>';
+            $conditions[] = sprintf('%s %s :%s', $filter->getField(), $operator, $maxParamId);
         }
+
+        $query->andWhere(implode($filter->getMode() === Filter::MODE_INCLUDE ? ' AND ' : ' OR ', $conditions));
     }
 
     /**
