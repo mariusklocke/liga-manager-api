@@ -303,6 +303,16 @@ query season($id: String!) {
         scored_goals,
         conceded_goals
         points
+      },
+      penalties {
+        id,
+        team {
+          id,
+          name
+        }
+        reason,
+        created_at,
+        points
       }
     },
     match_days {

@@ -66,7 +66,7 @@ class RankingRepository extends AbstractRepository
     public function findRanking(string $seasonId): ?array
     {
         $result = $this->gateway->fetch(
-            'rankings',
+            $this->getTableName(),
             [],
             [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])]
         );
