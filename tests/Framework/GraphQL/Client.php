@@ -251,6 +251,10 @@ query season($id: String!) {
     state,
     match_day_count,
     team_count,
+    teams {
+      id,
+      name
+    },
     ranking {
       updated_at,
       positions {
@@ -287,6 +291,10 @@ query season($id: String!) {
     state,
     match_day_count,
     team_count,
+    teams {
+      id,
+      name
+    },
     ranking {
       updated_at,
       positions {
