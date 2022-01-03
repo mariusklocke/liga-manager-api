@@ -45,12 +45,10 @@ class Hydrator
         $result = [];
 
         foreach ($rows as $row) {
-            $row = $this->hydrate($row);
-
             if ($groupBy !== null) {
-                $result[$row[$groupBy]][] = $row;
+                $result[$row[$groupBy]][] = $this->hydrate($row);
             } else {
-                $result[] = $row;
+                $result[] = $this->hydrate($row);
             }
         }
 

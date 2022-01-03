@@ -52,7 +52,7 @@ class TeamRepository extends AbstractRepository
     {
         $result = $this->gateway->fetch(
             $this->getTableName(),
-            ['seasons_teams_link' => ['id = team_id']],
+            ['seasons_teams_link' => 'id = team_id'],
             [new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds)]
         );
 
@@ -67,7 +67,7 @@ class TeamRepository extends AbstractRepository
     {
         $result = $this->gateway->fetch(
             $this->getTableName(),
-            ['users_teams_link' => ['id = team_id']],
+            ['users_teams_link' => 'id = team_id'],
             [new EqualityFilter('user_id', Filter::MODE_INCLUDE, $userIds)]
         );
 

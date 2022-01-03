@@ -669,7 +669,11 @@ query allUsers {
     email,
     role,
     first_name,
-    last_name
+    last_name,
+    teams {
+      id,
+      name
+    }
   }
 }
 GRAPHQL;

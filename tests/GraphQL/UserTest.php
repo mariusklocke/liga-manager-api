@@ -30,7 +30,7 @@ class UserTest extends TestCase
 
         $users = $this->client->getAllUsers();
 
-        $requiredAttributes = ['id', 'email', 'first_name', 'last_name', 'role'];
+        $requiredAttributes = ['id', 'email', 'first_name', 'last_name', 'role', 'teams'];
         $sensitiveAttributes = ['password'];
 
         foreach ($users as $user) {
