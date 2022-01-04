@@ -26,12 +26,14 @@ abstract class AbstractRepository
      * @param iterable|Filter[] $filters
      * @param iterable|Sorting[] $sortings
      * @param Pagination|null $pagination
+     * @param string|null $groupBy
      * @return array
      */
     public function findMany(
         iterable    $filters = [],
         iterable    $sortings = [],
-        ?Pagination $pagination = null
+        ?Pagination $pagination = null,
+        ?string     $groupBy = null
     ): array {
         foreach ($filters as $filter) {
             $fieldDefinition = current(array_filter($this->getFieldDefinitions(), function (Field $field) use ($filter): bool {
@@ -47,7 +49,7 @@ abstract class AbstractRepository
             $filters,
             $sortings,
             $pagination
-        ));
+        ), $groupBy);
     }
 
     /**

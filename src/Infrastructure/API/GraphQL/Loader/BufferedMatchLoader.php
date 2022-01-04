@@ -33,20 +33,22 @@ class BufferedMatchLoader
 
     /**
      * @param string $matchDayId
-     * @return array|null
+     * @return array
      */
-    public function getByMatchDay(string $matchDayId): ?array
+    public function getByMatchDay(string $matchDayId): array
     {
         $matchDayIds = array_keys($this->byMatchDayId, null, true);
 
         if (count($matchDayIds)) {
             $filters = [new EqualityFilter('match_day_id', Filter::MODE_INCLUDE, $matchDayIds)];
 
-            foreach ($this->matchRepository->findMany($filters) as $match) {
-                $this->byMatchDayId[$match['match_day_id']][] = $match;
+            $matches = $this->matchRepository->findMany($filters, [], null, 'match_day_id');
+
+            foreach ($matchDayIds as $id) {
+                $this->byMatchDayId[$id] = $matches[$id] ?? [];
             }
         }
 
-        return $this->byMatchDayId[$matchDayId] ?? null;
+        return $this->byMatchDayId[$matchDayId];
     }
 }

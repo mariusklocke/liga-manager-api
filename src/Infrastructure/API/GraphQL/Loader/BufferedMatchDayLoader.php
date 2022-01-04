@@ -44,39 +44,43 @@ class BufferedMatchDayLoader
 
     /**
      * @param string $seasonId
-     * @return array|null
+     * @return array
      */
-    public function getBySeason(string $seasonId): ?array
+    public function getBySeason(string $seasonId): array
     {
         $seasonIds = array_keys($this->bySeasonId, null, true);
 
         if (count($seasonIds)) {
             $filter = new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds);
 
-            foreach ($this->matchDayRepository->findMany([$filter]) as $matchDay) {
-                $this->bySeasonId[$matchDay['season_id']][] = $matchDay;
+            $matchDays = $this->matchDayRepository->findMany([$filter], [], null, 'season_id');
+
+            foreach ($seasonIds as $id) {
+                $this->bySeasonId[$id] = $matchDays[$id] ?? [];
             }
         }
 
-        return $this->bySeasonId[$seasonId] ?? null;
+        return $this->bySeasonId[$seasonId];
     }
 
     /**
      * @param string $tournamentId
-     * @return array|null
+     * @return array
      */
-    public function getByTournament(string $tournamentId): ?array
+    public function getByTournament(string $tournamentId): array
     {
         $tournamentIds = array_keys($this->byTournamentId, null ,true);
 
         if (count($tournamentIds)) {
             $filter = new EqualityFilter('tournament_id', Filter::MODE_INCLUDE, $tournamentIds);
 
-            foreach ($this->matchDayRepository->findMany([$filter]) as $matchDay) {
-                $this->byTournamentId[$matchDay['tournament_id']][] = $matchDay;
+            $matchDays = $this->matchDayRepository->findMany([$filter], [], null, 'tournament_id');
+
+            foreach ($tournamentIds as $id) {
+                $this->byTournamentId[$id] = $matchDays[$id] ?? [];
             }
         }
 
-        return $this->byTournamentId[$tournamentId] ?? null;
+        return $this->byTournamentId[$tournamentId];
     }
 }
