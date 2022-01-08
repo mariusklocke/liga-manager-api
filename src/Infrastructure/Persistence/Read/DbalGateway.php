@@ -25,8 +25,6 @@ use Psr\Log\LoggerInterface;
 
 class DbalGateway implements ReadDbGatewayInterface
 {
-    private const MYSQL_DATE_FORMAT = 'Y-m-d H:i:s';
-
     /** @var Connection */
     private $connection;
 
@@ -198,7 +196,7 @@ class DbalGateway implements ReadDbGatewayInterface
      */
     private function applySorting(QueryBuilder $query, Sorting $sorting): void
     {
-        $query->addOrderBy($sorting->getField(), $sorting->getDirection());
+        $query->addOrderBy($sorting->getField()->getName(), $sorting->getDirection());
     }
 
     /**

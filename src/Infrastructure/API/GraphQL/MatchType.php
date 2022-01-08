@@ -123,7 +123,7 @@ class MatchType extends ObjectType implements QueryTypeInterface
 
                     return $repo->findMany(
                         $filters,
-                        [new Sorting('kickoff', Sorting::DIRECTION_ASCENDING)]
+                        [new Sorting($repo->getField('kickoff'), Sorting::DIRECTION_ASCENDING)]
                     );
                 }
             ]

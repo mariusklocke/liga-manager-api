@@ -82,7 +82,7 @@ class EventType extends ObjectType implements QueryTypeInterface
 
                     return $repo->findMany(
                         $filters,
-                        [new Sorting('occurred_at', Sorting::DIRECTION_DESCENDING)],
+                        [new Sorting($repo->getField('occurred_at'), Sorting::DIRECTION_DESCENDING)],
                         new Pagination(50, 0)
                     );
                 }

@@ -7,13 +7,20 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class RankingRepository extends AbstractRepository
 {
+    /** @var Field[] */
+    private $positionFields;
+
     /** @var Hydrator */
     private $positionHydrator;
+
+    /** @var Field[] */
+    private $penaltyFields;
 
     /** @var Hydrator */
     private $penaltyHydrator;
@@ -22,7 +29,7 @@ class RankingRepository extends AbstractRepository
     {
         parent::__construct($gateway);
 
-        $this->positionHydrator = new Hydrator([
+        $this->positionFields = [
             new StringField('season_id', false),
             new StringField('team_id', false),
             new StringField('sort_index', false),
@@ -34,16 +41,20 @@ class RankingRepository extends AbstractRepository
             new IntegerField('scored_goals', false),
             new IntegerField('conceded_goals', false),
             new IntegerField('points', false)
-        ]);
+        ];
 
-        $this->penaltyHydrator = new Hydrator([
+        $this->positionHydrator = new Hydrator($this->positionFields);
+
+        $this->penaltyFields = [
             new StringField('id', false),
             new StringField('season_id', false),
             new StringField('team_id', false),
             new StringField('reason', false),
             new IntegerField('points', false),
             new DateTimeField('created_at', false)
-        ]);
+        ];
+
+        $this->penaltyHydrator = new Hydrator($this->penaltyFields);
     }
 
     protected function getTableName(): string
@@ -57,6 +68,28 @@ class RankingRepository extends AbstractRepository
             new StringField('season_id', false),
             new DateTimeField('updated_at', true)
         ];
+    }
+
+    protected function getPositionField(string $name): ?Field
+    {
+        foreach ($this->positionFields as $fieldDefinition) {
+            if ($fieldDefinition->getName() === $name) {
+                return $fieldDefinition;
+            }
+        }
+
+        return null;
+    }
+
+    protected function getPenaltyField(string $name): ?Field
+    {
+        foreach ($this->penaltyFields as $fieldDefinition) {
+            if ($fieldDefinition->getName() === $name) {
+                return $fieldDefinition;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -83,8 +116,8 @@ class RankingRepository extends AbstractRepository
         $result = $this->gateway->fetch(
             'ranking_positions',
             [],
-            [new EqualityFilter($this->getField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
-            [new Sorting('sort_index', Sorting::DIRECTION_ASCENDING)]
+            [new EqualityFilter($this->getPositionField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
+            [new Sorting($this->getPositionField('sort_index'), Sorting::DIRECTION_ASCENDING)]
         );
 
         return $this->positionHydrator->hydrateMany($result);
@@ -99,8 +132,8 @@ class RankingRepository extends AbstractRepository
         $result = $this->gateway->fetch(
             'ranking_penalties',
             [],
-            [new EqualityFilter($this->getField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
-            [new Sorting('created_at', Sorting::DIRECTION_ASCENDING)]
+            [new EqualityFilter($this->getPenaltyField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
+            [new Sorting($this->getPenaltyField('created_at'), Sorting::DIRECTION_ASCENDING)]
         );
 
         return $this->penaltyHydrator->hydrateMany($result);
