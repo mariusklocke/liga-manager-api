@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
@@ -50,6 +51,19 @@ abstract class AbstractRepository
             $sortings,
             $pagination
         ), $groupBy);
+    }
+
+    /**
+     * @param string $id
+     * @return array|null
+     */
+    public function findById(string $id): ?array
+    {
+        return $this->hydrator->hydrateOne($this->gateway->fetch(
+            $this->getTableName(),
+            [],
+            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
+        ));
     }
 
     /**

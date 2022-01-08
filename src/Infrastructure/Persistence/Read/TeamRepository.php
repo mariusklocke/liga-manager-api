@@ -32,19 +32,6 @@ class TeamRepository extends AbstractRepository
     }
 
     /**
-     * @param string $id
-     * @return array|null
-     */
-    public function findById(string $id): ?array
-    {
-        return $this->hydrator->hydrateOne($this->gateway->fetch(
-            $this->getTableName(),
-            [],
-            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
-        ));
-    }
-
-    /**
      * @param array $seasonIds
      * @return array
      */
