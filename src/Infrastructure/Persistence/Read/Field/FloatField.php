@@ -9,10 +9,6 @@ class FloatField extends Field
     {
         $value = $row[$this->getName()] ?? null;
 
-        if ($value === null) {
-            return null;
-        }
-
-        return (float)$value;
+        return $value !== null ? (float)$value : null;
     }
 }

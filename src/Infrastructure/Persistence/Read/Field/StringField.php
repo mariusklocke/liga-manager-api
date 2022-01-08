@@ -9,10 +9,6 @@ class StringField extends Field
     {
         $value = $row[$this->getName()] ?? null;
 
-        if ($value === null) {
-            return null;
-        }
-
-        return (string)$value;
+        return $value !== null ? (string)$value : null;
     }
 }

@@ -221,9 +221,6 @@ class DbalGateway implements ReadDbGatewayInterface
             case 'integer':
                 $type = ParameterType::INTEGER;
                 break;
-            case 'boolean':
-                $type = ParameterType::BOOLEAN;
-                break;
             case 'object':
                 if ($value instanceof DateTimeInterface) {
                     $value = $value->format(self::MYSQL_DATE_FORMAT);
@@ -238,9 +235,6 @@ class DbalGateway implements ReadDbGatewayInterface
                 } else {
                     $type = Connection::PARAM_STR_ARRAY;
                 }
-                break;
-            case 'null';
-                $type = ParameterType::NULL;
                 break;
             default:
                 throw new InvalidInputException('Unsupported type for query parameter');

@@ -9,10 +9,6 @@ class IntegerField extends Field
     {
         $value = $row[$this->getName()] ?? null;
 
-        if ($value === null) {
-            return null;
-        }
-
-        return (int)$value;
+        return $value !== null ? (int)$value : null;
     }
 }
