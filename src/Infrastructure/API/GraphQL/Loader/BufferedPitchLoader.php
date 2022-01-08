@@ -32,9 +32,13 @@ class BufferedPitchLoader
         $pitchIds = array_keys($this->byPitchId, null, true);
 
         if (count($pitchIds)) {
-            $filters = [new EqualityFilter('id', Filter::MODE_INCLUDE, $pitchIds)];
+            $filter = new EqualityFilter(
+                $this->pitchRepository->getField('id'),
+                Filter::MODE_INCLUDE,
+                $pitchIds
+            );
 
-            foreach ($this->pitchRepository->findMany($filters) as $pitch) {
+            foreach ($this->pitchRepository->findMany([$filter]) as $pitch) {
                 $this->byPitchId[$pitch['id']] = $pitch;
             }
         }

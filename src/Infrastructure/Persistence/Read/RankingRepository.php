@@ -68,7 +68,7 @@ class RankingRepository extends AbstractRepository
         $result = $this->gateway->fetch(
             $this->getTableName(),
             [],
-            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])]
+            [new EqualityFilter($this->getField('season_id'), Filter::MODE_INCLUDE, [$seasonId])]
         );
 
         return $this->hydrator->hydrateOne($result);
@@ -83,7 +83,7 @@ class RankingRepository extends AbstractRepository
         $result = $this->gateway->fetch(
             'ranking_positions',
             [],
-            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])],
+            [new EqualityFilter($this->getField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
             [new Sorting('sort_index', Sorting::DIRECTION_ASCENDING)]
         );
 
@@ -99,7 +99,7 @@ class RankingRepository extends AbstractRepository
         $result = $this->gateway->fetch(
             'ranking_penalties',
             [],
-            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])],
+            [new EqualityFilter($this->getField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
             [new Sorting('created_at', Sorting::DIRECTION_ASCENDING)]
         );
 

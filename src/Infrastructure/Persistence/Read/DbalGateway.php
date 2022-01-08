@@ -123,7 +123,7 @@ class DbalGateway implements ReadDbGatewayInterface
         if ($filter->getMinValue() === $filter->getMaxValue()) {
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '=' : '<>';
             $paramId = $this->bindParameter($query, $filter->getMinValue());
-            $query->andWhere(sprintf('%s %s :%s', $filter->getField(), $operator, $paramId));
+            $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
 
             return;
         }
@@ -133,13 +133,13 @@ class DbalGateway implements ReadDbGatewayInterface
         if ($filter->getMinValue() !== null) {
             $minParamId = $this->bindParameter($query, $filter->getMinValue());
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '>=' : '<';
-            $conditions[] = sprintf('%s %s :%s', $filter->getField(), $operator, $minParamId);
+            $conditions[] = sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $minParamId);
         }
 
         if ($filter->getMaxValue() !== null) {
             $maxParamId = $this->bindParameter($query, $filter->getMaxValue());
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '<=' : '>';
-            $conditions[] = sprintf('%s %s :%s', $filter->getField(), $operator, $maxParamId);
+            $conditions[] = sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $maxParamId);
         }
 
         $query->andWhere(implode($filter->getMode() === Filter::MODE_INCLUDE ? ' AND ' : ' OR ', $conditions));
@@ -156,7 +156,7 @@ class DbalGateway implements ReadDbGatewayInterface
         if (count($filter->getValues()) === 1) {
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '=' : '<>';
             $paramId = $this->bindParameter($query, current($filter->getValues()));
-            $query->andWhere(sprintf('%s %s :%s', $filter->getField(), $operator, $paramId));
+            $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
 
             return;
         }
@@ -164,7 +164,7 @@ class DbalGateway implements ReadDbGatewayInterface
         // Use IN-Operator if there are multiple values
         $operator = $filter->getMode() === Filter::MODE_INCLUDE ? 'IN' : 'NOT IN';
         $paramId = $this->bindParameter($query, $filter->getValues());
-        $query->andWhere(sprintf('%s %s (:%s)', $filter->getField(), $operator, $paramId));
+        $query->andWhere(sprintf('%s %s (:%s)', $filter->getField()->getName(), $operator, $paramId));
     }
 
     /**
@@ -184,7 +184,7 @@ class DbalGateway implements ReadDbGatewayInterface
         $pattern = str_replace(['*', '?'], ['%', '_'], $pattern);
 
         $paramId = $this->bindParameter($query, $pattern);
-        $query->andWhere(sprintf('%s %s :%s', $filter->getField(), $operator, $paramId));
+        $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
     }
 
     /**

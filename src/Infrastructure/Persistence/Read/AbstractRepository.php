@@ -36,14 +36,6 @@ abstract class AbstractRepository
         ?Pagination $pagination = null,
         ?string     $groupBy = null
     ): array {
-        foreach ($filters as $filter) {
-            $fieldDefinition = current(array_filter($this->getFieldDefinitions(), function (Field $field) use ($filter): bool {
-                return $field->getName() === $filter->getField();
-            }));
-
-            $filter->validate($fieldDefinition);
-        }
-
         return $this->hydrator->hydrateMany($this->gateway->fetch(
             $this->getTableName(),
             [],
@@ -62,8 +54,23 @@ abstract class AbstractRepository
         return $this->hydrator->hydrateOne($this->gateway->fetch(
             $this->getTableName(),
             [],
-            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
+            [new EqualityFilter($this->getField('id'), Filter::MODE_INCLUDE, [$id])]
         ));
+    }
+
+    /**
+     * @param string $name
+     * @return Field|null
+     */
+    public function getField(string $name): ?Field
+    {
+        foreach ($this->getFieldDefinitions() as $fieldDefinition) {
+            if ($fieldDefinition->getName() === $name) {
+                return $fieldDefinition;
+            }
+        }
+
+        return null;
     }
 
     /**

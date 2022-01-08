@@ -16,8 +16,43 @@ class EqualityFilter extends Filter
     /** @var array|int[]|string[]|DateTimeInterface[] */
     private $values;
 
-    public function __construct(string $field, string $mode, array $values)
+    public function __construct(?Field $field, string $mode, array $values)
     {
+        if ($field === null) {
+            throw new InvalidInputException('Invalid EqualityFilter: Unknown field');
+        }
+
+        $inputName = 'EqualityFilter.' . $field->getName();
+
+        // Validate Field type
+        switch (get_class($field)) {
+            case IntegerField::class:
+                $validator = function ($value) use ($inputName): void {
+                    TypeAssert::assertInteger($value, $inputName);
+                };
+                break;
+            case StringField::class:
+                $validator = function ($value) use ($inputName): void {
+                    TypeAssert::assertString($value, $inputName);
+                };
+                break;
+            case DateTimeField::class:
+                $validator = function ($value) use ($inputName): void {
+                    TypeAssert::assertInstanceOf($value, DateTimeInterface::class, $inputName);
+                };
+                break;
+            default:
+                throw new InvalidInputException('Invalid EqualityFilter: Unsupported field type');
+        }
+
+        if (count($values) === 0) {
+            throw new InvalidInputException('Invalid EqualityFilter: Array of values must not be empty');
+        }
+
+        foreach ($values as $value) {
+            $validator($value);
+        }
+
         $this->field = $field;
         $this->mode = $mode;
         $this->values = $values;
@@ -29,38 +64,5 @@ class EqualityFilter extends Filter
     public function getValues(): array
     {
         return $this->values;
-    }
-
-    public function validate(?Field $fieldDefinition): void
-    {
-        parent::validate($fieldDefinition);
-
-        switch (get_class($fieldDefinition)) {
-            case IntegerField::class:
-                $validator = function ($value): void {
-                    TypeAssert::assertInteger($value, 'EqualityFilter.' . $this->field);
-                };
-                break;
-            case StringField::class:
-                $validator = function ($value): void {
-                    TypeAssert::assertString($value, 'EqualityFilter.' . $this->field);
-                };
-                break;
-            case DateTimeField::class:
-                $validator = function ($value): void {
-                    TypeAssert::assertInstanceOf($value, DateTimeInterface::class, 'EqualityFilter.' . $this->field);
-                };
-                break;
-            default:
-                throw new InvalidInputException('Invalid EqualityFilter: Unsupported field type');
-        }
-
-        if (count($this->values) === 0) {
-            throw new InvalidInputException('Invalid EqualityFilter: Array of values must not be empty');
-        }
-
-        foreach ($this->values as $value) {
-            $validator($value);
-        }
     }
 }

@@ -19,8 +19,46 @@ class RangeFilter extends Filter
     /** @var null|int|float|DateTimeInterface */
     private $maxValue;
 
-    public function __construct(string $field, string $mode, $minValue, $maxValue)
+    public function __construct(?Field $field, string $mode, $minValue, $maxValue)
     {
+        if ($field === null) {
+            throw new InvalidInputException('Invalid RangeFilter: Unknown field');
+        }
+
+        $inputName = 'RangeFilter.' . $field->getName();
+
+        switch (get_class($field)) {
+            case IntegerField::class:
+                $validator = function ($value) use ($inputName): void {
+                    TypeAssert::assertInteger($value, $inputName);
+                };
+                break;
+            case FloatField::class:
+                $validator = function ($value) use ($inputName): void {
+                    TypeAssert::assertNumber($value, $inputName);
+                };
+                break;
+            case DateTimeField::class:
+                $validator = function ($value) use ($inputName): void {
+                    TypeAssert::assertInstanceOf($value, DateTimeInterface::class, $inputName);
+                };
+                break;
+            default:
+                throw new InvalidInputException('Invalid RangeFilter: Unsupported field type');
+        }
+
+        if ($minValue === null && $maxValue === null) {
+            throw new InvalidInputException('Invalid RangeFilter: Neither minValue nor maxValue given');
+        }
+
+        if ($minValue !== null) {
+            $validator($minValue);
+        }
+
+        if ($maxValue !== null) {
+            $validator($maxValue);
+        }
+
         $this->field = $field;
         $this->mode = $mode;
         $this->minValue = $minValue;
@@ -41,42 +79,5 @@ class RangeFilter extends Filter
     public function getMaxValue()
     {
         return $this->maxValue;
-    }
-
-    public function validate(?Field $fieldDefinition): void
-    {
-        parent::validate($fieldDefinition);
-
-        if ($this->minValue === null && $this->maxValue === null) {
-            throw new InvalidInputException('Invalid RangeFilter: Neither minValue nor maxValue given');
-        }
-
-        switch (get_class($fieldDefinition)) {
-            case IntegerField::class:
-                $validator = function ($value): void {
-                    TypeAssert::assertInteger($value, 'RangeFilter.' . $this->field);
-                };
-                break;
-            case FloatField::class:
-                $validator = function ($value): void {
-                    TypeAssert::assertNumber($value, 'RangeFilter.' . $this->field);
-                };
-                break;
-            case DateTimeField::class:
-                $validator = function ($value): void {
-                    TypeAssert::assertInstanceOf($value, DateTimeInterface::class, 'RangeFilter.' . $this->field);
-                };
-                break;
-            default:
-                throw new InvalidInputException('Invalid RangeFilter: Unsupported field type');
-        }
-
-        if ($this->minValue !== null) {
-            $validator($this->minValue);
-        }
-
-        if ($this->maxValue !== null) {
-            $validator($this->maxValue);
-        }
     }
 }

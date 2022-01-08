@@ -51,7 +51,7 @@ class BufferedMatchDayLoader
         $seasonIds = array_keys($this->bySeasonId, null, true);
 
         if (count($seasonIds)) {
-            $filter = new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds);
+            $filter = new EqualityFilter($this->matchDayRepository->getField('season_id'), Filter::MODE_INCLUDE, $seasonIds);
 
             $matchDays = $this->matchDayRepository->findMany([$filter], [], null, 'season_id');
 
@@ -72,7 +72,7 @@ class BufferedMatchDayLoader
         $tournamentIds = array_keys($this->byTournamentId, null ,true);
 
         if (count($tournamentIds)) {
-            $filter = new EqualityFilter('tournament_id', Filter::MODE_INCLUDE, $tournamentIds);
+            $filter = new EqualityFilter($this->matchDayRepository->getField('tournament_id'), Filter::MODE_INCLUDE, $tournamentIds);
 
             $matchDays = $this->matchDayRepository->findMany([$filter], [], null, 'tournament_id');
 

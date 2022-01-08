@@ -62,9 +62,13 @@ class BufferedTeamLoader
         $teamIds = array_keys($this->byTeamId, null, true);
 
         if (count($teamIds)) {
-            $filters = [new EqualityFilter('id', Filter::MODE_INCLUDE, $teamIds)];
+            $filter = new EqualityFilter(
+                $this->teamRepository->getField('id'),
+                Filter::MODE_INCLUDE,
+                $teamIds
+            );
 
-            foreach ($this->teamRepository->findMany($filters) as $team) {
+            foreach ($this->teamRepository->findMany([$filter]) as $team) {
                 $this->byTeamId[$team['id']] = $team;
             }
         }

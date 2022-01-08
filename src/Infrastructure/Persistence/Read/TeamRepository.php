@@ -40,7 +40,11 @@ class TeamRepository extends AbstractRepository
         $result = $this->gateway->fetch(
             $this->getTableName(),
             ['seasons_teams_link' => 'id = team_id'],
-            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, $seasonIds)]
+            [new EqualityFilter(
+                new StringField('season_id', false),
+                Filter::MODE_INCLUDE,
+                $seasonIds
+            )]
         );
 
         return $this->hydrator->hydrateMany($result, 'season_id');
@@ -55,7 +59,11 @@ class TeamRepository extends AbstractRepository
         $result = $this->gateway->fetch(
             $this->getTableName(),
             ['users_teams_link' => 'id = team_id'],
-            [new EqualityFilter('user_id', Filter::MODE_INCLUDE, $userIds)]
+            [new EqualityFilter(
+                new StringField('user_id', false),
+                Filter::MODE_INCLUDE,
+                $userIds
+            )]
         );
 
         return $this->hydrator->hydrateMany($result, 'user_id');

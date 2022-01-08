@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Criteria;
 
-use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 
 abstract class Filter
@@ -11,16 +10,16 @@ abstract class Filter
     public const MODE_INCLUDE = 'include';
     public const MODE_EXCLUDE = 'exclude';
 
-    /** @var string */
+    /** @var Field */
     protected $field;
 
     /** @var string */
     protected $mode;
 
     /**
-     * @return string
+     * @return Field
      */
-    public function getField(): string
+    public function getField(): Field
     {
         return $this->field;
     }
@@ -31,15 +30,5 @@ abstract class Filter
     public function getMode(): string
     {
         return $this->mode;
-    }
-
-    /**
-     * @param Field|null $fieldDefinition
-     */
-    public function validate(?Field $fieldDefinition): void
-    {
-        if ($fieldDefinition === null) {
-            throw new InvalidInputException('Invalid Filter: Field unknown');
-        }
     }
 }

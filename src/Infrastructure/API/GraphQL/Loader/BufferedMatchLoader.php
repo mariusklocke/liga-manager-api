@@ -40,9 +40,13 @@ class BufferedMatchLoader
         $matchDayIds = array_keys($this->byMatchDayId, null, true);
 
         if (count($matchDayIds)) {
-            $filters = [new EqualityFilter('match_day_id', Filter::MODE_INCLUDE, $matchDayIds)];
+            $filter = new EqualityFilter(
+                $this->matchRepository->getField('match_day_id'),
+                Filter::MODE_INCLUDE,
+                $matchDayIds
+            );
 
-            $matches = $this->matchRepository->findMany($filters, [], null, 'match_day_id');
+            $matches = $this->matchRepository->findMany([$filter], [], null, 'match_day_id');
 
             foreach ($matchDayIds as $id) {
                 $this->byMatchDayId[$id] = $matches[$id] ?? [];
