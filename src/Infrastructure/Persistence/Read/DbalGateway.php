@@ -15,6 +15,11 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\PatternFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\RangeFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 use Iterator;
 use Psr\Log\LoggerInterface;
 
@@ -122,7 +127,7 @@ class DbalGateway implements ReadDbGatewayInterface
     {
         if ($filter->getMinValue() === $filter->getMaxValue()) {
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '=' : '<>';
-            $paramId = $this->bindParameter($query, $filter->getMinValue());
+            $paramId = $this->bindParameter($query, $filter->getField(), $filter->getMinValue());
             $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
 
             return;
@@ -131,13 +136,13 @@ class DbalGateway implements ReadDbGatewayInterface
         $conditions = [];
 
         if ($filter->getMinValue() !== null) {
-            $minParamId = $this->bindParameter($query, $filter->getMinValue());
+            $minParamId = $this->bindParameter($query, $filter->getField(), $filter->getMinValue());
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '>=' : '<';
             $conditions[] = sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $minParamId);
         }
 
         if ($filter->getMaxValue() !== null) {
-            $maxParamId = $this->bindParameter($query, $filter->getMaxValue());
+            $maxParamId = $this->bindParameter($query, $filter->getField(), $filter->getMaxValue());
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '<=' : '>';
             $conditions[] = sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $maxParamId);
         }
@@ -155,7 +160,7 @@ class DbalGateway implements ReadDbGatewayInterface
         // Use equals-operator if only one value
         if (count($filter->getValues()) === 1) {
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '=' : '<>';
-            $paramId = $this->bindParameter($query, current($filter->getValues()));
+            $paramId = $this->bindParameter($query, $filter->getField(), current($filter->getValues()));
             $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
 
             return;
@@ -163,7 +168,7 @@ class DbalGateway implements ReadDbGatewayInterface
 
         // Use IN-Operator if there are multiple values
         $operator = $filter->getMode() === Filter::MODE_INCLUDE ? 'IN' : 'NOT IN';
-        $paramId = $this->bindParameter($query, $filter->getValues());
+        $paramId = $this->bindParameter($query, $filter->getField(), $filter->getValues());
         $query->andWhere(sprintf('%s %s (:%s)', $filter->getField()->getName(), $operator, $paramId));
     }
 
@@ -183,7 +188,7 @@ class DbalGateway implements ReadDbGatewayInterface
         // Translate wildcard characters
         $pattern = str_replace(['*', '?'], ['%', '_'], $pattern);
 
-        $paramId = $this->bindParameter($query, $pattern);
+        $paramId = $this->bindParameter($query, $filter->getField(), $pattern);
         $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
     }
 
@@ -208,36 +213,36 @@ class DbalGateway implements ReadDbGatewayInterface
 
     /**
      * @param QueryBuilder $query
+     * @param Field $field
      * @param mixed $value
      * @return string
      * @throws InvalidInputException
      */
-    private function bindParameter(QueryBuilder $query, $value): string
+    private function bindParameter(QueryBuilder $query, Field $field, $value): string
     {
-        switch (strtolower(gettype($value))) {
-            case 'string':
+        switch (get_class($field)) {
+            case StringField::class:
+                $type = is_array($value) ? Connection::PARAM_STR_ARRAY : ParameterType::STRING;
+                break;
+            case IntegerField::class:
+                $type = is_array($value) ? Connection::PARAM_INT_ARRAY : ParameterType::INTEGER;
+                break;
+            case DateTimeField::class:
+                if (!$value instanceof DateTimeInterface) {
+                    throw new InvalidInputException('Unsupported filter value for DateTimeField');
+                }
+                $value = $value->format('Y-m-d H:i:s');
                 $type = ParameterType::STRING;
                 break;
-            case 'integer':
-                $type = ParameterType::INTEGER;
-                break;
-            case 'object':
-                if ($value instanceof DateTimeInterface) {
-                    $value = $value->format(self::MYSQL_DATE_FORMAT);
-                    $type = ParameterType::STRING;
-                } else {
-                    throw new InvalidInputException('Unsupported object type for query parameter');
+            case DateField::class:
+                if (!$value instanceof DateTimeInterface) {
+                    throw new InvalidInputException('Unsupported filter value for DateField');
                 }
-                break;
-            case 'array':
-                if (is_int(current($value))) {
-                    $type = Connection::PARAM_INT_ARRAY;
-                } else {
-                    $type = Connection::PARAM_STR_ARRAY;
-                }
+                $value = $value->format('Y-m-d');
+                $type = ParameterType::STRING;
                 break;
             default:
-                throw new InvalidInputException('Unsupported type for query parameter');
+                throw new InvalidInputException('Unsupported field type for query parameter');
         }
 
         $paramId = 'param_' . ++$this->parameterInc;
