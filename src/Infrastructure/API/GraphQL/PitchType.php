@@ -48,7 +48,7 @@ class PitchType extends ObjectType implements QueryTypeInterface
                     /** @var PitchRepository $repo */
                     $repo = $context->getContainer()->get(PitchRepository::class);
 
-                    return $repo->findPitchById($args['id']);
+                    return $repo->findById($args['id']);
                 }
             ],
             'allPitches' => [
@@ -57,7 +57,7 @@ class PitchType extends ObjectType implements QueryTypeInterface
                     /** @var PitchRepository $repo */
                     $repo = $context->getContainer()->get(PitchRepository::class);
 
-                    return $repo->findAllPitches();
+                    return $repo->findMany();
                 }
             ]
         ];

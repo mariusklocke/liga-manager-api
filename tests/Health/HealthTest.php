@@ -19,7 +19,7 @@ class HealthTest extends HttpTest
         $status = $this->parser->parse($response);
         self::assertIsObject($status);
 
-        $checks = ['redis', 'mysqli', 'doctrine'];
+        $checks = ['redis', 'doctrine'];
 
         foreach ($checks as $name) {
             self::assertObjectHasAttribute($name, $status);

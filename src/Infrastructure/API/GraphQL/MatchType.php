@@ -8,6 +8,9 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedPitchLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\RangeFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 
 class MatchType extends ObjectType implements QueryTypeInterface
@@ -59,6 +62,7 @@ class MatchType extends ObjectType implements QueryTypeInterface
                             /** @var BufferedPitchLoader $loader */
                             $loader = $context->getContainer()->get(BufferedPitchLoader::class);
                             $loader->addPitch($root['pitch_id']);
+
                             return new Deferred(function () use ($loader, $root) {
                                 return $loader->getByPitch($root['pitch_id']);
                             });
@@ -75,6 +79,7 @@ class MatchType extends ObjectType implements QueryTypeInterface
         /** @var BufferedTeamLoader $loader */
         $loader = $context->getContainer()->get(BufferedTeamLoader::class);
         $loader->addTeam($teamId);
+
         return new Deferred(function() use ($loader, $teamId) {
             return $loader->getByTeam($teamId);
         });
@@ -92,7 +97,7 @@ class MatchType extends ObjectType implements QueryTypeInterface
                     /** @var MatchRepository $repo */
                     $repo = $context->getContainer()->get(MatchRepository::class);
 
-                    return $repo->findMatchById($args['id']);
+                    return $repo->findById($args['id']);
                 }
             ],
             'matchesByKickoff' => [
@@ -105,9 +110,20 @@ class MatchType extends ObjectType implements QueryTypeInterface
                     /** @var MatchRepository $repo */
                     $repo = $context->getContainer()->get(MatchRepository::class);
 
-                    return $repo->findMatchesByKickoff(
-                        $args['min_date'] ?? null,
-                        $args['max_date'] ?? null
+                    $filters = [];
+
+                    if (isset($args['min_date']) || isset($args['max_date'])) {
+                        $filters[] = new RangeFilter(
+                            $repo->getField('kickoff'),
+                            Filter::MODE_INCLUDE,
+                            $args['min_date'] ?? null,
+                            $args['max_date'] ?? null
+                        );
+                    }
+
+                    return $repo->findMany(
+                        $filters,
+                        [new Sorting($repo->getField('kickoff'), Sorting::DIRECTION_ASCENDING)]
                     );
                 }
             ]

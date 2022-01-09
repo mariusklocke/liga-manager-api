@@ -3,32 +3,30 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\EmbeddedObjectField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\FloatField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
+
 class PitchRepository extends AbstractRepository
 {
-    /**
-     * @return array
-     */
-    public function findAllPitches()
+    protected function getTableName(): string
     {
-        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll('SELECT * FROM `pitches`'));
+        return 'pitches';
     }
 
-    /**
-     * @param string $id
-     * @return array|null
-     */
-    public function findPitchById(string $id): ?array
+    protected function getFieldDefinitions(): array
     {
-        $pitch = $this->getDb()->fetchFirstRow('SELECT * FROM `pitches` WHERE `id` = ?', [$id]);
-        if (null === $pitch) {
-            return null;
-        }
-
-        return $this->hydrate($pitch);
-    }
-
-    private function hydrate(array $row): array
-    {
-        return $this->reconstructEmbeddedObject($row, 'contact');
+        return [
+            new StringField('id', false),
+            new StringField('label', false),
+            new FloatField('location_longitude', false),
+            new FloatField('location_latitude', false),
+            new EmbeddedObjectField('contact', true, [
+                new StringField('email', false),
+                new StringField('first_name', false),
+                new StringField('last_name', false),
+                new StringField('phone', false)
+            ])
+        ];
     }
 }

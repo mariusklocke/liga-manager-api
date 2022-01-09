@@ -26,6 +26,9 @@ class TeamTest extends TestCase
         $allTeams = $this->client->getAllTeams();
         self::assertArrayContainsObjectWithAttribute($allTeams, 'id', $sent['id']);
 
+        $teams = $this->client->getTeamsByPattern('Team*');
+        self::assertArrayContainsObjectWithAttribute($teams, 'id', $sent['id']);
+
         return $sent['id'];
     }
 

@@ -3,34 +3,22 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
+
 class TournamentRepository extends AbstractRepository
 {
-    /**
-     * @return array
-     */
-    public function findAllTournaments() : array
+    protected function getTableName(): string
     {
-        return $this->getDb()->fetchAll('SELECT * FROM tournaments');
+        return 'tournaments';
     }
 
-    /**
-     * @param string $id
-     * @return array|null
-     */
-    public function findTournamentById(string $id): ?array
+    protected function getFieldDefinitions(): array
     {
-        return $this->getDb()->fetchFirstRow('SELECT * FROM tournaments WHERE id = ?', [$id]);
-    }
-
-    /**
-     * @param string $tournamentId
-     * @return array
-     */
-    public function findRounds(string $tournamentId): array
-    {
-        return $this->getDb()->fetchAll(
-            'SELECT * FROM `match_days` WHERE tournament_id = ? ORDER BY number ASC',
-            [$tournamentId]
-        );
+        return [
+            new StringField('id', false),
+            new StringField('name', false),
+            new IntegerField('rounds', false)
+        ];
     }
 }

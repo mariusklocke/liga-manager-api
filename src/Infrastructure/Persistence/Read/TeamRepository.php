@@ -3,65 +3,69 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\EmbeddedObjectField;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
+
 class TeamRepository extends AbstractRepository
 {
+    protected function getTableName(): string
+    {
+        return 'teams';
+    }
+
+    protected function getFieldDefinitions(): array
+    {
+        return [
+            new StringField('id', false),
+            new StringField('name', false),
+            new DateTimeField('created_at', false),
+            new EmbeddedObjectField('contact', true, [
+                new StringField('email', false),
+                new StringField('first_name', false),
+                new StringField('last_name', false),
+                new StringField('phone', false)
+            ])
+        ];
+    }
+
     /**
+     * @param array $seasonIds
      * @return array
      */
-    public function findAllTeams()
+    public function findBySeasonIds(array $seasonIds): array
     {
-        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll($this->getBaseQuery()));
+        $result = $this->gateway->fetch(
+            $this->getTableName(),
+            ['seasons_teams_link' => 'id = team_id'],
+            [new EqualityFilter(
+                new StringField('season_id', false),
+                Filter::MODE_INCLUDE,
+                $seasonIds
+            )]
+        );
+
+        return $this->hydrator->hydrateMany($result, 'season_id');
     }
 
     /**
-     * @param string $id
-     * @return array|null
-     */
-    public function findTeamById(string $id): ?array
-    {
-        $query = $this->getBaseQuery() . ' WHERE id = ?';
-        $team  = $this->getDb()->fetchFirstRow($query, [$id]);
-        if (null === $team) {
-            return null;
-        }
-
-        return $this->hydrate($team);
-    }
-
-    /**
-     * @param string $seasonId
+     * @param array $userIds
      * @return array
      */
-    public function findTeamsBySeasonId(string $seasonId): array
+    public function findByUserIds(array $userIds): array
     {
-        $query = $this->getBaseQuery() . ' JOIN seasons_teams_link ON id = team_id WHERE season_id = ?';
-        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll($query, [$seasonId]));
-    }
+        $result = $this->gateway->fetch(
+            $this->getTableName(),
+            ['users_teams_link' => 'id = team_id'],
+            [new EqualityFilter(
+                new StringField('user_id', false),
+                Filter::MODE_INCLUDE,
+                $userIds
+            )]
+        );
 
-    /**
-     * @param string $userId
-     * @return array
-     */
-    public function findTeamsByUserId(string $userId): array
-    {
-        $query = $this->getBaseQuery() . ' JOIN users_teams_link ON id = team_id WHERE user_id = ?';
-        return array_map([$this, 'hydrate'], $this->getDb()->fetchAll($query, [$userId]));
-    }
-
-    /**
-     * @return string
-     */
-    private function getBaseQuery(): string
-    {
-        $createdAt = $this->getDateFormat('created_at');
-        $query = <<<SQL
-  SELECT id, name, $createdAt, contact_email, contact_first_name, contact_last_name, contact_phone FROM teams
-SQL;
-        return $query;
-    }
-
-    private function hydrate(array $row): array
-    {
-        return $this->reconstructEmbeddedObject($row, 'contact');
+        return $this->hydrator->hydrateMany($result, 'user_id');
     }
 }

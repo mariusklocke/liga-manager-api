@@ -54,14 +54,20 @@ class TypeAssert
         }
     }
 
+    public static function assertInstanceOf($value, $base, string $name): void
+    {
+        if (!($value instanceof $base)) {
+            throw self::createException($name, $value, $base);
+        }
+    }
+
     private static function createException(string $name, $value, string $expectedType): InvalidInputException
     {
-        $message = sprintf(
-            'Invalid parameter type for %s. Expected: %s. Given: %s',
+        return new InvalidInputException(sprintf(
+            'Invalid type for input %s. Expected: %s. Given: %s',
             $name,
             $expectedType,
-            gettype($value)
-        );
-        return new InvalidInputException($message);
+            is_object($value) ? get_class($value) : gettype($value)
+        ));
     }
 }

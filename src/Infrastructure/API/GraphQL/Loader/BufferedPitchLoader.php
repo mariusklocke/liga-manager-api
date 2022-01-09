@@ -2,20 +2,24 @@
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
+
 class BufferedPitchLoader
 {
-    /** @var PitchLoader */
-    private $pitchLoader;
+    /** @var PitchRepository */
+    private $pitchRepository;
 
     /** @var array */
     private $byPitchId = [];
 
     /**
-     * @param PitchLoader $pitchLoader
+     * @param PitchRepository $pitchRepository
      */
-    public function __construct(PitchLoader $pitchLoader)
+    public function __construct(PitchRepository $pitchRepository)
     {
-        $this->pitchLoader = $pitchLoader;
+        $this->pitchRepository = $pitchRepository;
     }
 
     public function addPitch(string $pitchId): void
@@ -26,8 +30,17 @@ class BufferedPitchLoader
     public function getByPitch(string $pitchId): ?array
     {
         $pitchIds = array_keys($this->byPitchId, null, true);
-        foreach ($this->pitchLoader->loadPitchesById($pitchIds) as $id => $pitch) {
-            $this->byPitchId[$id] = $pitch;
+
+        if (count($pitchIds)) {
+            $filter = new EqualityFilter(
+                $this->pitchRepository->getField('id'),
+                Filter::MODE_INCLUDE,
+                $pitchIds
+            );
+
+            foreach ($this->pitchRepository->findMany([$filter]) as $pitch) {
+                $this->byPitchId[$pitch['id']] = $pitch;
+            }
         }
 
         return $this->byPitchId[$pitchId] ?? null;

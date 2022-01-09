@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\PatternFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 
 class TeamType extends ObjectType implements QueryTypeInterface
@@ -43,7 +45,7 @@ class TeamType extends ObjectType implements QueryTypeInterface
                     /** @var TeamRepository $repo */
                     $repo = $context->getContainer()->get(TeamRepository::class);
 
-                    return $repo->findAllTeams();
+                    return $repo->findMany();
                 }
             ],
             'team' => [
@@ -55,7 +57,25 @@ class TeamType extends ObjectType implements QueryTypeInterface
                     /** @var TeamRepository $repo */
                     $repo = $context->getContainer()->get(TeamRepository::class);
 
-                    return $repo->findTeamById($args['id']);
+                    return $repo->findById($args['id']);
+                }
+            ],
+            'teamsByPattern' => [
+                'type' => Type::listOf(static::getInstance()),
+                'args' => [
+                    'pattern' => Type::nonNull(Type::string())
+                ],
+                'resolve' => function ($root, array $args, AppContext $context) {
+                    /** @var TeamRepository $repo */
+                    $repo = $context->getContainer()->get(TeamRepository::class);
+
+                    $filter = new PatternFilter(
+                        $repo->getField('name'),
+                        Filter::MODE_INCLUDE,
+                        $args['pattern']
+                    );
+
+                    return $repo->findMany([$filter]);
                 }
             ]
         ];

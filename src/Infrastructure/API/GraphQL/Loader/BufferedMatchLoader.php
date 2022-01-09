@@ -3,20 +3,24 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
+
 class BufferedMatchLoader
 {
-    /** @var MatchLoader */
-    private $matchLoader;
+    /** @var MatchRepository */
+    private $matchRepository;
 
     /** @var array */
     private $byMatchDayId = [];
 
     /**
-     * @param MatchLoader $matchLoader
+     * @param MatchRepository $matchRepository
      */
-    public function __construct(MatchLoader $matchLoader)
+    public function __construct(MatchRepository $matchRepository)
     {
-        $this->matchLoader = $matchLoader;
+        $this->matchRepository = $matchRepository;
     }
 
     /**
@@ -29,14 +33,26 @@ class BufferedMatchLoader
 
     /**
      * @param string $matchDayId
-     * @return array|null
+     * @return array
      */
-    public function getByMatchDay(string $matchDayId): ?array
+    public function getByMatchDay(string $matchDayId): array
     {
         $matchDayIds = array_keys($this->byMatchDayId, null, true);
-        foreach ($this->matchLoader->loadByMatchDayId($matchDayIds) as $id => $matches) {
-            $this->byMatchDayId[$id] = $matches;
+
+        if (count($matchDayIds)) {
+            $filter = new EqualityFilter(
+                $this->matchRepository->getField('match_day_id'),
+                Filter::MODE_INCLUDE,
+                $matchDayIds
+            );
+
+            $matches = $this->matchRepository->findMany([$filter], [], null, 'match_day_id');
+
+            foreach ($matchDayIds as $id) {
+                $this->byMatchDayId[$id] = $matches[$id] ?? [];
+            }
         }
-        return $this->byMatchDayId[$matchDayId] ?? null;
+
+        return $this->byMatchDayId[$matchDayId];
     }
 }

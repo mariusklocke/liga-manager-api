@@ -3,69 +3,83 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
-class AbstractRepository
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
+
+abstract class AbstractRepository
 {
-    const MYSQL_DATE_FORMAT = 'Y-m-d H:i:s';
+    /** @var ReadDbGatewayInterface */
+    protected $gateway;
 
-    /** @var ReadDbAdapterInterface */
-    private $db;
+    /** @var Hydrator */
+    protected $hydrator;
 
-    public function __construct(ReadDbAdapterInterface $readDbAdapter)
+    public function __construct(ReadDbGatewayInterface $gateway)
     {
-        $this->db = $readDbAdapter;
+        $this->gateway = $gateway;
+        $this->hydrator = new Hydrator($this->getFieldDefinitions());
     }
 
     /**
-     * @return ReadDbAdapterInterface
-     */
-    protected function getDb(): ReadDbAdapterInterface
-    {
-        return $this->db;
-    }
-
-    /**
-     * @param array $subject
-     * @param string $objectProperty
-     * @param string $separator
+     * @param iterable|Filter[] $filters
+     * @param iterable|Sorting[] $sortings
+     * @param Pagination|null $pagination
+     * @param string|null $groupBy
      * @return array
      */
-    protected function reconstructEmbeddedObject(array $subject, string $objectProperty, string $separator = '_'): array
-    {
-        $hasValues  = false;
-        $properties = array_filter(array_keys($subject), function($key) use ($objectProperty) {
-            return strpos($key, $objectProperty) === 0;
-        });
-        foreach ($properties as $property) {
-            list(,$innerProperty) = explode($separator, $property, 2);
-            $subject[$objectProperty][$innerProperty] = $subject[$property];
-            $hasValues = $hasValues || ($subject[$property] !== null);
-            unset($subject[$property]);
-        }
-        if (!$hasValues) {
-            $subject[$objectProperty] = null;
-        }
-        return $subject;
+    public function findMany(
+        iterable    $filters = [],
+        iterable    $sortings = [],
+        ?Pagination $pagination = null,
+        ?string     $groupBy = null
+    ): array {
+        return $this->hydrator->hydrateMany($this->gateway->fetch(
+            $this->getTableName(),
+            [],
+            $filters,
+            $sortings,
+            $pagination
+        ), $groupBy);
     }
 
     /**
-     * @param string $field
-     * @param string|null $alias
-     * @return string
+     * @param string $id
+     * @return array|null
      */
-    protected function getDateFormat(string $field, string $alias = null): string
+    public function findById(string $id): ?array
     {
-        if (null === $alias) {
-            $alias = $field;
-        }
-        return "DATE_FORMAT($field, '%Y-%m-%dT%TZ') as $alias";
+        return $this->hydrator->hydrateOne($this->gateway->fetch(
+            $this->getTableName(),
+            [],
+            [new EqualityFilter($this->getField('id'), Filter::MODE_INCLUDE, [$id])]
+        ));
     }
 
     /**
-     * @param array $params
+     * @param string $name
+     * @return Field|null
+     */
+    public function getField(string $name): ?Field
+    {
+        foreach ($this->getFieldDefinitions() as $fieldDefinition) {
+            if ($fieldDefinition->getName() === $name) {
+                return $fieldDefinition;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array|Field[]
+     */
+    abstract protected function getFieldDefinitions(): array;
+
+    /**
      * @return string
      */
-    protected function getPlaceholders(array $params): string
-    {
-        return implode(',', array_fill(0, count($params), '?'));
-    }
+    abstract protected function getTableName(): string;
 }

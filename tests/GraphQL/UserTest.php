@@ -25,6 +25,24 @@ class UserTest extends TestCase
         }
 
         self::assertInstanceOf(Exception::class, $exception);
+
+        $this->useAdminAuth();
+
+        $users = $this->client->getAllUsers();
+
+        $requiredAttributes = ['id', 'email', 'first_name', 'last_name', 'role', 'teams'];
+        $sensitiveAttributes = ['password'];
+
+        foreach ($users as $user) {
+            foreach ($requiredAttributes as $requiredAttribute) {
+                self::assertObjectHasAttribute($requiredAttribute, $user);
+            }
+            foreach ($sensitiveAttributes as $sensitiveAttribute) {
+                self::assertObjectNotHasAttribute($sensitiveAttribute, $user);
+            }
+        }
+
+        self::assertNotEmpty($users);
     }
 
     public function testUserCanBeCreated()

@@ -3,24 +3,26 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
-class SeasonRepository extends AbstractRepository
+class MatchDayRepository extends AbstractRepository
 {
     protected function getTableName(): string
     {
-        return 'seasons';
+        return 'match_days';
     }
 
     protected function getFieldDefinitions(): array
     {
         return [
             new StringField('id', false),
-            new StringField('name', false),
-            new StringField('state', false),
-            new IntegerField('match_day_count', false),
-            new IntegerField('team_count', false)
+            new StringField('season_id', false),
+            new StringField('tournament_id', false),
+            new IntegerField('number', false),
+            new DateField('start_date', false),
+            new DateField('end_date', false)
         ];
     }
 }

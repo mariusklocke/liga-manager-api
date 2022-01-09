@@ -251,6 +251,10 @@ query season($id: String!) {
     state,
     match_day_count,
     team_count,
+    teams {
+      id,
+      name
+    },
     ranking {
       updated_at,
       positions {
@@ -287,6 +291,10 @@ query season($id: String!) {
     state,
     match_day_count,
     team_count,
+    teams {
+      id,
+      name
+    },
     ranking {
       updated_at,
       positions {
@@ -302,6 +310,16 @@ query season($id: String!) {
         losses,
         scored_goals,
         conceded_goals
+        points
+      },
+      penalties {
+        id,
+        team {
+          id,
+          name
+        }
+        reason,
+        created_at,
         points
       }
     },
@@ -659,7 +677,11 @@ query allUsers {
     email,
     role,
     first_name,
-    last_name
+    last_name,
+    teams {
+      id,
+      name
+    }
   }
 }
 GRAPHQL;
@@ -865,5 +887,45 @@ GRAPHQL;
         $data = $this->requestAndParse($query, ['min_date' => $minDate, 'max_date' => $maxDate]);
 
         return $data->matchesByKickoff;
+    }
+
+    public function getLatestEvents(): array
+    {
+        $query = <<<'GRAPHQL'
+query latestEvents {
+  latestEvents {
+    id,
+    occurred_at,
+    type
+  }
+}
+GRAPHQL;
+
+        $data = $this->requestAndParse($query);
+
+        return $data->latestEvents;
+    }
+
+    public function getTeamsByPattern($pattern): array
+    {
+        $query = <<<'GRAPHQL'
+    query teamsByPattern ($pattern: String!) {
+      teamsByPattern (pattern: $pattern) {
+        id,
+        name,
+        created_at,
+        contact {
+          first_name,
+          last_name,
+          phone,
+          email
+        }
+      }
+    }
+GRAPHQL;
+
+        $data = $this->requestAndParse($query, ['pattern' => $pattern]);
+
+        return $data->teamsByPattern;
     }
 }
