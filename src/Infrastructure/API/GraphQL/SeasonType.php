@@ -41,6 +41,7 @@ class SeasonType extends ObjectType implements QueryTypeInterface
                             /** @var BufferedTeamLoader $loader */
                             $loader = $context->getContainer()->get(BufferedTeamLoader::class);
                             $loader->addSeason($root['id']);
+
                             return new Deferred(function () use ($loader, $root) {
                                 return $loader->getBySeason($root['id']);
                             });
@@ -52,6 +53,7 @@ class SeasonType extends ObjectType implements QueryTypeInterface
                             /** @var BufferedMatchDayLoader $loader */
                             $loader = $context->getContainer()->get(BufferedMatchDayLoader::class);
                             $loader->addSeason($root['id']);
+
                             return new Deferred(function () use ($loader, $root) {
                                 return $loader->getBySeason($root['id']);
                             });

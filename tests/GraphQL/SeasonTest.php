@@ -92,9 +92,17 @@ class SeasonTest extends CompetitionTestCase
         self::assertSame(count($dates), count($season->match_days));
 
         $matchCount = 0;
+        $previousMatchDay = null;
         foreach ($season->match_days as $matchDay) {
             $matchCount += count($matchDay->matches);
+
+            if ($previousMatchDay !== null) {
+                self::assertGreaterThan($previousMatchDay->number, $matchDay->number);
+            }
+
+            $previousMatchDay = $matchDay;
         }
+
         self::assertSame(count($dates) * count(self::$teamIds) / 2, $matchCount);
 
         return $season->id;

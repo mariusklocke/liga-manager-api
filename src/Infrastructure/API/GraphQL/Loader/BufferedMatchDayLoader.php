@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL\Loader;
 
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchDayRepository;
 
 class BufferedMatchDayLoader
@@ -51,9 +52,23 @@ class BufferedMatchDayLoader
         $seasonIds = array_keys($this->bySeasonId, null, true);
 
         if (count($seasonIds)) {
-            $filter = new EqualityFilter($this->matchDayRepository->getField('season_id'), Filter::MODE_INCLUDE, $seasonIds);
+            $filter = new EqualityFilter(
+                $this->matchDayRepository->getField('season_id'),
+                Filter::MODE_INCLUDE,
+                $seasonIds
+            );
 
-            $matchDays = $this->matchDayRepository->findMany([$filter], [], null, 'season_id');
+            $sorting = new Sorting(
+                $this->matchDayRepository->getField('number'),
+                Sorting::DIRECTION_ASCENDING
+            );
+
+            $matchDays = $this->matchDayRepository->findMany(
+                [$filter],
+                [$sorting],
+                null,
+                'season_id'
+            );
 
             foreach ($seasonIds as $id) {
                 $this->bySeasonId[$id] = $matchDays[$id] ?? [];
@@ -72,9 +87,23 @@ class BufferedMatchDayLoader
         $tournamentIds = array_keys($this->byTournamentId, null ,true);
 
         if (count($tournamentIds)) {
-            $filter = new EqualityFilter($this->matchDayRepository->getField('tournament_id'), Filter::MODE_INCLUDE, $tournamentIds);
+            $filter = new EqualityFilter(
+                $this->matchDayRepository->getField('tournament_id'),
+                Filter::MODE_INCLUDE,
+                $tournamentIds
+            );
 
-            $matchDays = $this->matchDayRepository->findMany([$filter], [], null, 'tournament_id');
+            $sorting = new Sorting(
+                $this->matchDayRepository->getField('number'),
+                Sorting::DIRECTION_ASCENDING
+            );
+
+            $matchDays = $this->matchDayRepository->findMany(
+                [$filter],
+                [$sorting],
+                null,
+                'tournament_id'
+            );
 
             foreach ($tournamentIds as $id) {
                 $this->byTournamentId[$id] = $matchDays[$id] ?? [];
