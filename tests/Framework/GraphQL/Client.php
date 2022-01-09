@@ -905,4 +905,27 @@ GRAPHQL;
 
         return $data->latestEvents;
     }
+
+    public function getTeamsByPattern($pattern): array
+    {
+        $query = <<<'GRAPHQL'
+    query teamsByPattern ($pattern: String!) {
+      teamsByPattern (pattern: $pattern) {
+        id,
+        name,
+        created_at,
+        contact {
+          first_name,
+          last_name,
+          phone,
+          email
+        }
+      }
+    }
+GRAPHQL;
+
+        $data = $this->requestAndParse($query, ['pattern' => $pattern]);
+
+        return $data->teamsByPattern;
+    }
 }
