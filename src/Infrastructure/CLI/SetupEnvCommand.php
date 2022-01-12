@@ -40,7 +40,7 @@ class SetupEnvCommand extends Command
                 $stream = new FileStream($envPath, 'w');
 
                 foreach ($env as $name => $value) {
-                    //$stream->write("$name=$value\n");
+                    $stream->write("$name=$value\n");
                 }
 
                 $stream->close();
