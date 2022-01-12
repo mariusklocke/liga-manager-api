@@ -7,9 +7,13 @@ use DI;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
+use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
-use Swift_Mailer;
-use Swift_Transport;
+use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport;
 
 class MailServiceProvider implements ServiceProviderInterface
 {
@@ -17,16 +21,20 @@ class MailServiceProvider implements ServiceProviderInterface
     {
         return [
             'app.home' => DI\env('APP_HOME'),
-            MailerInterface::class => DI\get(SwiftMailer::class),
-            Swift_Mailer::class => DI\autowire(),
-            Swift_Transport::class => DI\factory(SwiftTransportFactory::class)
-                ->parameter('url', DI\env('EMAIL_URL')),
-            SwiftMailer::class => DI\create()
-                ->constructor(
-                    DI\get(Swift_Mailer::class),
-                    DI\env('EMAIL_SENDER_ADDRESS'),
-                    DI\env('EMAIL_SENDER_NAME')
-                ),
+            EventDispatcherInterface::class => DI\get(EventDispatcher::class),
+            MailerInterface::class => DI\get(SymfonyMailer::class),
+            SymfonyMailer::class => DI\factory(function (ContainerInterface $container) {
+                $transport = Transport::fromDsn(
+                    Environment::get('EMAIL_URL'),
+                    $container->get(EventDispatcherInterface::class)
+                );
+
+                return new SymfonyMailer(
+                    new Mailer($transport),
+                    Environment::get('EMAIL_SENDER_ADDRESS'),
+                    Environment::get('EMAIL_SENDER_NAME')
+                );
+            }),
             TemplateRendererInterface::class => DI\get(TemplateRenderer::class),
             TemplateRenderer::class => DI\create()
                 ->constructor(DI\string('{app.home}/templates'))

@@ -6,12 +6,15 @@ namespace HexagonalPlayground\Application\Email;
 interface MailerInterface
 {
     /**
-     * @return MessageInterface
+     * @param array $to
+     * @param string $subject
+     * @param string $html
+     * @return object
      */
-    public function createMessage();
+    public function createMessage(array $to, string $subject, string $html): object;
 
     /**
-     * @param MessageInterface $message
+     * @param object $message
      */
-    public function send(MessageInterface $message);
+    public function send(object $message);
 }

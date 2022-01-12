@@ -2,17 +2,17 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use HexagonalPlayground\Application\Email\MailerInterface;
+use ArrayObject;
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
-use HexagonalPlayground\Infrastructure\Email\SwiftMailer;
 use HexagonalPlayground\Infrastructure\Environment;
-use HexagonalPlayground\Tests\Framework\EmailListenerInterface;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\SlimClient;
-use HexagonalPlayground\Tests\Framework\SwiftMailListener;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Slim\App;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Contracts\EventDispatcher\Event;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -22,9 +22,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /** @var App */
     private static $app;
 
-    /** @var EmailListenerInterface */
-    private static $emailListener;
-
     protected function setUp(): void
     {
         if (null === self::$app) {
@@ -33,17 +30,27 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->client = new Client(new SlimClient(self::$app, new Psr17Factory()));
     }
 
-    protected static function getEmailListener(): EmailListenerInterface
+    /**
+     * @param string $eventName
+     * @param callable $callable
+     * @return array|Event[]
+     */
+    protected static function catchEvents(string $eventName, callable $callable): array
     {
-        if (null === self::$emailListener) {
-            /** @var MailerInterface $mailer */
-            $mailer = self::$app->getContainer()->get(MailerInterface::class);
-            if (!($mailer instanceof SwiftMailer)) {
-                throw new \Exception('Unsupported Mailer Type: ' . get_class($mailer));
-            }
-            self::$emailListener = new SwiftMailListener($mailer);
-        }
-        return self::$emailListener;
+        $events = new ArrayObject();
+
+        /** @var EventDispatcher $eventDispatcher */
+        $eventDispatcher = self::$app->getContainer()->get(EventDispatcherInterface::class);
+
+        $listener = function (Event $event) use ($events) {
+            $events[] = $event;
+        };
+
+        $eventDispatcher->addListener($eventName, $listener);
+        $callable();
+        $eventDispatcher->removeListener($eventName, $listener);
+
+        return $events->getArrayCopy();
     }
 
     protected function useAdminAuth(): void

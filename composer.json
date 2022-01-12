@@ -41,8 +41,8 @@
         "php-di/php-di": "^6.0",
         "ramsey/uuid": "^4.1",
         "slim/slim": "^4.8.1",
-        "swiftmailer/swiftmailer": "^6.2",
         "symfony/console": "^5.3.2",
+        "symfony/mailer": "^6.0",
         "web-auth/webauthn-lib": "^3.3.9",
         "webonyx/graphql-php": "^0.13.9"
     }
