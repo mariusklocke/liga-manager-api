@@ -21,10 +21,11 @@ class SendTestMailCommand extends Command
         /** @var MailerInterface $mailer */
         $mailer = $this->container->get(MailerInterface::class);
 
-        $message = $mailer->createMessage();
-        $message->setSubject('Test');
-        $message->setBody('This is just a test', 'text/plain');
-        $message->setTo([$input->getArgument('recipient')]);
+        $message = $mailer->createMessage(
+            [$input->getArgument('recipient') => 'Test Recipient'],
+            'Test',
+            '<h1>This is just a test</h1>'
+        );
 
         $mailer->send($message);
 

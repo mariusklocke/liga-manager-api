@@ -5,14 +5,12 @@ namespace HexagonalPlayground\Application\Handler;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\Email\MessageInterface;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Domain\User;
-use Psr\Http\Message\UriInterface;
 
 class SendInviteMailHandler implements AuthAwareHandler
 {
@@ -52,37 +50,24 @@ class SendInviteMailHandler implements AuthAwareHandler
         $isAdmin->check();
 
         /** @var User $user */
-        $user    = $this->userRepository->find($command->getUserId());
-        $message = $this->buildMessage($user, $command->getBaseUri(), $command->getTargetPath());
+        $user  = $this->userRepository->find($command->getUserId());
+        $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 week'));
 
-        $this->mailer->send($message);
-    }
-
-    /**
-     * @param User $invitedUser
-     * @param UriInterface $baseUri
-     * @param string $targetPath
-     * @return MessageInterface
-     */
-    private function buildMessage(User $invitedUser, UriInterface $baseUri, string $targetPath): MessageInterface
-    {
-        $title = 'You have been invited';
-        $token = $this->tokenFactory->create($invitedUser, new DateTimeImmutable('now + 1 week'));
-
-        $targetUri = $baseUri
-            ->withPath($targetPath)
+        $targetUri = $command->getBaseUri()
+            ->withPath($command->getTargetPath())
             ->withQuery(http_build_query(['token' => $token->encode()]));
 
-        $message = $this->mailer->createMessage();
-        $message->setTo([$invitedUser->getEmail() => $invitedUser->getFullName()]);
-        $message->setSubject($title);
-        $message->setBody($this->templateRenderer->render('InviteUser.html.php', [
-            'title'      => $title,
-            'userName'   => $invitedUser->getFirstName(),
-            'targetLink' => $targetUri->__toString(),
-            'validUntil' => $token->getExpiresAt()
-        ]), 'text/html');
+        $message = $this->mailer->createMessage(
+            [$user->getEmail() => $user->getFullName()],
+            'You have been invited',
+            $this->templateRenderer->render('InviteUser.html.php', [
+                'title'      => 'You have been invited',
+                'userName'   => $user->getFirstName(),
+                'targetLink' => $targetUri->__toString(),
+                'validUntil' => $token->getExpiresAt()
+            ])
+        );
 
-        return $message;
+        $this->mailer->send($message);
     }
 }

@@ -10,8 +10,6 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
-use HexagonalPlayground\Domain\User;
-use Psr\Http\Message\UriInterface;
 
 class SendPasswordResetMailHandler
 {
@@ -55,20 +53,17 @@ class SendPasswordResetMailHandler
             ->getBaseUri()
             ->withPath($command->getTargetPath())
             ->withQuery(http_build_query(['token' => $token->encode()]));
-        $message = $this->mailer->createMessage();
-        $message->setTo([$user->getEmail() => $user->getFullName()]);
-        $message->setSubject('Reset your password');
-        $message->setBody($this->renderMailBody($user, $targetUri), 'text/html');
+
+        $message = $this->mailer->createMessage(
+            [$user->getEmail() => $user->getFullName()],
+            'Reset your password',
+            $this->templateRenderer->render('PasswordReset.html.php', [
+                'title'      => 'Reset your password',
+                'userName'   => $user->getFirstName(),
+                'targetLink' => $targetUri->__toString()
+            ])
+        );
 
         $this->mailer->send($message);
-    }
-
-    private function renderMailBody(User $user, UriInterface $targetUri): string
-    {
-        return $this->templateRenderer->render('PasswordReset.html.php', [
-            'title'      => 'Reset your password',
-            'userName'   => $user->getFirstName(),
-            'targetLink' => $targetUri->__toString()
-        ]);
     }
 }

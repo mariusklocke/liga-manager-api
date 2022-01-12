@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
+use Symfony\Component\Mailer\Event\MessageEvent;
 
 class UserTest extends TestCase
 {
@@ -62,20 +63,20 @@ class UserTest extends TestCase
         $this->client->clearAuth();
 
         $user = $this->getUserData();
-        $emails = self::getEmailListener()->listen(function () use ($user) {
+        $messageEvents = self::catchEvents(MessageEvent::class, function () use ($user) {
             $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
         });
 
-        self::assertCount(1, $emails);
+        self::assertCount(1, $messageEvents);
     }
 
     public function testPasswordResetDoesNotErrorWithUnknownEmail(): void
     {
-        $emails = self::getEmailListener()->listen(function () {
+        $messageEvents = self::catchEvents(MessageEvent::class, function () {
             $this->client->sendPasswordResetMail('mister.secret@example.com', '/nowhere');
         });
 
-        self::assertCount(0, $emails);
+        self::assertCount(0, $messageEvents);
     }
 
     /**
@@ -133,10 +134,11 @@ class UserTest extends TestCase
      */
     public function testSendingInviteEmail(array $user): array
     {
-        $emails = self::getEmailListener()->listen(function () use ($user) {
+        $messageEvents = self::catchEvents(MessageEvent::class, function () use ($user) {
             $this->client->sendInviteMail($user['id'], '/straight/to/hell');
         });
-        self::assertCount(1, $emails);
+
+        self::assertCount(1, $messageEvents);
 
         return $user;
     }
