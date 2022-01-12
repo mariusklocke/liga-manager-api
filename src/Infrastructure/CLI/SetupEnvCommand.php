@@ -25,7 +25,7 @@ class SetupEnvCommand extends Command
         $env['MYSQL_PASSWORD'] = $io->ask('Enter MySQL password', 'dev');
         $env['EMAIL_SENDER_ADDRESS'] = $io->ask('Enter sender address for outbound email', 'noreply@example.com');
         $env['EMAIL_SENDER_NAME'] = $io->ask('Enter sender name for outbound email', 'No Reply');
-        $env['EMAIL_URL'] = $io->ask('Enter URL to use for sending email', 'smtp://maildev:25');
+        $env['EMAIL_URL'] = $io->ask('Enter URL to use for sending email', 'smtp://maildev:25?verify_peer=0');
         $env['JWT_SECRET'] = JsonWebToken::generateSecret();
 
         $envPath = getenv('APP_HOME') . '/.env';
