@@ -25,4 +25,9 @@ class CommandQueue
     {
         return new ArrayIterator($this->commands);
     }
+
+    public function size(): int
+    {
+        return count($this->commands);
+    }
 }
