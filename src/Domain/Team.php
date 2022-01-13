@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Domain\Event\Event;
-use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 
@@ -25,10 +23,6 @@ class Team extends Entity
         parent::__construct($id);
         $this->setName($name);
         $this->createdAt = new DateTimeImmutable();
-
-        Publisher::getInstance()->publish(new Event('team:created', [
-            'teamId' => $this->id
-        ]));
     }
 
     /**
@@ -40,19 +34,11 @@ class Team extends Entity
     }
 
     /**
-     * @param string $newName
+     * @return ContactPerson|null
      */
-    public function rename(string $newName)
+    public function getContact(): ?ContactPerson
     {
-        $oldName = $this->name;
-        if ($newName !== $oldName) {
-            $this->setName($newName);
-            Publisher::getInstance()->publish(new Event('team:renamed', [
-                'teamId' => $this->id,
-                'oldName' => $oldName,
-                'newName' => $newName
-            ]));
-        }
+        return $this->contact;
     }
 
     /**
@@ -60,20 +46,13 @@ class Team extends Entity
      */
     public function setContact(ContactPerson $contact): void
     {
-        if (null === $this->contact || !$this->contact->equals($contact)) {
-            Publisher::getInstance()->publish(new Event('team:contact:updated', [
-                'teamId' => $this->id,
-                'oldContact' => $this->contact !== null ? $this->contact->toArray() : null,
-                'newContact' => $contact->toArray()
-            ]));
-            $this->contact = $contact;
-        }
+        $this->contact = $contact;
     }
 
     /**
      * @param string $name
      */
-    private function setName(string $name): void
+    public function setName(string $name): void
     {
         Assert::minLength($name, 1, "A team's name cannot be blank");
         Assert::maxLength($name, 255, "A team's name cannot exceed 255 characters");

@@ -6,6 +6,7 @@ use HexagonalPlayground\Application\Command\CreateMatchDayForSeasonCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
 
 class CreateMatchDayForSeasonHandler implements AuthAwareHandler
@@ -24,8 +25,9 @@ class CreateMatchDayForSeasonHandler implements AuthAwareHandler
     /**
      * @param CreateMatchDayForSeasonCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      */
-    public function __invoke(CreateMatchDayForSeasonCommand $command, AuthContext $authContext): void
+    public function __invoke(CreateMatchDayForSeasonCommand $command, AuthContext $authContext): array
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
@@ -39,5 +41,7 @@ class CreateMatchDayForSeasonHandler implements AuthAwareHandler
             $command->getDatePeriod()->getEndDate()
         );
         $this->seasonRepository->save($season);
+
+        return [];
     }
 }

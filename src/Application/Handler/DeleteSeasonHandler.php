@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Command\DeleteSeasonCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
 
 class DeleteSeasonHandler implements AuthAwareHandler
@@ -26,8 +27,9 @@ class DeleteSeasonHandler implements AuthAwareHandler
     /**
      * @param DeleteSeasonCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      */
-    public function __invoke(DeleteSeasonCommand $command, AuthContext $authContext): void
+    public function __invoke(DeleteSeasonCommand $command, AuthContext $authContext): array
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
@@ -37,5 +39,7 @@ class DeleteSeasonHandler implements AuthAwareHandler
         $season->clearMatchDays();
         $season->clearTeams();
         $this->seasonRepository->delete($season);
+
+        return [];
     }
 }

@@ -5,16 +5,15 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use DI;
 use HexagonalPlayground\Application\Bus\HandlerResolver;
-use HexagonalPlayground\Application\EventStoreInterface;
-use HexagonalPlayground\Application\EventStoreSubscriber;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
-use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineEventStore;
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Redis;
 use RuntimeException;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EventServiceProvider implements ServiceProviderInterface
 {
@@ -22,11 +21,19 @@ class EventServiceProvider implements ServiceProviderInterface
     {
         return [
             HandlerResolver::class => DI\decorate(function (HandlerResolver $resolver, ContainerInterface $container) {
-                Publisher::getInstance()->addSubscriber($container->get(EventStoreSubscriber::class));
-                Publisher::getInstance()->addSubscriber($container->get(RedisEventPublisher::class));
+                /** @var EventDispatcher $eventDispatcher */
+                $eventDispatcher = $container->get(EventDispatcherInterface::class);
+
+                foreach ($container->get(EventSubscriberInterface::class) as $subscriber) {
+                    $eventDispatcher->addSubscriber($subscriber);
+                }
 
                 return $resolver;
             }),
+
+            EventSubscriberInterface::class => [
+                DI\get(RedisEventPublisher::class)
+            ],
 
             HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
 
@@ -37,15 +44,7 @@ class EventServiceProvider implements ServiceProviderInterface
                 }
 
                 return $redis;
-            }),
-
-            EventStoreInterface::class => DI\get(DoctrineEventStore::class),
-
-            DoctrineEventStore::class => DI\autowire(),
-
-            EventStoreSubscriber::class => DI\autowire(),
-
-            RedisEventPublisher::class => DI\autowire()
+            })
         ];
     }
 }

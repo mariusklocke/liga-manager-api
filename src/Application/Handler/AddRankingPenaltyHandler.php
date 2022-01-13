@@ -8,6 +8,8 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Event\Event;
+use HexagonalPlayground\Domain\RankingPenalty;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 
@@ -32,25 +34,41 @@ class AddRankingPenaltyHandler implements AuthAwareHandler
     /**
      * @param AddRankingPenaltyCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      */
-    public function __invoke(AddRankingPenaltyCommand $command, AuthContext $authContext): void
+    public function __invoke(AddRankingPenaltyCommand $command, AuthContext $authContext): array
     {
+        $events = [];
+
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
 
         /** @var Season $season */
-        $season = $this->seasonRepository->find($command->getSeasonId());
+        $season  = $this->seasonRepository->find($command->getSeasonId());
         /** @var Team $team */
-        $team   = $this->teamRepository->find($command->getTeamId());
+        $team    = $this->teamRepository->find($command->getTeamId());
+        $ranking = $season->getRanking();
 
-        $season->getRanking()->addPenalty(
+        $penalty = new RankingPenalty(
             $command->getId(),
+            $season->getRanking(),
             $team,
             $command->getReason(),
-            $command->getPoints(),
-            $authContext->getUser()
+            $command->getPoints()
         );
 
+        $ranking->addPenalty($penalty);
+
         $this->seasonRepository->save($season);
+
+        $events[] = new Event('ranking:penalty:added', [
+            'seasonId'   => $season->getId(),
+            'teamId'     => $team->getId(),
+            'reason'     => $command->getReason(),
+            'points'     => $command->getPoints(),
+            'userId'     => $authContext->getUser()->getId()
+        ]);
+
+        return $events;
     }
 }

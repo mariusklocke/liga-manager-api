@@ -3,8 +3,8 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
-use HexagonalPlayground\Tests\Framework\EventCapturer;
 use stdClass;
 
 class SeasonTest extends CompetitionTestCase
@@ -77,7 +77,7 @@ class SeasonTest extends CompetitionTestCase
         $dates = self::createMatchDayDates(2 * (count(self::$teamIds) - 1));
         $this->client->createMatchesForSeason($seasonId, $dates);
 
-        $events = EventCapturer::getInstance()->capture(function() use ($seasonId) {
+        $events = self::catchEvents(Event::class, function () use ($seasonId) {
             $this->client->startSeason($seasonId);
         });
 

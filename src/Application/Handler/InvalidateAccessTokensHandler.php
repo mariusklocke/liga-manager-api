@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Handler;
 use HexagonalPlayground\Application\Command\InvalidateAccessTokensCommand;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
+use HexagonalPlayground\Domain\Event\Event;
 
 class InvalidateAccessTokensHandler implements AuthAwareHandler
 {
@@ -22,12 +23,15 @@ class InvalidateAccessTokensHandler implements AuthAwareHandler
     /**
      * @param InvalidateAccessTokensCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      */
-    public function __invoke(InvalidateAccessTokensCommand $command, AuthContext $authContext): void
+    public function __invoke(InvalidateAccessTokensCommand $command, AuthContext $authContext): array
     {
         $user = $authContext->getUser();
         $user->invalidateAccessTokens();
 
         $this->userRepository->save($user);
+
+        return [];
     }
 }

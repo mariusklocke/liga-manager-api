@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\Util\Assert;
@@ -33,8 +34,9 @@ class SetTournamentRoundHandler implements AuthAwareHandler
     /**
      * @param SetTournamentRoundCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      */
-    public function __invoke(SetTournamentRoundCommand $command, AuthContext $authContext): void
+    public function __invoke(SetTournamentRoundCommand $command, AuthContext $authContext): array
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
@@ -60,5 +62,7 @@ class SetTournamentRoundHandler implements AuthAwareHandler
             $round->createMatch(null, $homeTeam, $guestTeam);
         }
         $this->tournamentRepository->save($tournament);
+
+        return [];
     }
 }

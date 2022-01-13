@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\MatchDayGenerator;
 use HexagonalPlayground\Domain\Season;
 
@@ -27,9 +28,10 @@ class CreateMatchesForSeasonHandler implements AuthAwareHandler
     /**
      * @param CreateMatchesForSeasonCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      * @throws NotFoundException
      */
-    public function __invoke(CreateMatchesForSeasonCommand $command, AuthContext $authContext): void
+    public function __invoke(CreateMatchesForSeasonCommand $command, AuthContext $authContext): array
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
@@ -42,5 +44,7 @@ class CreateMatchesForSeasonHandler implements AuthAwareHandler
         $generator->generateMatchDaysForSeason($season, $command->getMatchDaysDates());
 
         $this->seasonRepository->save($season);
+
+        return [];
     }
 }
