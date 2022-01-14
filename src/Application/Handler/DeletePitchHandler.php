@@ -6,6 +6,7 @@ use HexagonalPlayground\Application\Command\DeletePitchCommand;
 use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Pitch;
 
 class DeletePitchHandler implements AuthAwareHandler
@@ -24,8 +25,9 @@ class DeletePitchHandler implements AuthAwareHandler
     /**
      * @param DeletePitchCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      */
-    public function __invoke(DeletePitchCommand $command, AuthContext $authContext): void
+    public function __invoke(DeletePitchCommand $command, AuthContext $authContext): array
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
@@ -34,5 +36,7 @@ class DeletePitchHandler implements AuthAwareHandler
         $pitch = $this->pitchRepository->find($command->getPitchId());
         $pitch->assertDeletable();
         $this->pitchRepository->delete($pitch);
+
+        return [];
     }
 }

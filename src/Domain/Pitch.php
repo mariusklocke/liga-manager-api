@@ -5,8 +5,6 @@ namespace HexagonalPlayground\Domain;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use HexagonalPlayground\Domain\Event\Event;
-use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 use HexagonalPlayground\Domain\Value\GeographicLocation;
@@ -36,18 +34,19 @@ class Pitch extends Entity
     }
 
     /**
+     * @return ContactPerson|null
+     */
+    public function getContact(): ?ContactPerson
+    {
+        return $this->contact;
+    }
+
+    /**
      * @param ContactPerson $contact
      */
     public function setContact(ContactPerson $contact): void
     {
-        if (null === $this->contact || !$this->contact->equals($contact)) {
-            Publisher::getInstance()->publish(new Event('pitch:contact:updated', [
-                'pitchId' => $this->id,
-                'oldContact' => $this->contact !== null ? $this->contact->toArray() : null,
-                'newContact' => $contact->toArray()
-            ]));
-            $this->contact = $contact;
-        }
+        $this->contact = $contact;
     }
 
     /**

@@ -6,8 +6,6 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use HexagonalPlayground\Domain\Event\Event;
-use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class Season extends Competition
@@ -46,10 +44,6 @@ class Season extends Competition
         $this->state = self::STATE_PREPARATION;
         $this->teamCount = 0;
         $this->updateMatchDayCount();
-
-        Publisher::getInstance()->publish(new Event('season:created', [
-            'seasonId' => $this->id
-        ]));
     }
 
     /**
@@ -141,10 +135,6 @@ class Season extends Competition
         Assert::true($this->hasMatches(), 'Cannot start a season which has no matches');
         $this->ranking = new Ranking($this);
         $this->state = self::STATE_PROGRESS;
-
-        Publisher::getInstance()->publish(new Event('season:started', [
-            'seasonId' => $this->id
-        ]));
     }
 
     /**
@@ -154,10 +144,6 @@ class Season extends Competition
     {
         Assert::true($this->hasStarted(), 'Cannot end a season which has not been started');
         $this->state = self::STATE_ENDED;
-
-        Publisher::getInstance()->publish(new Event('season:ended', [
-            'seasonId' => $this->id
-        ]));
     }
 
     /**
@@ -196,7 +182,7 @@ class Season extends Competition
 
     /**
      * Replaces a team by another team
-     * 
+     *
      * @param Team $from
      * @param Team $to
      */

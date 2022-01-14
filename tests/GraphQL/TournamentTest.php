@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use HexagonalPlayground\Tests\Framework\EventCapturer;
+use HexagonalPlayground\Domain\Event\Event;
 
 class TournamentTest extends CompetitionTestCase
 {
@@ -10,7 +10,7 @@ class TournamentTest extends CompetitionTestCase
     {
         $tournamentId = 'TournamentA';
 
-        $events = EventCapturer::getInstance()->capture(function () use ($tournamentId) {
+        $events = self::catchEvents(Event::class, function () use ($tournamentId) {
             $this->client->createTournament($tournamentId, $tournamentId);
         });
 
@@ -41,7 +41,7 @@ class TournamentTest extends CompetitionTestCase
         ];
         $teamPairs = self::getTeamPairs();
         $this->client->setTournamentRound($tournamentId, 1, $teamPairs, $datePeriod);
-        
+
         $tournament = $this->client->getTournamentByIdWithRounds($tournamentId);
         self::assertNotNull($tournament);
         self::assertSame(1, count($tournament->rounds));

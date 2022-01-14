@@ -6,8 +6,6 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use HexagonalPlayground\Domain\Event\Event;
-use HexagonalPlayground\Domain\Event\Publisher;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
@@ -67,53 +65,51 @@ class Ranking
     }
 
     /**
-     * @param string $id
-     * @param Team $team
-     * @param string $reason
-     * @param int $points
-     * @param User $user
+     * @param RankingPenalty $penalty
+     * @throws DomainException
      */
-    public function addPenalty(string $id, Team $team, string $reason, int $points, User $user): void
+    public function addPenalty(RankingPenalty $penalty): void
     {
-        Assert::true($this->season->isInProgress(), 'Cannot add a penalty for a season which is not in progress');
-
-        $penalty = new RankingPenalty($id, $this, $team, $reason, $points);
-        $this->getPositionForTeam($team->getId())->subtractPoints($points);
+        Assert::true(
+            $this->season->isInProgress(),
+            'Cannot add a penalty to season which is not in progress'
+        );
+        Assert::true($this->getPenalty($penalty->getId()) === null, sprintf(
+            'Ranking penalty with ID %s already exists',
+            $penalty->getId()
+        ));
         $this->penalties[$penalty->getId()] = $penalty;
+        $this->getPositionForTeam($penalty->getTeam()->getId())->subtractPoints($penalty->getPoints());
         $this->reorder();
-
-        Publisher::getInstance()->publish(new Event('ranking:penalty:added', [
-            'seasonId'   => $this->season->getId(),
-            'teamId'     => $team->getId(),
-            'reason'     => $reason,
-            'points'     => $points,
-            'userId'     => $user->getId()
-        ]));
     }
 
     /**
-     * @param string $id
-     * @param User $user
+     * @param string $penaltyId
+     * @return RankingPenalty|null
      */
-    public function removePenalty(string $id, User $user): void
+    public function getPenalty(string $penaltyId): ?RankingPenalty
     {
-        Assert::true($this->season->isInProgress(), 'Cannot remove a penalty from a season which is not in progress');
+        return $this->penalties[$penaltyId] ?? null;
+    }
 
-        /** @var RankingPenalty $penalty */
-        $penalty = $this->penalties->get($id);
-        Assert::false($penalty === null, 'Cannot find ranking penalty');
+    /**
+     * @param RankingPenalty $penalty
+     * @throws DomainException
+     */
+    public function removePenalty(RankingPenalty $penalty): void
+    {
+        Assert::true(
+            $this->season->isInProgress(),
+            'Cannot remove a penalty from a season which is not in progress'
+        );
+        Assert::true($this->getPenalty($penalty->getId()) !== null, sprintf(
+            'Ranking penalty with ID %s does not exist',
+            $penalty->getId()
+        ));
 
         $this->getPositionForTeam($penalty->getTeam()->getId())->addPoints($penalty->getPoints());
         $this->penalties->removeElement($penalty);
         $this->reorder();
-
-        Publisher::getInstance()->publish(new Event('ranking:penalty:removed', [
-            'seasonId'   => $this->season->getId(),
-            'teamId'     => $penalty->getTeam()->getId(),
-            'reason'     => $penalty->getReason(),
-            'points'     => $penalty->getPoints(),
-            'userId'     => $user->getId()
-        ]));
     }
 
     /**
@@ -158,9 +154,10 @@ class Ranking
      * @param string $teamId
      * @return RankingPosition
      */
-    private function getPositionForTeam(string $teamId)
+    private function getPositionForTeam(string $teamId): RankingPosition
     {
         Assert::true(isset($this->positions[$teamId]), sprintf('Team %s is not ranked', $teamId));
+
         return $this->positions[$teamId];
     }
 }

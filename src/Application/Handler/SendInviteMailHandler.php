@@ -10,6 +10,7 @@ use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\User;
 
 class SendInviteMailHandler implements AuthAwareHandler
@@ -43,8 +44,9 @@ class SendInviteMailHandler implements AuthAwareHandler
     /**
      * @param SendInviteMailCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      */
-    public function __invoke(SendInviteMailCommand $command, AuthContext $authContext): void
+    public function __invoke(SendInviteMailCommand $command, AuthContext $authContext): array
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
@@ -69,5 +71,7 @@ class SendInviteMailHandler implements AuthAwareHandler
         );
 
         $this->mailer->send($message);
+
+        return [];
     }
 }

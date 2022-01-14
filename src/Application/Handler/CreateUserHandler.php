@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
+use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\User;
 
@@ -32,8 +33,9 @@ class CreateUserHandler implements AuthAwareHandler
     /**
      * @param CreateUserCommand $command
      * @param AuthContext $authContext
+     * @return array|Event[]
      */
-    public function __invoke(CreateUserCommand $command, AuthContext $authContext): void
+    public function __invoke(CreateUserCommand $command, AuthContext $authContext): array
     {
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
@@ -47,5 +49,7 @@ class CreateUserHandler implements AuthAwareHandler
             $user->addTeam($team);
         }
         $this->userRepository->save($user);
+
+        return [];
     }
 }

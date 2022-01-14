@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\Persistence\ObjectManager;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
+use HexagonalPlayground\Application\Repository\EventRepositoryInterface;
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
@@ -28,6 +29,7 @@ use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
 use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\PitchRepository;
@@ -124,6 +126,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
 
             OrmTransactionWrapperInterface::class => DI\get(DoctrineTransactionWrapper::class),
 
+            EventRepositoryInterface::class => DI\get(EventRepository::class),
             MatchRepositoryInterface::class => DI\get(MatchRepository::class),
             MatchDayRepositoryInterface::class => DI\get(MatchDayRepository::class),
             PitchRepositoryInterface::class => DI\get(PitchRepository::class),

@@ -12,7 +12,6 @@ use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Slim\App;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Contracts\EventDispatcher\Event;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -33,7 +32,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     /**
      * @param string $eventName
      * @param callable $callable
-     * @return array|Event[]
+     * @return array
      */
     protected static function catchEvents(string $eventName, callable $callable): array
     {
@@ -42,7 +41,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         /** @var EventDispatcher $eventDispatcher */
         $eventDispatcher = self::$app->getContainer()->get(EventDispatcherInterface::class);
 
-        $listener = function (Event $event) use ($events) {
+        $listener = function ($event) use ($events) {
             $events[] = $event;
         };
 
