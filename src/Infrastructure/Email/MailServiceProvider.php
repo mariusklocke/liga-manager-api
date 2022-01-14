@@ -11,7 +11,6 @@ use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 
@@ -21,7 +20,6 @@ class MailServiceProvider implements ServiceProviderInterface
     {
         return [
             'app.home' => DI\env('APP_HOME'),
-            EventDispatcherInterface::class => DI\get(EventDispatcher::class),
             MailerInterface::class => DI\get(SymfonyMailer::class),
             SymfonyMailer::class => DI\factory(function (ContainerInterface $container) {
                 $transport = Transport::fromDsn(

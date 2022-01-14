@@ -20,6 +20,8 @@ class EventServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
+            EventDispatcherInterface::class => DI\get(EventDispatcher::class),
+
             HandlerResolver::class => DI\decorate(function (HandlerResolver $resolver, ContainerInterface $container) {
                 /** @var EventDispatcher $eventDispatcher */
                 $eventDispatcher = $container->get(EventDispatcherInterface::class);
