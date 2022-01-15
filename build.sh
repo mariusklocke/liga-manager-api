@@ -1,25 +1,34 @@
 #!/usr/bin/env bash
 set -e
 
-IMAGE="mklocke/liga-manager-api"
+if [[ -z "${PHP_VERSION}" ]]; then
+    PHP_VERSION="8.0"
+fi
+if [[ -z "${MARIADB_VERSION}" ]]; then
+    MARIADB_VERSION="10.4"
+fi
+if [[ -z "${REDIS_VERSION}" ]]; then
+    REDIS_VERSION="5"
+fi
 
+IMAGE="mklocke/liga-manager-api"
 if [[ $GITHUB_REF == *"refs/tags"* ]]; then
   TAG=$(sed 's#refs/tags/##' <<< "${GITHUB_REF}")
 else
   TAG="latest"
 fi
 
+echo "Building ${IMAGE}:${TAG} with:"
 echo "GITHUB_REF: ${GITHUB_REF}"
-echo "IMAGE: ${IMAGE}"
-echo "TAG: ${TAG}"
+echo "PHP_VERSION: ${PHP_VERSION}"
+echo "MARIADB_VERSION: ${MARIADB_VERSION}"
+echo "REDIS_VERSION: ${REDIS_VERSION}"
 
-# Pull images
-docker pull mariadb:10.4
-docker pull redis:5-alpine
+# Pull for having a cache base
 docker pull $IMAGE:latest
 
 # Build images
-DOCKER_BUILDKIT=1 docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --cache-from $IMAGE:latest .
+DOCKER_BUILDKIT=1 docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --build-arg PHP_VERSION=$PHP_VERSION --cache-from $IMAGE:latest .
 
 cleanup() {
     echo 'Cleanup: Removing containers ...'
@@ -32,8 +41,8 @@ trap cleanup EXIT
 
 # Launch containers
 docker network create build
-docker run -d --name=mariadb --network=build --env-file=build.env mariadb:10.4
-docker run -d --name=redis --network=build redis:5-alpine
+docker run -d --name=mariadb --network=build --pull=always --env-file=build.env mariadb:$MARIADB_VERSION
+docker run -d --name=redis --network=build --pull=always redis:$REDIS_VERSION-alpine
 docker run -d --name=php --network=build --env-file=build.env $IMAGE:$TAG
 
 # Run deptrac
@@ -45,7 +54,7 @@ docker exec -t php wait-for 127.0.0.1 9000
 # Run phpunit without coverage
 docker exec -t php phpunit.phar --testdox
 
-if [[ ! -z "${CI}" ]]; then
+if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     # Enable xdebug
     docker exec -t -u root php docker-php-ext-enable xdebug
 
@@ -54,7 +63,9 @@ if [[ ! -z "${CI}" ]]; then
 
     # Upload coverage report to coveralls.io
     docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
+fi
 
+if [[ -n "${PUBLISH_IMAGE}" ]]; then
     # Login to docker hub
     echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
