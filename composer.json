@@ -15,10 +15,10 @@
     },
     "extra": {
         "phar-tools": {
-            "composer.phar": "https://github.com/composer/composer/releases/download/2.1.3/composer.phar",
-            "phpunit.phar": "https://phar.phpunit.de/phpunit-9.5.6.phar",
-            "php-coveralls.phar": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.3/php-coveralls.phar",
-            "deptrac.phar": "https://github.com/qossmic/deptrac/releases/download/0.14.1/deptrac.phar"
+            "composer.phar": "https://github.com/composer/composer/releases/download/2.2.4/composer.phar",
+            "phpunit.phar": "https://phar.phpunit.de/phpunit-9.phar",
+            "php-coveralls.phar": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar",
+            "deptrac.phar": "https://github.com/qossmic/deptrac/releases/download/0.19.0/deptrac.phar"
         }
     },
     "require": {
@@ -30,9 +30,9 @@
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
-        "doctrine/cache": "^1.11",
+        "doctrine/dbal": "^2.13.6",
         "doctrine/migrations": "^3.2",
-        "doctrine/orm": "~2.9.3",
+        "doctrine/orm": "~2.11.0",
         "firebase/php-jwt": "^5.4",
         "middlewares/trailing-slash": "^2.0",
         "monolog/monolog": "^2.3.1",

@@ -14,7 +14,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
-use Doctrine\ORM\Tools\Setup;
 use Doctrine\Persistence\ObjectManager;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Repository\EventRepositoryInterface;
@@ -95,7 +94,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Configuration::class => DI\factory(function (ContainerInterface $container) {
-                $config = Setup::createConfiguration(false);
+                $config = new Configuration();
+                $config->setProxyDir(sys_get_temp_dir());
+                $config->setProxyNamespace('DoctrineProxies');
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
                 $config->setSQLLogger($container->get(SQLLogger::class));
                 $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
