@@ -16,7 +16,7 @@
     "extra": {
         "phar-tools": {
             "composer.phar": "https://github.com/composer/composer/releases/download/2.2.4/composer.phar",
-            "phpunit.phar": "https://phar.phpunit.de/phpunit-9.phar",
+            "phpunit.phar": "https://phar.phpunit.de/phpunit-9.5.11.phar",
             "php-coveralls.phar": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar",
             "deptrac.phar": "https://github.com/qossmic/deptrac/releases/download/0.19.0/deptrac.phar"
         }
