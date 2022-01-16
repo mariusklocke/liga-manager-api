@@ -41,9 +41,28 @@ trap cleanup EXIT
 
 # Launch containers
 docker network create build
-docker run -d --name=mariadb --network=build --pull=always --env-file=build.env mariadb:$MARIADB_VERSION
+docker run -d --name=mariadb --network=build --pull=always \
+    -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
+    -e MYSQL_DATABASE=test \
+    -e MYSQL_USER=test \
+    -e MYSQL_PASSWORD=test \
+    mariadb:$MARIADB_VERSION
 docker run -d --name=redis --network=build --pull=always redis:$REDIS_VERSION-alpine
-docker run -d --name=php --network=build --env-file=build.env $IMAGE:$TAG
+docker run -d --name=php --network=build \
+     -e ALLOW_TESTS=1 \
+     -e ADMIN_EMAIL=admin@example.com \
+     -e ADMIN_PASSWORD=123456 \
+     -e LOG_LEVEL=warning \
+     -e REDIS_HOST=redis \
+     -e JWT_SECRET=a194be3811fc \
+     -e MYSQL_HOST=mariadb \
+     -e MYSQL_DATABASE=test \
+     -e MYSQL_USER=test \
+     -e MYSQL_PASSWORD=test \
+     -e EMAIL_URL=null://localhost \
+     -e EMAIL_SENDER_ADDRESS=noreply@example.com \
+     -e EMAIL_SENDER_NAME=noreply \
+     $IMAGE:$TAG
 
 # Run deptrac
 docker exec -t php bin/deptrac.phar --no-progress
