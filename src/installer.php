@@ -13,11 +13,6 @@ return new class {
 
         foreach ($this->getTools() as $filename => $source) {
             $target = getenv('APP_HOME') . '/bin/' . $filename;
-
-            if (file_exists($target)) {
-                continue;
-            }
-
             $this->installTool($target, $source);
         }
 

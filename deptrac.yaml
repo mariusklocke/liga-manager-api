@@ -1,0 +1,25 @@
+parameters:
+  paths:
+    - ./src
+  exclude_files:
+    - .*test.*
+  layers:
+    - name: Application
+      collectors:
+        - type: className
+          regex: .*HexagonalPlayground\\Application\\.*
+    - name: Domain
+      collectors:
+        - type: className
+          regex: .*HexagonalPlayground\\Domain\\.*
+    - name: Infrastructure
+      collectors:
+        - type: className
+          regex: .*HexagonalPlayground\\Infrastructure\\.*
+  ruleset:
+    Application:
+      - Domain
+    Domain: ~
+    Infrastructure:
+      - Application
+      - Domain
