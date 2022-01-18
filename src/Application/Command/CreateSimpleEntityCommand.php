@@ -2,8 +2,6 @@
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
-
 abstract class CreateSimpleEntityCommand implements CommandInterface
 {
     use IdAware;
@@ -15,10 +13,9 @@ abstract class CreateSimpleEntityCommand implements CommandInterface
      * @param string|null $id
      * @param string      $name
      */
-    public function __construct($id, $name)
+    public function __construct(?string $id, string $name)
     {
         $this->setId($id);
-        TypeAssert::assertString($name, 'name');
         $this->name = $name;
     }
 

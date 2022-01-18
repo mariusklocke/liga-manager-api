@@ -2,7 +2,6 @@
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Util\Uuid;
 
 trait IdAware
@@ -18,13 +17,13 @@ trait IdAware
         return $this->id;
     }
 
-    private function setId($id): void
+    private function setId(?string $id): void
     {
         if (null === $id) {
             $this->id = Uuid::create();
             return;
         }
-        TypeAssert::assertString($id, 'id');
+
         $this->id = $id;
     }
 }

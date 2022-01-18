@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
-
 class UpdateUserCommand implements CommandInterface
 {
     /** @var string */
@@ -33,15 +31,8 @@ class UpdateUserCommand implements CommandInterface
      * @param string|null $role
      * @param string[]|null $teamIds
      */
-    public function __construct($userId, $email, $firstName, $lastName, $role, $teamIds)
+    public function __construct(string $userId, ?string $email, ?string $firstName, ?string $lastName, ?string $role, ?array $teamIds)
     {
-        TypeAssert::assertString($userId, 'userId');
-        TypeAssert::assertStringOrNull($email, 'email');
-        TypeAssert::assertStringOrNull($firstName, 'firstName');
-        TypeAssert::assertStringOrNull($lastName, 'lastName');
-        TypeAssert::assertStringOrNull($role, 'role');
-        TypeAssert::assertArrayOrNull($teamIds, 'teams');
-
         $this->userId = $userId;
         $this->email  = $email;
         $this->firstName = $firstName;
@@ -49,11 +40,9 @@ class UpdateUserCommand implements CommandInterface
         $this->role = $role;
 
         if (null !== $teamIds) {
-            $this->teamIds = [];
-            foreach ($teamIds as $index => $teamId) {
-                TypeAssert::assertString($teamId, 'teams[' . $index . ']');
-                $this->teamIds[] = $teamId;
-            }
+            $this->teamIds = array_map(function (string $teamId) {
+                return $teamId;
+            }, $teamIds);
         }
     }
 

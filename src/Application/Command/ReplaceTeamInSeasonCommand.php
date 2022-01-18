@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
-
 class ReplaceTeamInSeasonCommand implements CommandInterface
 {
     /** @var string */
@@ -19,11 +17,8 @@ class ReplaceTeamInSeasonCommand implements CommandInterface
      * @param string $currentTeamId
      * @param string $replacementTeamId
      */
-    public function __construct($seasonId, $currentTeamId, $replacementTeamId)
+    public function __construct(string $seasonId, string $currentTeamId, string $replacementTeamId)
     {
-        TypeAssert::assertString($seasonId, 'seasonId');
-        TypeAssert::assertString($currentTeamId, 'currentTeamId');
-        TypeAssert::assertString($replacementTeamId, 'replacementTeamId');
         $this->seasonId = $seasonId;
         $this->currentTeamId = $currentTeamId;
         $this->replacementTeamId = $replacementTeamId;
@@ -52,6 +47,4 @@ class ReplaceTeamInSeasonCommand implements CommandInterface
     {
         return $this->replacementTeamId;
     }
-
-    
 }

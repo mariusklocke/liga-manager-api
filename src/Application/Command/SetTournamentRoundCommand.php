@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Value\DatePeriod;
 use HexagonalPlayground\Domain\Value\TeamIdPair;
 
@@ -27,12 +26,8 @@ class SetTournamentRoundCommand implements CommandInterface
      * @param TeamIdPair[] $teamIdPairs
      * @param DatePeriod $datePeriod
      */
-    public function __construct($tournamentId, $round, array $teamIdPairs, DatePeriod $datePeriod)
+    public function __construct(string $tournamentId, int $round, array $teamIdPairs, DatePeriod $datePeriod)
     {
-        TypeAssert::assertString($tournamentId, 'tournamentId');
-        TypeAssert::assertInteger($round, 'round');
-        TypeAssert::assertArray($teamIdPairs, 'teamIdPairs');
-
         $this->tournamentId = $tournamentId;
         $this->round        = $round;
         $this->datePeriod   = $datePeriod;

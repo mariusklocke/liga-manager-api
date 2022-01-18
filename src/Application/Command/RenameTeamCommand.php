@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
-
 class RenameTeamCommand implements CommandInterface
 {
     /** @var string */
@@ -17,10 +15,8 @@ class RenameTeamCommand implements CommandInterface
      * @param string $teamId
      * @param string $newName
      */
-    public function __construct($teamId, $newName)
+    public function __construct(string $teamId, string $newName)
     {
-        TypeAssert::assertString($teamId, 'teamId');
-        TypeAssert::assertString($newName, 'newName');
         $this->teamId = $teamId;
         $this->newName = $newName;
     }

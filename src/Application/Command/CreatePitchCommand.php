@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Value\GeographicLocation;
 
 class CreatePitchCommand implements CommandInterface
@@ -22,13 +21,10 @@ class CreatePitchCommand implements CommandInterface
      * @param float|int $longitude
      * @param float|int $latitude
      */
-    public function __construct($id, $label, $longitude, $latitude)
+    public function __construct(?string $id, string $label, float $longitude, float $latitude)
     {
-        TypeAssert::assertString($label, 'label');
-        TypeAssert::assertNumber($longitude, 'longitude');
-        TypeAssert::assertNumber($latitude, 'latitude');
         $this->label = $label;
-        $this->location = new GeographicLocation((float)$longitude, (float)$latitude);
+        $this->location = new GeographicLocation($longitude, $latitude);
         $this->setId($id);
     }
 

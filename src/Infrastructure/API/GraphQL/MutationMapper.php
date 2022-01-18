@@ -8,8 +8,10 @@ use GraphQL\Type\Definition\NonNull;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CommandInterface;
+use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
+use TypeError;
 
 class MutationMapper
 {
@@ -42,7 +44,12 @@ class MutationMapper
                 'args' => $argTypes,
                 'type' => Type::boolean(),
                 'resolve' => function ($val, $argValues, AppContext $context) use ($commandClass, $argTypes) {
-                    $command = $this->createCommand($commandClass, $argTypes, $argValues);
+                    try {
+                        $command = $this->createCommand($commandClass, $argTypes, $argValues);
+                    } catch (TypeError $typeError)  {
+                        throw new InvalidInputException($typeError->getMessage());
+                    }
+
                     if (method_exists($command, 'withBaseUri')) {
                         $command = $command->withBaseUri($context->getRequest()->getUri());
                     }

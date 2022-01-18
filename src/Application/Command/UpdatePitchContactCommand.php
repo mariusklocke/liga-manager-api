@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
-
 class UpdatePitchContactCommand extends UpdateContactCommand
 {
     /** @var string */
@@ -17,13 +15,8 @@ class UpdatePitchContactCommand extends UpdateContactCommand
      * @param string $phone
      * @param string $email
      */
-    public function __construct($pitchId, $firstName, $lastName, $phone, $email)
+    public function __construct(string $pitchId, string $firstName, string $lastName, string $phone, string $email)
     {
-        TypeAssert::assertString($pitchId, 'pitchId');
-        TypeAssert::assertString($firstName, 'firstName');
-        TypeAssert::assertString($lastName, 'lastName');
-        TypeAssert::assertString($phone, 'phone');
-        TypeAssert::assertString($email, 'email');
         $this->pitchId = $pitchId;
         $this->firstName = $firstName;
         $this->lastName = $lastName;

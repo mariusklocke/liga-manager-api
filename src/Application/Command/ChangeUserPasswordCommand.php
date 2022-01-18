@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
-
 class ChangeUserPasswordCommand implements CommandInterface
 {
     /** @var string */
@@ -13,9 +11,8 @@ class ChangeUserPasswordCommand implements CommandInterface
     /**
      * @param string $newPassword
      */
-    public function __construct($newPassword)
+    public function __construct(string $newPassword)
     {
-        TypeAssert::assertString($newPassword, 'newPassword');
         $this->newPassword = $newPassword;
     }
 

@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
-
 class SubmitMatchResultCommand implements CommandInterface
 {
     /** @var string */
@@ -19,11 +17,8 @@ class SubmitMatchResultCommand implements CommandInterface
      * @param int $homeScore
      * @param int $guestScore
      */
-    public function __construct($matchId, $homeScore, $guestScore)
+    public function __construct(string $matchId, int $homeScore, int $guestScore)
     {
-        TypeAssert::assertString($matchId, 'matchId');
-        TypeAssert::assertInteger($homeScore, 'homeScore');
-        TypeAssert::assertInteger($guestScore, 'guestScore');
         $this->matchId = $matchId;
         $this->homeScore = $homeScore;
         $this->guestScore = $guestScore;

@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Application\TypeAssert;
-
 class CreateUserCommand implements CommandInterface
 {
     use IdAware;
@@ -36,28 +34,24 @@ class CreateUserCommand implements CommandInterface
      * @param string $role
      * @param string[] $teamIds
      */
-    public function __construct($id, $email, $password, $firstName, $lastName, $role, $teamIds)
-    {
-        TypeAssert::assertString($email, 'email');
-        if (null !== $password) {
-            TypeAssert::assertString($password, 'password');
-            $this->password = $password;
-        }
-        TypeAssert::assertString($firstName, 'firstName');
-        TypeAssert::assertString($lastName, 'lastName');
-        TypeAssert::assertString($role, 'role');
-        TypeAssert::assertArray($teamIds, 'teamIds');
-
+    public function __construct(
+        ?string $id,
+        string $email,
+        ?string $password,
+        string $firstName,
+        string $lastName,
+        string $role,
+        array $teamIds
+    ) {
         $this->setId($id);
         $this->email = $email;
+        $this->password = $password;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->role = $role;
-        $this->teamIds = [];
-        foreach ($teamIds as $index => $teamId) {
-            TypeAssert::assertString($teamId, 'teamIds[' . $index . ']');
-            $this->teamIds[] = $teamId;
-        }
+        $this->teamIds = array_map(function (string $teamId) {
+            return $teamId;
+        }, $teamIds);
     }
 
     /**
