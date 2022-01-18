@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\Timer;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,9 +16,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 abstract class Command extends SymfonyCommand
 {
     public const NAME = null;
-
-    /** @var float */
-    private $startTime;
 
     /** @var AuthContext|null */
     private $authContext;
@@ -36,20 +34,18 @@ abstract class Command extends SymfonyCommand
      */
     public function run(InputInterface $input, OutputInterface $output)
     {
-        $this->startTime = microtime(true);
-        $exitCode = parent::run($input, $output);
-        if ($output->isVerbose()) {
-            $this->printStats($output);
-        }
-        return $exitCode;
-    }
+        $timer = new Timer();
+        $timer->start();
 
-    private function printStats(OutputInterface $output)
-    {
-        $executionTime = microtime(true) - $this->startTime;
-        $memory = memory_get_peak_usage() / 1024 / 1024;
-        $output->writeln(sprintf('Execution time: %.1f seconds', $executionTime));
-        $output->writeln(sprintf('Peak memory usage: %.1f MiB', $memory));
+        $exitCode = parent::run($input, $output);
+
+        if ($output->isVerbose()) {
+            $memory = memory_get_peak_usage() / 1024 / 1024;
+            $output->writeln(sprintf('Execution time: %d ms', $timer->stop()));
+            $output->writeln(sprintf('Peak memory usage: %.1f MiB', $memory));
+        }
+
+        return $exitCode;
     }
 
     protected function getAuthContext(): AuthContext

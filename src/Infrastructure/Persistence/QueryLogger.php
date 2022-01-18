@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use Doctrine\DBAL\Logging\SQLLogger;
+use HexagonalPlayground\Infrastructure\Timer;
 use Psr\Log\LoggerInterface;
 
 class QueryLogger implements SQLLogger
@@ -11,16 +12,17 @@ class QueryLogger implements SQLLogger
     /** @var LoggerInterface */
     private $logger;
 
-    /** @var float|null */
-    private $startTime;
+    /** @var Timer */
+    private $timer;
 
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
+        $this->timer = new Timer();
     }
 
     /**
-     * Logs a SQL statement somewhere.
+     * Starts a timer and logs query
      *
      * @param string $sql The SQL to be executed.
      * @param array|null $params The SQL parameters.
@@ -30,7 +32,7 @@ class QueryLogger implements SQLLogger
      */
     public function startQuery($sql, array $params = null, array $types = null)
     {
-        $this->startTime = microtime(true);
+        $this->timer->start();
         $this->logger->debug('Executing SQL query', [
             'sql' => $sql,
             'types' => $types
@@ -38,16 +40,12 @@ class QueryLogger implements SQLLogger
     }
 
     /**
-     * Marks the last started query as stopped. This can be used for timing of queries.
+     * Logs the query execute time
      *
      * @return void
      */
     public function stopQuery()
     {
-        if ($this->startTime !== null) {
-            $time = microtime(true) - $this->startTime;
-            $this->logger->debug(sprintf('Finished query after %.3f ms', $time * 1000));
-            $this->startTime = null;
-        }
+        $this->logger->debug('Finished query after {time} ms', ['time' => $this->timer->stop()]);
     }
 }
