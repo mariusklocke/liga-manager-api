@@ -10,4 +10,9 @@ class PermissionException extends Exception implements ExceptionInterface
 {
     /** @var string */
     protected $code = 'ERR-PERMISSION';
+
+    public function getHttpResponseCode(): int
+    {
+        return 403; // Forbidden
+    }
 }

@@ -51,11 +51,10 @@ class ErrorHandler implements ErrorHandlerInterface
         bool $displayErrorDetails,
         bool $logErrors,
         bool $logErrorDetails
-    ): ResponseInterface
-    {
+    ): ResponseInterface {
         switch (true) {
             case ($exception instanceof ExceptionInterface):
-                $response = $this->createResponse($this->mapCode($exception), $exception->getMessage());
+                $response = $this->createResponse($exception->getHttpResponseCode(), $exception->getMessage());
                 break;
             case ($exception instanceof HttpNotFoundException):
                 $response = $this->createResponse(404, 'Route not found');
@@ -86,32 +85,6 @@ class ErrorHandler implements ErrorHandlerInterface
         ]);
 
         return $response;
-    }
-
-    /**
-     * Returns the appropriate HTTP status code for a given exception
-     *
-     * @param ExceptionInterface $exception
-     * @return int
-     */
-    private function mapCode(ExceptionInterface $exception): int
-    {
-        switch ($exception->getCode()) {
-            case 'ERR-MAINTENANCE-MODE':
-                return 503;
-            case 'ERR-NOT-FOUND':
-                return 404;
-            case 'ERR-PERMISSION':
-                return 403;
-            case 'ERR-AUTHENTICATION':
-                return 401;
-            case 'ERR-DOMAIN':
-            case 'ERR-INVALID-INPUT':
-            case 'ERR-UNIQUENESS':
-                return 400;
-            default:
-                return 500;
-        }
     }
 
     /**

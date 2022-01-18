@@ -10,4 +10,9 @@ class MaintenanceModeException extends Exception implements ExceptionInterface
 {
     /** @var string */
     protected $code = 'ERR-MAINTENANCE-MODE';
+
+    public function getHttpResponseCode()
+    {
+        return 503; // Service Unavailable
+    }
 }
