@@ -21,27 +21,21 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 use Iterator;
-use Psr\Log\LoggerInterface;
 
 class DbalGateway implements ReadDbGatewayInterface
 {
     /** @var Connection */
     private $connection;
 
-    /** @var LoggerInterface */
-    private $logger;
-
     /** @var int */
     private $parameterInc;
 
     /**
      * @param Connection $connection
-     * @param LoggerInterface $logger
      */
-    public function __construct(Connection $connection, LoggerInterface $logger)
+    public function __construct(Connection $connection)
     {
         $this->connection = $connection;
-        $this->logger = $logger;
     }
 
     /**
@@ -84,10 +78,6 @@ class DbalGateway implements ReadDbGatewayInterface
         if ($pagination !== null) {
             $this->applyPagination($query, $pagination);
         }
-
-        $this->logger->debug('Executing query', [
-            'sql' => $query->getSQL()
-        ]);
 
         foreach ($query->execute()->iterateAssociative() as $row) {
             yield $row;
