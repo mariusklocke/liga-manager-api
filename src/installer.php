@@ -17,7 +17,7 @@ return new class {
         }
 
         $this->output('Installing composer dependencies ...');
-        $this->runCommand('composer.phar install --prefer-dist --no-dev --optimize-autoloader --no-cache --no-progress');
+        $this->runCommand('composer.phar install --optimize-autoloader --no-progress');
         $this->output('Installation complete.');
     }
 
