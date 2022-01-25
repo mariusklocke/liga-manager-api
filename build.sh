@@ -34,6 +34,7 @@ cleanup() {
     echo 'Cleanup: Removing containers ...'
     docker rm -f php mariadb redis
     docker network rm build
+    rm -rf coverage
 }
 
 # Make sure we clean up running containers in case of error
@@ -48,7 +49,7 @@ docker run -d --name=mariadb --network=build --pull=always \
     -e MYSQL_PASSWORD=test \
     mariadb:$MARIADB_VERSION
 docker run -d --name=redis --network=build --pull=always redis:$REDIS_VERSION-alpine
-docker run -d --name=php --network=build \
+docker run -d --name=php --network=build -v "${PWD}/coverage:/coverage" \
      -e ALLOW_TESTS=1 \
      -e ADMIN_EMAIL=admin@example.com \
      -e ADMIN_PASSWORD=123456 \
@@ -78,10 +79,13 @@ if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     docker exec -t -u root php docker-php-ext-enable xdebug
 
     # Run tests with coverage
-    docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml
+    docker exec -t php phpunit.phar --coverage-clover /coverage/clover.xml
 
-    # Upload coverage report to coveralls.io
-    docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
+    # Build codecov uploader container
+    docker build -f docker/codecov/Dockerfile -t codecov:latest
+
+    # Upload coverage report to codecov.io
+    docker run -t -e CODECOV_TOKEN -v "${PWD}:/app" -w /app codecov:latest codecov -f coverage/clover.xml
 fi
 
 if [[ -n "${PUBLISH_IMAGE}" ]]; then
