@@ -89,7 +89,7 @@ if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     docker build -f docker/codecov/Dockerfile -t codecov:latest .
 
     # Upload coverage report to codecov.io
-    docker run --rm -t -e CODECOV_TOKEN=1234 -v "${PWD}:/app" -w /app \
+    docker run --rm -t -e CODECOV_TOKEN -v "${PWD}:/app" -w /app \
         codecov:latest codecov -f coverage/clover.xml -R /app
 fi
 
