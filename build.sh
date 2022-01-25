@@ -82,7 +82,7 @@ if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     docker exec -t php phpunit.phar --coverage-clover /coverage/clover.xml
 
     # Build codecov uploader container
-    docker build -f docker/codecov/Dockerfile -t codecov:latest
+    docker build -f docker/codecov/Dockerfile -t codecov:latest .
 
     # Upload coverage report to codecov.io
     docker run -t -e CODECOV_TOKEN -v "${PWD}:/app" -w /app codecov:latest codecov -f coverage/clover.xml
