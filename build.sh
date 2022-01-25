@@ -89,15 +89,8 @@ if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     docker build -f docker/codecov/Dockerfile -t codecov:latest .
 
     # Upload coverage report to codecov.io
-    docker run --rm -t -v "${PWD}:/app" -w /app \
-        -e CODECOV_TOKEN \
-        -e GITHUB_ACTION \
-        -e GITHUB_RUN_ID \
-        -e GITHUB_REF \
-        -e GITHUB_REPOSITORY \
-        -e GITHUB_SHA \
-        -e GITHUB_HEAD_REF \
-        codecov:latest codecov -f coverage/clover.xml -R /app
+    docker run --rm -t -v "${PWD}:/app" -w /app -e CODECOV_TOKEN \
+        codecov:latest codecov -f coverage/clover.xml -R /app -C "${GITHUB_SHA}" -r "${GITHUB_REPOSITORY}"
 fi
 
 if [[ -n "${PUBLISH_IMAGE}" ]]; then
