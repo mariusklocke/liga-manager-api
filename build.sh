@@ -40,6 +40,10 @@ cleanup() {
 # Make sure we clean up running containers in case of error
 trap cleanup EXIT
 
+# Setup directory for coverage reports
+mkdir coverage
+chmod 777 coverage
+
 # Launch containers
 docker network create build
 docker run -d --name=mariadb --network=build --pull=always \
@@ -85,7 +89,8 @@ if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     docker build -f docker/codecov/Dockerfile -t codecov:latest .
 
     # Upload coverage report to codecov.io
-    docker run -t -e CODECOV_TOKEN -v "${PWD}:/app" -w /app codecov:latest codecov -f coverage/clover.xml
+    docker run --rm -t -e CODECOV_TOKEN=1234 -v "${PWD}:/app" -w /app \
+        codecov:latest codecov -f coverage/clover.xml -R /app
 fi
 
 if [[ -n "${PUBLISH_IMAGE}" ]]; then
