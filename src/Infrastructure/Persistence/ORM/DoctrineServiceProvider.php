@@ -56,24 +56,18 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 return $em;
             }),
 
-            PDO::class => DI\factory(function () {
-                $dsn = sprintf(
-                    'mysql:host=%s;dbname=%s',
-                    Environment::get('MYSQL_HOST'),
-                    Environment::get('MYSQL_DATABASE')
-                );
-
-                return new PDO(
-                    $dsn,
-                    Environment::get('MYSQL_USER'),
-                    Environment::get('MYSQL_PASSWORD'),
-                    [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
-                );
-            }),
-
             Connection::class => DI\factory(function (ContainerInterface $container) {
+                $params = [
+                    'dbname' => Environment::get('MYSQL_DATABASE'),
+                    'user' => Environment::get('MYSQL_USER'),
+                    'password' => Environment::get('MYSQL_PASSWORD'),
+                    'host' => Environment::get('MYSQL_HOST'),
+                    'driver' => 'pdo_mysql',
+                    'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
+                ];
+
                 $connection = DriverManager::getConnection(
-                    ['pdo' => $container->get(PDO::class)],
+                    $params,
                     $container->get(Configuration::class)
                 );
 
