@@ -30,7 +30,7 @@
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
         "ext-redis": "*",
-        "doctrine/dbal": "^2.13.6",
+        "doctrine/dbal": "^3.3.0",
         "doctrine/migrations": "^3.2",
         "doctrine/orm": "~2.11.0",
         "firebase/php-jwt": "^5.4",

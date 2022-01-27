@@ -7,7 +7,7 @@ use DI;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Logging\SQLLogger;
+use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -37,7 +37,6 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonReposito
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\UserRepository;
-use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -56,24 +55,18 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 return $em;
             }),
 
-            PDO::class => DI\factory(function () {
-                $dsn = sprintf(
-                    'mysql:host=%s;dbname=%s',
-                    Environment::get('MYSQL_HOST'),
-                    Environment::get('MYSQL_DATABASE')
-                );
-
-                return new PDO(
-                    $dsn,
-                    Environment::get('MYSQL_USER'),
-                    Environment::get('MYSQL_PASSWORD'),
-                    [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
-                );
-            }),
-
             Connection::class => DI\factory(function (ContainerInterface $container) {
+                $params = [
+                    'dbname' => Environment::get('MYSQL_DATABASE'),
+                    'user' => Environment::get('MYSQL_USER'),
+                    'password' => Environment::get('MYSQL_PASSWORD'),
+                    'host' => Environment::get('MYSQL_HOST'),
+                    'driver' => 'pdo_mysql',
+                    'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
+                ];
+
                 $connection = DriverManager::getConnection(
-                    ['pdo' => $container->get(PDO::class)],
+                    $params,
                     $container->get(Configuration::class)
                 );
 
@@ -98,13 +91,14 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 $config->setProxyDir(sys_get_temp_dir());
                 $config->setProxyNamespace('DoctrineProxies');
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
-                $config->setSQLLogger($container->get(SQLLogger::class));
                 $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+
+                if (getenv('LOG_LEVEL') === 'debug') {
+                    $config->setMiddlewares([new LoggingMiddleware($container->get(LoggerInterface::class))]);
+                }
 
                 return $config;
             }),
-
-            SQLLogger::class => DI\get(QueryLogger::class),
 
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
