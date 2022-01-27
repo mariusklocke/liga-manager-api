@@ -7,7 +7,7 @@ use DI;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Logging\SQLLogger;
+use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -37,7 +37,6 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonReposito
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\UserRepository;
-use HexagonalPlayground\Infrastructure\Persistence\QueryLogger;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -92,13 +91,14 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 $config->setProxyDir(sys_get_temp_dir());
                 $config->setProxyNamespace('DoctrineProxies');
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
-                $config->setSQLLogger($container->get(SQLLogger::class));
                 $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+
+                if (getenv('LOG_LEVEL') === 'debug') {
+                    $config->setMiddlewares([new LoggingMiddleware($container->get(LoggerInterface::class))]);
+                }
 
                 return $config;
             }),
-
-            SQLLogger::class => DI\get(QueryLogger::class),
 
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
