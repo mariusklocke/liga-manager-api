@@ -17,6 +17,11 @@ class EmbeddedObjectField extends Field
         }
     }
 
+    public function getSubFields(): array
+    {
+        return $this->subFields;
+    }
+
     public function hydrate(array $row): ?array
     {
         $result = [];

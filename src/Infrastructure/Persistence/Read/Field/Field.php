@@ -28,4 +28,12 @@ abstract class Field
     {
         return $this->isNullable;
     }
+
+    public function withName(string $name): Field
+    {
+        $clone = clone $this;
+        $clone->name = $name;
+
+        return $clone;
+    }
 }
