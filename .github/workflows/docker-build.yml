@@ -11,5 +11,5 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           UPLOAD_COVERAGE: 1

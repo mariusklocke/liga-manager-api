@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use DI;
-use HexagonalPlayground\Application\Bus\HandlerResolver;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
@@ -20,17 +19,14 @@ class EventServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            EventDispatcherInterface::class => DI\get(EventDispatcher::class),
-
-            HandlerResolver::class => DI\decorate(function (HandlerResolver $resolver, ContainerInterface $container) {
-                /** @var EventDispatcher $eventDispatcher */
-                $eventDispatcher = $container->get(EventDispatcherInterface::class);
+            EventDispatcherInterface::class => DI\factory(function (ContainerInterface $container) {
+                $eventDispatcher = new EventDispatcher();
 
                 foreach ($container->get(EventSubscriberInterface::class) as $subscriber) {
                     $eventDispatcher->addSubscriber($subscriber);
                 }
 
-                return $resolver;
+                return $eventDispatcher;
             }),
 
             EventSubscriberInterface::class => [

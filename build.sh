@@ -95,7 +95,7 @@ fi
 
 if [[ -n "${PUBLISH_IMAGE}" ]]; then
     # Login to docker hub
-    echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+    echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
 
     # Push image to docker hub
     docker push $IMAGE:$TAG

@@ -7,6 +7,7 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\EmbeddedObjectField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 
 abstract class AbstractRepository
@@ -17,10 +18,14 @@ abstract class AbstractRepository
     /** @var Hydrator */
     protected $hydrator;
 
+    /** @var array|Field[] */
+    protected $flattenedFieldDefinitions;
+
     public function __construct(ReadDbGatewayInterface $gateway)
     {
         $this->gateway = $gateway;
         $this->hydrator = new Hydrator($this->getFieldDefinitions());
+        $this->flattenFieldDefinitions();
     }
 
     /**
@@ -64,13 +69,24 @@ abstract class AbstractRepository
      */
     public function getField(string $name): ?Field
     {
-        foreach ($this->getFieldDefinitions() as $fieldDefinition) {
-            if ($fieldDefinition->getName() === $name) {
-                return $fieldDefinition;
-            }
-        }
+        return $this->flattenedFieldDefinitions[$name] ?? null;
+    }
 
-        return null;
+    protected function flattenFieldDefinitions(): void
+    {
+        $this->flattenedFieldDefinitions = [];
+
+        foreach ($this->getFieldDefinitions() as $fieldDefinition) {
+            if ($fieldDefinition instanceof EmbeddedObjectField) {
+                foreach ($fieldDefinition->getSubFields() as $subField) {
+                    $subField = $subField->withName($fieldDefinition->getName() . '_' . $subField->getName());
+                    $this->flattenedFieldDefinitions[$subField->getName()] = $subField;
+                }
+                continue;
+            }
+
+            $this->flattenedFieldDefinitions[$fieldDefinition->getName()] = $fieldDefinition;
+        }
     }
 
     /**

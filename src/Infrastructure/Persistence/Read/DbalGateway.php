@@ -219,14 +219,14 @@ class DbalGateway implements ReadDbGatewayInterface
                 if (!$value instanceof DateTimeInterface) {
                     throw new InvalidInputException('Unsupported filter value for DateTimeField');
                 }
-                $value = $value->format('Y-m-d H:i:s');
+                $value = $value->format($this->connection->getDatabasePlatform()->getDateTimeFormatString());
                 $type = ParameterType::STRING;
                 break;
             case DateField::class:
                 if (!$value instanceof DateTimeInterface) {
                     throw new InvalidInputException('Unsupported filter value for DateField');
                 }
-                $value = $value->format('Y-m-d');
+                $value = $value->format($this->connection->getDatabasePlatform()->getDateFormatString());
                 $type = ParameterType::STRING;
                 break;
             default:
