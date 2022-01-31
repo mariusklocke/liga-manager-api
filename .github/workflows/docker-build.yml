@@ -12,6 +12,6 @@ jobs:
           COVERALLS_RUN_LOCALLY: 1
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           PUBLISH_IMAGE: 1
           UPLOAD_COVERAGE: 1
