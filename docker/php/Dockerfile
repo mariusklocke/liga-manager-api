@@ -26,7 +26,6 @@ RUN set -xe \
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/init-container.sh /usr/local/bin/init-container
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
-COPY docker/php/wait-for.sh /usr/local/bin/wait-for
 
 # Prepare application source directory
 ENV APP_HOME="/var/www/api"

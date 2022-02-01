@@ -12,8 +12,13 @@ class ServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            HealthCheckInterface::class => [],
-            QueryAction::class => DI\create()->constructor(DI\get(HealthCheckInterface::class), DI\get(JsonResponseWriter::class))
+            HealthCheckInterface::class => [
+                DI\get(FpmHealthCheck::class)
+            ],
+            QueryAction::class => DI\create()->constructor(
+                DI\get(HealthCheckInterface::class),
+                DI\get(JsonResponseWriter::class)
+            )
         ];
     }
 }

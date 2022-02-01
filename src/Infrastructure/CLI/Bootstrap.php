@@ -27,6 +27,7 @@ class Bootstrap
             new SendTestMailCommand($container),
             new SetupDbCommand($container),
             new SetupEnvCommand($container),
+            new HealthCommand($container)
         ]);
 
         return $app;
