@@ -25,7 +25,7 @@ class HealthCommand extends Command
         /** @var HealthCheckInterface[] $checks */
         $checks = $this->container->get(HealthCheckInterface::class);
 
-        $attempt = 0;
+        $attempt = 1;
         $retries = (int)$input->getOption('retries');
 
         do {
@@ -37,15 +37,19 @@ class HealthCommand extends Command
                 } catch (Exception $e) {
                     $errors[] = sprintf('Health check "%s" has failed: %s', $check->getName(), $e->getMessage());
 
-                    if ($attempt < $retries) {
-                        $output->writeln('Waiting for application to become healthy ...');
+                    if ($attempt <= $retries) {
+                        $output->writeln(sprintf(
+                            'Waiting for application to become healthy ... Attempt %d of %d',
+                            $attempt,
+                            $retries
+                        ));
                         sleep(1);
                     }
                 }
             }
 
             $attempt++;
-        } while (count($errors) > 0 && $attempt < $retries);
+        } while (count($errors) > 0 && $attempt <= $retries);
 
         if (count($errors)) {
             $io->error($errors);

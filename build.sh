@@ -68,7 +68,7 @@ docker run -d --name=php --network=build \
 docker exec -t php bin/deptrac.phar --no-progress
 
 # Wait until application is healthy
-docker exec -t php lima app:health --no-ansi --retries 60
+docker exec -t php lima app:health --no-ansi --retries 10
 
 # Run phpunit without coverage
 docker exec -t php phpunit.phar --testdox
