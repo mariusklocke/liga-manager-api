@@ -65,10 +65,19 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
                 ];
 
-                $connection = DriverManager::getConnection(
-                    $params,
-                    $container->get(Configuration::class)
-                );
+                $connection = DriverManager::getConnection($params, $container->get(Configuration::class));
+
+                do {
+                    try {
+                        $connected = $connection->connect();
+                    } catch (\Exception $exception) {
+                        /** @var LoggerInterface $logger */
+                        $logger = $container->get(LoggerInterface::class);
+                        $logger->notice('Waiting for database connection');
+                        $connected = false;
+                        sleep(1);
+                    }
+                } while (!$connected);
 
                 if (!Type::hasType(CustomBinaryType::NAME)) {
                     Type::addType(CustomBinaryType::NAME, CustomBinaryType::class);
@@ -76,6 +85,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 if (!Type::hasType(CustomDateTimeType::NAME)) {
                     Type::addType(CustomDateTimeType::NAME, CustomDateTimeType::class);
                 }
+
                 $connection
                     ->getDatabasePlatform()
                     ->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
