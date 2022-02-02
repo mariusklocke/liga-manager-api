@@ -29,8 +29,7 @@ class CliTest extends TestCase
 
     public function testSetupEnv(): void
     {
-        $tester = $this->getCommandTester(SetupEnvCommand::NAME);
-        $tester->setInputs([
+        $input = [
             'notice',
             'redis',
             'mariadb',
@@ -40,9 +39,12 @@ class CliTest extends TestCase
             'noreply@example.com',
             'No Reply',
             'smtp://127.0.0.1:25'
-        ]);
+        ];
 
-        self::assertExecutionSuccess($tester->execute([]));
+        $tester = $this->getCommandTester(SetupEnvCommand::NAME);
+        $tester->setInputs($input);
+
+        self::assertExecutionSuccess($tester->execute([], ['interactive' => true]));
     }
 
     public function testSetupDatabase(): void
