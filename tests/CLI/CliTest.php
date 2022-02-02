@@ -11,6 +11,7 @@ use HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand;
 use HexagonalPlayground\Infrastructure\CLI\MaintenanceModeCommand;
 use HexagonalPlayground\Infrastructure\CLI\SendTestMailCommand;
 use HexagonalPlayground\Infrastructure\CLI\SetupDbCommand;
+use HexagonalPlayground\Infrastructure\CLI\SetupEnvCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -23,6 +24,24 @@ class CliTest extends TestCase
     protected function setUp(): void
     {
         $this->app = Bootstrap::bootstrap();
+    }
+
+    public function testSetupEnv(): void
+    {
+        $tester = $this->getCommandTester(SetupEnvCommand::NAME);
+        $tester->setInputs([
+            'notice',
+            'redis',
+            'mariadb',
+            'db1',
+            'user',
+            'password',
+            'noreply@example.com',
+            'No Reply',
+            'smtp://127.0.0.1:25'
+        ]);
+
+        self::assertExecutionSuccess($tester->execute([]));
     }
 
     public function testSetupDatabase(): void
