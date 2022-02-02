@@ -48,8 +48,8 @@ operating system.
 For generating a local root CA certificate, please refer to `docker/nginx/generate-root-cert.sh`. Please read the script
 and verify the paths are valid for your system before running.
 
-To generate a signed certificate for `localhost`, please check out `docker/nginx/generate-site-cert.sh`. Sames rules for
-that script: Please have a look inside, before running it.
+To generate a signed certificate for `lima.local`, please check out `docker/nginx/generate-site-cert.sh`.
+Same rules for that script: Please have a look inside, before running it.
 
 If you need to change paths, make your sure to reflect the changes in `docker-compose.yml` and your nginx configuration.
 
