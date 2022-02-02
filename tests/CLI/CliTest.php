@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Tests\CLI;
 use HexagonalPlayground\Infrastructure\CLI\Bootstrap;
 use HexagonalPlayground\Infrastructure\CLI\CreateUserCommand;
 use HexagonalPlayground\Infrastructure\CLI\DebugGqlSchemaCommand;
+use HexagonalPlayground\Infrastructure\CLI\HealthCommand;
 use HexagonalPlayground\Infrastructure\CLI\L98ImportCommand;
 use HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand;
 use HexagonalPlayground\Infrastructure\CLI\MaintenanceModeCommand;
@@ -47,6 +48,13 @@ class CliTest extends TestCase
     public function testSetupDatabase(): void
     {
         $tester = $this->getCommandTester(SetupDbCommand::NAME);
+
+        self::assertExecutionSuccess($tester->execute([]));
+    }
+
+    public function testCheckingHealth(): void
+    {
+        $tester = $this->getCommandTester(HealthCommand::NAME);
 
         self::assertExecutionSuccess($tester->execute([]));
     }
