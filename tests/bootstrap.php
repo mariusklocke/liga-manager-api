@@ -10,5 +10,11 @@ if (!getenv('ALLOW_TESTS')) {
 $autoloader = require_once __DIR__ . '/../vendor/autoload.php';
 $autoloader->addPsr4('HexagonalPlayground\\Tests\\', __DIR__);
 
+# Wipe database
+system('lima app:db:wipe -n');
+
+# Run migrations
+system('lima migrations:migrate -n');
+
 # Create default user
 system('lima app:create-user -n --default');
