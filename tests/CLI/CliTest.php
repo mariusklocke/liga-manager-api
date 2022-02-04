@@ -3,16 +3,15 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\CLI;
 
-use HexagonalPlayground\Infrastructure\CLI\Bootstrap;
 use HexagonalPlayground\Infrastructure\CLI\CreateUserCommand;
 use HexagonalPlayground\Infrastructure\CLI\DebugGqlSchemaCommand;
 use HexagonalPlayground\Infrastructure\CLI\HealthCommand;
 use HexagonalPlayground\Infrastructure\CLI\L98ImportCommand;
-use HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand;
+use HexagonalPlayground\Infrastructure\CLI\LoadDemoDataCommand;
 use HexagonalPlayground\Infrastructure\CLI\MaintenanceModeCommand;
 use HexagonalPlayground\Infrastructure\CLI\SendTestMailCommand;
-use HexagonalPlayground\Infrastructure\CLI\SetupDbCommand;
 use HexagonalPlayground\Infrastructure\CLI\SetupEnvCommand;
+use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -24,7 +23,7 @@ class CliTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->app = Bootstrap::bootstrap();
+        $this->app = ContainerBuilder::build()->get(Application::class);
     }
 
     public function testSetupEnv(): void
@@ -47,13 +46,6 @@ class CliTest extends TestCase
         self::assertExecutionSuccess($tester->execute([], ['interactive' => true]));
     }
 
-    public function testSetupDatabase(): void
-    {
-        $tester = $this->getCommandTester(SetupDbCommand::NAME);
-
-        self::assertExecutionSuccess($tester->execute([]));
-    }
-
     public function testCheckingHealth(): void
     {
         $tester = $this->getCommandTester(HealthCommand::NAME);
@@ -61,9 +53,6 @@ class CliTest extends TestCase
         self::assertExecutionSuccess($tester->execute([]));
     }
 
-    /**
-     * @depends testSetupDatabase
-     */
     public function testCreatingUser(): void
     {
         $tester = $this->getCommandTester(CreateUserCommand::NAME);
@@ -72,18 +61,12 @@ class CliTest extends TestCase
         self::assertExecutionSuccess($tester->execute([]));
     }
 
-    /**
-     * @depends testSetupDatabase
-     */
     public function testLoadingFixtures(): void
     {
-        $tester = $this->getCommandTester(LoadFixturesCommand::NAME);
+        $tester = $this->getCommandTester(LoadDemoDataCommand::NAME);
         self::assertExecutionSuccess($tester->execute([]));
     }
 
-    /**
-     * @depends testSetupDatabase
-     */
     public function testSeasonsCanBeImportedFromLegacyFiles(): void
     {
         $tester = $this->getCommandTester(L98ImportCommand::NAME);

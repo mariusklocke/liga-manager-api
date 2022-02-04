@@ -23,9 +23,9 @@ use Iterator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class LoadFixturesCommand extends Command
+class LoadDemoDataCommand extends Command
 {
-    public const NAME = 'app:load-fixtures';
+    public const NAME = 'app:db:demo-data';
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

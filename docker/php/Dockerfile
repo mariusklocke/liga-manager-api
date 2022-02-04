@@ -34,7 +34,7 @@ WORKDIR ${APP_HOME}
 
 # Install dependencies first
 COPY --chown=www-data:www-data bin bin/
-COPY --chown=www-data:www-data composer.lock composer.json deptrac.yaml migrations.php phpunit.xml ./
+COPY --chown=www-data:www-data composer.lock composer.json deptrac.yaml phpunit.xml ./
 RUN chmod +x bin/*
 USER www-data
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"

@@ -16,6 +16,7 @@ class HealthCommand extends Command
     protected function configure()
     {
         $this->addOption('retries', null, InputOption::VALUE_REQUIRED, 'Retry attempts');
+        $this->addOption('skip', null, InputOption::VALUE_REQUIRED);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -24,6 +25,9 @@ class HealthCommand extends Command
 
         /** @var HealthCheckInterface[] $checks */
         $checks = $this->container->get(HealthCheckInterface::class);
+        $checks = array_filter($checks, function (HealthCheckInterface $healthCheck) use ($input) {
+            return $healthCheck->getName() !== $input->getOption('skip');
+        });
 
         $attempt = 1;
         $retries = (int)$input->getOption('retries');
@@ -45,6 +49,8 @@ class HealthCommand extends Command
                         ));
                         sleep(1);
                     }
+
+                    break;
                 }
             }
 

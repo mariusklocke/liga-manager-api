@@ -3,12 +3,13 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
+use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SetupDbCommand extends Command
+class WipeDbCommand extends Command
 {
-    public const NAME = 'app:setup:db';
+    public const NAME = 'app:db:wipe';
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -23,11 +24,14 @@ class SetupDbCommand extends Command
             }
         }
 
-        system('doctrine orm:schema-tool:drop --force');
-        system('doctrine dbal:run-sql "DROP TABLE IF EXISTS doctrine_migration_versions;"');
-        system('doctrine-migrations migrations:migrate -n');
+        /** @var Connection $connection */
+        $connection = $this->container->get(Connection::class);
 
-        $output->writeln('DB setup complete.');
+        foreach ($connection->fetchFirstColumn('SHOW TABLES') as $table) {
+            $connection->executeStatement("DROP TABLE `$table`");
+        }
+
+        $io->success('Successfully dropped all tables');
 
         return 0;
     }

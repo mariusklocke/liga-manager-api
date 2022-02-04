@@ -27,14 +27,20 @@ For more information on how to manage containers, please refer to the [docker-co
 ## Useful commands
 
 ```bash
-# Drop schema and run all migrations (empty table state)
-$ docker-compose exec php lima app:setup:db
+# Wipe database
+$ docker-compose exec php lima app:db:wipe
+
+# Run migrations
+$ docker-compose exec php lima migrations:migrate
 
 # Create a new user (any role)
 $ docker-compose exec php lima app:create-user
 
 # Create the default admin user
 $ docker-compose exec php lima app:create-user --default
+
+# Load demo data
+$ docker-compose exec php loma app:db:demo-data
 ```
 
 ## Enable HTTPS
