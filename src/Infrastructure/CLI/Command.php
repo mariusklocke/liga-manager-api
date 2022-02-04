@@ -32,7 +32,7 @@ abstract class Command extends SymfonyCommand
     /**
      * {@inheritdoc}
      */
-    public function run(InputInterface $input, OutputInterface $output)
+    public function run(InputInterface $input, OutputInterface $output): int
     {
         $timer = new Timer();
         $timer->start();

@@ -34,7 +34,7 @@
         "doctrine/dbal": "^3.3.0",
         "doctrine/migrations": "^3.2",
         "doctrine/orm": "~2.11.0",
-        "firebase/php-jwt": "^5.4",
+        "firebase/php-jwt": "^6.0",
         "middlewares/trailing-slash": "^2.0",
         "monolog/monolog": "^2.3.1",
         "nyholm/psr7": "^1.4.1",
@@ -42,7 +42,7 @@
         "php-di/php-di": "^6.0",
         "ramsey/uuid": "^4.1",
         "slim/slim": "^4.8.1",
-        "symfony/console": "^5.3.2",
+        "symfony/console": "^6.0",
         "symfony/mailer": "^6.0",
         "web-auth/webauthn-lib": "^3.3.9",
         "webonyx/graphql-php": "^14.11.3"
