@@ -73,13 +73,13 @@ docker exec -t php lima app:health --no-ansi --retries 10
 # Run phpunit without coverage
 docker exec -t php phpunit.phar --testdox
 
+# Enable xdebug
+docker exec -t -u root php docker-php-ext-enable xdebug
+
+# Run tests with coverage
+docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml
+
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
-    # Enable xdebug
-    docker exec -t -u root php docker-php-ext-enable xdebug
-
-    # Run tests with coverage
-    docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml
-
     # Upload coverage report to coveralls.io
     docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
 fi

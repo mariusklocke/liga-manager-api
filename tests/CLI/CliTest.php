@@ -11,6 +11,7 @@ use HexagonalPlayground\Infrastructure\CLI\LoadDemoDataCommand;
 use HexagonalPlayground\Infrastructure\CLI\MaintenanceModeCommand;
 use HexagonalPlayground\Infrastructure\CLI\SendTestMailCommand;
 use HexagonalPlayground\Infrastructure\CLI\SetupEnvCommand;
+use HexagonalPlayground\Infrastructure\CLI\WipeDbCommand;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
@@ -42,26 +43,39 @@ class CliTest extends TestCase
 
         $tester = $this->getCommandTester(SetupEnvCommand::NAME);
         $tester->setInputs($input);
-
         self::assertExecutionSuccess($tester->execute([], ['interactive' => true]));
     }
 
     public function testCheckingHealth(): void
     {
         $tester = $this->getCommandTester(HealthCommand::NAME);
-
         self::assertExecutionSuccess($tester->execute([]));
+    }
+
+    public function testWipingDatabase(): void
+    {
+        $tester = $this->getCommandTester(WipeDbCommand::NAME);
+        $tester->setInputs(['y']);
+        self::assertExecutionSuccess($tester->execute([], ['interactive' => true]));
+    }
+
+    public function testMigratingDatabase(): void
+    {
+        $tester = $this->getCommandTester('migrations:migrate');
+        self::assertExecutionSuccess($tester->execute(['-n' => null]));
     }
 
     public function testCreatingUser(): void
     {
         $tester = $this->getCommandTester(CreateUserCommand::NAME);
         $tester->setInputs(['mary.poppins@example.com', '123456', 'Mary', 'Poppins', 'admin']);
-
         self::assertExecutionSuccess($tester->execute([]));
+
+        $tester = $this->getCommandTester(CreateUserCommand::NAME);
+        self::assertExecutionSuccess($tester->execute(['--default' => null]));
     }
 
-    public function testLoadingFixtures(): void
+    public function testLoadingDemoData(): void
     {
         $tester = $this->getCommandTester(LoadDemoDataCommand::NAME);
         self::assertExecutionSuccess($tester->execute([]));
@@ -70,10 +84,8 @@ class CliTest extends TestCase
     public function testSeasonsCanBeImportedFromLegacyFiles(): void
     {
         $tester = $this->getCommandTester(L98ImportCommand::NAME);
-
         $exitCode = $tester->execute(['path' => __DIR__ . '/data/*.l98'], ['interactive' => false]);
         $output = $tester->getDisplay();
-
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('success', $output);
     }
@@ -81,10 +93,8 @@ class CliTest extends TestCase
     public function testGraphqlSchemaCanBeDumped(): void
     {
         $tester = $this->getCommandTester(DebugGqlSchemaCommand::NAME);
-
         $exitCode = $tester->execute([]);
         $output = $tester->getDisplay();
-
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('mutation', $output);
         self::assertStringContainsString('query', $output);
