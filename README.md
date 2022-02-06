@@ -19,7 +19,7 @@ $ docker-compose up -d
 
 To setup your `.env` file follow the instructions given from
 ```bash
-$ docker-compose exec php lima app:setup:env
+$ docker-compose exec php lima app:env:setup
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
@@ -27,14 +27,20 @@ For more information on how to manage containers, please refer to the [docker-co
 ## Useful commands
 
 ```bash
-# Drop schema and run all migrations (empty table state)
-$ docker-compose exec php lima app:setup:db
+# Wipe database
+$ docker-compose exec php lima app:db:wipe
+
+# Run migrations
+$ docker-compose exec php lima migrations:migrate
 
 # Create a new user (any role)
-$ docker-compose exec php lima app:create-user
+$ docker-compose exec php lima app:user:create
 
 # Create the default admin user
-$ docker-compose exec php lima app:create-user --default
+$ docker-compose exec php lima app:user:create --default
+
+# Load demo data
+$ docker-compose exec php lima app:db:demo-data
 ```
 
 ## Enable HTTPS
@@ -48,8 +54,8 @@ operating system.
 For generating a local root CA certificate, please refer to `docker/nginx/generate-root-cert.sh`. Please read the script
 and verify the paths are valid for your system before running.
 
-To generate a signed certificate for `localhost`, please check out `docker/nginx/generate-site-cert.sh`. Sames rules for
-that script: Please have a look inside, before running it.
+To generate a signed certificate for `lima.local`, please check out `docker/nginx/generate-site-cert.sh`.
+Same rules for that script: Please have a look inside, before running it.
 
 If you need to change paths, make your sure to reflect the changes in `docker-compose.yml` and your nginx configuration.
 

@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\DBAL\Connection;
 use Exception;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use Psr\Container\ContainerInterface;
@@ -25,7 +25,7 @@ class DoctrineHealthCheck implements HealthCheckInterface
      */
     public function __invoke(): void
     {
-        $this->container->get(EntityManagerInterface::class)->getConnection()->executeQuery('SELECT 1');
+        $this->container->get(Connection::class)->executeQuery('SELECT 1');
     }
 
     /**

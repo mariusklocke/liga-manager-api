@@ -7,9 +7,14 @@ use GraphQL\Utils\SchemaPrinter;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DebugGqlSchemaCommand extends Command
+class PrintGraphQlSchemaCommand extends Command
 {
-    public const NAME = 'app:debug-gql-schema';
+    public const NAME = 'app:graphql:schema';
+
+    protected function configure()
+    {
+        $this->setDescription('Print the current GraphQL schema');
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

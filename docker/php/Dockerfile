@@ -26,7 +26,6 @@ RUN set -xe \
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/init-container.sh /usr/local/bin/init-container
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
-COPY docker/php/wait-for.sh /usr/local/bin/wait-for
 
 # Prepare application source directory
 ENV APP_HOME="/var/www/api"
@@ -34,12 +33,11 @@ RUN mkdir -p ${APP_HOME} && chown www-data:www-data ${APP_HOME}
 WORKDIR ${APP_HOME}
 
 # Install dependencies first
-COPY --chown=www-data:www-data src/installer.php src/installer.php
 COPY --chown=www-data:www-data bin bin/
-COPY --chown=www-data:www-data composer.lock composer.json deptrac.yaml migrations.php phpunit.xml ./
+COPY --chown=www-data:www-data composer.lock composer.json deptrac.yaml phpunit.xml ./
 RUN chmod +x bin/*
 USER www-data
-ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
+ENV PATH="${PATH}:${APP_HOME}/bin"
 RUN bin/lima install
 
 # Install own application sources

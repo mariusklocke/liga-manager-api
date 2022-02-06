@@ -2,6 +2,8 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
+use HexagonalPlayground\Tests\Framework\IdGenerator;
+
 class TeamTest extends TestCase
 {
     protected function setUp(): void
@@ -15,7 +17,7 @@ class TeamTest extends TestCase
      */
     public function testTeamCanBeCreated(): string
     {
-        $sent = ['id' => 'TeamA', 'name' => 'Team A'];
+        $sent = ['id' => IdGenerator::generate(), 'name' => 'Team A'];
         $this->client->createTeam($sent['id'], $sent['name']);
 
         $received = $this->client->getTeamById($sent['id']);

@@ -3,14 +3,18 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\CLI;
 
-use HexagonalPlayground\Infrastructure\CLI\Bootstrap;
 use HexagonalPlayground\Infrastructure\CLI\CreateUserCommand;
-use HexagonalPlayground\Infrastructure\CLI\DebugGqlSchemaCommand;
+use HexagonalPlayground\Infrastructure\CLI\DeleteUserCommand;
+use HexagonalPlayground\Infrastructure\CLI\ListUserCommand;
+use HexagonalPlayground\Infrastructure\CLI\PrintGraphQlSchemaCommand;
+use HexagonalPlayground\Infrastructure\CLI\HealthCommand;
 use HexagonalPlayground\Infrastructure\CLI\L98ImportCommand;
-use HexagonalPlayground\Infrastructure\CLI\LoadFixturesCommand;
+use HexagonalPlayground\Infrastructure\CLI\LoadDemoDataCommand;
 use HexagonalPlayground\Infrastructure\CLI\MaintenanceModeCommand;
 use HexagonalPlayground\Infrastructure\CLI\SendTestMailCommand;
-use HexagonalPlayground\Infrastructure\CLI\SetupDbCommand;
+use HexagonalPlayground\Infrastructure\CLI\SetupEnvCommand;
+use HexagonalPlayground\Infrastructure\CLI\WipeDbCommand;
+use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -22,57 +26,122 @@ class CliTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->app = Bootstrap::bootstrap();
+        $this->app = ContainerBuilder::build()->get(Application::class);
     }
 
-    public function testSetupDatabase(): void
+    public function testSetupEnv(): void
     {
-        $tester = $this->getCommandTester(SetupDbCommand::NAME);
+        $input = [
+            'notice',
+            'redis',
+            'mariadb',
+            'db1',
+            'user',
+            'password',
+            'noreply@example.com',
+            'No Reply',
+            'smtp://127.0.0.1:25'
+        ];
 
+        $tester = $this->getCommandTester(SetupEnvCommand::NAME);
+        $tester->setInputs($input);
+        self::assertExecutionSuccess($tester->execute([], ['interactive' => true]));
+    }
+
+    public function testCheckingHealth(): void
+    {
+        $tester = $this->getCommandTester(HealthCommand::NAME);
         self::assertExecutionSuccess($tester->execute([]));
     }
 
-    /**
-     * @depends testSetupDatabase
-     */
+    public function testWipingDatabase(): void
+    {
+        $tester = $this->getCommandTester(WipeDbCommand::NAME);
+        $tester->setInputs(['y']);
+        self::assertExecutionSuccess($tester->execute([], ['interactive' => true]));
+    }
+
+    public function testMigratingDatabase(): void
+    {
+        $tester = $this->getCommandTester('migrations:migrate');
+        self::assertExecutionSuccess($tester->execute(['-n' => null]));
+    }
+
     public function testCreatingUser(): void
     {
         $tester = $this->getCommandTester(CreateUserCommand::NAME);
         $tester->setInputs(['mary.poppins@example.com', '123456', 'Mary', 'Poppins', 'admin']);
-
         self::assertExecutionSuccess($tester->execute([]));
+
+        $tester = $this->getCommandTester(CreateUserCommand::NAME);
+        self::assertExecutionSuccess($tester->execute(['--default' => null]));
     }
 
     /**
-     * @depends testSetupDatabase
+     * @depends testCreatingUser
+     * @return array
      */
-    public function testLoadingFixtures(): void
+    public function testListingUsers(): array
     {
-        $tester = $this->getCommandTester(LoadFixturesCommand::NAME);
-        self::assertExecutionSuccess($tester->execute([]));
+        $tester = $this->getCommandTester(ListUserCommand::NAME);
+        $exitCode = $tester->execute([]);
+        $output = $tester->getDisplay();
+
+        $users = [];
+
+        foreach (explode("\n", trim($output)) as $line) {
+            if (str_contains($line, '@')) {
+                $columns = array_values(array_filter(explode(' ', $line)));
+                $users[] = [
+                    'id' => $columns[0],
+                    'email' => $columns[1]
+                ];
+            }
+        }
+
+        self::assertExecutionSuccess($exitCode);
+
+        return $users;
     }
 
     /**
-     * @depends testSetupDatabase
+     * @depends testListingUsers
+     * @param array $users
+     * @return void
      */
+    public function testDeletingUser(array $users): void
+    {
+        $deletable = array_filter($users, function (array $user) {
+            return $user['email'] !== getenv('ADMIN_EMAIL');
+        });
+
+        self::assertNotEmpty($deletable);
+
+        $user = array_shift($deletable);
+        $tester = $this->getCommandTester(DeleteUserCommand::NAME);
+        self::assertExecutionSuccess($tester->execute(['userId' => $user['id']]));
+    }
+
+    public function testLoadingDemoData(): void
+    {
+        $tester = $this->getCommandTester(LoadDemoDataCommand::NAME);
+        self::assertExecutionSuccess($tester->execute([]));
+    }
+
     public function testSeasonsCanBeImportedFromLegacyFiles(): void
     {
         $tester = $this->getCommandTester(L98ImportCommand::NAME);
-
         $exitCode = $tester->execute(['path' => __DIR__ . '/data/*.l98'], ['interactive' => false]);
         $output = $tester->getDisplay();
-
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('success', $output);
     }
 
     public function testGraphqlSchemaCanBeDumped(): void
     {
-        $tester = $this->getCommandTester(DebugGqlSchemaCommand::NAME);
-
+        $tester = $this->getCommandTester(PrintGraphQlSchemaCommand::NAME);
         $exitCode = $tester->execute([]);
         $output = $tester->getDisplay();
-
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('mutation', $output);
         self::assertStringContainsString('query', $output);

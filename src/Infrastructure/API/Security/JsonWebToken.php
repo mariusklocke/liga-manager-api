@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Security;
 
 use DateTimeImmutable;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Security\TokenInterface;
 use HexagonalPlayground\Infrastructure\Environment;
@@ -74,7 +75,8 @@ final class JsonWebToken implements TokenInterface
     public static function decode(string $encoded): self
     {
         try {
-            $payload = JWT::decode($encoded, self::getSecret(), [self::ALGORITHM]);
+            $key = new Key(self::getSecret(), self::ALGORITHM);
+            $payload = JWT::decode($encoded, $key);
         } catch (\Exception $e) {
             throw new AuthenticationException('Invalid Token');
         }

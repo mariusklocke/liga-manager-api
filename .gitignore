@@ -6,3 +6,4 @@ bin/*.phar
 docker-compose.yml
 docker/_volumes
 import
+*.sql.gz

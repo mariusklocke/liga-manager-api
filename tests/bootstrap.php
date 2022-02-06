@@ -9,9 +9,3 @@ if (!getenv('ALLOW_TESTS')) {
 /** @var \Composer\Autoload\ClassLoader $autoloader */
 $autoloader = require_once __DIR__ . '/../vendor/autoload.php';
 $autoloader->addPsr4('HexagonalPlayground\\Tests\\', __DIR__);
-
-# Make sure we have a clean database
-system('lima app:setup:db -n');
-
-# Create default user
-system('lima app:create-user -n --default');

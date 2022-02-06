@@ -72,19 +72,19 @@ docker run -d --name=php --network=build -v "${PWD}/coverage:/coverage" \
 # Run deptrac
 docker exec -t php bin/deptrac.phar --no-progress
 
-# Wait until FPM is ready
-docker exec -t php wait-for 127.0.0.1 9000
+# Wait until application is healthy
+docker exec -t php lima app:health --no-ansi --retries 10
 
 # Run phpunit without coverage
 docker exec -t php phpunit.phar --testdox
 
+# Enable xdebug
+docker exec -t -u root php docker-php-ext-enable xdebug
+
+# Run tests with coverage
+docker exec -t php phpunit.phar --coverage-clover /coverage/clover.xml
+
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
-    # Enable xdebug
-    docker exec -t -u root php docker-php-ext-enable xdebug
-
-    # Run tests with coverage
-    docker exec -t php phpunit.phar --coverage-clover /coverage/clover.xml
-
     # Build codecov uploader container
     docker build -f docker/codecov/Dockerfile -t codecov:latest .
 

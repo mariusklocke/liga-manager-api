@@ -35,8 +35,9 @@ class EventServiceProvider implements ServiceProviderInterface
 
             HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
 
-            Redis::class => DI\factory(function() {
+            Redis::class => DI\factory(function () {
                 $redis = new Redis();
+
                 if (false === $redis->connect(Environment::get('REDIS_HOST'))) {
                     throw new RuntimeException('Could not connect to redis');
                 }
