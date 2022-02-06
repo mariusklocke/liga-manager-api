@@ -25,11 +25,11 @@ class ListUserCommand extends Command
 
         $users = $userRepository->findMany([]);
 
-        if (count($users) === 0) {
+        if (count($users) > 0) {
+            $io->table(array_keys($users[0]), $users);
+        } else {
             $io->text('No users found.');
         }
-
-        $io->table(array_keys($users[0]), $users);
 
         return 0;
     }
