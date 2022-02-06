@@ -40,7 +40,7 @@ $ docker-compose exec php lima app:user:create
 $ docker-compose exec php lima app:user:create --default
 
 # Load demo data
-$ docker-compose exec php loma app:db:demo-data
+$ docker-compose exec php lima app:db:demo-data
 ```
 
 ## Enable HTTPS
