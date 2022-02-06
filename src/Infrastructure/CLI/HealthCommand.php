@@ -15,6 +15,7 @@ class HealthCommand extends Command
 
     protected function configure()
     {
+        $this->setDescription('Check application health');
         $this->addOption('retries', null, InputOption::VALUE_REQUIRED, 'Retry attempts');
         $this->addOption('skip', null, InputOption::VALUE_REQUIRED);
     }

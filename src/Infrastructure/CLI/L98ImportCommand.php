@@ -16,10 +16,11 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 class L98ImportCommand extends Command
 {
-    public const NAME = 'app:import-season';
+    public const NAME = 'app:import:season';
 
     protected function configure(): void
     {
+        $this->setDescription('Import season data from L98 files');
         $this
             ->setDefinition([
                 new InputArgument('path', InputArgument::REQUIRED, 'Path to L98 season files (wildcards allowed)')

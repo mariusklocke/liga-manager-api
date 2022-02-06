@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\CLI;
 
 use HexagonalPlayground\Infrastructure\CLI\CreateUserCommand;
-use HexagonalPlayground\Infrastructure\CLI\DebugGqlSchemaCommand;
+use HexagonalPlayground\Infrastructure\CLI\PrintGraphQlSchemaCommand;
 use HexagonalPlayground\Infrastructure\CLI\HealthCommand;
 use HexagonalPlayground\Infrastructure\CLI\L98ImportCommand;
 use HexagonalPlayground\Infrastructure\CLI\LoadDemoDataCommand;
@@ -92,7 +92,7 @@ class CliTest extends TestCase
 
     public function testGraphqlSchemaCanBeDumped(): void
     {
-        $tester = $this->getCommandTester(DebugGqlSchemaCommand::NAME);
+        $tester = $this->getCommandTester(PrintGraphQlSchemaCommand::NAME);
         $exitCode = $tester->execute([]);
         $output = $tester->getDisplay();
         self::assertExecutionSuccess($exitCode);

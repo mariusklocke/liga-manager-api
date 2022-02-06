@@ -37,7 +37,7 @@ class ServiceProvider implements ServiceProviderInterface
                 $app = new Application();
                 $app->setCatchExceptions(true);
                 $app->addCommands([
-                    new DebugGqlSchemaCommand($container),
+                    new PrintGraphQlSchemaCommand($container),
                     new MaintenanceModeCommand($container),
                     new SendTestMailCommand($container),
                     new SetupEnvCommand($container),

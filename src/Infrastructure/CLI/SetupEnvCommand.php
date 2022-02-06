@@ -10,7 +10,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SetupEnvCommand extends Command
 {
-    public const NAME = 'app:setup:env';
+    public const NAME = 'app:env:setup';
+
+    protected function configure(): void
+    {
+        $this->setDescription('Setup environment config interactively');
+    }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

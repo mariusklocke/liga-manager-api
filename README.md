@@ -19,7 +19,7 @@ $ docker-compose up -d
 
 To setup your `.env` file follow the instructions given from
 ```bash
-$ docker-compose exec php lima app:setup:env
+$ docker-compose exec php lima app:env:setup
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
@@ -34,10 +34,10 @@ $ docker-compose exec php lima app:db:wipe
 $ docker-compose exec php lima migrations:migrate
 
 # Create a new user (any role)
-$ docker-compose exec php lima app:create-user
+$ docker-compose exec php lima app:user:create
 
 # Create the default admin user
-$ docker-compose exec php lima app:create-user --default
+$ docker-compose exec php lima app:user:create --default
 
 # Load demo data
 $ docker-compose exec php loma app:db:demo-data

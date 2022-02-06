@@ -11,13 +11,18 @@ class WipeDbCommand extends Command
 {
     public const NAME = 'app:db:wipe';
 
+    protected function configure(): void
+    {
+        $this->setDescription('Erase all data from the current database');
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = $this->getStyledIO($input, $output);
 
         if ($input->isInteractive()) {
             if (!$io->confirm(
-                'Warning: You are about to delete the current database. Are you sure you want to continue?',
+                'Warning: You are about to erase all data from the current database. Are you sure you want to continue?',
                 false
             )) {
                 return 0;
