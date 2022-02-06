@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\CLI;
 
 use HexagonalPlayground\Infrastructure\CLI\CreateUserCommand;
+use HexagonalPlayground\Infrastructure\CLI\DeleteUserCommand;
+use HexagonalPlayground\Infrastructure\CLI\ListUserCommand;
 use HexagonalPlayground\Infrastructure\CLI\PrintGraphQlSchemaCommand;
 use HexagonalPlayground\Infrastructure\CLI\HealthCommand;
 use HexagonalPlayground\Infrastructure\CLI\L98ImportCommand;
@@ -73,6 +75,51 @@ class CliTest extends TestCase
 
         $tester = $this->getCommandTester(CreateUserCommand::NAME);
         self::assertExecutionSuccess($tester->execute(['--default' => null]));
+    }
+
+    /**
+     * @depends testCreatingUser
+     * @return array
+     */
+    public function testListingUsers(): array
+    {
+        $tester = $this->getCommandTester(ListUserCommand::NAME);
+        $exitCode = $tester->execute([]);
+        $output = $tester->getDisplay();
+
+        $users = [];
+
+        foreach (explode("\n", trim($output)) as $line) {
+            if (str_contains($line, '@')) {
+                $columns = array_values(array_filter(explode(' ', $line)));
+                $users[] = [
+                    'id' => $columns[0],
+                    'email' => $columns[1]
+                ];
+            }
+        }
+
+        self::assertExecutionSuccess($exitCode);
+
+        return $users;
+    }
+
+    /**
+     * @depends testListingUsers
+     * @param array $users
+     * @return void
+     */
+    public function testDeletingUser(array $users): void
+    {
+        $deletable = array_filter($users, function (array $user) {
+            return $user['email'] !== getenv('ADMIN_EMAIL');
+        });
+
+        self::assertNotEmpty($deletable);
+
+        $user = array_shift($deletable);
+        $tester = $this->getCommandTester(DeleteUserCommand::NAME);
+        self::assertExecutionSuccess($tester->execute(['userId' => $user['id']]));
     }
 
     public function testLoadingDemoData(): void

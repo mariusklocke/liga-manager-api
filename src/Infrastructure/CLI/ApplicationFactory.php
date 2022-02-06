@@ -59,6 +59,8 @@ class ApplicationFactory
             // Own commands
             $app->addCommands([
                 new CreateUserCommand($container),
+                new DeleteUserCommand($container),
+                new ListUserCommand($container),
                 new L98ImportCommand($container),
                 new LoadDemoDataCommand($container),
                 new WipeDbCommand($container)
