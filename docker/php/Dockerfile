@@ -37,7 +37,7 @@ COPY --chown=www-data:www-data bin bin/
 COPY --chown=www-data:www-data composer.lock composer.json deptrac.yaml phpunit.xml ./
 RUN chmod +x bin/*
 USER www-data
-ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
+ENV PATH="${PATH}:${APP_HOME}/bin"
 RUN bin/lima install
 
 # Install own application sources

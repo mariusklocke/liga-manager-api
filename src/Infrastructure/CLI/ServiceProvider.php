@@ -21,6 +21,14 @@ use Doctrine\Migrations\Tools\Console\Command\StatusCommand;
 use Doctrine\Migrations\Tools\Console\Command\SyncMetadataCommand;
 use Doctrine\Migrations\Tools\Console\Command\UpToDateCommand;
 use Doctrine\Migrations\Tools\Console\Command\VersionCommand;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand;
+use Doctrine\ORM\Tools\Console\Command\InfoCommand;
+use Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand;
+use Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand;
+use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
+use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Exception;
 use HexagonalPlayground\Application\Import\TeamMapperInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
@@ -64,6 +72,10 @@ class ServiceProvider implements ServiceProviderInterface
                     foreach ($this->getDoctrineMigrationsCommands($dbConnection) as $command) {
                         $app->add($command);
                     }
+
+                    foreach ($this->getDoctrineOrmCommands($container->get(EntityManagerInterface::class)) as $command) {
+                        $app->add($command);
+                    }
                 }
 
                 return $app;
@@ -101,5 +113,21 @@ class ServiceProvider implements ServiceProviderInterface
         yield new UpToDateCommand($dependencyFactory);
         yield new SyncMetadataCommand($dependencyFactory);
         yield new ListCommand($dependencyFactory);
+    }
+
+    /**
+     * @param EntityManagerInterface $entityManager
+     * @return Iterator
+     */
+    private function getDoctrineOrmCommands(EntityManagerInterface $entityManager): Iterator
+    {
+        $emProvider = new SingleManagerProvider($entityManager);
+
+        yield new CreateCommand($emProvider);
+        yield new UpdateCommand($emProvider);
+        yield new DropCommand($emProvider);
+        yield new GenerateProxiesCommand($emProvider);
+        yield new ValidateSchemaCommand($emProvider);
+        yield new InfoCommand($emProvider);
     }
 }
