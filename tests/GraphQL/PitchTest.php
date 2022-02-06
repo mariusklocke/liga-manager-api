@@ -2,6 +2,8 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
+use HexagonalPlayground\Tests\Framework\IdGenerator;
+
 class PitchTest extends TestCase
 {
     protected function setUp(): void
@@ -12,24 +14,26 @@ class PitchTest extends TestCase
 
     public function testPitchCanBeCreated(): array
     {
-        $this->client->createPitch('TestFloat', 'TestFloat', 89.99, 6.78);
-        $this->client->createPitch('TestInt', 'TestInt', 89, 6);
+        $floatPitchId = IdGenerator::generate();
+        $intPitchId = IdGenerator::generate();
+        $this->client->createPitch($floatPitchId, 'TestFloat', 89.99, 6.78);
+        $this->client->createPitch($intPitchId, 'TestInt', 89, 6);
 
-        $pitch = $this->client->getPitchById('TestFloat');
+        $pitch = $this->client->getPitchById($floatPitchId);
         self::assertNotNull($pitch);
-        self::assertSame('TestFloat', $pitch->id);
+        self::assertSame($floatPitchId, $pitch->id);
         self::assertSame('TestFloat', $pitch->label);
         self::assertSimilarFloats(89.99, $pitch->location_latitude);
         self::assertSimilarFloats(6.78, $pitch->location_longitude);
 
-        $pitch = $this->client->getPitchById('TestInt');
+        $pitch = $this->client->getPitchById($intPitchId);
         self::assertNotNull($pitch);
-        self::assertSame('TestInt', $pitch->id);
+        self::assertSame($intPitchId, $pitch->id);
         self::assertSame('TestInt', $pitch->label);
         self::assertSame(89, $pitch->location_latitude);
         self::assertSame(6, $pitch->location_longitude);
 
-        return ['TestFloat', 'TestInt'];
+        return [$floatPitchId, $intPitchId];
     }
 
     /**
@@ -37,7 +41,7 @@ class PitchTest extends TestCase
      * @param array $pitchIds
      * @return array
      */
-    public function testPitchContactCanBeUpdated(array $pitchIds)
+    public function testPitchContactCanBeUpdated(array $pitchIds): array
     {
         $pitchId = $pitchIds[0];
         $contact = [

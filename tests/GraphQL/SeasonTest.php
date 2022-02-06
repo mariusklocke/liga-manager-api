@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Tests\GraphQL;
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
+use HexagonalPlayground\Tests\Framework\IdGenerator;
 use stdClass;
 
 class SeasonTest extends CompetitionTestCase
@@ -12,7 +13,7 @@ class SeasonTest extends CompetitionTestCase
     public function testSeasonCanBeCreated(): string
     {
         $sent = [
-            'id' => 'SeasonA',
+            'id' => IdGenerator::generate(),
             'name' => 'Season 18/19'
         ];
         $this->client->createSeason($sent['id'], $sent['name']);
@@ -36,7 +37,7 @@ class SeasonTest extends CompetitionTestCase
 
     public function testSeasonCanBeDeleted(): void
     {
-        $seasonId = 'toDelete';
+        $seasonId = IdGenerator::generate();
         $this->client->createSeason($seasonId, $seasonId);
         $season = $this->client->getSeasonById($seasonId);
         self::assertNotNull($season);
@@ -219,7 +220,7 @@ class SeasonTest extends CompetitionTestCase
 
         self::assertNotNull($match);
 
-        $pitchId = 'PitchABC';
+        $pitchId = IdGenerator::generate();
         $this->client->createPitch($pitchId, 'Pitch ABC', 12.34, 23.45);
         $this->client->locateMatch($matchId, $pitchId);
 
@@ -386,7 +387,7 @@ class SeasonTest extends CompetitionTestCase
      */
     public function testPenaltiesAffectRanking(string $seasonId): string
     {
-        $penaltyId = 'foobar';
+        $penaltyId = IdGenerator::generate();
         $teamId = self::$teamIds[0];
 
         $this->client->addRankingPenalty($penaltyId, $seasonId, $teamId, 'for not partying hard', 5);

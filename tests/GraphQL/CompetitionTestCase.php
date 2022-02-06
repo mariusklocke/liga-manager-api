@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Tests\GraphQL;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 abstract class CompetitionTestCase extends TestCase
 {
@@ -33,7 +34,7 @@ abstract class CompetitionTestCase extends TestCase
     private function createTeams(): void
     {
         for ($i = 1; $i <= 8; $i++) {
-            $teamId = 'Team' . $i;
+            $teamId = IdGenerator::generate();
             $this->client->createTeam($teamId, $teamId);
             self::$teamIds[] = $teamId;
 
@@ -46,7 +47,7 @@ abstract class CompetitionTestCase extends TestCase
     private function createSpareTeams(): void
     {
         for ($i = 1; $i <= 2; $i++) {
-            $teamId = 'Spare-Team' . $i;
+            $teamId = IdGenerator::generate();
             $this->client->createTeam($teamId, $teamId);
             self::$spareTeamIds[] = $teamId;
 
@@ -59,8 +60,9 @@ abstract class CompetitionTestCase extends TestCase
     private function createPitches(): void
     {
         for ($i = 1; $i <= 2; $i++) {
-            $id = 'Pitch' . $i;
-            $this->client->createPitch($id, $id, -2.45 * $i, -1.87 * $i);
+            $id = IdGenerator::generate();
+            $label = 'Pitch' . $i;
+            $this->client->createPitch($id, $label, -2.45 * $i, -1.87 * $i);
             self::$pitchIds[] = $id;
         }
     }
@@ -123,9 +125,11 @@ abstract class CompetitionTestCase extends TestCase
 
     private function generateTeamManager(string $teamId, int $i): array
     {
+        $userId = IdGenerator::generate();
+
         return [
-            'id' => 'Manager-For-' . $teamId,
-            'email' => 'Manager-For-' . $teamId . '@example.com',
+            'id' => $userId,
+            'email' => $userId . '@example.com',
             'password' => '123456',
             'first_name' => 'Foo',
             'last_name' => 'Bar',
