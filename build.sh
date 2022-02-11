@@ -2,7 +2,7 @@
 set -e
 
 if [[ -z "${PHP_VERSION}" ]]; then
-    PHP_VERSION="8.0"
+    PHP_VERSION="8.1"
 fi
 if [[ -z "${MARIADB_VERSION}" ]]; then
     MARIADB_VERSION="10.4"
