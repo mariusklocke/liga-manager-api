@@ -70,6 +70,9 @@ docker exec -t php bin/deptrac.phar --no-progress
 # Wait until application is healthy
 docker exec -t php lima app:health --no-ansi --retries 10
 
+# Test gdpr-dump config
+docker exec -t php gdpr-dump.phar config/gdpr-dump.yml > /dev/null
+
 # Run phpunit without coverage
 docker exec -t php phpunit.phar --testdox
 
