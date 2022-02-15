@@ -15,10 +15,10 @@ use HexagonalPlayground\Domain\Pitch;
 class LocateMatchHandler implements AuthAwareHandler
 {
     /** @var MatchRepositoryInterface */
-    private $matchRepository;
+    private MatchRepositoryInterface $matchRepository;
 
     /** @var PitchRepositoryInterface */
-    private $pitchRepository;
+    private PitchRepositoryInterface $pitchRepository;
 
     /**
      * @param MatchRepositoryInterface $matchRepository

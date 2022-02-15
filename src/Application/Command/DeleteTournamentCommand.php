@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Command;
 class DeleteTournamentCommand implements CommandInterface
 {
     /** @var string */
-    private $tournamentId;
+    private string $tournamentId;
 
     /**
      * @param string $tournamentId

@@ -10,37 +10,37 @@ class RankingPosition
     const COMPARISON_SUPERIOR = 1;
 
     /** @var Ranking */
-    private $ranking;
+    private Ranking $ranking;
 
     /** @var Team */
-    private $team;
+    private Team $team;
 
     /** @var int */
-    private $sortIndex;
+    private int $sortIndex;
 
     /** @var int */
-    private $number;
+    private int $number;
 
     /** @var int */
-    private $matches;
+    private int $matches;
 
     /** @var int */
-    private $wins;
+    private int $wins;
 
     /** @var int */
-    private $draws;
+    private int $draws;
 
     /** @var int */
-    private $losses;
+    private int $losses;
 
     /** @var int */
-    private $scoredGoals;
+    private int $scoredGoals;
 
     /** @var int */
-    private $concededGoals;
+    private int $concededGoals;
 
     /** @var int */
-    private $points;
+    private int $points;
 
     public function __construct(Ranking $ranking, Team $team)
     {

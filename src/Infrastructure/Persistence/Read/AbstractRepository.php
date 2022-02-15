@@ -13,13 +13,13 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 abstract class AbstractRepository
 {
     /** @var ReadDbGatewayInterface */
-    protected $gateway;
+    protected ReadDbGatewayInterface $gateway;
 
     /** @var Hydrator */
-    protected $hydrator;
+    protected Hydrator $hydrator;
 
     /** @var array|Field[] */
-    protected $flattenedFieldDefinitions;
+    protected array $flattenedFieldDefinitions;
 
     public function __construct(ReadDbGatewayInterface $gateway)
     {

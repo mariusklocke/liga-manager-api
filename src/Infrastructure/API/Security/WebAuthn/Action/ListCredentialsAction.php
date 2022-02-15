@@ -13,13 +13,13 @@ use Psr\Http\Message\ServerRequestInterface;
 class ListCredentialsAction implements ActionInterface
 {
     /** @var PublicKeyCredentialSourceRepository */
-    private $credentialRepository;
+    private PublicKeyCredentialSourceRepository $credentialRepository;
 
     /** @var AuthReader */
-    private $authReader;
+    private AuthReader $authReader;
 
     /** @var JsonResponseWriter */
-    private $responseWriter;
+    private JsonResponseWriter $responseWriter;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository

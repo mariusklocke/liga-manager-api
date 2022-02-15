@@ -8,7 +8,7 @@ use LogicException;
 class Timer
 {
     /** @var float|null Timestamp in seconds */
-    private $startTime = null;
+    private ?float $startTime = null;
 
     /**
      * Start the timer

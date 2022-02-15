@@ -8,10 +8,10 @@ use HexagonalPlayground\Domain\Value\DatePeriod;
 class RescheduleMatchDayCommand implements CommandInterface
 {
     /** @var string */
-    private $matchDayId;
+    private string $matchDayId;
 
     /** @var DatePeriod */
-    private $datePeriod;
+    private DatePeriod $datePeriod;
 
     /**
      * @param string $matchDayId

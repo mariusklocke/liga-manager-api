@@ -11,7 +11,7 @@ use HexagonalPlayground\Domain\Util\StringUtils;
 abstract class EntityRepository implements EntityRepositoryInterface
 {
     /** @var ObjectManager */
-    protected $manager;
+    protected ObjectManager $manager;
 
     /**
      * @param ObjectManager $manager

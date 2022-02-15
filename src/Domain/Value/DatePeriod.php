@@ -8,10 +8,10 @@ use DateTimeImmutable;
 class DatePeriod extends ValueObject
 {
     /** @var DateTimeImmutable */
-    private $startDate;
+    private DateTimeImmutable $startDate;
 
     /** @var DateTimeImmutable */
-    private $endDate;
+    private DateTimeImmutable $endDate;
 
     /**
      * @param DateTimeImmutable $startDate

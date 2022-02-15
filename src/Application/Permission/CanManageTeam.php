@@ -9,10 +9,10 @@ use HexagonalPlayground\Domain\User;
 class CanManageTeam extends Permission
 {
     /** @var Team */
-    private $team;
+    private Team $team;
 
     /** @var User */
-    private $user;
+    private User $user;
 
     /**
      * @param Team $team

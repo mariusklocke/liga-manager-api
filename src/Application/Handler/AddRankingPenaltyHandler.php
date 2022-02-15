@@ -16,10 +16,10 @@ use HexagonalPlayground\Domain\Team;
 class AddRankingPenaltyHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
-    private $seasonRepository;
+    private SeasonRepositoryInterface $seasonRepository;
 
     /** @var TeamRepositoryInterface */
-    private $teamRepository;
+    private TeamRepositoryInterface $teamRepository;
 
     /**
      * @param SeasonRepositoryInterface $seasonRepository

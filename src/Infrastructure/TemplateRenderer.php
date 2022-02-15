@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class TemplateRenderer implements TemplateRendererInterface
 {
-    private $templatePath;
+    private string $templatePath;
 
     /**
      * @param string $templatePath

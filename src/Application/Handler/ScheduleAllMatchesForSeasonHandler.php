@@ -15,13 +15,13 @@ use HexagonalPlayground\Domain\Season;
 class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
-    private $seasonRepository;
+    private SeasonRepositoryInterface $seasonRepository;
 
     /** @var MatchScheduler */
-    private $matchScheduler;
+    private MatchScheduler $matchScheduler;
 
     /** @var PitchRepositoryInterface */
-    private $pitchRepository;
+    private PitchRepositoryInterface $pitchRepository;
 
     /**
      * @param SeasonRepositoryInterface $seasonRepository

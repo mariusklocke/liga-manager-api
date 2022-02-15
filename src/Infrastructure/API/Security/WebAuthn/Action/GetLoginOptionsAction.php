@@ -19,22 +19,22 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 class GetLoginOptionsAction implements ActionInterface
 {
     /** @var PublicKeyCredentialSourceRepository */
-    private $credentialRepository;
+    private PublicKeyCredentialSourceRepository $credentialRepository;
 
     /** @var RequestOptionsFactory */
-    private $requestOptionsFactory;
+    private RequestOptionsFactory $requestOptionsFactory;
 
     /** @var OptionsStoreInterface */
-    private $optionsStore;
+    private OptionsStoreInterface $optionsStore;
 
     /** @var FakeCredentialDescriptorFactory */
-    private $fakeCredentialDescriptorFactory;
+    private FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory;
 
     /** @var UserRepositoryInterface */
-    private $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     /** @var JsonResponseWriter */
-    private $responseWriter;
+    private JsonResponseWriter $responseWriter;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository

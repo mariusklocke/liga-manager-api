@@ -9,7 +9,7 @@ use Psr\Http\Message\StreamInterface;
 class L98IniParser
 {
     /** @var array */
-    private $sections;
+    private array $sections;
 
     public function __construct(StreamInterface $stream)
     {

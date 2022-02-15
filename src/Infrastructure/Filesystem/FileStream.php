@@ -11,7 +11,7 @@ class FileStream implements StreamInterface
     private $stream;
 
     /** @var int|null */
-    private $size;
+    private ?int $size;
 
     /**
      * @param string $path

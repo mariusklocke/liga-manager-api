@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Command;
 class StartSeasonCommand implements CommandInterface
 {
     /** @var string */
-    private $seasonId;
+    private string $seasonId;
 
     /**
      * @param string $seasonId

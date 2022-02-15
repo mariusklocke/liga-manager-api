@@ -16,10 +16,10 @@ use HexagonalPlayground\Domain\Util\Assert;
 class SetTournamentRoundHandler implements AuthAwareHandler
 {
     /** @var TournamentRepositoryInterface */
-    private $tournamentRepository;
+    private TournamentRepositoryInterface $tournamentRepository;
 
     /** @var TeamRepositoryInterface */
-    private $teamRepository;
+    private TeamRepositoryInterface $teamRepository;
 
     /**
      * @param TournamentRepositoryInterface $tournamentRepository

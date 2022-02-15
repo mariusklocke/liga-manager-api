@@ -14,14 +14,14 @@ use Slim\Interfaces\RouteCollectorProxyInterface;
 
 class RouteProvider implements RouteProviderInterface
 {
-    public function register(RouteCollectorProxyInterface $collector): void
+    public function register(RouteCollectorProxyInterface $routeCollectorProxy): void
     {
-        $collector->get('/webauthn/test', GetTestClientAction::class);
-        $collector->post('/webauthn/credential/options', GetRegisterOptionsAction::class);
-        $collector->post('/webauthn/credential', RegisterCredentialAction::class);
-        $collector->get('/webauthn/credential', ListCredentialsAction::class);
-        $collector->delete('/webauthn/credential/{id}', DeleteCredentialAction::class);
-        $collector->post('/webauthn/login/options', GetLoginOptionsAction::class);
-        $collector->post('/webauthn/login', PerformLoginAction::class);
+        $routeCollectorProxy->get('/webauthn/test', GetTestClientAction::class);
+        $routeCollectorProxy->post('/webauthn/credential/options', GetRegisterOptionsAction::class);
+        $routeCollectorProxy->post('/webauthn/credential', RegisterCredentialAction::class);
+        $routeCollectorProxy->get('/webauthn/credential', ListCredentialsAction::class);
+        $routeCollectorProxy->delete('/webauthn/credential/{id}', DeleteCredentialAction::class);
+        $routeCollectorProxy->post('/webauthn/login/options', GetLoginOptionsAction::class);
+        $routeCollectorProxy->post('/webauthn/login', PerformLoginAction::class);
     }
 }

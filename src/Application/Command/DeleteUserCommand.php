@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Command;
 class DeleteUserCommand implements CommandInterface
 {
     /** @var string */
-    private $userId;
+    private string $userId;
 
     /**
      * @param string $userId

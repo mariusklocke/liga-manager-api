@@ -8,10 +8,10 @@ use HexagonalPlayground\Domain\Util\Assert;
 class GeographicLocation extends ValueObject
 {
     /** @var float */
-    protected $longitude;
+    protected float $longitude;
 
     /** @var float */
-    protected $latitude;
+    protected float $latitude;
 
     /**
      * @param float $longitude

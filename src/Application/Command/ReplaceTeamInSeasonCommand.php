@@ -6,11 +6,11 @@ namespace HexagonalPlayground\Application\Command;
 class ReplaceTeamInSeasonCommand implements CommandInterface
 {
     /** @var string */
-    private $seasonId;
+    private string $seasonId;
     /** @var string */
-    private $currentTeamId;
+    private string $currentTeamId;
     /** @var string */
-    private $replacementTeamId;
+    private string $replacementTeamId;
 
     /**
      * @param string $seasonId

@@ -14,10 +14,10 @@ use Psr\Log\LoggerInterface;
 class ProfilingMiddleware implements MiddlewareInterface
 {
     /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /** @var Timer */
-    private $timer;
+    private Timer $timer;
 
     public function __construct(ContainerInterface $container)
     {

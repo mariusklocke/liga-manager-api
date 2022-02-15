@@ -14,7 +14,7 @@ use HexagonalPlayground\Domain\Value\MatchResult;
 class SubmitMatchResultHandler implements AuthAwareHandler
 {
     /** @var MatchRepositoryInterface */
-    private $matchRepository;
+    private MatchRepositoryInterface $matchRepository;
 
     /**
      * @param MatchRepositoryInterface $matchRepository

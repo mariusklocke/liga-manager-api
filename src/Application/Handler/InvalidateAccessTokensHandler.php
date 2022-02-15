@@ -10,7 +10,7 @@ use HexagonalPlayground\Domain\Event\Event;
 class InvalidateAccessTokensHandler implements AuthAwareHandler
 {
     /** @var UserRepositoryInterface */
-    private $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     /**
      * @param UserRepositoryInterface $userRepository

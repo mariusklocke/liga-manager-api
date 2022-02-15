@@ -15,7 +15,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class AuthenticationMiddleware implements MiddlewareInterface
 {
     /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * @param ContainerInterface $container

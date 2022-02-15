@@ -9,10 +9,10 @@ use Psr\Http\Message\ServerRequestInterface;
 class AppContext
 {
     /** @var ServerRequestInterface */
-    private $request;
+    private ServerRequestInterface $request;
 
     /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * @param ServerRequestInterface $request

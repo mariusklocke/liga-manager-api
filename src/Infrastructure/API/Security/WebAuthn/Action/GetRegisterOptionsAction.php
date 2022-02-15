@@ -15,16 +15,16 @@ use Webauthn\PublicKeyCredentialRpEntity;
 class GetRegisterOptionsAction implements ActionInterface
 {
     /** @var OptionsStoreInterface */
-    private $optionsStore;
+    private OptionsStoreInterface $optionsStore;
 
     /** @var CreationOptionsFactory */
-    private $optionsFactory;
+    private CreationOptionsFactory $optionsFactory;
 
     /** @var AuthReader */
-    private $authReader;
+    private AuthReader $authReader;
 
     /** @var JsonResponseWriter */
-    private $responseWriter;
+    private JsonResponseWriter $responseWriter;
 
     /**
      * @param OptionsStoreInterface $optionsStore

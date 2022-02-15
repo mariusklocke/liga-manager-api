@@ -15,9 +15,9 @@ use HexagonalPlayground\Domain\Team;
 class ReplaceTeamInSeasonHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
-    private $teamRepository;
+    private TeamRepositoryInterface $teamRepository;
     /** @var SeasonRepositoryInterface */
-    private $seasonRepository;
+    private SeasonRepositoryInterface $seasonRepository;
 
     public function __construct(TeamRepositoryInterface $teamRepository, SeasonRepositoryInterface $seasonRepository)
     {

@@ -12,22 +12,22 @@ use HexagonalPlayground\Domain\Value\MatchResult;
 class MatchDay extends Entity
 {
     /** @var Season|null */
-    private $season;
+    private ?Season $season = null;
 
     /** @var Tournament|null */
-    private $tournament;
+    private ?Tournament $tournament = null;
 
     /** @var int */
-    private $number;
+    private int $number;
 
     /** @var DateTimeImmutable */
-    private $startDate;
+    private DateTimeImmutable $startDate;
 
     /** @var DateTimeImmutable */
-    private $endDate;
+    private DateTimeImmutable $endDate;
 
     /** @var Collection|MatchEntity[] */
-    private $matches;
+    private Collection $matches;
 
     /**
      * @param string|null $id

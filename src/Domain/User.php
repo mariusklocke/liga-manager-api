@@ -14,28 +14,28 @@ class User extends Entity
     const ROLE_ADMIN = 'admin';
 
     /** @var string */
-    private $email;
+    private string $email;
 
     /** @var string|null */
-    private $password;
+    private ?string $password = null;
 
     /** @var string */
-    private $firstName;
+    private string $firstName;
 
     /** @var string */
-    private $lastName;
+    private string $lastName;
 
     /** @var DateTimeImmutable|null */
-    private $lastPasswordChange;
+    private ?DateTimeImmutable $lastPasswordChange = null;
 
     /** @var DateTimeImmutable|null */
-    private $lastTokenInvalidation;
+    private ?DateTimeImmutable $lastTokenInvalidation = null;
 
     /** @var Collection */
-    private $teams;
+    private Collection $teams;
 
     /** @var string */
-    private $role;
+    private string $role;
 
     /**
      * @param string $id

@@ -9,7 +9,7 @@ use Psr\Container\ContainerInterface;
 class ContainerHandlerResolver implements HandlerResolver
 {
     /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * @param ContainerInterface $container

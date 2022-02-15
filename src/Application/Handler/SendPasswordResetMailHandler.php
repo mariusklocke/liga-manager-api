@@ -15,16 +15,16 @@ use HexagonalPlayground\Domain\Event\Event;
 class SendPasswordResetMailHandler
 {
     /** @var TokenFactoryInterface */
-    private $tokenFactory;
+    private TokenFactoryInterface $tokenFactory;
 
     /** @var UserRepositoryInterface */
-    private $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     /** @var TemplateRendererInterface */
-    private $templateRenderer;
+    private TemplateRendererInterface $templateRenderer;
 
     /** @var MailerInterface */
-    private $mailer;
+    private MailerInterface $mailer;
 
     /**
      * @param TokenFactoryInterface     $tokenFactory

@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class RedisEventPublisher implements EventSubscriberInterface
 {
     /** @var Redis */
-    private $redis;
+    private Redis $redis;
 
     /**
      * @param Redis $redis

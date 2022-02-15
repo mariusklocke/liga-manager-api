@@ -6,22 +6,22 @@ namespace HexagonalPlayground\Application\Command;
 class UpdateUserCommand implements CommandInterface
 {
     /** @var string */
-    private $userId;
+    private string $userId;
 
     /** @var string|null */
-    private $email;
+    private ?string $email;
 
     /** @var string|null */
-    private $firstName;
+    private ?string $firstName;
 
     /** @var string|null */
-    private $lastName;
+    private ?string $lastName;
 
     /** @var string|null */
-    private $role;
+    private ?string $role;
 
     /** @var string[]|null */
-    private $teamIds;
+    private ?array $teamIds = null;
 
     /**
      * @param string $userId

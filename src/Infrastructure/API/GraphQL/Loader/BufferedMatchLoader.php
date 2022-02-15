@@ -10,10 +10,10 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 class BufferedMatchLoader
 {
     /** @var MatchRepository */
-    private $matchRepository;
+    private MatchRepository $matchRepository;
 
     /** @var array */
-    private $byMatchDayId = [];
+    private array $byMatchDayId = [];
 
     /**
      * @param MatchRepository $matchRepository

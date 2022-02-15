@@ -12,16 +12,16 @@ use HexagonalPlayground\Domain\Value\GeographicLocation;
 class Pitch extends Entity
 {
     /** @var string */
-    private $label;
+    private string $label;
 
     /** @var GeographicLocation */
-    private $location;
+    private GeographicLocation $location;
 
     /** @var ContactPerson|null */
-    private $contact;
+    private ?ContactPerson $contact = null;
 
     /** @var Collection|MatchEntity[] */
-    private $matches;
+    private Collection $matches;
 
     public function __construct(string $id, string $label, GeographicLocation $location)
     {

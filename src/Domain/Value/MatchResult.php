@@ -8,10 +8,10 @@ use HexagonalPlayground\Domain\Util\Assert;
 class MatchResult extends ValueObject
 {
     /** @var int */
-    protected $homeScore;
+    protected int $homeScore;
 
     /** @var int */
-    protected $guestScore;
+    protected int $guestScore;
 
     public function __construct(int $homeScore, int $guestScore)
     {

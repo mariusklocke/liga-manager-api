@@ -13,7 +13,7 @@ use HexagonalPlayground\Domain\User;
 class DeleteUserHandler implements AuthAwareHandler
 {
     /** @var UserRepositoryInterface */
-    private $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     /**
      * @param UserRepositoryInterface $userRepository

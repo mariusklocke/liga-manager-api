@@ -7,7 +7,7 @@ abstract class CreateSimpleEntityCommand implements CommandInterface
     use IdAware;
 
     /** @var string */
-    private $name;
+    private string $name;
 
     /**
      * @param string|null $id

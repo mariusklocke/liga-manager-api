@@ -6,11 +6,11 @@ namespace HexagonalPlayground\Application\Command;
 class SubmitMatchResultCommand implements CommandInterface
 {
     /** @var string */
-    private $matchId;
+    private string $matchId;
     /** @var int */
-    private $homeScore;
+    private int $homeScore;
     /** @var int */
-    private $guestScore;
+    private int $guestScore;
 
     /**
      * @param string $matchId

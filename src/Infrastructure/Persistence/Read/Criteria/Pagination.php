@@ -6,10 +6,10 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read\Criteria;
 class Pagination
 {
     /** @var int */
-    private $limit;
+    private int $limit;
 
     /** @var int */
-    private $offset;
+    private int $offset;
 
     /**
      * @param int $limit

@@ -8,22 +8,22 @@ class CreateUserCommand implements CommandInterface
     use IdAware;
 
     /** @var string */
-    private $email;
+    private string $email;
 
     /** @var string|null */
-    private $password;
+    private ?string $password;
 
     /** @var string */
-    private $firstName;
+    private string $firstName;
 
     /** @var string */
-    private $lastName;
+    private string $lastName;
 
     /** @var string */
-    private $role;
+    private string $role;
 
     /** @var string[] */
-    private $teamIds;
+    private array $teamIds;
 
     /**
      * @param string|null $id

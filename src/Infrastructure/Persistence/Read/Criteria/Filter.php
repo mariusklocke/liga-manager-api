@@ -11,10 +11,10 @@ abstract class Filter
     public const MODE_EXCLUDE = 'exclude';
 
     /** @var Field */
-    protected $field;
+    protected Field $field;
 
     /** @var string */
-    protected $mode;
+    protected string $mode;
 
     /**
      * @return Field

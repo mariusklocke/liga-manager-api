@@ -7,7 +7,7 @@ use HexagonalPlayground\Domain\Util\Uuid;
 trait IdAware
 {
     /** @var string */
-    private $id;
+    private string $id;
 
     /**
      * @return string

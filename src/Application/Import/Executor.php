@@ -10,7 +10,7 @@ use Psr\Http\Message\StreamInterface;
 class Executor
 {
     /** @var BatchCommandBus */
-    private $commandBus;
+    private BatchCommandBus $commandBus;
 
     /**
      * @param BatchCommandBus $commandBus

@@ -15,10 +15,10 @@ use HexagonalPlayground\Domain\User;
 class CreateUserHandler implements AuthAwareHandler
 {
     /** @var UserRepositoryInterface */
-    private $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     /** @var TeamRepositoryInterface */
-    private $teamRepository;
+    private TeamRepositoryInterface $teamRepository;
 
     /**
      * @param UserRepositoryInterface $userRepository

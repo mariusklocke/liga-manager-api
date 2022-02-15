@@ -9,16 +9,16 @@ use HexagonalPlayground\Domain\Value\TeamIdPair;
 class SetTournamentRoundCommand implements CommandInterface
 {
     /** @var string */
-    private $tournamentId;
+    private string $tournamentId;
 
     /** @var int */
-    private $round;
+    private int $round;
 
     /** @var TeamIdPair[] */
-    private $teamIdPairs;
+    private array $teamIdPairs;
 
     /** @var DatePeriod */
-    private $datePeriod;
+    private DatePeriod $datePeriod;
 
     /**
      * @param string $tournamentId

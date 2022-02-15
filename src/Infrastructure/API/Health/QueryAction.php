@@ -12,10 +12,10 @@ use Psr\Http\Message\ServerRequestInterface;
 class QueryAction implements ActionInterface
 {
     /** @var HealthCheckInterface[] */
-    private $checks;
+    private array $checks;
 
     /** @var JsonResponseWriter */
-    private $responseWriter;
+    private JsonResponseWriter $responseWriter;
 
     /**
      * @param HealthCheckInterface[] $checks

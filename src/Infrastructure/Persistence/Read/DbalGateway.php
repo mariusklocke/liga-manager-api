@@ -25,10 +25,10 @@ use Iterator;
 class DbalGateway implements ReadDbGatewayInterface
 {
     /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
     /** @var int */
-    private $parameterInc;
+    private int $parameterInc;
 
     /**
      * @param Connection $connection

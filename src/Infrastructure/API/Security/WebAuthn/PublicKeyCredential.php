@@ -8,13 +8,13 @@ use Webauthn\PublicKeyCredentialSource;
 class PublicKeyCredential extends PublicKeyCredentialSource
 {
     /** @var string */
-    private $name;
+    private string $name;
 
     /** @var DateTimeImmutable */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
     /** @var DateTimeImmutable|null */
-    private $updatedAt;
+    private ?DateTimeImmutable $updatedAt = null;
 
     public function __construct(PublicKeyCredentialSource $parent, string $name)
     {

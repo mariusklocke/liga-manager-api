@@ -8,9 +8,9 @@ use DateTimeImmutable;
 class ScheduleMatchCommand implements CommandInterface
 {
     /** @var string */
-    private $matchId;
+    private string $matchId;
     /** @var DateTimeImmutable */
-    private $kickoff;
+    private DateTimeImmutable $kickoff;
 
     /**
      * @param string $matchId

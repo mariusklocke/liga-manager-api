@@ -14,7 +14,7 @@ use HexagonalPlayground\Domain\MatchEntity;
 class ScheduleMatchHandler implements AuthAwareHandler
 {
     /** @var MatchRepositoryInterface */
-    private $matchRepository;
+    private MatchRepositoryInterface $matchRepository;
 
     /**
      * @param MatchRepositoryInterface $matchRepository

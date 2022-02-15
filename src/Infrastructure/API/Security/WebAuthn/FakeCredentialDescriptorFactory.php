@@ -7,7 +7,7 @@ use Webauthn\PublicKeyCredentialDescriptor;
 class FakeCredentialDescriptorFactory
 {
     /** @var string */
-    private $salt;
+    private string $salt;
 
     /**
      * @param string $salt

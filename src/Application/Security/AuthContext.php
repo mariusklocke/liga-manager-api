@@ -7,7 +7,7 @@ use HexagonalPlayground\Domain\User;
 class AuthContext
 {
     /** @var User */
-    private $user;
+    private User $user;
 
     /**
      * @param User $user

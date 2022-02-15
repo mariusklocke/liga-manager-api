@@ -10,13 +10,13 @@ use Symfony\Component\Console\Style\StyleInterface;
 class TeamMapper implements TeamMapperInterface
 {
     /** @var StyleInterface|null */
-    private $styledIo;
+    private ?StyleInterface $styledIo = null;
 
     /** @var TeamRepositoryInterface */
-    private $repository;
+    private TeamRepositoryInterface $repository;
 
     /** @var array */
-    private $mapping;
+    private array $mapping;
 
     /**
      * @param TeamRepositoryInterface $repository

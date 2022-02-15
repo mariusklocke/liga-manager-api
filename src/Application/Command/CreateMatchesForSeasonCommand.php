@@ -8,10 +8,10 @@ use HexagonalPlayground\Domain\Value\DatePeriod;
 class CreateMatchesForSeasonCommand implements CommandInterface
 {
     /** @var string */
-    private $seasonId;
+    private string $seasonId;
 
     /** @var DatePeriod[] */
-    private $matchDaysDates;
+    private array $matchDaysDates;
 
     /**
      * @param string       $seasonId

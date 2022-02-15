@@ -15,10 +15,10 @@ use Psr\Log\LoggerInterface;
 class QueryAction implements ActionInterface
 {
     /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /** @var JsonResponseWriter */
-    private $responseWriter;
+    private JsonResponseWriter $responseWriter;
 
     /**
      * @param ContainerInterface $container

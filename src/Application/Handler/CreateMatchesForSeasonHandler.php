@@ -15,7 +15,7 @@ use HexagonalPlayground\Domain\Season;
 class CreateMatchesForSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
-    private $seasonRepository;
+    private SeasonRepositoryInterface $seasonRepository;
 
     /**
      * @param SeasonRepositoryInterface $seasonRepository

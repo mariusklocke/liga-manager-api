@@ -13,13 +13,13 @@ use Webauthn\PublicKeyCredentialUserEntity;
 class CreationOptionsFactory
 {
     /** @var ChallengeGenerator */
-    private $challengeGenerator;
+    private ChallengeGenerator $challengeGenerator;
 
     /** @var int */
-    private $timeout;
+    private int $timeout;
 
     /** @var Manager */
-    private $algorithmManager;
+    private Manager $algorithmManager;
 
     /**
      * @param ChallengeGenerator $challengeGenerator

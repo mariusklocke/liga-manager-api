@@ -11,13 +11,13 @@ use Symfony\Component\Mime\Email;
 class SymfonyMailer implements MailerInterface
 {
     /** @var Mailer */
-    private $mailer;
+    private Mailer $mailer;
 
     /** @var string */
-    private $senderAddress;
+    private string $senderAddress;
 
     /** @var string */
-    private $senderName;
+    private string $senderName;
 
     public function __construct(Mailer $mailer, string $senderAddress, string $senderName)
     {

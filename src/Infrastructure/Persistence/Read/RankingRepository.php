@@ -14,16 +14,16 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 class RankingRepository extends AbstractRepository
 {
     /** @var Field[] */
-    private $positionFields;
+    private array $positionFields;
 
     /** @var Hydrator */
-    private $positionHydrator;
+    private Hydrator $positionHydrator;
 
     /** @var Field[] */
-    private $penaltyFields;
+    private array $penaltyFields;
 
     /** @var Hydrator */
-    private $penaltyHydrator;
+    private Hydrator $penaltyHydrator;
 
     public function __construct(ReadDbGatewayInterface $gateway)
     {

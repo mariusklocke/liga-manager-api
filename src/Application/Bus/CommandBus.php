@@ -15,22 +15,22 @@ use Psr\Log\LoggerInterface;
 class CommandBus
 {
     /** @var HandlerResolver */
-    private $resolver;
+    private HandlerResolver $resolver;
 
     /** @var OrmTransactionWrapperInterface */
-    private $transactionWrapper;
+    private OrmTransactionWrapperInterface $transactionWrapper;
 
     /** @var EventDispatcherInterface */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
     /** @var EventRepositoryInterface */
-    private $eventRepository;
+    private EventRepositoryInterface $eventRepository;
 
     /** @var AuthChecker */
-    private $authChecker;
+    private AuthChecker $authChecker;
 
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /**
      * @param HandlerResolver $resolver
