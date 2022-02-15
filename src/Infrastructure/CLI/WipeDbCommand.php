@@ -33,7 +33,7 @@ class WipeDbCommand extends Command
         $connection = $this->container->get(Connection::class);
 
         foreach ($connection->fetchFirstColumn('SHOW TABLES') as $table) {
-            $connection->executeStatement("DROP TABLE `$table`");
+            $connection->executeStatement($connection->getDatabasePlatform()->getDropTableSQL($table));
         }
 
         $io->success('Successfully dropped all tables');
