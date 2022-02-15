@@ -79,7 +79,7 @@ class DbalGateway implements ReadDbGatewayInterface
             $this->applyPagination($query, $pagination);
         }
 
-        foreach ($query->execute()->iterateAssociative() as $row) {
+        foreach ($query->executeQuery()->iterateAssociative() as $row) {
             yield $row;
         }
     }
