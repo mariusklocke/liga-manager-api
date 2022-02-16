@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## NEXT
+* Improvement: Updated docker image to PHP 8.1
+* Improvement: Updated PHAR tools
+* Refactoring: Dropped support for PHP 7.3
+* Refactoring: Added type definitions to class properties
+* Bugfix: Fixed an empty condition bug in CLI command for listing users
+
 ## 1.11.6 - 2022-02-09
 * Improvement: Added CLI commands for listing and deleting users
 * Improvement: Updated dependencies
