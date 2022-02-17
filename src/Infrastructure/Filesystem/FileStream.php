@@ -11,7 +11,7 @@ class FileStream implements StreamInterface
     private $stream;
 
     /** @var int|null */
-    private $size;
+    private ?int $size;
 
     /**
      * @param string $path
@@ -34,15 +34,11 @@ class FileStream implements StreamInterface
     /**
      * {@inheritdoc}
      */
-    public function __toString()
+    public function __toString(): string
     {
-        try {
-            $this->rewind();
-            return $this->getContents();
-        } catch (Exception $e) {
-            trigger_error($e->__toString(), E_USER_ERROR);
-            return '';
-        }
+        $this->rewind();
+
+        return $this->getContents();
     }
 
     /**

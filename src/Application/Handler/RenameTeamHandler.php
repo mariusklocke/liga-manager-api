@@ -13,7 +13,7 @@ use HexagonalPlayground\Domain\Team;
 class RenameTeamHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
-    private $teamRepository;
+    private TeamRepositoryInterface $teamRepository;
 
     /**
      * @param TeamRepositoryInterface $teamRepository

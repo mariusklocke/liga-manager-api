@@ -8,7 +8,7 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 class Hydrator
 {
     /** @var array|Field[] */
-    private $fields;
+    private array $fields;
 
     /**
      * @param iterable|Field[] $fields

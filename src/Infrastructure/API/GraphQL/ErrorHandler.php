@@ -11,12 +11,12 @@ use Throwable;
 class ErrorHandler
 {
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /** @var ServerRequestInterface */
-    private $request;
+    private ServerRequestInterface $request;
 
-    private static $loggableHeaders = [
+    private static array $loggableHeaders = [
         'Content-Length',
         'Content-Type',
         'User-Agent'

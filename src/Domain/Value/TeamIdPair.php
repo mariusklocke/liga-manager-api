@@ -6,10 +6,10 @@ namespace HexagonalPlayground\Domain\Value;
 class TeamIdPair extends ValueObject
 {
     /** @var string */
-    private $homeTeamId;
+    private string $homeTeamId;
 
     /** @var string */
-    private $guestTeamId;
+    private string $guestTeamId;
 
     /**
      * @param string $homeTeamId

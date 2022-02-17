@@ -11,13 +11,13 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\MatchDayRepository;
 class BufferedMatchDayLoader
 {
     /** @var MatchDayRepository */
-    private $matchDayRepository;
+    private MatchDayRepository $matchDayRepository;
 
     /** @var array */
-    private $bySeasonId = [];
+    private array $bySeasonId = [];
 
     /** @var array */
-    private $byTournamentId = [];
+    private array $byTournamentId = [];
 
     /**
      * @param MatchDayRepository $matchDayRepository

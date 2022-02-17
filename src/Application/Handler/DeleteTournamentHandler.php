@@ -13,7 +13,7 @@ use HexagonalPlayground\Domain\Tournament;
 class DeleteTournamentHandler implements AuthAwareHandler
 {
     /** @var TournamentRepositoryInterface */
-    private $repository;
+    private TournamentRepositoryInterface $repository;
 
     /**
      * @param TournamentRepositoryInterface $repository

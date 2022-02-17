@@ -10,7 +10,7 @@ use HexagonalPlayground\Domain\Util\Assert;
 class Tournament extends Competition
 {
     /** @var int */
-    private $rounds;
+    private int $rounds;
 
     /**
      * @param string $id

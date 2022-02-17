@@ -13,7 +13,7 @@ use HexagonalPlayground\Domain\Season;
 class DeleteSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
-    private $seasonRepository;
+    private SeasonRepositoryInterface $seasonRepository;
 
     /**
      * DeleteSeasonHandler constructor.

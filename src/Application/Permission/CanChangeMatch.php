@@ -9,10 +9,10 @@ use HexagonalPlayground\Domain\User;
 class CanChangeMatch extends Permission
 {
     /** @var User */
-    private $user;
+    private User $user;
 
     /** @var MatchEntity */
-    private $match;
+    private MatchEntity $match;
 
     /**
      * @param User $user

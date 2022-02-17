@@ -10,10 +10,10 @@ class CreatePitchCommand implements CommandInterface
     use IdAware;
 
     /** @var string */
-    private $label;
+    private string $label;
 
     /** @var GeographicLocation */
-    private $location;
+    private GeographicLocation $location;
 
     /**
      * @param string|null $id

@@ -14,7 +14,7 @@ use HexagonalPlayground\Domain\Value\ContactPerson;
 class UpdatePitchContactHandler implements AuthAwareHandler
 {
     /** @var PitchRepositoryInterface */
-    private $pitchRepository;
+    private PitchRepositoryInterface $pitchRepository;
 
     /**
      * @param PitchRepositoryInterface $pitchRepository

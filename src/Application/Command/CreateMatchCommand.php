@@ -7,13 +7,13 @@ class CreateMatchCommand implements CommandInterface
     use IdAware;
 
     /** @var string */
-    private $matchDayId;
+    private string $matchDayId;
 
     /** @var string */
-    private $homeTeamId;
+    private string $homeTeamId;
 
     /** @var string */
-    private $guestTeamId;
+    private string $guestTeamId;
 
     /**
      * @param string|null $id

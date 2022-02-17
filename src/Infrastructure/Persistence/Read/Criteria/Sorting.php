@@ -12,10 +12,10 @@ class Sorting
     public const DIRECTION_DESCENDING = 'DESC';
 
     /** @var Field */
-    private $field;
+    private Field $field;
 
     /** @var string */
-    private $direction;
+    private string $direction;
 
     public function __construct(?Field $field, string $direction)
     {

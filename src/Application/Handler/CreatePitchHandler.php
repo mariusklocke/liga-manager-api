@@ -13,7 +13,7 @@ use HexagonalPlayground\Domain\Pitch;
 class CreatePitchHandler implements AuthAwareHandler
 {
     /** @var PitchRepositoryInterface */
-    private $pitchRepository;
+    private PitchRepositoryInterface $pitchRepository;
 
     /**
      * @param PitchRepositoryInterface $pitchRepository

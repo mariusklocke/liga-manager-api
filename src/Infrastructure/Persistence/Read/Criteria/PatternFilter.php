@@ -10,7 +10,7 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 class PatternFilter extends Filter
 {
     /** @var string */
-    private $pattern;
+    private string $pattern;
 
     public function __construct(?Field $field, string $mode, string $pattern)
     {

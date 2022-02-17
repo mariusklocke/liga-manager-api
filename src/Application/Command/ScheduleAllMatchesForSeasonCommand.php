@@ -7,10 +7,10 @@ use HexagonalPlayground\Domain\Value\MatchAppointment;
 class ScheduleAllMatchesForSeasonCommand implements CommandInterface
 {
     /** @var string */
-    private $seasonId;
+    private string $seasonId;
 
     /** @var MatchAppointment[] */
-    private $matchAppointments;
+    private array $matchAppointments;
 
     /**
      * @param string $seasonId

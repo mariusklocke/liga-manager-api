@@ -8,16 +8,16 @@ use HexagonalPlayground\Domain\Util\Assert;
 class ContactPerson extends ValueObject
 {
     /** @var string */
-    protected $firstName;
+    protected string $firstName;
 
     /** @var string */
-    protected $lastName;
+    protected string $lastName;
 
     /** @var string */
-    protected $phone;
+    protected string $phone;
 
     /** @var string */
-    protected $email;
+    protected string $email;
 
     /**
      * @param string $firstName

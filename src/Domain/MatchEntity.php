@@ -10,28 +10,28 @@ use HexagonalPlayground\Domain\Value\MatchResult;
 class MatchEntity extends Entity
 {
     /** @var MatchDay */
-    private $matchDay;
+    private MatchDay $matchDay;
 
     /** @var Team */
-    private $homeTeam;
+    private Team $homeTeam;
 
     /** @var Team */
-    private $guestTeam;
+    private Team $guestTeam;
 
     /** @var MatchResult|null */
-    private $matchResult;
+    private ?MatchResult $matchResult = null;
 
     /** @var DateTimeImmutable|null */
-    private $kickoff;
+    private ?DateTimeImmutable $kickoff = null;
 
     /** @var Pitch|null */
-    private $pitch;
+    private ?Pitch $pitch = null;
 
     /** @var DateTimeImmutable|null */
-    private $cancelledAt;
+    private ?DateTimeImmutable $cancelledAt = null;
 
     /** @var string|null */
-    private $cancellationReason;
+    private ?string $cancellationReason = null;
 
     /**
      * Create a new match

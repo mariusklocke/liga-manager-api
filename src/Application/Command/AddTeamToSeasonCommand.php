@@ -6,10 +6,10 @@ namespace HexagonalPlayground\Application\Command;
 class AddTeamToSeasonCommand implements CommandInterface
 {
     /** @var string */
-    private $seasonId;
+    private string $seasonId;
 
     /** @var string */
-    private $teamId;
+    private string $teamId;
 
     /**
      * @param string $seasonId

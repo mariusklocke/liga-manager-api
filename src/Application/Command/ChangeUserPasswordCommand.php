@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Command;
 class ChangeUserPasswordCommand implements CommandInterface
 {
     /** @var string */
-    private $newPassword;
+    private string $newPassword;
 
     /**
      * @param string $newPassword

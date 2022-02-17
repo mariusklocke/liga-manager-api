@@ -8,7 +8,7 @@ use HexagonalPlayground\Domain\Util\Uuid;
 abstract class Entity
 {
     /** @var string */
-    protected $id;
+    protected string $id;
 
     /**
      * @param string|null $id

@@ -14,7 +14,7 @@ use HexagonalPlayground\Domain\Value\ContactPerson;
 class UpdateTeamContactHandler implements AuthAwareHandler
 {
     /** @var TeamRepositoryInterface */
-    private $teamRepository;
+    private TeamRepositoryInterface $teamRepository;
 
     /**
      * @param TeamRepositoryInterface $teamRepository

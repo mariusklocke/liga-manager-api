@@ -14,7 +14,7 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 class EqualityFilter extends Filter
 {
     /** @var array|int[]|string[]|DateTimeInterface[] */
-    private $values;
+    private array $values;
 
     public function __construct(?Field $field, string $mode, array $values)
     {

@@ -10,16 +10,16 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 class BufferedTeamLoader
 {
     /** @var TeamRepository */
-    private $teamRepository;
+    private TeamRepository $teamRepository;
 
     /** @var array */
-    private $bySeasonId = [];
+    private array $bySeasonId = [];
 
     /** @var array */
-    private $byTeamId = [];
+    private array $byTeamId = [];
 
     /** @var array */
-    private $byUserId = [];
+    private array $byUserId = [];
 
     /**
      * @param TeamRepository $teamRepository

@@ -20,19 +20,19 @@ use Webauthn\PublicKeyCredentialLoader;
 class RegisterCredentialAction implements ActionInterface
 {
     /** @var PublicKeyCredentialSourceRepository */
-    private $credentialRepository;
+    private PublicKeyCredentialSourceRepository $credentialRepository;
 
     /** @var PublicKeyCredentialLoader */
-    private $credentialLoader;
+    private PublicKeyCredentialLoader $credentialLoader;
 
     /** @var AuthenticatorAttestationResponseValidator */
-    private $authenticatorAttestationResponseValidator;
+    private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator;
 
     /** @var OptionsStoreInterface */
-    private $creationOptionsStore;
+    private OptionsStoreInterface $creationOptionsStore;
 
     /** @var AuthReader */
-    private $authReader;
+    private AuthReader $authReader;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository

@@ -6,10 +6,10 @@ namespace HexagonalPlayground\Application\Command;
 class RemoveRankingPenaltyCommand implements CommandInterface
 {
     /** @var string */
-    private $rankingPenaltyId;
+    private string $rankingPenaltyId;
 
     /** @var string */
-    private $seasonId;
+    private string $seasonId;
 
     /**
      * @param string $rankingPenaltyId

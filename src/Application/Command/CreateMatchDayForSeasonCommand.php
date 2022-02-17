@@ -9,13 +9,13 @@ class CreateMatchDayForSeasonCommand implements CommandInterface
     use IdAware;
 
     /** @var string */
-    private $seasonId;
+    private string $seasonId;
 
     /** @var int */
-    private $number;
+    private int $number;
 
     /** @var DatePeriod */
-    private $datePeriod;
+    private DatePeriod $datePeriod;
 
     /**
      * @param string|null $id

@@ -17,10 +17,10 @@ use Psr\Http\Message\ServerRequestInterface;
 class DeleteCredentialAction implements ActionInterface
 {
     /** @var PublicKeyCredentialSourceRepository */
-    private $credentialRepository;
+    private PublicKeyCredentialSourceRepository $credentialRepository;
 
     /** @var AuthReader */
-    private $authReader;
+    private AuthReader $authReader;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository

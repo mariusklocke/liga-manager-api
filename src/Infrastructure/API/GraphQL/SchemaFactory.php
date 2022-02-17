@@ -10,6 +10,7 @@ use Psr\Container\ContainerInterface;
 class SchemaFactory
 {
     /**
+     * @param ContainerInterface $container
      * @return Schema
      */
     public function __invoke(ContainerInterface $container): Schema

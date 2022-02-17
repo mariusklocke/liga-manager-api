@@ -6,10 +6,10 @@ namespace HexagonalPlayground\Application\Command;
 class CancelMatchCommand implements CommandInterface
 {
     /** @var string */
-    private $matchId;
+    private string $matchId;
 
     /** @var string */
-    private $reason;
+    private string $reason;
 
     /**
      * @param string $matchId

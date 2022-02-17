@@ -6,12 +6,13 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read\Field;
 class EmbeddedObjectField extends Field
 {
     /** @var array|Field[] */
-    private $subFields;
+    private array $subFields;
 
     public function __construct(string $name, bool $isNullable, iterable $subFields)
     {
         parent::__construct($name, $isNullable);
 
+        $this->subFields = [];
         foreach ($subFields as $subField) {
             $this->subFields[] = $subField;
         }

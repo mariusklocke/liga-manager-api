@@ -7,13 +7,13 @@ use Psr\Http\Message\UriInterface;
 class SendInviteMailCommand implements CommandInterface
 {
     /** @var string */
-    private $userId;
+    private string $userId;
 
     /** @var string */
-    private $targetPath;
+    private string $targetPath;
 
     /** @var UriInterface */
-    private $baseUri;
+    private UriInterface $baseUri;
 
     /**
      * @param string $userId

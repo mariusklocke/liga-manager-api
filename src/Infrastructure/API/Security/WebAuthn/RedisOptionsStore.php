@@ -8,10 +8,10 @@ use Webauthn\PublicKeyCredentialOptions;
 class RedisOptionsStore implements OptionsStoreInterface
 {
     /** @var Redis */
-    private $redis;
+    private Redis $redis;
 
     /** @var int */
-    private $ttl;
+    private int $ttl;
 
     /**
      * @param Redis $redis

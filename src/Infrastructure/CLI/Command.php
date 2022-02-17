@@ -18,10 +18,10 @@ abstract class Command extends SymfonyCommand
     public const NAME = null;
 
     /** @var AuthContext|null */
-    private $authContext;
+    private ?AuthContext $authContext = null;
 
     /** @var ContainerInterface */
-    protected $container;
+    protected ContainerInterface $container;
 
     public function __construct(ContainerInterface $container)
     {

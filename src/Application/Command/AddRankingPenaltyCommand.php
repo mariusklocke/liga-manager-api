@@ -8,16 +8,16 @@ class AddRankingPenaltyCommand implements CommandInterface
     use IdAware;
 
     /** @var string */
-    private $seasonId;
+    private string $seasonId;
 
     /** @var string */
-    private $teamId;
+    private string $teamId;
 
     /** @var string */
-    private $reason;
+    private string $reason;
 
     /** @var int */
-    private $points;
+    private int $points;
 
     /**
      * @param string|null $id

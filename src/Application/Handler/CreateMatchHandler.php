@@ -14,10 +14,10 @@ use HexagonalPlayground\Domain\Team;
 class CreateMatchHandler implements AuthAwareHandler
 {
     /** @var MatchDayRepositoryInterface */
-    private $matchDayRepository;
+    private MatchDayRepositoryInterface $matchDayRepository;
 
     /** @var TeamRepositoryInterface */
-    private $teamRepository;
+    private TeamRepositoryInterface $teamRepository;
 
     /**
      * @param MatchDayRepositoryInterface $matchDayRepository

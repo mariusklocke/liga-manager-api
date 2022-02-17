@@ -16,10 +16,10 @@ use TypeError;
 class MutationMapper
 {
     /** @var TypeMapper */
-    private $typeMapper;
+    private TypeMapper $typeMapper;
 
     /** @var AuthReader */
-    private $authReader;
+    private AuthReader $authReader;
 
     /**
      * @param TypeMapper $typeMapper

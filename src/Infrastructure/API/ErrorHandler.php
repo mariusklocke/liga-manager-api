@@ -17,13 +17,13 @@ use Throwable;
 class ErrorHandler implements ErrorHandlerInterface
 {
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     /** @var ResponseFactoryInterface */
-    private $responseFactory;
+    private ResponseFactoryInterface $responseFactory;
 
     /** @var JsonResponseWriter */
-    private $responseWriter;
+    private JsonResponseWriter $responseWriter;
 
     /**
      * @param LoggerInterface $logger

@@ -8,13 +8,13 @@ use Psr\Http\Message\UriInterface;
 class SendPasswordResetMailCommand implements CommandInterface
 {
     /** @var string */
-    private $email;
+    private string $email;
 
     /** @var string */
-    private $targetPath;
+    private string $targetPath;
 
     /** @var UriInterface */
-    private $baseUri;
+    private UriInterface $baseUri;
 
     /**
      * @param string $email

@@ -7,13 +7,13 @@ use DateTimeImmutable;
 class MatchAppointment extends ValueObject
 {
     /** @var DateTimeImmutable */
-    private $kickoff;
+    private DateTimeImmutable $kickoff;
 
     /** @var string[] */
-    private $unavailableTeamIds;
+    private array $unavailableTeamIds;
 
     /** @var string */
-    private $pitchId;
+    private string $pitchId;
 
     /**
      * @param DateTimeImmutable $kickoff

@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 abstract class Authenticator
 {
     /** @var UserRepositoryInterface */
-    protected $userRepository;
+    protected UserRepositoryInterface $userRepository;
 
     /**
      * @param UserRepositoryInterface $userRepository

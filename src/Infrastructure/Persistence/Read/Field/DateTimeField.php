@@ -8,8 +8,8 @@ use DateTimeZone;
 
 class DateTimeField extends Field
 {
-    /** @var DateTimeZone */
-    private static $dateTimeZone;
+    /** @var DateTimeZone|null */
+    private static ?DateTimeZone $dateTimeZone = null;
 
     private static function getTimeZone(): DateTimeZone
     {

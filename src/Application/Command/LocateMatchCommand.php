@@ -6,9 +6,9 @@ namespace HexagonalPlayground\Application\Command;
 class LocateMatchCommand implements CommandInterface
 {
     /** @var string */
-    private $matchId;
+    private string $matchId;
     /** @var string */
-    private $pitchId;
+    private string $pitchId;
 
     /**
      * @param string $matchId

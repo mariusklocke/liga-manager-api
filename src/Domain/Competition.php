@@ -10,10 +10,10 @@ use HexagonalPlayground\Domain\Util\Assert;
 abstract class Competition extends Entity
 {
     /** @var string */
-    protected $name;
+    protected string $name;
 
     /** @var Collection */
-    protected $matchDays;
+    protected Collection $matchDays;
 
     /**
      * @param string|null $id

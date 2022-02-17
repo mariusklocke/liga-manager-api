@@ -10,7 +10,7 @@ use Redis;
 class RedisHealthCheck implements HealthCheckInterface
 {
     /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * @param ContainerInterface $container

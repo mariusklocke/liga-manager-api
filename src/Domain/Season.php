@@ -15,19 +15,19 @@ class Season extends Competition
     const STATE_ENDED = 'ended';
 
     /** @var Collection */
-    private $teams;
+    private Collection $teams;
 
     /** @var Ranking|null */
-    private $ranking;
+    private ?Ranking $ranking = null;
 
     /** @var string */
-    private $state;
+    private string $state;
 
     /** @var int */
-    private $matchDayCount;
+    private int $matchDayCount;
 
     /** @var int */
-    private $teamCount;
+    private int $teamCount;
 
     /**
      * @param string $id

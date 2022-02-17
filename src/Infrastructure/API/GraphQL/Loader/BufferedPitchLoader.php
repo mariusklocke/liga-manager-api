@@ -9,10 +9,10 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 class BufferedPitchLoader
 {
     /** @var PitchRepository */
-    private $pitchRepository;
+    private PitchRepository $pitchRepository;
 
     /** @var array */
-    private $byPitchId = [];
+    private array $byPitchId = [];
 
     /**
      * @param PitchRepository $pitchRepository

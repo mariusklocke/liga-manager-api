@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Command;
 class UpdatePitchContactCommand extends UpdateContactCommand
 {
     /** @var string */
-    private $pitchId;
+    private string $pitchId;
 
     /**
      * @param string $pitchId

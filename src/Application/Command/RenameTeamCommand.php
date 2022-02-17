@@ -6,10 +6,10 @@ namespace HexagonalPlayground\Application\Command;
 class RenameTeamCommand implements CommandInterface
 {
     /** @var string */
-    private $teamId;
+    private string $teamId;
 
     /** @var string */
-    private $newName;
+    private string $newName;
 
     /**
      * @param string $teamId

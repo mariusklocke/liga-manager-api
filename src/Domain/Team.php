@@ -10,13 +10,13 @@ use HexagonalPlayground\Domain\Value\ContactPerson;
 class Team extends Entity
 {
     /** @var string */
-    private $name;
+    private string $name;
 
     /** @var DateTimeImmutable */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
     /** @var ContactPerson|null */
-    private $contact;
+    private ?ContactPerson $contact = null;
 
     public function __construct(string $id, string $name)
     {

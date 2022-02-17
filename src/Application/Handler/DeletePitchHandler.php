@@ -12,7 +12,7 @@ use HexagonalPlayground\Domain\Pitch;
 class DeletePitchHandler implements AuthAwareHandler
 {
     /** @var PitchRepositoryInterface */
-    private $pitchRepository;
+    private PitchRepositoryInterface $pitchRepository;
 
     /**
      * @param PitchRepositoryInterface $pitchRepository

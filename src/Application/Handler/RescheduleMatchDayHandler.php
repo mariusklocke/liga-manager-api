@@ -13,7 +13,7 @@ use HexagonalPlayground\Domain\MatchDay;
 class RescheduleMatchDayHandler implements AuthAwareHandler
 {
     /** @var MatchDayRepositoryInterface */
-    private $matchDayRepository;
+    private MatchDayRepositoryInterface $matchDayRepository;
 
     /**
      * @param MatchDayRepositoryInterface $matchDayRepository

@@ -6,16 +6,16 @@ namespace HexagonalPlayground\Application\Command;
 abstract class UpdateContactCommand implements CommandInterface
 {
     /** @var string */
-    protected $firstName;
+    protected string $firstName;
 
     /** @var string */
-    protected $lastName;
+    protected string $lastName;
 
     /** @var string */
-    protected $phone;
+    protected string $phone;
 
     /** @var string */
-    protected $email;
+    protected string $email;
 
     /**
      * @return string

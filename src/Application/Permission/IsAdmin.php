@@ -8,7 +8,7 @@ use HexagonalPlayground\Domain\User;
 class IsAdmin extends Permission
 {
     /** @var User */
-    private $user;
+    private User $user;
 
     /**
      * @param User $user

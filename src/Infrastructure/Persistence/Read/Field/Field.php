@@ -6,10 +6,10 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read\Field;
 abstract class Field
 {
     /** @var string */
-    private $name;
+    private string $name;
 
     /** @var bool */
-    private $isNullable;
+    private bool $isNullable;
 
     public function __construct(string $name, bool $isNullable)
     {

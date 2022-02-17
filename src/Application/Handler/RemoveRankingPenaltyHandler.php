@@ -8,13 +8,12 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
-use HexagonalPlayground\Domain\RankingPenalty;
 use HexagonalPlayground\Domain\Season;
 
 class RemoveRankingPenaltyHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
-    private $seasonRepository;
+    private SeasonRepositoryInterface $seasonRepository;
 
     /**
      * @param SeasonRepositoryInterface $seasonRepository

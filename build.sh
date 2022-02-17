@@ -2,7 +2,7 @@
 set -e
 
 if [[ -z "${PHP_VERSION}" ]]; then
-    PHP_VERSION="8.0"
+    PHP_VERSION="8.1"
 fi
 if [[ -z "${MARIADB_VERSION}" ]]; then
     MARIADB_VERSION="10.4"
@@ -74,6 +74,9 @@ docker exec -t php bin/deptrac.phar --no-progress
 
 # Wait until application is healthy
 docker exec -t php lima app:health --no-ansi --retries 10
+
+# Test gdpr-dump config
+docker exec -t php gdpr-dump.phar config/gdpr-dump.yml > /dev/null
 
 # Run phpunit without coverage
 docker exec -t php phpunit.phar --testdox

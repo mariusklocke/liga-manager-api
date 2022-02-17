@@ -8,10 +8,10 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 class RequestOptionsFactory
 {
     /** @var ChallengeGenerator */
-    private $challengeGenerator;
+    private ChallengeGenerator $challengeGenerator;
 
     /** @var int */
-    private $timeout;
+    private int $timeout;
 
     /**
      * @param ChallengeGenerator $challengeGenerator

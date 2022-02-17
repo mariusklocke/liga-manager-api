@@ -13,7 +13,7 @@ use HexagonalPlayground\Domain\Season;
 class StartSeasonHandler implements AuthAwareHandler
 {
     /** @var SeasonRepositoryInterface */
-    private $seasonRepository;
+    private SeasonRepositoryInterface $seasonRepository;
 
     /**
      * @param SeasonRepositoryInterface $seasonRepository

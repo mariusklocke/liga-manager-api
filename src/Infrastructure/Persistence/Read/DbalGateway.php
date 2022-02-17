@@ -25,10 +25,10 @@ use Iterator;
 class DbalGateway implements ReadDbGatewayInterface
 {
     /** @var Connection */
-    private $connection;
+    private Connection $connection;
 
     /** @var int */
-    private $parameterInc;
+    private int $parameterInc;
 
     /**
      * @param Connection $connection
@@ -79,7 +79,7 @@ class DbalGateway implements ReadDbGatewayInterface
             $this->applyPagination($query, $pagination);
         }
 
-        foreach ($query->execute()->iterateAssociative() as $row) {
+        foreach ($query->executeQuery()->iterateAssociative() as $row) {
             yield $row;
         }
     }

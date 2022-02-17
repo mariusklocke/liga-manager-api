@@ -10,7 +10,7 @@ use Psr\Container\ContainerInterface;
 class DoctrineHealthCheck implements HealthCheckInterface
 {
     /** @var ContainerInterface */
-    private $container;
+    private ContainerInterface $container;
 
     /**
      * @param ContainerInterface $container

@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 class QueryTypeAggregator
 {
     /** @var QueryTypeInterface[] */
-    private $types;
+    private array $types;
 
     /**
      * @param QueryTypeInterface[] $types

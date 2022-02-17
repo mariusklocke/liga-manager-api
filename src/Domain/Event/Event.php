@@ -12,16 +12,16 @@ class Event implements JsonSerializable
     public const DATE_FORMAT = 'Y-m-d';
 
     /** @var string */
-    private $id;
+    private string $id;
 
     /** @var string */
-    private $type;
+    private string $type;
 
     /** @var DateTimeImmutable */
-    private $occurredAt;
+    private DateTimeImmutable $occurredAt;
 
     /** @var array */
-    private $payload;
+    private array $payload;
 
     /**
      * @param string $type

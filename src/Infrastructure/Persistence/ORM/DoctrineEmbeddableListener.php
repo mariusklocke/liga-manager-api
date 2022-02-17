@@ -20,10 +20,10 @@ use ReflectionProperty;
 class DoctrineEmbeddableListener
 {
     /** @var EntityManager */
-    private $entityManager;
+    private EntityManager $entityManager;
 
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(EntityManager $entityManager, LoggerInterface $logger)
     {

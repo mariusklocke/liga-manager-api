@@ -5,10 +5,10 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 class MutationTypeAggregator
 {
     /** @var array|string[] */
-    private $commands;
+    private array $commands;
 
     /** @var MutationMapper */
-    private $mapper;
+    private MutationMapper $mapper;
 
     /**
      * @param string[] $commands

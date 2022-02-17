@@ -16,16 +16,16 @@ final class JsonWebToken implements TokenInterface
     private const ALGORITHM = 'HS256';
 
     /** @var string */
-    private $userId;
+    private string $userId;
 
     /** @var DateTimeImmutable */
-    private $issuedAt;
+    private DateTimeImmutable $issuedAt;
 
     /** @var DateTimeImmutable */
-    private $expiresAt;
+    private DateTimeImmutable $expiresAt;
 
-    /** @var string */
-    private static $secret;
+    /** @var string|null */
+    private static ?string $secret = null;
 
     /**
      * @param string $userId

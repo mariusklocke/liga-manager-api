@@ -11,10 +11,10 @@ use Psr\Http\Message\ServerRequestInterface;
 class GetTestClientAction implements ActionInterface
 {
     /** @var TemplateRendererInterface */
-    private $templateRenderer;
+    private TemplateRendererInterface $templateRenderer;
 
     /** @var HtmlResponseWriter */
-    private $responseWriter;
+    private HtmlResponseWriter $responseWriter;
 
     /**
      * @param TemplateRendererInterface $templateRenderer

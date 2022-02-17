@@ -23,22 +23,22 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 class PerformLoginAction implements ActionInterface
 {
     /** @var OptionsStoreInterface */
-    private $optionsStore;
+    private OptionsStoreInterface $optionsStore;
 
     /** @var PublicKeyCredentialLoader */
-    private $credentialLoader;
+    private PublicKeyCredentialLoader $credentialLoader;
 
     /** @var AuthenticatorAssertionResponseValidator */
-    private $authenticatorAssertionResponseValidator;
+    private AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator;
 
     /** @var UserRepositoryInterface */
-    private $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     /** @var TokenFactoryInterface */
-    private $tokenFactory;
+    private TokenFactoryInterface $tokenFactory;
 
     /** @var JsonResponseWriter */
-    private $responseWriter;
+    private JsonResponseWriter $responseWriter;
 
     /**
      * @param OptionsStoreInterface $optionsStore

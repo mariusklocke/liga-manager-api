@@ -12,16 +12,16 @@ use HexagonalPlayground\Domain\Value\MatchResult;
 class Ranking
 {
     /** @var Season */
-    private $season;
+    private Season $season;
 
     /** @var DateTimeImmutable|null */
-    private $updatedAt;
+    private ?DateTimeImmutable $updatedAt = null;
 
     /** @var Collection */
-    private $positions;
+    private Collection $positions;
 
     /** @var Collection */
-    private $penalties;
+    private Collection $penalties;
 
     /**
      * @param Season $season

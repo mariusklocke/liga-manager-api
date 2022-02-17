@@ -9,19 +9,19 @@ use HexagonalPlayground\Domain\Util\Assert;
 class RankingPenalty extends Entity
 {
     /** @var Ranking */
-    private $ranking;
+    private Ranking $ranking;
 
     /** @var Team */
-    private $team;
+    private Team $team;
 
     /** @var string */
-    private $reason;
+    private string $reason;
 
     /** @var int */
-    private $points;
+    private int $points;
 
     /** @var DateTimeImmutable */
-    private $createdAt;
+    private DateTimeImmutable $createdAt;
 
     /**
      * @param string $id

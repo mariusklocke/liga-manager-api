@@ -12,9 +12,9 @@ class CustomDateTimeType extends DateTimeImmutableType
     public const NAME = 'custom_datetime';
 
     /**
-     * @var DateTimeZone
+     * @var DateTimeZone|null
      */
-    private static $utc;
+    private static ?DateTimeZone $utc = null;
 
     public function getName()
     {

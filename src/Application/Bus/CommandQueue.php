@@ -9,7 +9,7 @@ use Iterator;
 class CommandQueue
 {
     /** @var array */
-    private $commands;
+    private array $commands;
 
     public function __construct()
     {
