@@ -66,12 +66,4 @@ class RankingPenalty extends Entity
     {
         return $this->points;
     }
-
-    /**
-     * @param Team $team
-     */
-    public function setTeam(Team $team): void
-    {
-        $this->team = $team;
-    }
 }

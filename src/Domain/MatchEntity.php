@@ -46,8 +46,8 @@ class MatchEntity extends Entity
         parent::__construct($id);
         Assert::false($homeTeam->equals($guestTeam), 'A team cannot play against itself');
         $this->matchDay = $matchDay;
-        $this->homeTeam = $homeTeam;
-        $this->guestTeam = $guestTeam;
+        $this->setHomeTeam($homeTeam);
+        $this->setGuestTeam($guestTeam);
     }
 
     /**

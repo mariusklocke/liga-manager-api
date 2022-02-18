@@ -33,24 +33,10 @@ class TypeAssert
         }
     }
 
-    public static function assertStringOrNull($value, string $name): void
-    {
-        if (!is_null($value) && !is_string($value)) {
-            throw self::createException($name, $value, 'string|null');
-        }
-    }
-
     public static function assertArray($value, string $name): void
     {
         if (!is_array($value)) {
             throw self::createException($name, $value, 'array');
-        }
-    }
-
-    public static function assertArrayOrNull($value, string $name): void
-    {
-        if (!is_null($value) && !is_array($value)) {
-            throw self::createException($name, $value, 'array|null');
         }
     }
 

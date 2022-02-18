@@ -2,7 +2,6 @@
 
 namespace HexagonalPlayground\Infrastructure\Filesystem;
 
-use Exception;
 use Psr\Http\Message\StreamInterface;
 
 class FileStream implements StreamInterface

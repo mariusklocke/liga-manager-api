@@ -29,34 +29,6 @@ class InputParser
     }
 
     /**
-     * Parses a float from a string
-     *
-     * @param string $value
-     * @return float
-     */
-    public static function parseFloat(string $value): float
-    {
-        if (is_numeric($value)) {
-            return (float) $value;
-        }
-        throw new InvalidInputException('Cannot parse float. Got: ' . $value);
-    }
-
-    /**
-     * Parses a boolean from a string
-     *
-     * @param string $value
-     * @return bool
-     */
-    public static function parseBoolean(string $value): bool
-    {
-        if ('0' === $value || '1' === $value) {
-            return (bool) $value;
-        }
-        throw new InvalidInputException('Cannot parse boolean. Got: ' . $value);
-    }
-
-    /**
      * Parses a Date from a string
      *
      * @param string $value
