@@ -52,7 +52,7 @@ class DoctrineEmbeddableListener
      * @param object $embeddable
      * @return bool
      */
-    private function hasOnlyNullProperties($embeddable) : bool
+    private function hasOnlyNullProperties(object $embeddable) : bool
     {
         /** @var ReflectionProperty[] $properties */
         $properties = $this->entityManager->getClassMetadata(get_class($embeddable))->getReflectionProperties();

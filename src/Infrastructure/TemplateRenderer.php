@@ -26,7 +26,7 @@ class TemplateRenderer implements TemplateRendererInterface
      * @param array $data
      * @return string
      */
-    public function render(string $template, array $data)
+    public function render(string $template, array $data): string
     {
         $path = $this->templatePath . DIRECTORY_SEPARATOR . $template;
         extract($data);

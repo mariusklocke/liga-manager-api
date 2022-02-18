@@ -12,7 +12,7 @@ class StringUtils
      * @param string $separator A separator character to use
      * @return string The transformed name like "match:located"
      */
-    public static function camelCaseToSeparatedLowercase(string $subject, string $separator = ':')
+    public static function camelCaseToSeparatedLowercase(string $subject, string $separator = ':'): string
     {
         $words = preg_split('/(?=[A-Z])/', lcfirst($subject));
         $words = array_map(function (string $word) {

@@ -16,7 +16,7 @@ class CustomDateTimeType extends DateTimeImmutableType
      */
     private static ?DateTimeZone $utc = null;
 
-    public function getName()
+    public function getName(): string
     {
         return self::NAME;
     }

@@ -119,7 +119,7 @@ class RankingPosition
      * @param RankingPosition $other
      * @return int
      */
-    public function compare(RankingPosition $other)
+    public function compare(RankingPosition $other): int
     {
         // Point comparison
         if ($this->points != $other->points) {
