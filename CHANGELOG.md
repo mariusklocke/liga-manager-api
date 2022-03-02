@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## NEXT
+
+## 1.12.0 - 2022-03-02
 * Improvement: Updated docker image to PHP 8.1
 * Improvement: Updated PHAR tools
 * Refactoring: Dropped support for PHP 7.3
