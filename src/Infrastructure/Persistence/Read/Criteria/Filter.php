@@ -10,16 +10,16 @@ abstract class Filter
     public const MODE_INCLUDE = 'include';
     public const MODE_EXCLUDE = 'exclude';
 
-    /** @var Field */
-    protected Field $field;
+    /** @var string */
+    protected string $field;
 
     /** @var string */
     protected string $mode;
 
     /**
-     * @return Field
+     * @return string
      */
-    public function getField(): Field
+    public function getField(): string
     {
         return $this->field;
     }
@@ -31,4 +31,6 @@ abstract class Filter
     {
         return $this->mode;
     }
+
+    abstract public function validate(Field $fieldDefinition): void;
 }

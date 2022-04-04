@@ -25,7 +25,7 @@ abstract class AbstractRepository
     {
         $this->gateway = $gateway;
         $this->hydrator = new Hydrator($this->getFieldDefinitions());
-        $this->flattenFieldDefinitions();
+        $this->flattenedFieldDefinitions = $this->flattenFieldDefinitions($this->getFieldDefinitions());
     }
 
     /**
@@ -43,6 +43,7 @@ abstract class AbstractRepository
     ): array {
         return $this->hydrator->hydrateMany($this->gateway->fetch(
             $this->getTableName(),
+            $this->flattenedFieldDefinitions,
             [],
             $filters,
             $sortings,
@@ -58,35 +59,29 @@ abstract class AbstractRepository
     {
         return $this->hydrator->hydrateOne($this->gateway->fetch(
             $this->getTableName(),
+            $this->flattenedFieldDefinitions,
             [],
-            [new EqualityFilter($this->getField('id'), Filter::MODE_INCLUDE, [$id])]
+            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
         ));
     }
 
-    /**
-     * @param string $name
-     * @return Field|null
-     */
-    public function getField(string $name): ?Field
+    protected function flattenFieldDefinitions(array $fieldDefinitions): array
     {
-        return $this->flattenedFieldDefinitions[$name] ?? null;
-    }
+        $flattened = [];
 
-    protected function flattenFieldDefinitions(): void
-    {
-        $this->flattenedFieldDefinitions = [];
-
-        foreach ($this->getFieldDefinitions() as $fieldDefinition) {
+        foreach ($fieldDefinitions as $fieldDefinition) {
             if ($fieldDefinition instanceof EmbeddedObjectField) {
                 foreach ($fieldDefinition->getSubFields() as $subField) {
                     $subField = $subField->withName($fieldDefinition->getName() . '_' . $subField->getName());
-                    $this->flattenedFieldDefinitions[$subField->getName()] = $subField;
+                    $flattened[$subField->getName()] = $subField;
                 }
                 continue;
             }
 
-            $this->flattenedFieldDefinitions[$fieldDefinition->getName()] = $fieldDefinition;
+            $flattened[$fieldDefinition->getName()] = $fieldDefinition;
         }
+
+        return $flattened;
     }
 
     /**

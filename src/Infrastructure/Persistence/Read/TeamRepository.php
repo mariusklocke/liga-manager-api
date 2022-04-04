@@ -37,11 +37,15 @@ class TeamRepository extends AbstractRepository
      */
     public function findBySeasonIds(array $seasonIds): array
     {
+        $fields = $this->flattenedFieldDefinitions;
+        $fields['season_id'] = new StringField('season_id', false);
+
         $result = $this->gateway->fetch(
             $this->getTableName(),
+            $fields,
             ['seasons_teams_link' => 'id = team_id'],
             [new EqualityFilter(
-                new StringField('season_id', false),
+                'season_id',
                 Filter::MODE_INCLUDE,
                 $seasonIds
             )]
@@ -56,11 +60,15 @@ class TeamRepository extends AbstractRepository
      */
     public function findByUserIds(array $userIds): array
     {
+        $fields = $this->flattenedFieldDefinitions;
+        $fields['user_id'] = new StringField('user_id', false);
+
         $result = $this->gateway->fetch(
             $this->getTableName(),
+            $fields,
             ['users_teams_link' => 'id = team_id'],
             [new EqualityFilter(
-                new StringField('user_id', false),
+                'user_id',
                 Filter::MODE_INCLUDE,
                 $userIds
             )]

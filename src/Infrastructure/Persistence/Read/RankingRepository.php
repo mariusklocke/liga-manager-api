@@ -16,11 +16,17 @@ class RankingRepository extends AbstractRepository
     /** @var Field[] */
     private array $positionFields;
 
+    /** @var Field[] */
+    private array $flattenedPositionFields;
+
     /** @var Hydrator */
     private Hydrator $positionHydrator;
 
     /** @var Field[] */
     private array $penaltyFields;
+
+    /** @var Field[] */
+    private array $flattenedPenaltyFields;
 
     /** @var Hydrator */
     private Hydrator $penaltyHydrator;
@@ -45,6 +51,8 @@ class RankingRepository extends AbstractRepository
 
         $this->positionHydrator = new Hydrator($this->positionFields);
 
+        $this->flattenedPositionFields = $this->flattenFieldDefinitions($this->positionFields);
+
         $this->penaltyFields = [
             new StringField('id', false),
             new StringField('season_id', false),
@@ -55,6 +63,8 @@ class RankingRepository extends AbstractRepository
         ];
 
         $this->penaltyHydrator = new Hydrator($this->penaltyFields);
+
+        $this->flattenedPenaltyFields = $this->flattenFieldDefinitions($this->penaltyFields);
     }
 
     protected function getTableName(): string
@@ -70,28 +80,6 @@ class RankingRepository extends AbstractRepository
         ];
     }
 
-    protected function getPositionField(string $name): ?Field
-    {
-        foreach ($this->positionFields as $fieldDefinition) {
-            if ($fieldDefinition->getName() === $name) {
-                return $fieldDefinition;
-            }
-        }
-
-        return null;
-    }
-
-    protected function getPenaltyField(string $name): ?Field
-    {
-        foreach ($this->penaltyFields as $fieldDefinition) {
-            if ($fieldDefinition->getName() === $name) {
-                return $fieldDefinition;
-            }
-        }
-
-        return null;
-    }
-
     /**
      * @param string $seasonId
      * @return array|null
@@ -100,8 +88,9 @@ class RankingRepository extends AbstractRepository
     {
         $result = $this->gateway->fetch(
             $this->getTableName(),
+            $this->flattenedFieldDefinitions,
             [],
-            [new EqualityFilter($this->getField('season_id'), Filter::MODE_INCLUDE, [$seasonId])]
+            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])]
         );
 
         return $this->hydrator->hydrateOne($result);
@@ -115,9 +104,10 @@ class RankingRepository extends AbstractRepository
     {
         $result = $this->gateway->fetch(
             'ranking_positions',
+            $this->flattenedPositionFields,
             [],
-            [new EqualityFilter($this->getPositionField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
-            [new Sorting($this->getPositionField('sort_index'), Sorting::DIRECTION_ASCENDING)]
+            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])],
+            [new Sorting('sort_index', Sorting::DIRECTION_ASCENDING)]
         );
 
         return $this->positionHydrator->hydrateMany($result);
@@ -131,9 +121,10 @@ class RankingRepository extends AbstractRepository
     {
         $result = $this->gateway->fetch(
             'ranking_penalties',
+            $this->flattenedPenaltyFields,
             [],
-            [new EqualityFilter($this->getPenaltyField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
-            [new Sorting($this->getPenaltyField('created_at'), Sorting::DIRECTION_ASCENDING)]
+            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])],
+            [new Sorting('created_at', Sorting::DIRECTION_ASCENDING)]
         );
 
         return $this->penaltyHydrator->hydrateMany($result);

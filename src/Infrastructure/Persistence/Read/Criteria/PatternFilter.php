@@ -12,16 +12,8 @@ class PatternFilter extends Filter
     /** @var string */
     private string $pattern;
 
-    public function __construct(?Field $field, string $mode, string $pattern)
+    public function __construct(string $field, string $mode, string $pattern)
     {
-        if ($field === null) {
-            throw new InvalidInputException('Invalid PatternFilter: Unknown field');
-        }
-
-        if (!($field instanceof StringField)) {
-            throw new InvalidInputException('Invalid PatternFilter: Can only be used on string fields');
-        }
-
         $this->field = $field;
         $this->mode = $mode;
         $this->pattern = $pattern;
@@ -33,5 +25,12 @@ class PatternFilter extends Filter
     public function getPattern(): string
     {
         return $this->pattern;
+    }
+
+    public function validate(Field $fieldDefinition): void
+    {
+        if (!($fieldDefinition instanceof StringField)) {
+            throw new InvalidInputException('Invalid PatternFilter: Can only be used on string fields');
+        }
     }
 }

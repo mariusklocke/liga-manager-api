@@ -33,7 +33,7 @@ class BufferedPitchLoader
 
         if (count($pitchIds)) {
             $filter = new EqualityFilter(
-                $this->pitchRepository->getField('id'),
+                'id',
                 Filter::MODE_INCLUDE,
                 $pitchIds
             );

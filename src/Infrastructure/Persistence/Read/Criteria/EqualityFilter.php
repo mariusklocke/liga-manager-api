@@ -16,16 +16,31 @@ class EqualityFilter extends Filter
     /** @var array|int[]|string[]|DateTimeInterface[] */
     private array $values;
 
-    public function __construct(?Field $field, string $mode, array $values)
+    public function __construct(string $field, string $mode, array $values)
     {
-        if ($field === null) {
-            throw new InvalidInputException('Invalid EqualityFilter: Unknown field');
+        if (count($values) === 0) {
+            throw new InvalidInputException('Invalid EqualityFilter: Array of values must not be empty');
         }
 
-        $inputName = 'EqualityFilter.' . $field->getName();
+        $this->field = $field;
+        $this->mode = $mode;
+        $this->values = $values;
+    }
+
+    /**
+     * @return array|int[]|string[]|DateTimeInterface[]
+     */
+    public function getValues(): array
+    {
+        return $this->values;
+    }
+
+    public function validate(Field $fieldDefinition): void
+    {
+        $inputName = 'EqualityFilter.' . $fieldDefinition->getName();
 
         // Validate Field type
-        switch (get_class($field)) {
+        switch (get_class($fieldDefinition)) {
             case IntegerField::class:
                 $validator = function ($value) use ($inputName): void {
                     TypeAssert::assertInteger($value, $inputName);
@@ -45,24 +60,8 @@ class EqualityFilter extends Filter
                 throw new InvalidInputException('Invalid EqualityFilter: Unsupported field type');
         }
 
-        if (count($values) === 0) {
-            throw new InvalidInputException('Invalid EqualityFilter: Array of values must not be empty');
-        }
-
-        foreach ($values as $value) {
+        foreach ($this->values as $value) {
             $validator($value);
         }
-
-        $this->field = $field;
-        $this->mode = $mode;
-        $this->values = $values;
-    }
-
-    /**
-     * @return array|int[]|string[]|DateTimeInterface[]
-     */
-    public function getValues(): array
-    {
-        return $this->values;
     }
 }

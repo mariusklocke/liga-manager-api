@@ -40,6 +40,7 @@ class DbalGateway implements ReadDbGatewayInterface
 
     /**
      * @param string $from
+     * @param array $fields
      * @param array $joins
      * @param iterable|Filter[] $filters
      * @param iterable|Sorting[] $sortings
@@ -49,6 +50,7 @@ class DbalGateway implements ReadDbGatewayInterface
      */
     public function fetch(
         string      $from,
+        array       $fields,
         array       $joins = [],
         iterable    $filters = [],
         iterable    $sortings = [],
@@ -68,11 +70,24 @@ class DbalGateway implements ReadDbGatewayInterface
         $this->parameterInc = 0;
 
         foreach ($filters as $filter) {
-            $this->applyFilter($query, $filter);
+            $field = $fields[$filter->getField()] ?? null;
+
+            if ($field === null) {
+                throw new InvalidInputException('Invalid Filter: Unknown field');
+            }
+
+            $filter->validate($field);
+            $this->applyFilter($query, $filter, $field);
         }
 
         foreach ($sortings as $sorting) {
-            $this->applySorting($query, $sorting);
+            $field = $fields[$sorting->getField()] ?? null;
+
+            if ($field === null) {
+                throw new InvalidInputException('Invalid Sorting: Unknown field');
+            }
+
+            $this->applySorting($query, $sorting, $field);
         }
 
         if ($pagination !== null) {
@@ -87,19 +102,20 @@ class DbalGateway implements ReadDbGatewayInterface
     /**
      * @param QueryBuilder $query
      * @param Filter $filter
+     * @param Field $field
      * @throws InvalidInputException
      */
-    private function applyFilter(QueryBuilder $query, Filter $filter): void
+    private function applyFilter(QueryBuilder $query, Filter $filter, Field $field): void
     {
         switch (true) {
             case $filter instanceof RangeFilter:
-                $this->applyRangeFilter($query, $filter);
+                $this->applyRangeFilter($query, $filter, $field);
                 break;
             case $filter instanceof EqualityFilter:
-                $this->applyEqualityFilter($query, $filter);
+                $this->applyEqualityFilter($query, $filter, $field);
                 break;
             case $filter instanceof PatternFilter:
-                $this->applyPatternFilter($query, $filter);
+                $this->applyPatternFilter($query, $filter, $field);
                 break;
             default:
                 throw new InvalidInputException('Unsupported filter type');
@@ -109,14 +125,15 @@ class DbalGateway implements ReadDbGatewayInterface
     /**
      * @param QueryBuilder $query
      * @param RangeFilter $filter
+     * @param Field $field
      * @throws InvalidInputException
      */
-    private function applyRangeFilter(QueryBuilder $query, RangeFilter $filter): void
+    private function applyRangeFilter(QueryBuilder $query, RangeFilter $filter, Field $field): void
     {
         if ($filter->getMinValue() === $filter->getMaxValue()) {
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '=' : '<>';
-            $paramId = $this->bindParameter($query, $filter->getField(), $filter->getMinValue());
-            $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
+            $paramId = $this->bindParameter($query, $field, $filter->getMinValue());
+            $query->andWhere(sprintf('%s %s :%s', $field->getName(), $operator, $paramId));
 
             return;
         }
@@ -124,15 +141,15 @@ class DbalGateway implements ReadDbGatewayInterface
         $conditions = [];
 
         if ($filter->getMinValue() !== null) {
-            $minParamId = $this->bindParameter($query, $filter->getField(), $filter->getMinValue());
+            $minParamId = $this->bindParameter($query, $field, $filter->getMinValue());
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '>=' : '<';
-            $conditions[] = sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $minParamId);
+            $conditions[] = sprintf('%s %s :%s', $field->getName(), $operator, $minParamId);
         }
 
         if ($filter->getMaxValue() !== null) {
-            $maxParamId = $this->bindParameter($query, $filter->getField(), $filter->getMaxValue());
+            $maxParamId = $this->bindParameter($query, $field, $filter->getMaxValue());
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '<=' : '>';
-            $conditions[] = sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $maxParamId);
+            $conditions[] = sprintf('%s %s :%s', $field->getName(), $operator, $maxParamId);
         }
 
         $query->andWhere(implode($filter->getMode() === Filter::MODE_INCLUDE ? ' AND ' : ' OR ', $conditions));
@@ -141,31 +158,33 @@ class DbalGateway implements ReadDbGatewayInterface
     /**
      * @param QueryBuilder $query
      * @param EqualityFilter $filter
+     * @param Field $field
      * @throws InvalidInputException
      */
-    private function applyEqualityFilter(QueryBuilder $query, EqualityFilter $filter): void
+    private function applyEqualityFilter(QueryBuilder $query, EqualityFilter $filter, Field $field): void
     {
         // Use equals-operator if only one value
         if (count($filter->getValues()) === 1) {
             $operator = $filter->getMode() === Filter::MODE_INCLUDE ? '=' : '<>';
-            $paramId = $this->bindParameter($query, $filter->getField(), current($filter->getValues()));
-            $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
+            $paramId = $this->bindParameter($query, $field, current($filter->getValues()));
+            $query->andWhere(sprintf('%s %s :%s', $field->getName(), $operator, $paramId));
 
             return;
         }
 
         // Use IN-Operator if there are multiple values
         $operator = $filter->getMode() === Filter::MODE_INCLUDE ? 'IN' : 'NOT IN';
-        $paramId = $this->bindParameter($query, $filter->getField(), $filter->getValues());
-        $query->andWhere(sprintf('%s %s (:%s)', $filter->getField()->getName(), $operator, $paramId));
+        $paramId = $this->bindParameter($query, $field, $filter->getValues());
+        $query->andWhere(sprintf('%s %s (:%s)', $field->getName(), $operator, $paramId));
     }
 
     /**
      * @param QueryBuilder $query
      * @param PatternFilter $filter
+     * @param Field $field
      * @throws InvalidInputException
      */
-    private function applyPatternFilter(QueryBuilder $query, PatternFilter $filter): void
+    private function applyPatternFilter(QueryBuilder $query, PatternFilter $filter, Field $field): void
     {
         $operator = $filter->getMode() === Filter::MODE_INCLUDE ? 'LIKE' : 'NOT LIKE';
         $pattern = $filter->getPattern();
@@ -176,17 +195,18 @@ class DbalGateway implements ReadDbGatewayInterface
         // Translate wildcard characters
         $pattern = str_replace(['*', '?'], ['%', '_'], $pattern);
 
-        $paramId = $this->bindParameter($query, $filter->getField(), $pattern);
-        $query->andWhere(sprintf('%s %s :%s', $filter->getField()->getName(), $operator, $paramId));
+        $paramId = $this->bindParameter($query, $field, $pattern);
+        $query->andWhere(sprintf('%s %s :%s', $field->getName(), $operator, $paramId));
     }
 
     /**
      * @param QueryBuilder $query
      * @param Sorting $sorting
+     * @param Field $field
      */
-    private function applySorting(QueryBuilder $query, Sorting $sorting): void
+    private function applySorting(QueryBuilder $query, Sorting $sorting, Field $field): void
     {
-        $query->addOrderBy($sorting->getField()->getName(), $sorting->getDirection());
+        $query->addOrderBy($field->getName(), $sorting->getDirection());
     }
 
     /**

@@ -63,7 +63,7 @@ class BufferedTeamLoader
 
         if (count($teamIds)) {
             $filter = new EqualityFilter(
-                $this->teamRepository->getField('id'),
+                'id',
                 Filter::MODE_INCLUDE,
                 $teamIds
             );

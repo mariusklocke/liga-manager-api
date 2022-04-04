@@ -65,7 +65,7 @@ class EventType extends ObjectType implements QueryTypeInterface
 
                     if (isset($args['start_date']) || isset($args['end_date'])) {
                         $filters[] = new RangeFilter(
-                            $repo->getField('occurred_at'),
+                            'occurred_at',
                             Filter::MODE_INCLUDE,
                             $args['start_date'] ?? null,
                             $args['end_date'] ?? null
@@ -74,7 +74,7 @@ class EventType extends ObjectType implements QueryTypeInterface
 
                     if (isset($args['type'])) {
                         $filters[] = new EqualityFilter(
-                            $repo->getField('type'),
+                            'type',
                             Filter::MODE_INCLUDE,
                             [$args['type']]
                         );
@@ -82,7 +82,7 @@ class EventType extends ObjectType implements QueryTypeInterface
 
                     return $repo->findMany(
                         $filters,
-                        [new Sorting($repo->getField('occurred_at'), Sorting::DIRECTION_DESCENDING)],
+                        [new Sorting('occurred_at', Sorting::DIRECTION_DESCENDING)],
                         new Pagination(50, 0)
                     );
                 }

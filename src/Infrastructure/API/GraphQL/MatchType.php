@@ -114,7 +114,7 @@ class MatchType extends ObjectType implements QueryTypeInterface
 
                     if (isset($args['min_date']) || isset($args['max_date'])) {
                         $filters[] = new RangeFilter(
-                            $repo->getField('kickoff'),
+                            'kickoff',
                             Filter::MODE_INCLUDE,
                             $args['min_date'] ?? null,
                             $args['max_date'] ?? null
@@ -123,7 +123,7 @@ class MatchType extends ObjectType implements QueryTypeInterface
 
                     return $repo->findMany(
                         $filters,
-                        [new Sorting($repo->getField('kickoff'), Sorting::DIRECTION_ASCENDING)]
+                        [new Sorting('kickoff', Sorting::DIRECTION_ASCENDING)]
                     );
                 }
             ]

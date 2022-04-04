@@ -12,6 +12,7 @@ interface ReadDbGatewayInterface
 {
     /**
      * @param string $from
+     * @param array $fields
      * @param array $joins
      * @param iterable|Filter[] $filters
      * @param iterable|Sorting[] $sortings
@@ -21,6 +22,7 @@ interface ReadDbGatewayInterface
      */
     public function fetch(
         string      $from,
+        array       $fields,
         array       $joins = [],
         iterable    $filters = [],
         iterable    $sortings = [],
