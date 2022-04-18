@@ -2,9 +2,14 @@
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use Iterator;
+
 class SeasonTest extends TestCase
 {
-    public function testSeasonsCanBeListed(): void
+    /**
+     * @dataProvider filterProvider
+     */
+    public function testSeasonsCanBeListed(array $filter): void
     {
         $query = $this->createQuery('seasonList')
             ->fields([
@@ -50,6 +55,12 @@ class SeasonTest extends TestCase
                         'points'
                     ]
                 ]
+            ])
+            ->argTypes([
+                'filter' => 'SeasonFilter'
+            ])
+            ->argValues([
+                'filter' => $filter
             ]);
 
         $response = $this->request($query);
@@ -83,7 +94,8 @@ class SeasonTest extends TestCase
                 self::assertObjectHasAttribute('name', $team);
             }
 
-            if (isset($season->ranking)) {
+            if ($season->state !== 'preparation') {
+                self::assertObjectHasAttribute('ranking', $season);
                 self::assertObjectHasAttribute('updatedAt', $season->ranking);
                 self::assertObjectHasAttribute('positions', $season->ranking);
 
@@ -111,5 +123,16 @@ class SeasonTest extends TestCase
                 }
             }
         }
+    }
+
+    public function filterProvider(): Iterator
+    {
+        yield 'empty filter' => [[]];
+        yield 'simple filter' => [[
+            'states' => ['preparation']
+        ]];
+        yield 'complete filter' => [[
+            'states' => ['preparation', 'progress', 'ended']
+        ]];
     }
 }

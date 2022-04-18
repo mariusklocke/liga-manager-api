@@ -11,6 +11,8 @@ class DateTimeType extends StringType
 {
     public $name = 'DateTime';
 
+    public $description = '';
+
     /**
      * @param mixed $value
      * @return DateTimeImmutable|null

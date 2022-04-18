@@ -11,6 +11,9 @@
             <directory suffix=".php">src</directory>
         </include>
     </coverage>
+    <extensions>
+        <extension class="HexagonalPlayground\Tests\Hook\MemoryUsageHook"/>
+    </extensions>
     <testsuites>
         <testsuite name="CLI">
             <directory>tests/CLI</directory>

@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Criteria\Filter;
 
 use GraphQL\Type\Definition\InputObjectType;
+use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\SeasonStateType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 
@@ -14,7 +15,7 @@ class SeasonFilterType extends InputObjectType
             'fields' => function () {
                 return [
                     'states' => [
-                        'type' => TypeRegistry::get(SeasonStateType::class)
+                        'type' => Type::listOf(TypeRegistry::get(SeasonStateType::class))
                     ]
                 ];
             }

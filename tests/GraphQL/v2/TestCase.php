@@ -12,6 +12,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query;
 use HexagonalPlayground\Tests\Framework\JsonResponseParser;
 use HexagonalPlayground\Tests\Framework\PsrSlimClient;
+use Iterator;
 use JsonSerializable;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Stream;
@@ -84,6 +85,35 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
 
         return new BearerAuth($token);
+    }
+
+    /**
+     * @param Query $query
+     * @param int $pageSize
+     * @param Auth|null $auth
+     * @return Iterator|array[]
+     */
+    protected function paginate(Query $query, int $pageSize = 100, ?Auth $auth = null): Iterator
+    {
+        $offset = 0;
+        do {
+            $payload = $query
+                ->argTypes(['pagination' => 'Pagination'])
+                ->argValues(['pagination' => ['limit' => $pageSize, 'offset' => $offset]]);
+
+            $response = $this->request($payload, $auth);
+
+            self::assertObjectNotHasAttribute('errors', $response);
+            self::assertObjectHasAttribute('data', $response);
+
+            $result = current(get_object_vars($response->data));
+            self::assertIsArray($result);
+
+            yield $result;
+
+            $offset += $pageSize;
+
+        } while (count($result) > 0);
     }
 
     protected static function formatDate(DateTimeInterface $dateTime): string
