@@ -15,12 +15,14 @@ class UpdatePitchCommand extends UpdateCommand implements CommandInterface
     private ?ContactPerson $contact;
 
     /**
+     * @param string $id
      * @param string $label
      * @param GeographicLocation|null $location
      * @param ContactPerson|null $contact
      */
-    public function __construct(string $label, ?GeographicLocation $location, ?ContactPerson $contact)
+    public function __construct(string $id, string $label, ?GeographicLocation $location, ?ContactPerson $contact)
     {
+        $this->id = $id;
         $this->label = $label;
         $this->location = $location;
         $this->contact = $contact;

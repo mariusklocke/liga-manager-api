@@ -48,25 +48,21 @@ class UpdateUserHandler implements AuthAwareHandler
         }
 
         // Changing user role requires admin rights
-        if (null !== $command->getRole() && !$user->hasRole($command->getRole())) {
+        if ($command->getRole() !== $user->getRole()) {
             $isAdmin->check();
             $user->setRole($command->getRole());
         }
 
-        if (null !== $command->getEmail() && $command->getEmail() !== $user->getEmail()) {
+        // Changing email address requires new email address to be unused
+        if ($command->getEmail() !== $user->getEmail()) {
             $this->userRepository->assertEmailDoesNotExist($command->getEmail());
             $user->setEmail($command->getEmail());
         }
 
-        if (null !== $command->getFirstName()) {
-            $user->setFirstName($command->getFirstName());
-        }
+        $user->setFirstName($command->getFirstName());
+        $user->setLastName($command->getLastName());
 
-        if (null !== $command->getLastName()) {
-            $user->setLastName($command->getLastName());
-        }
-
-        if (null !== $command->getTeamIds()) {
+        if (!$this->areArraysEqual($command->getTeamIds(), $user->getTeamIds())) {
             $isAdmin->check();
 
             $user->clearTeams();
@@ -80,5 +76,18 @@ class UpdateUserHandler implements AuthAwareHandler
         $this->userRepository->save($user);
 
         return [];
+    }
+
+    private function areArraysEqual(array $array1, array $array2): bool
+    {
+        if (count(array_diff($array1, $array2)) > 0) {
+            return false;
+        }
+
+        if (count(array_diff($array2, $array1)) > 0) {
+            return false;
+        }
+
+        return true;
     }
 }

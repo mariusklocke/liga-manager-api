@@ -248,4 +248,14 @@ class User extends Entity
 
         return $data;
     }
+
+    /**
+     * @return array|string[]
+     */
+    public function getTeamIds(): array
+    {
+        return array_map(function (Team $team): string {
+            return $team->getId();
+        }, $this->teams->toArray());
+    }
 }

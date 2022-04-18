@@ -17,7 +17,7 @@ class UpdateSeasonCommand extends UpdateCommand implements CommandInterface
     /**
      * @param string $id
      * @param string $name
-     * @param array|string[] $teamIds
+     * @param string[] $teamIds
      * @param string $state
      */
     public function __construct(string $id, string $name, array $teamIds, string $state)
