@@ -14,8 +14,8 @@ class Pitch extends Entity
     /** @var string */
     private string $label;
 
-    /** @var GeographicLocation */
-    private GeographicLocation $location;
+    /** @var GeographicLocation|null */
+    private ?GeographicLocation $location = null;
 
     /** @var ContactPerson|null */
     private ?ContactPerson $contact = null;
@@ -23,7 +23,7 @@ class Pitch extends Entity
     /** @var Collection|MatchEntity[] */
     private Collection $matches;
 
-    public function __construct(string $id, string $label, GeographicLocation $location)
+    public function __construct(string $id, string $label, ?GeographicLocation $location = null)
     {
         parent::__construct($id);
         Assert::minLength($label, 1, "A pitch's label cannot be blank");
