@@ -21,7 +21,7 @@ class Tournament extends Competition
         parent::__construct($id);
         Assert::minLength($name, 1, "A tournament's name cannot be blank");
         Assert::maxLength($name, 255, "A tournament's name cannot exceed 255 characters");
-        $this->name = $name;
+        $this->setName($name);
         $this->matchDays = new ArrayCollection();
         $this->updateRoundCount();
     }

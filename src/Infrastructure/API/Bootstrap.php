@@ -7,6 +7,7 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRoute
 use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RouteProvider as WebAuthnRouteProvider;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\RouteProvider as GraphQlv2RouteProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use Middlewares\TrailingSlash;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -53,6 +54,7 @@ class Bootstrap
     {
         return [
             new GraphQLRouteProvider(),
+            new GraphQlv2RouteProvider(),
             new WebAuthnRouteProvider(),
             new HealthRouteProvider()
         ];

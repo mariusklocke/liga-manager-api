@@ -36,9 +36,7 @@ class Season extends Competition
     public function __construct(string $id, string $name)
     {
         parent::__construct($id);
-        Assert::minLength($name, 1, "A season's name cannot be blank");
-        Assert::maxLength($name, 255, "A season's name cannot exceed 255 characters");
-        $this->name = $name;
+        $this->setName($name);
         $this->teams = new ArrayCollection();
         $this->matchDays = new ArrayCollection();
         $this->state = self::STATE_PREPARATION;
@@ -76,6 +74,16 @@ class Season extends Competition
     public function getTeams() : array
     {
         return $this->teams->toArray();
+    }
+
+    /**
+     * @return array|string[]
+     */
+    public function getTeamIds(): array
+    {
+        return $this->teams->map(function (Team $team): string {
+            return $team->getId();
+        })->toArray();
     }
 
     /**
@@ -208,5 +216,26 @@ class Season extends Competition
     private function updateMatchDayCount(): void
     {
         $this->matchDayCount = $this->matchDays->count();
+    }
+
+    /**
+     * @param string $state
+     * @return void
+     */
+    public function setState(string $state): void
+    {
+        switch ($state) {
+            case self::STATE_PREPARATION:
+                Assert::true($this->state === self::STATE_PREPARATION, 'Invalid state transition');
+                break;
+            case self::STATE_PROGRESS:
+                $this->start();
+                break;
+            case self::STATE_ENDED:
+                $this->end();
+                break;
+            default:
+                throw new DomainException('Unknown season state');
+        }
     }
 }

@@ -40,6 +40,21 @@ use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Command\UpdateUserCommand;
+use HexagonalPlayground\Application\Command\v2\CommandInterface as v2CommandInterface;
+use HexagonalPlayground\Application\Command\v2\CreateMatchCommand;
+use HexagonalPlayground\Application\Command\v2\CreateMatchDayCommand;
+use HexagonalPlayground\Application\Command\v2\CreateRankingPenaltyCommand;
+use HexagonalPlayground\Application\Command\v2\DeleteMatchCommand;
+use HexagonalPlayground\Application\Command\v2\DeleteMatchDayCommand;
+use HexagonalPlayground\Application\Command\v2\DeleteRankingPenaltyCommand;
+use HexagonalPlayground\Application\Command\v2\GenerateMatchDaysCommand;
+use HexagonalPlayground\Application\Command\v2\ScheduleMatchesForMatchDayCommand;
+use HexagonalPlayground\Application\Command\v2\UpdateMatchDayCommand;
+use HexagonalPlayground\Application\Command\v2\UpdatePitchCommand;
+use HexagonalPlayground\Application\Command\v2\UpdateSeasonCommand;
+use HexagonalPlayground\Application\Command\v2\UpdateTeamCommand;
+use HexagonalPlayground\Application\Command\v2\UpdateTournamentCommand;
+use HexagonalPlayground\Application\Command\v2\UpdateUserPasswordCommand;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -82,7 +97,38 @@ class ServiceProvider implements ServiceProviderInterface
                 UpdateTeamContactCommand::class,
                 UpdateUserCommand::class
             ],
-            HandlerResolver::class => DI\get(ContainerHandlerResolver::class)
+            HandlerResolver::class => DI\get(ContainerHandlerResolver::class),
+            v2CommandInterface::class => [
+                CreateMatchCommand::class,
+                CreateMatchDayCommand::class,
+                \HexagonalPlayground\Application\Command\v2\CreatePitchCommand::class,
+                CreateRankingPenaltyCommand::class,
+                \HexagonalPlayground\Application\Command\v2\CreateSeasonCommand::class,
+                \HexagonalPlayground\Application\Command\v2\CreateTeamCommand::class,
+                \HexagonalPlayground\Application\Command\v2\CreateTournamentCommand::class,
+                \HexagonalPlayground\Application\Command\v2\CreateUserCommand::class,
+                DeleteMatchCommand::class,
+                DeleteMatchDayCommand::class,
+                \HexagonalPlayground\Application\Command\v2\DeletePitchCommand::class,
+                DeleteRankingPenaltyCommand::class,
+                \HexagonalPlayground\Application\Command\v2\DeleteSeasonCommand::class,
+                \HexagonalPlayground\Application\Command\v2\DeleteTeamCommand::class,
+                \HexagonalPlayground\Application\Command\v2\DeleteTournamentCommand::class,
+                \HexagonalPlayground\Application\Command\v2\DeleteUserCommand::class,
+                GenerateMatchDaysCommand::class,
+                \HexagonalPlayground\Application\Command\v2\ScheduleMatchCommand::class,
+                ScheduleMatchesForMatchDayCommand::class,
+                \HexagonalPlayground\Application\Command\v2\SubmitMatchResultCommand::class,
+                UpdateMatchDayCommand::class,
+                UpdatePitchCommand::class,
+                UpdateSeasonCommand::class,
+                UpdateTeamCommand::class,
+                UpdateSeasonCommand::class,
+                UpdateTeamCommand::class,
+                UpdateTournamentCommand::class,
+                \HexagonalPlayground\Application\Command\v2\UpdateUserCommand::class,
+                UpdateUserPasswordCommand::class
+            ]
         ];
     }
 }

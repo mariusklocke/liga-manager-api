@@ -37,4 +37,14 @@ abstract class Competition extends Entity
     {
         $this->matchDays->remove($number);
     }
+
+    /**
+     * @param string $name
+     */
+    public function setName(string $name): void
+    {
+        Assert::minLength($name, 1, "A competition's name cannot be blank");
+        Assert::maxLength($name, 255, "A competition's name cannot exceed 255 characters");
+        $this->name = $name;
+    }
 }

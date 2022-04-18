@@ -1,0 +1,28 @@
+<?php
+declare(strict_types=1);
+
+namespace HexagonalPlayground\Application\Command\v2;
+
+class CreateTournamentCommand extends CreateCommand implements CommandInterface
+{
+    /** @var string */
+    private string $name;
+
+    /**
+     * @param string $id
+     * @param string $name
+     */
+    public function __construct(string $id, string $name)
+    {
+        $this->id = $id;
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+}

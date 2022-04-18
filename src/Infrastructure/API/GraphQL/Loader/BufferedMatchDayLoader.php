@@ -14,6 +14,9 @@ class BufferedMatchDayLoader
     private MatchDayRepository $matchDayRepository;
 
     /** @var array */
+    private array $byMatchDayId = [];
+
+    /** @var array */
     private array $bySeasonId = [];
 
     /** @var array */
@@ -25,6 +28,11 @@ class BufferedMatchDayLoader
     public function __construct(MatchDayRepository $matchDayRepository)
     {
         $this->matchDayRepository = $matchDayRepository;
+    }
+
+    public function addMatchDay(string $matchDayId): void
+    {
+        $this->byMatchDayId[$matchDayId] = null;
     }
 
     /**
@@ -41,6 +49,32 @@ class BufferedMatchDayLoader
     public function addTournament(string $tournamentId): void
     {
         $this->byTournamentId[$tournamentId] = null;
+    }
+
+    public function getByMatchDay(string $matchDayId): ?array
+    {
+        $matchDayIds = array_keys($this->byMatchDayId, null, true);
+
+        if (count($matchDayIds)) {
+            $filter = new EqualityFilter(
+                'id',
+                Filter::MODE_INCLUDE,
+                $matchDayIds
+            );
+
+            $sorting = new Sorting(
+                'number',
+                Sorting::DIRECTION_ASCENDING
+            );
+
+            $matchDays = $this->matchDayRepository->findMany([$filter], [$sorting]);
+
+            foreach ($matchDays as $matchDay) {
+                $this->byMatchDayId[$matchDay['id']] = $matchDay;
+            }
+        }
+
+        return $this->byMatchDayId[$matchDayId] ?? null;
     }
 
     /**

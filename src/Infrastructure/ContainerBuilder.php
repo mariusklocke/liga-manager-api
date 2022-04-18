@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure;
 use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLProvider;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\ServiceProvider as GraphQLv2Provider;
 use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
@@ -49,6 +50,7 @@ class ContainerBuilder
             new GraphQLProvider(),
             new WebAuthnServiceProvider(),
             new CliServiceProvider(),
+            new GraphQLv2Provider()
         ];
     }
 }

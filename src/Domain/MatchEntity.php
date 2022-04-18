@@ -173,4 +173,9 @@ class MatchEntity extends Entity
     {
         return $this->kickoff;
     }
+
+    public function assertDeletable(): void
+    {
+        Assert::false($this->hasResult(), 'Cannot delete a match with submitted result');
+    }
 }

@@ -162,4 +162,9 @@ class MatchDay extends Entity
             $this->tournament = $competition;
         }
     }
+
+    public function assertDeletable(): void
+    {
+        Assert::false($this->hasMatchWithResult(), 'Cannot delete a match day containing match results');
+    }
 }

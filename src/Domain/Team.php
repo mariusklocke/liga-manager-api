@@ -18,10 +18,11 @@ class Team extends Entity
     /** @var ContactPerson|null */
     private ?ContactPerson $contact = null;
 
-    public function __construct(string $id, string $name)
+    public function __construct(string $id, string $name, ?ContactPerson $contact = null)
     {
         parent::__construct($id);
         $this->setName($name);
+        $this->contact = $contact;
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -42,9 +43,9 @@ class Team extends Entity
     }
 
     /**
-     * @param ContactPerson $contact
+     * @param ContactPerson|null $contact
      */
-    public function setContact(ContactPerson $contact): void
+    public function setContact(?ContactPerson $contact): void
     {
         $this->contact = $contact;
     }

@@ -68,7 +68,7 @@ class RangeFilter extends Filter
                 };
                 break;
             default:
-                throw new InvalidInputException('Invalid RangeFilter: Unsupported field type');
+                throw new InvalidInputException('Invalid RangeFilter: Unsupported field type ' . get_class($fieldDefinition));
         }
 
         if ($this->minValue !== null) {

@@ -23,13 +23,12 @@ class Pitch extends Entity
     /** @var Collection|MatchEntity[] */
     private Collection $matches;
 
-    public function __construct(string $id, string $label, GeographicLocation $location)
+    public function __construct(string $id, string $label, GeographicLocation $location, ?ContactPerson $contact = null)
     {
         parent::__construct($id);
-        Assert::minLength($label, 1, "A pitch's label cannot be blank");
-        Assert::maxLength($label, 255, "A pitch's label cannot exceed 255 characters");
-        $this->label = $label;
-        $this->location = $location;
+        $this->setLabel($label);
+        $this->setLocation($location);
+        $this->setContact($contact);
         $this->matches = new ArrayCollection();
     }
 
@@ -42,9 +41,9 @@ class Pitch extends Entity
     }
 
     /**
-     * @param ContactPerson $contact
+     * @param ContactPerson|null $contact
      */
-    public function setContact(ContactPerson $contact): void
+    public function setContact(?ContactPerson $contact): void
     {
         $this->contact = $contact;
     }
@@ -73,5 +72,23 @@ class Pitch extends Entity
     public function assertDeletable(): void
     {
         Assert::true($this->matches->isEmpty(), 'Cannot delete pitch which is used in matches');
+    }
+
+    /**
+     * @param GeographicLocation|null $location
+     */
+    public function setLocation(?GeographicLocation $location): void
+    {
+        $this->location = $location;
+    }
+
+    /**
+     * @param string $label
+     */
+    public function setLabel(string $label): void
+    {
+        Assert::minLength($label, 1, "A pitch's label cannot be blank");
+        Assert::maxLength($label, 255, "A pitch's label cannot exceed 255 characters");
+        $this->label = $label;
     }
 }
