@@ -109,7 +109,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $result = current(get_object_vars($response->data));
             self::assertIsArray($result);
 
-            yield $result;
+            if (count($result) > 0) {
+                yield $result;
+            }
 
             $offset += $pageSize;
 
