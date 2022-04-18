@@ -18,8 +18,11 @@
         <testsuite name="CLI">
             <directory>tests/CLI</directory>
         </testsuite>
-        <testsuite name="GraphQL">
-            <directory>tests/GraphQL</directory>
+        <testsuite name="GraphQL/v1">
+            <directory>tests/GraphQL/v1</directory>
+        </testsuite>
+        <testsuite name="GraphQL/v2">
+            <directory>tests/GraphQL/v2</directory>
         </testsuite>
         <testsuite name="Health">
             <directory>tests/Health</directory>

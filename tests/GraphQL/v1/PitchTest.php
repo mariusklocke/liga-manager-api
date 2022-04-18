@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\GraphQL;
+namespace HexagonalPlayground\Tests\GraphQL\v1;
 
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
