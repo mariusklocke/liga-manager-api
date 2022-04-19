@@ -2,6 +2,10 @@
 
 ## NEXT
 
+## 1.12.1 - 2022-04-19
+* Refactoring: Simplify query criteria building
+* Refactoring: Make pitch location nullable in database
+
 ## 1.12.0 - 2022-03-02
 * Improvement: Updated docker image to PHP 8.1
 * Improvement: Updated PHAR tools
