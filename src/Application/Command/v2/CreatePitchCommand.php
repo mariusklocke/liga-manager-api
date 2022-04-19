@@ -11,8 +11,8 @@ class CreatePitchCommand extends CreateCommand implements CommandInterface
     /** @var string */
     private string $label;
 
-    /** @var GeographicLocation */
-    private GeographicLocation $location;
+    /** @var GeographicLocation|null */
+    private ?GeographicLocation $location;
 
     /** @var ContactPerson|null */
     private ?ContactPerson $contact;
@@ -20,10 +20,10 @@ class CreatePitchCommand extends CreateCommand implements CommandInterface
     /**
      * @param string $id
      * @param string $label
-     * @param GeographicLocation $location
+     * @param GeographicLocation|null $location
      * @param ContactPerson|null $contact
      */
-    public function __construct(string $id, string $label, GeographicLocation $location, ?ContactPerson $contact = null)
+    public function __construct(string $id, string $label, ?GeographicLocation $location = null, ?ContactPerson $contact = null)
     {
         $this->id = $id;
         $this->label = $label;
@@ -40,9 +40,9 @@ class CreatePitchCommand extends CreateCommand implements CommandInterface
     }
 
     /**
-     * @return GeographicLocation
+     * @return GeographicLocation|null
      */
-    public function getLocation(): GeographicLocation
+    public function getLocation(): ?GeographicLocation
     {
         return $this->location;
     }
