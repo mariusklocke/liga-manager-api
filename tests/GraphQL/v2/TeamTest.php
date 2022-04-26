@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query;
+use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class TeamTest extends TestCase
 {
@@ -13,6 +16,68 @@ class TeamTest extends TestCase
     {
         parent::setUp();
         $this->adminAuth = $this->authenticate($this->defaultAdminAuth);
+    }
+
+    public function testTeamCanBeCreated(): string
+    {
+        $id = IdGenerator::generate();
+        $name = __METHOD__;
+        $contact = new \stdClass();
+        $contact->firstName = 'Marty';
+        $contact->lastName = 'McFly';
+        $contact->phone = '0123456';
+        $contact->email = 'marty@example.com';
+
+        self::assertNull($this->getTeam($id));
+        $this->createTeam($id, $name, $contact);
+        $team = $this->getTeam($id);
+        self::assertIsObject($team);
+        self::assertEquals($id, $team->id);
+        self::assertEquals($name, $team->name);
+        self::assertEquals($contact->firstName, $team->contact->firstName);
+        self::assertEquals($contact->lastName, $team->contact->lastName);
+        self::assertEquals($contact->phone, $team->contact->phone);
+        self::assertEquals($contact->email, $team->contact->email);
+
+        return $id;
+    }
+
+    /**
+     * @depends testTeamCanBeCreated
+     * @param string $id
+     * @return string
+     */
+    public function testTeamCanBeUpdated(string $id): string
+    {
+        $name = __METHOD__;
+        $contact = new \stdClass();
+        $contact->firstName = 'Walter';
+        $contact->lastName = 'White';
+        $contact->phone = '911';
+        $contact->email = 'walter.white@example.com';
+
+        $this->updateTeam($id, $name, $contact);
+        $team = $this->getTeam($id);
+        self::assertIsObject($team);
+        self::assertEquals($id, $team->id);
+        self::assertEquals($name, $team->name);
+        self::assertEquals($contact->firstName, $team->contact->firstName);
+        self::assertEquals($contact->lastName, $team->contact->lastName);
+        self::assertEquals($contact->phone, $team->contact->phone);
+        self::assertEquals($contact->email, $team->contact->email);
+
+        return $id;
+    }
+
+    /**
+     * @depends testTeamCanBeUpdated
+     * @param string $id
+     */
+    public function testTeamCanBeDeleted(string $id): void
+    {
+        self::assertNotNull($this->getTeam($id));
+        $this->deleteTeam($id);
+        self::assertNull($this->getTeam($id));
     }
 
     public function testTeamsCanBeListed(): void
@@ -94,5 +159,83 @@ class TeamTest extends TestCase
 
         self::assertObjectHasAttribute('errors', $response);
         self::assertObjectNotHasAttribute('data', $response);
+    }
+
+    private function createTeam(string $id, string $name, ?object $contact): void
+    {
+        $mutation = (new Mutation('createTeam'))
+            ->argTypes([
+                'id' => 'String!',
+                'name' => 'String!',
+                'contact' => 'ContactInput'
+            ])
+            ->argValues([
+                'id' => $id,
+                'name' => $name,
+                'contact' => $contact
+            ]);
+
+        $response = $this->request($mutation, $this->adminAuth);
+
+        self::assertResponseNotHasError($response);
+    }
+
+    private function updateTeam(string $id, string $name, ?object $contact): void
+    {
+        $mutation = (new Mutation('updateTeam'))
+            ->argTypes([
+                'id' => 'String!',
+                'name' => 'String!',
+                'contact' => 'ContactInput'
+            ])
+            ->argValues([
+                'id' => $id,
+                'name' => $name,
+                'contact' => $contact
+            ]);
+
+        $response = $this->request($mutation, $this->adminAuth);
+
+        self::assertResponseNotHasError($response);
+    }
+
+    private function deleteTeam(string $id): void
+    {
+        $mutation = (new Mutation('deleteTeam'))
+            ->argTypes([
+                'id' => 'String!',
+            ])
+            ->argValues([
+                'id' => $id
+            ]);
+
+        $response = $this->request($mutation, $this->adminAuth);
+
+        self::assertResponseNotHasError($response);
+    }
+
+    private function getTeam(string $id): ?object
+    {
+        $query = (new Query('team'))
+            ->fields([
+                'id',
+                'name',
+                'contact' => [
+                    'firstName',
+                    'lastName',
+                    'phone',
+                    'email'
+                ]
+            ])
+            ->argTypes(['id' => 'String!'])
+            ->argValues(['id' => $id]);
+
+        $response = $this->request($query);
+
+        if (isset($response->data) && isset($response->data->team)) {
+            return $response->data->team;
+        }
+
+        return null;
     }
 }
