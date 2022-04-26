@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Criteria\Filter;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\Filter;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Infrastructure\API\GraphQL\v2\SeasonStateType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\SeasonStateType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 
 class SeasonFilterType extends InputObjectType

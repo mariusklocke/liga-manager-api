@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Command\v2;
 /**
  * Marker interface for Command classes
  */
-interface CommandInterface
+interface CommandInterface extends \HexagonalPlayground\Application\Command\CommandInterface
 {
 
 }

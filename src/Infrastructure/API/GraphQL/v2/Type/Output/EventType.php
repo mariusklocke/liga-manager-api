@@ -1,13 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
-use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Criteria\PaginationType;
-use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Criteria\Filter\EventFilterType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\FieldNameConverter;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\PaginationType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\Filter\EventFilterType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Scalar\DateTimeType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;

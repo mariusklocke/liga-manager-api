@@ -1,12 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output;
 
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\FieldNameConverter;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Scalar\DateType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 
 class MatchDayType extends ObjectType
 {

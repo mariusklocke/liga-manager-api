@@ -135,4 +135,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         return new Query($name);
     }
+
+    protected static function assertSimilarFloats(float $expected, float $actual, float $tolerance = 0.00001)
+    {
+        self::assertLessThan($tolerance, abs($expected - $actual));
+    }
 }

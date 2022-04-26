@@ -7,8 +7,15 @@ use DI;
 use GraphQL\Type\Definition\ObjectType;
 use HexagonalPlayground\Application\Command\v2\CommandInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\API\GraphQL\MutationMapper;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\EventType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\MatchType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\PitchType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\SeasonType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\TeamType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\TournamentType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\UserType;
+use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use Psr\Container\ContainerInterface;
 
 class ServiceProvider implements ServiceProviderInterface
@@ -17,28 +24,29 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             Schema::class => DI\factory(function (ContainerInterface $container) {
-                /** @var QueryTypeInterface[] $queryTypes */
                 $queryTypes = [
-                    new EventType(),
-                    new MatchType(),
-                    new PitchType(),
-                    new SeasonType(),
-                    new TeamType(),
-                    new TournamentType(),
-                    new UserType()
+                    EventType::class,
+                    MatchType::class,
+                    PitchType::class,
+                    SeasonType::class,
+                    TeamType::class,
+                    TournamentType::class,
+                    UserType::class
                 ];
 
                 $queries = [];
                 foreach ($queryTypes as $queryType) {
+                    $queryType = TypeRegistry::get($queryType);
+                    /** @var QueryTypeInterface $queryType */
                     $queries = array_merge($queries, $queryType->getQueries());
                 }
 
-                /** @var MutationMapper $mutationMapper */
-                $mutationMapper = $container->get(MutationMapper::class);
-                $commands = [];
-                $mutations = array_map(function (string $command) use ($mutationMapper) {
-                    return $mutationMapper->getDefinition($command);
-                }, $commands);
+                $mutationMapper = new MutationMapper(new TypeMapper(), new AuthReader());
+                $commands = $container->get(CommandInterface::class);
+                $mutations = [];
+                foreach ($commands as $command) {
+                    $mutations = array_merge($mutations, $mutationMapper->getDefinition($command));
+                }
 
                 return new Schema([
                     'query' => new ObjectType([

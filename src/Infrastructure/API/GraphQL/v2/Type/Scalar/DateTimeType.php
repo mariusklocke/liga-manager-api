@@ -1,16 +1,15 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Scalar;
 
 use DateTimeImmutable;
 use GraphQL\Language\AST\Node;
 use GraphQL\Type\Definition\StringType;
 use HexagonalPlayground\Application\InputParser;
 
-class DateType extends StringType
+class DateTimeType extends StringType
 {
-    public $name = 'Date';
+    public $name = 'DateTime';
 
     public $description = '';
 
@@ -20,7 +19,7 @@ class DateType extends StringType
      */
     public function parseValue($value): ?DateTimeImmutable
     {
-        return $value !== null ? InputParser::parseDate(parent::parseValue($value)) : null;
+        return $value !== null ? InputParser::parseDateTime(parent::parseValue($value)) : null;
     }
 
     /**
@@ -30,6 +29,6 @@ class DateType extends StringType
      */
     public function parseLiteral($valueNode, ?array $variables = null): ?DateTimeImmutable
     {
-        return $this->parseValue($this->parseLiteral($valueNode, $variables));
+        return $this->parseValue(parent::parseLiteral($valueNode, $variables));
     }
 }

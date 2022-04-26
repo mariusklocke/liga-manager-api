@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Criteria;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;

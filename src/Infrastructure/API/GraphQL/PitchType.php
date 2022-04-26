@@ -48,7 +48,9 @@ class PitchType extends ObjectType implements QueryTypeInterface
                     /** @var PitchRepository $repo */
                     $repo = $context->getContainer()->get(PitchRepository::class);
 
-                    return $repo->findById($args['id']);
+                    $pitch = $repo->findById($args['id']);
+
+                    return $pitch !== null ? $this->transformPitch($pitch) : null;
                 }
             ],
             'allPitches' => [
@@ -57,9 +59,20 @@ class PitchType extends ObjectType implements QueryTypeInterface
                     /** @var PitchRepository $repo */
                     $repo = $context->getContainer()->get(PitchRepository::class);
 
-                    return $repo->findMany();
+                    return array_map([$this, 'transformPitch'], $repo->findMany());
                 }
             ]
         ];
+    }
+
+    private function transformPitch(array $pitch): array
+    {
+        if (isset($pitch['location'])) {
+            $pitch['location_longitude'] = $pitch['location']['longitude'];
+            $pitch['location_latitude'] = $pitch['location']['latitude'];
+            unset($pitch['location']);
+        }
+
+        return $pitch;
     }
 }

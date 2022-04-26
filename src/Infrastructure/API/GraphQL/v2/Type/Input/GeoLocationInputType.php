@@ -1,11 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input;
 
-use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
+use HexagonalPlayground\Domain\Value\GeographicLocation;
+use HexagonalPlayground\Infrastructure\API\GraphQL\CustomObjectType;
 
-class GeoLocationType extends ObjectType
+class GeoLocationInputType extends InputObjectType implements CustomObjectType
 {
     public function __construct()
     {
@@ -21,5 +23,10 @@ class GeoLocationType extends ObjectType
                 ];
             }
         ]);
+    }
+
+    public function parseCustomValue($value): object
+    {
+        return new GeographicLocation($value['longitude'], $value['latitude']);
     }
 }

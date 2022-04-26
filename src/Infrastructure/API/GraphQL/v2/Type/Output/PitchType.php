@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output;
 
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
@@ -8,7 +8,9 @@ use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
-use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Criteria\PaginationType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\FieldNameConverter;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\PaginationType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 
@@ -66,11 +68,17 @@ class PitchType extends ObjectType implements QueryTypeInterface
 
                     $pitch = $repo->findById($args['id']);
 
-                    if ($pitch === null) {
-                        return null;
-                    }
+                    /**
+                    if ($pitch !== null) {
+                        if ($pitch['location_latitude'] !== null && $pitch['location_longitude'] !== null) {
+                            $pitch['location']['latitude'] = $pitch['location_latitude'];
+                            $pitch['location']['longitude'] = $pitch['location_longitude'];
+                            unset($pitch['location_latitude']);
+                            unset($pitch['location_longitude']);
+                        }
+                    }**/
 
-                    return $converter->convert($pitch);
+                    return $pitch !== null ? $converter->convert($pitch) : null;
                 }
             ],
             'pitchList' => [

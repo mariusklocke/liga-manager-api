@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Criteria\Filter;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\Filter;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Infrastructure\API\GraphQL\v2\DateTimeType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Scalar\DateTimeType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 
 class EventFilterType extends InputObjectType

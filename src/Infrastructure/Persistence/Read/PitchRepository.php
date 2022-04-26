@@ -19,8 +19,10 @@ class PitchRepository extends AbstractRepository
         return [
             new StringField('id', false),
             new StringField('label', false),
-            new FloatField('location_longitude', false),
-            new FloatField('location_latitude', false),
+            new EmbeddedObjectField('location', true, [
+                new FloatField('longitude', false),
+                new FloatField('latitude', false)
+            ]),
             new EmbeddedObjectField('contact', true, [
                 new StringField('email', false),
                 new StringField('first_name', false),

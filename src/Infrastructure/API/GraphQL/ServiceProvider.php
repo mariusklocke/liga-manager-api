@@ -6,6 +6,7 @@ use DI;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -16,7 +17,13 @@ class ServiceProvider implements ServiceProviderInterface
 
             MutationTypeAggregator::class => DI\create()->constructor(
                 DI\get(CommandInterface::class),
-                DI\get(MutationMapper::class)
+                DI\factory(function () {
+                    return new MutationMapper(
+                        new TypeMapper(),
+                        new AuthReader(),
+                        true
+                    );
+                })
             ),
 
             QueryTypeAggregator::class => DI\create()->constructor(

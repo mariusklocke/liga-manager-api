@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\Type\Definition\Type;
 
-class TypeMapper
+class TypeMapper implements TypeMapperInterface
 {
     public function map(string $phpType): Type
     {
@@ -34,7 +34,7 @@ class TypeMapper
         return $innerType;
     }
 
-    private function mapInnerType(string $phpType): Type
+    protected function mapInnerType(string $phpType): Type
     {
         switch ($phpType) {
             case 'string':
