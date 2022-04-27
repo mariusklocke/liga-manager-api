@@ -96,7 +96,6 @@ class TeamTest extends TestCase
 
         $response = self::$client->request($query, $this->defaultAdminAuth);
 
-        self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('teamList', $response->data);
         self::assertIsArray($response->data->teamList);
@@ -144,10 +143,8 @@ class TeamTest extends TestCase
                 ]
             ]);
 
+        $this->expectClientException();
         $response = self::$client->request($query);
-
-        self::assertObjectHasAttribute('errors', $response);
-        self::assertObjectNotHasAttribute('data', $response);
     }
 
     private function createTeam(string $id, string $name, ?object $contact): void
@@ -164,9 +161,7 @@ class TeamTest extends TestCase
                 'contact' => $contact
             ]);
 
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function updateTeam(string $id, string $name, ?object $contact): void
@@ -183,9 +178,7 @@ class TeamTest extends TestCase
                 'contact' => $contact
             ]);
 
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function deleteTeam(string $id): void
@@ -198,9 +191,7 @@ class TeamTest extends TestCase
                 'id' => $id
             ]);
 
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function getTeam(string $id): ?object

@@ -33,7 +33,6 @@ class EventTest extends TestCase
 
         $response = self::$client->request($query);
 
-        self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('eventList', $response->data);
         self::assertIsArray($response->data->eventList);

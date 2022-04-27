@@ -38,26 +38,38 @@ class AdvancedClient
         return new Mutation($name);
     }
 
+    /**
+     * @param JsonSerializable $payload
+     * @param Auth|null $auth
+     * @return stdClass
+     * @throws Exception
+     */
     public function request(JsonSerializable $payload, ?Auth $auth = null): stdClass
     {
         $request = $this->buildRequest($payload, $auth);
-
         $response = $this->httpClient->sendRequest($request);
+        $parsedResponse = $this->responseParser->parse($response);
 
-        return $this->responseParser->parse($response);
+        if (isset($parsedResponse->errors) && count($parsedResponse->errors) > 0) {
+            throw new Exception($parsedResponse->errors);
+        }
+
+        return $parsedResponse;
     }
 
+    /**
+     * @param BasicAuth $basicAuth
+     * @return BearerAuth
+     * @throws Exception
+     */
     public function authenticate(BasicAuth $basicAuth): BearerAuth
     {
         $query = $this->createQuery('user')->fields(['id']);
-
         $request = $this->buildRequest($query, $basicAuth);
-
         $response = $this->httpClient->sendRequest($request);
+        $token = current($response->getHeader('X-Token'));
 
-        $token = $response->getHeader('X-Token')[0] ?? null;
-
-        if (null === $token) {
+        if (!is_string($token)) {
             throw new Exception(['Failed to authenticate']);
         }
 

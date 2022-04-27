@@ -116,10 +116,8 @@ class UserTest extends TestCase
                 ]
             ]);
 
-        $response = self::$client->request($query);
-
-        self::assertObjectHasAttribute('errors', $response);
-        self::assertObjectNotHasAttribute('data', $response);
+        $this->expectClientException();
+        self::$client->request($query);
     }
 
     public function testUsersCanBeListed(): void
@@ -139,7 +137,6 @@ class UserTest extends TestCase
 
         $response = self::$client->request($query, $this->defaultAdminAuth);
 
-        self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('userList', $response->data);
         self::assertIsArray($response->data->userList);
@@ -189,9 +186,7 @@ class UserTest extends TestCase
                 'teamIds' => $teamIds
             ]);
 
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function updateUser(
@@ -220,9 +215,7 @@ class UserTest extends TestCase
                 'teamIds' => $teamIds
             ]);
 
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function getUser(?string $id = null, ?Auth $auth = null): ?object
@@ -262,8 +255,6 @@ class UserTest extends TestCase
             ]);
 
         $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
     }
 
     private function updateUserPassword(string $id, string $oldPassword, string $newPassword, ?Auth $auth = null): void
@@ -280,9 +271,7 @@ class UserTest extends TestCase
                 'newPassword' => $newPassword
             ]);
 
-        $response = self::$client->request($mutation, $auth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $auth);
     }
 
     private static function generatePassword(): string

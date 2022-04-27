@@ -84,7 +84,6 @@ class PitchTest extends TestCase
 
         $response = self::$client->request($query);
 
-        self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('pitchList', $response->data);
         self::assertIsArray($response->data->pitchList);
@@ -128,9 +127,7 @@ class PitchTest extends TestCase
                 'location' => $location
             ]);
 
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function updatePitch(string $id, string $label, ?object $location): void
@@ -147,9 +144,7 @@ class PitchTest extends TestCase
                 'location' => $location
             ]);
 
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function deletePitch(string $id): void
@@ -158,9 +153,7 @@ class PitchTest extends TestCase
             ->argTypes(['id' => 'String!'])
             ->argValues(['id' => $id]);
 
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-
-        self::assertResponseNotHasError($response);
+        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function getPitch(string $id): ?object

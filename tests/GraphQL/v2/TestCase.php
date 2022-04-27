@@ -8,7 +8,7 @@ use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Tests\Framework\GraphQL\AdvancedClient;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
-use stdClass;
+use HexagonalPlayground\Tests\Framework\GraphQL\Exception as ClientException;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -32,12 +32,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $dateTime->format(DATE_ATOM);
     }
 
-    protected static function assertResponseNotHasError(stdClass $response): void
+    protected function expectClientException(): void
     {
-        $hasErrors = isset($response->errors) && count($response->errors) > 0;
-        $message   = $hasErrors ? json_encode($response->errors) : '';
-
-        self::assertObjectNotHasAttribute('errors', $response, $message);
+        $this->expectException(ClientException::class);
     }
 
     protected static function assertSimilarFloats(float $expected, float $actual, float $tolerance = 0.00001)

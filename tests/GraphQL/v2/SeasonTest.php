@@ -65,7 +65,6 @@ class SeasonTest extends TestCase
 
         $response = self::$client->request($query);
 
-        self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('seasonList', $response->data);
         self::assertIsArray($response->data->seasonList);
