@@ -5,19 +5,10 @@ namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use HexagonalPlayground\Tests\Framework\GraphQL\Auth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
-use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class UserTest extends TestCase
 {
-    private BearerAuth $adminAuth;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->adminAuth = self::$client->authenticate($this->defaultAdminAuth);
-    }
-
     public function testUserCanBeCreated(): object
     {
         $id = IdGenerator::generate();
@@ -28,7 +19,7 @@ class UserTest extends TestCase
         $lastName = 'White';
         $teamIds = [];
 
-        self::assertNull($this->getUser($id, $this->adminAuth));
+        self::assertNull($this->getUser($id, $this->defaultAdminAuth));
         $this->createUser($id, $email, $password, $firstName, $lastName, $role, $teamIds);
         sleep(1); // Workaround for issue "Password has changed after token has been issued"
         $userAuth = self::$client->authenticate(new BasicAuth($email, $password));
@@ -86,7 +77,7 @@ class UserTest extends TestCase
         $teamIds = [];
 
         $this->updateUser($id, $email, $firstName, $lastName, $role, $teamIds);
-        $user = $this->getUser($id, $this->adminAuth);
+        $user = $this->getUser($id, $this->defaultAdminAuth);
         self::assertIsObject($user);
         self::assertEquals($id, $user->id);
         self::assertEquals($email, $user->email);
@@ -105,9 +96,9 @@ class UserTest extends TestCase
      */
     public function testUserCanBeDeleted(string $id): void
     {
-        self::assertNotNull($this->getUser($id, $this->adminAuth));
+        self::assertNotNull($this->getUser($id, $this->defaultAdminAuth));
         $this->deleteUser($id);
-        self::assertNull($this->getUser($id, $this->adminAuth));
+        self::assertNull($this->getUser($id, $this->defaultAdminAuth));
     }
 
     public function testListingUsersRequiresAdminPermissions(): void
@@ -146,7 +137,7 @@ class UserTest extends TestCase
                 ]
             ]);
 
-        $response = self::$client->request($query, $this->adminAuth);
+        $response = self::$client->request($query, $this->defaultAdminAuth);
 
         self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
@@ -198,7 +189,7 @@ class UserTest extends TestCase
                 'teamIds' => $teamIds
             ]);
 
-        $response = self::$client->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->defaultAdminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -229,7 +220,7 @@ class UserTest extends TestCase
                 'teamIds' => $teamIds
             ]);
 
-        $response = self::$client->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->defaultAdminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -270,7 +261,7 @@ class UserTest extends TestCase
                 'id' => $id
             ]);
 
-        $response = self::$client->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->defaultAdminAuth);
 
         self::assertResponseNotHasError($response);
     }

@@ -7,11 +7,12 @@ use DateTimeInterface;
 use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Tests\Framework\GraphQL\AdvancedClient;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
+use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
 use stdClass;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    protected BasicAuth $defaultAdminAuth;
+    protected BearerAuth $defaultAdminAuth;
 
     protected static ?AdvancedClient $client = null;
 
@@ -20,10 +21,10 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         if (null === self::$client) {
             self::$client = new AdvancedClient();
         }
-        $this->defaultAdminAuth = new BasicAuth(
+        $this->defaultAdminAuth = self::$client->authenticate(new BasicAuth(
             Environment::get('ADMIN_EMAIL'),
             Environment::get('ADMIN_PASSWORD')
-        );
+        ));
     }
 
     protected static function formatDate(DateTimeInterface $dateTime): string

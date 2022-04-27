@@ -3,19 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
-use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class PitchTest extends TestCase
 {
-    private BearerAuth $adminAuth;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->adminAuth = self::$client->authenticate($this->defaultAdminAuth);
-    }
-
     public function testPitchCanBeCreated(): string
     {
         $id = IdGenerator::generate();
@@ -137,7 +128,7 @@ class PitchTest extends TestCase
                 'location' => $location
             ]);
 
-        $response = self::$client->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->defaultAdminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -156,7 +147,7 @@ class PitchTest extends TestCase
                 'location' => $location
             ]);
 
-        $response = self::$client->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->defaultAdminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -167,7 +158,7 @@ class PitchTest extends TestCase
             ->argTypes(['id' => 'String!'])
             ->argValues(['id' => $id]);
 
-        $response = self::$client->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->defaultAdminAuth);
 
         self::assertResponseNotHasError($response);
     }
