@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
-use HexagonalPlayground\Tests\Framework\GraphQL\Mutation;
-use HexagonalPlayground\Tests\Framework\GraphQL\Query;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class PitchTest extends TestCase
@@ -127,7 +125,7 @@ class PitchTest extends TestCase
 
     private function createPitch(string $id, string $label, ?object $location): void
     {
-        $mutation = (new Mutation('createPitch'))
+        $mutation = self::$client->createMutation('createPitch')
             ->argTypes([
                 'id' => 'String!',
                 'label' => 'String!',
@@ -146,7 +144,7 @@ class PitchTest extends TestCase
 
     private function updatePitch(string $id, string $label, ?object $location): void
     {
-        $mutation = (new Mutation('updatePitch'))
+        $mutation = self::$client->createMutation('updatePitch')
             ->argTypes([
                 'id' => 'String!',
                 'label' => 'String!',
@@ -165,7 +163,7 @@ class PitchTest extends TestCase
 
     private function deletePitch(string $id): void
     {
-        $mutation = (new Mutation('deletePitch'))
+        $mutation = self::$client->createMutation('deletePitch')
             ->argTypes(['id' => 'String!'])
             ->argValues(['id' => $id]);
 
@@ -176,7 +174,7 @@ class PitchTest extends TestCase
 
     private function getPitch(string $id): ?object
     {
-        $query = (new Query('pitch'))
+        $query = self::$client->createQuery('pitch')
             ->fields([
                 'id',
                 'label',

@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
-use HexagonalPlayground\Tests\Framework\GraphQL\Mutation;
-use HexagonalPlayground\Tests\Framework\GraphQL\Query;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class TeamTest extends TestCase
@@ -163,7 +161,7 @@ class TeamTest extends TestCase
 
     private function createTeam(string $id, string $name, ?object $contact): void
     {
-        $mutation = (new Mutation('createTeam'))
+        $mutation = self::$client->createMutation('createTeam')
             ->argTypes([
                 'id' => 'String!',
                 'name' => 'String!',
@@ -182,7 +180,7 @@ class TeamTest extends TestCase
 
     private function updateTeam(string $id, string $name, ?object $contact): void
     {
-        $mutation = (new Mutation('updateTeam'))
+        $mutation = self::$client->createMutation('updateTeam')
             ->argTypes([
                 'id' => 'String!',
                 'name' => 'String!',
@@ -201,7 +199,7 @@ class TeamTest extends TestCase
 
     private function deleteTeam(string $id): void
     {
-        $mutation = (new Mutation('deleteTeam'))
+        $mutation = self::$client->createMutation('deleteTeam')
             ->argTypes([
                 'id' => 'String!',
             ])
@@ -216,7 +214,7 @@ class TeamTest extends TestCase
 
     private function getTeam(string $id): ?object
     {
-        $query = (new Query('team'))
+        $query = self::$client->createQuery('team')
             ->fields([
                 'id',
                 'name',

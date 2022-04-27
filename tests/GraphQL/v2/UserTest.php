@@ -6,8 +6,6 @@ namespace HexagonalPlayground\Tests\GraphQL\v2;
 use HexagonalPlayground\Tests\Framework\GraphQL\Auth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
-use HexagonalPlayground\Tests\Framework\GraphQL\Mutation;
-use HexagonalPlayground\Tests\Framework\GraphQL\Query;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class UserTest extends TestCase
@@ -180,7 +178,7 @@ class UserTest extends TestCase
         string $role,
         array $teamIds
     ): void {
-        $mutation = (new Mutation('createUser'))
+        $mutation = self::$client->createMutation('createUser')
             ->argTypes([
                 'id' => 'String!',
                 'email' => 'String!',
@@ -213,7 +211,7 @@ class UserTest extends TestCase
         string $role,
         array $teamIds
     ): void {
-        $mutation = (new Mutation('updateUser'))
+        $mutation = self::$client->createMutation('updateUser')
             ->argTypes([
                 'id' => 'String!',
                 'email' => 'String!',
@@ -238,7 +236,7 @@ class UserTest extends TestCase
 
     private function getUser(?string $id = null, ?Auth $auth = null): ?object
     {
-        $query = (new Query('user'))
+        $query = self::$client->createQuery('user')
             ->fields([
                 'id',
                 'email',
@@ -264,7 +262,7 @@ class UserTest extends TestCase
 
     private function deleteUser(string $id): void
     {
-        $mutation = (new Mutation('deleteUser'))
+        $mutation = self::$client->createMutation('deleteUser')
             ->argTypes([
                 'id' => 'String!'
             ])
@@ -279,7 +277,7 @@ class UserTest extends TestCase
 
     private function updateUserPassword(string $id, string $oldPassword, string $newPassword, ?Auth $auth = null): void
     {
-        $mutation = (new Mutation('updateUserPassword'))
+        $mutation = self::$client->createMutation('updateUserPassword')
             ->argTypes([
                 'id' => 'String!',
                 'oldPassword' => 'String!',
