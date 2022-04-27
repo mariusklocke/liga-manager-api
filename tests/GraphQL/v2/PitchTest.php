@@ -15,7 +15,7 @@ class PitchTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->adminAuth = $this->authenticate($this->defaultAdminAuth);
+        $this->adminAuth = self::$client->authenticate($this->defaultAdminAuth);
     }
 
     public function testPitchCanBeCreated(): string
@@ -74,7 +74,7 @@ class PitchTest extends TestCase
 
     public function testPitchesCanBeListed(): void
     {
-        $query = $this->createQuery('pitchList')
+        $query = self::$client->createQuery('pitchList')
             ->fields([
                 'id',
                 'label',
@@ -93,7 +93,7 @@ class PitchTest extends TestCase
                 ]
             ]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
@@ -139,7 +139,7 @@ class PitchTest extends TestCase
                 'location' => $location
             ]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -158,7 +158,7 @@ class PitchTest extends TestCase
                 'location' => $location
             ]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -169,7 +169,7 @@ class PitchTest extends TestCase
             ->argTypes(['id' => 'String!'])
             ->argValues(['id' => $id]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -194,7 +194,7 @@ class PitchTest extends TestCase
             ->argTypes(['id' => 'String!'])
             ->argValues(['id' => $id]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         if (isset($response->data) && isset($response->data->pitch)) {
             return $response->data->pitch;

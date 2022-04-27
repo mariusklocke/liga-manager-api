@@ -15,7 +15,7 @@ class TeamTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->adminAuth = $this->authenticate($this->defaultAdminAuth);
+        $this->adminAuth = self::$client->authenticate($this->defaultAdminAuth);
     }
 
     public function testTeamCanBeCreated(): string
@@ -82,7 +82,7 @@ class TeamTest extends TestCase
 
     public function testTeamsCanBeListed(): void
     {
-        $query = $this->createQuery('teamList')
+        $query = self::$client->createQuery('teamList')
             ->fields([
                 'id',
                 'name',
@@ -105,7 +105,7 @@ class TeamTest extends TestCase
                 ]
             ]);
 
-        $response = $this->request($query, $this->adminAuth);
+        $response = self::$client->request($query, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
@@ -145,7 +145,7 @@ class TeamTest extends TestCase
 
     public function testListingAssociatedUsersRequiresAdminPermission(): void
     {
-        $query = $this->createQuery('teamList')
+        $query = self::$client->createQuery('teamList')
             ->fields([
                 'id',
                 'name',
@@ -155,7 +155,7 @@ class TeamTest extends TestCase
                 ]
             ]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         self::assertObjectHasAttribute('errors', $response);
         self::assertObjectNotHasAttribute('data', $response);
@@ -175,7 +175,7 @@ class TeamTest extends TestCase
                 'contact' => $contact
             ]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -194,7 +194,7 @@ class TeamTest extends TestCase
                 'contact' => $contact
             ]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -209,7 +209,7 @@ class TeamTest extends TestCase
                 'id' => $id
             ]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -230,7 +230,7 @@ class TeamTest extends TestCase
             ->argTypes(['id' => 'String!'])
             ->argValues(['id' => $id]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         if (isset($response->data) && isset($response->data->team)) {
             return $response->data->team;

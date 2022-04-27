@@ -13,7 +13,7 @@ class EventTest extends TestCase
      */
     public function testEventsCanBeListed(array $filter): void
     {
-        $query = $this->createQuery('eventList')
+        $query = self::$client->createQuery('eventList')
             ->fields([
                 'id',
                 'occurredAt',
@@ -31,7 +31,7 @@ class EventTest extends TestCase
                 ]
             ]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);

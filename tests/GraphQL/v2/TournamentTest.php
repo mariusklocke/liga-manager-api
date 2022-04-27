@@ -6,7 +6,7 @@ class TournamentTest extends TestCase
 {
     public function testTournamentsCanBeListed(): void
     {
-        $query = $this->createQuery('tournamentList')
+        $query = self::$client->createQuery('tournamentList')
             ->fields([
                 'id',
                 'name',
@@ -19,7 +19,7 @@ class TournamentTest extends TestCase
                 ]
             ]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);

@@ -17,7 +17,7 @@ class UserTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->adminAuth = $this->authenticate($this->defaultAdminAuth);
+        $this->adminAuth = self::$client->authenticate($this->defaultAdminAuth);
     }
 
     public function testUserCanBeCreated(): object
@@ -33,7 +33,7 @@ class UserTest extends TestCase
         self::assertNull($this->getUser($id, $this->adminAuth));
         $this->createUser($id, $email, $password, $firstName, $lastName, $role, $teamIds);
         sleep(1); // Workaround for issue "Password has changed after token has been issued"
-        $userAuth = $this->authenticate(new BasicAuth($email, $password));
+        $userAuth = self::$client->authenticate(new BasicAuth($email, $password));
         $user = $this->getUser($id, $userAuth);
         self::assertIsObject($user);
         self::assertEquals($id, $user->id);
@@ -62,10 +62,10 @@ class UserTest extends TestCase
         $oldPassword = $user->password;
         $newPassword = self::generatePassword();
 
-        $userAuth = $this->authenticate(new BasicAuth($email, $oldPassword));
+        $userAuth = self::$client->authenticate(new BasicAuth($email, $oldPassword));
         $this->updateUserPassword($id, $oldPassword, $newPassword, $userAuth);
         sleep(1); // Workaround for issue "Password has changed after token has been issued"
-        $userAuth = $this->authenticate(new BasicAuth($email, $newPassword));
+        $userAuth = self::$client->authenticate(new BasicAuth($email, $newPassword));
         $user = $this->getUser($id, $userAuth);
         self::assertIsObject($user);
         self::assertEquals($id, $user->id);
@@ -114,7 +114,7 @@ class UserTest extends TestCase
 
     public function testListingUsersRequiresAdminPermissions(): void
     {
-        $query = $this->createQuery('userList')
+        $query = self::$client->createQuery('userList')
             ->fields([
                 'id',
                 'email',
@@ -127,7 +127,7 @@ class UserTest extends TestCase
                 ]
             ]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         self::assertObjectHasAttribute('errors', $response);
         self::assertObjectNotHasAttribute('data', $response);
@@ -135,7 +135,7 @@ class UserTest extends TestCase
 
     public function testUsersCanBeListed(): void
     {
-        $query = $this->createQuery('userList')
+        $query = self::$client->createQuery('userList')
             ->fields([
                 'id',
                 'email',
@@ -148,7 +148,7 @@ class UserTest extends TestCase
                 ]
             ]);
 
-        $response = $this->request($query, $this->adminAuth);
+        $response = self::$client->request($query, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
@@ -200,7 +200,7 @@ class UserTest extends TestCase
                 'teamIds' => $teamIds
             ]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -231,7 +231,7 @@ class UserTest extends TestCase
                 'teamIds' => $teamIds
             ]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -253,7 +253,7 @@ class UserTest extends TestCase
             ->argTypes(['id' => 'String'])
             ->argValues(['id' => $id]);
 
-        $response = $this->request($query, $auth);
+        $response = self::$client->request($query, $auth);
 
         if (isset($response->data) && isset($response->data->user)) {
             return $response->data->user;
@@ -272,7 +272,7 @@ class UserTest extends TestCase
                 'id' => $id
             ]);
 
-        $response = $this->request($mutation, $this->adminAuth);
+        $response = self::$client->request($mutation, $this->adminAuth);
 
         self::assertResponseNotHasError($response);
     }
@@ -291,7 +291,7 @@ class UserTest extends TestCase
                 'newPassword' => $newPassword
             ]);
 
-        $response = $this->request($mutation, $auth);
+        $response = self::$client->request($mutation, $auth);
 
         self::assertResponseNotHasError($response);
     }

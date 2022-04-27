@@ -13,7 +13,7 @@ class MatchTest extends TestCase
      */
     public function testMatchesCanBeListed(array $filter): void
     {
-        $query = $this->createQuery('matchList')
+        $query = self::$client->createQuery('matchList')
             ->fields([
                 'id',
                 'matchDay' => [
@@ -48,7 +48,7 @@ class MatchTest extends TestCase
                 'filter' => $filter
             ]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);

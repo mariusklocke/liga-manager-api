@@ -11,7 +11,7 @@ class SeasonTest extends TestCase
      */
     public function testSeasonsCanBeListed(array $filter): void
     {
-        $query = $this->createQuery('seasonList')
+        $query = self::$client->createQuery('seasonList')
             ->fields([
                 'id',
                 'name',
@@ -63,7 +63,7 @@ class SeasonTest extends TestCase
                 'filter' => $filter
             ]);
 
-        $response = $this->request($query);
+        $response = self::$client->request($query);
 
         self::assertResponseNotHasError($response);
         self::assertObjectHasAttribute('data', $response);
