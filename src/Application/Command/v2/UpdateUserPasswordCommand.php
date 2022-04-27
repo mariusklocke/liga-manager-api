@@ -12,11 +12,13 @@ class UpdateUserPasswordCommand extends UpdateCommand implements CommandInterfac
     private string $newPassword;
 
     /**
+     * @param string $id
      * @param string $oldPassword
      * @param string $newPassword
      */
-    public function __construct(string $oldPassword, string $newPassword)
+    public function __construct(string $id, string $oldPassword, string $newPassword)
     {
+        $this->id = $id;
         $this->oldPassword = $oldPassword;
         $this->newPassword = $newPassword;
     }

@@ -3,7 +3,12 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\GraphQL\Auth;
+use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query;
+use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class UserTest extends TestCase
 {
@@ -13,6 +18,98 @@ class UserTest extends TestCase
     {
         parent::setUp();
         $this->adminAuth = $this->authenticate($this->defaultAdminAuth);
+    }
+
+    public function testUserCanBeCreated(): object
+    {
+        $id = IdGenerator::generate();
+        $email = 'skyler.white@example.com';
+        $password = self::generatePassword();
+        $role = 'team_manager';
+        $firstName = 'Skyler';
+        $lastName = 'White';
+        $teamIds = [];
+
+        self::assertNull($this->getUser($id, $this->adminAuth));
+        $this->createUser($id, $email, $password, $firstName, $lastName, $role, $teamIds);
+        sleep(1); // Workaround for issue "Password has changed after token has been issued"
+        $userAuth = $this->authenticate(new BasicAuth($email, $password));
+        $user = $this->getUser($id, $userAuth);
+        self::assertIsObject($user);
+        self::assertEquals($id, $user->id);
+        self::assertEquals($email, $user->email);
+        self::assertEquals($role, $user->role);
+        self::assertEquals($firstName, $user->firstName);
+        self::assertEquals($lastName, $user->lastName);
+        self::assertEmpty(array_diff($teamIds, array_column($user->teams, 'id')));
+        self::assertEmpty(array_diff(array_column($user->teams, 'id'), $teamIds));
+        self::assertObjectNotHasAttribute('password', $user);
+
+        $user->password = $password;
+
+        return $user;
+    }
+
+    /**
+     * @depends testUserCanBeCreated
+     * @param object $user
+     * @return string
+     */
+    public function testUserCanChangePassword(object $user): string
+    {
+        $email = $user->email;
+        $id = $user->id;
+        $oldPassword = $user->password;
+        $newPassword = self::generatePassword();
+
+        $userAuth = $this->authenticate(new BasicAuth($email, $oldPassword));
+        $this->updateUserPassword($id, $oldPassword, $newPassword, $userAuth);
+        sleep(1); // Workaround for issue "Password has changed after token has been issued"
+        $userAuth = $this->authenticate(new BasicAuth($email, $newPassword));
+        $user = $this->getUser($id, $userAuth);
+        self::assertIsObject($user);
+        self::assertEquals($id, $user->id);
+        self::assertEquals($email, $user->email);
+
+        return $id;
+    }
+
+    /**
+     * @depends testUserCanChangePassword
+     * @param string $id
+     * @return string
+     */
+    public function testUserCanBeUpdated(string $id): string
+    {
+        $email = 'jessie.pinkman@example.com';
+        $role = 'team_manager';
+        $firstName = 'Jessie';
+        $lastName = 'Pinkman';
+        $teamIds = [];
+
+        $this->updateUser($id, $email, $firstName, $lastName, $role, $teamIds);
+        $user = $this->getUser($id, $this->adminAuth);
+        self::assertIsObject($user);
+        self::assertEquals($id, $user->id);
+        self::assertEquals($email, $user->email);
+        self::assertEquals($role, $user->role);
+        self::assertEquals($firstName, $user->firstName);
+        self::assertEquals($lastName, $user->lastName);
+        self::assertEmpty(array_diff($teamIds, array_column($user->teams, 'id')));
+        self::assertEmpty(array_diff(array_column($user->teams, 'id'), $teamIds));
+
+        return $id;
+    }
+
+    /**
+     * @depends testUserCanBeUpdated
+     * @param string $id
+     */
+    public function testUserCanBeDeleted(string $id): void
+    {
+        self::assertNotNull($this->getUser($id, $this->adminAuth));
+        $this->deleteUser($id);
+        self::assertNull($this->getUser($id, $this->adminAuth));
     }
 
     public function testListingUsersRequiresAdminPermissions(): void
@@ -72,5 +169,135 @@ class UserTest extends TestCase
                 self::assertObjectHasAttribute('name', $team);
             }
         }
+    }
+
+    private function createUser(
+        string $id,
+        string $email,
+        string $password,
+        string $firstName,
+        string $lastName,
+        string $role,
+        array $teamIds
+    ): void {
+        $mutation = (new Mutation('createUser'))
+            ->argTypes([
+                'id' => 'String!',
+                'email' => 'String!',
+                'password' => 'String!',
+                'firstName' => 'String!',
+                'lastName' => 'String!',
+                'role' => 'String!',
+                'teamIds' => '[String]!'
+            ])
+            ->argValues([
+                'id' => $id,
+                'email' => $email,
+                'password' => $password,
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+                'role' => $role,
+                'teamIds' => $teamIds
+            ]);
+
+        $response = $this->request($mutation, $this->adminAuth);
+
+        self::assertResponseNotHasError($response);
+    }
+
+    private function updateUser(
+        string $id,
+        string $email,
+        string $firstName,
+        string $lastName,
+        string $role,
+        array $teamIds
+    ): void {
+        $mutation = (new Mutation('updateUser'))
+            ->argTypes([
+                'id' => 'String!',
+                'email' => 'String!',
+                'firstName' => 'String!',
+                'lastName' => 'String!',
+                'role' => 'String!',
+                'teamIds' => '[String]!'
+            ])
+            ->argValues([
+                'id' => $id,
+                'email' => $email,
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+                'role' => $role,
+                'teamIds' => $teamIds
+            ]);
+
+        $response = $this->request($mutation, $this->adminAuth);
+
+        self::assertResponseNotHasError($response);
+    }
+
+    private function getUser(?string $id = null, ?Auth $auth = null): ?object
+    {
+        $query = (new Query('user'))
+            ->fields([
+                'id',
+                'email',
+                'firstName',
+                'lastName',
+                'role',
+                'teams' => [
+                    'id',
+                    'name'
+                ]
+            ])
+            ->argTypes(['id' => 'String'])
+            ->argValues(['id' => $id]);
+
+        $response = $this->request($query, $auth);
+
+        if (isset($response->data) && isset($response->data->user)) {
+            return $response->data->user;
+        }
+
+        return null;
+    }
+
+    private function deleteUser(string $id): void
+    {
+        $mutation = (new Mutation('deleteUser'))
+            ->argTypes([
+                'id' => 'String!'
+            ])
+            ->argValues([
+                'id' => $id
+            ]);
+
+        $response = $this->request($mutation, $this->adminAuth);
+
+        self::assertResponseNotHasError($response);
+    }
+
+    private function updateUserPassword(string $id, string $oldPassword, string $newPassword, ?Auth $auth = null): void
+    {
+        $mutation = (new Mutation('updateUserPassword'))
+            ->argTypes([
+                'id' => 'String!',
+                'oldPassword' => 'String!',
+                'newPassword' => 'String!'
+            ])
+            ->argValues([
+                'id' => $id,
+                'oldPassword' => $oldPassword,
+                'newPassword' => $newPassword
+            ]);
+
+        $response = $this->request($mutation, $auth);
+
+        self::assertResponseNotHasError($response);
+    }
+
+    private static function generatePassword(): string
+    {
+        return bin2hex(random_bytes(8));
     }
 }
