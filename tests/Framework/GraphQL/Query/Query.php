@@ -10,13 +10,6 @@ class Query implements JsonSerializable
     private array $argTypes;
     private array $argValues;
     private array $fields;
-    private const TEMPLATE = <<<'GRAPHQL'
-query %s%s {
-  %s%s {
-    %s
-  }
-}
-GRAPHQL;
 
     public function __construct(string $name)
     {
@@ -58,7 +51,7 @@ GRAPHQL;
         }
 
         $query = sprintf(
-            self::TEMPLATE,
+            'query %s%s { %s%s { %s } }',
             $this->name,
             count($argTypes) ? '(' . implode(', ', $argTypes) . ')' : '',
             $this->name,

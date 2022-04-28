@@ -10,11 +10,6 @@ class Mutation implements JsonSerializable
     private string $name;
     private array $argTypes;
     private array $argValues;
-    private const TEMPLATE = <<<'GRAPHQL'
-mutation %s%s {
-  %s%s
-}
-GRAPHQL;
 
     public function __construct(string $name, array $argTypes = [], array $argValues = [])
     {
@@ -46,7 +41,7 @@ GRAPHQL;
         }
 
         $query = sprintf(
-            self::TEMPLATE,
+            'mutation %s%s { %s%s }',
             $this->name,
             count($argTypes) ? '(' . implode(', ', $argTypes) . ')' : '',
             $this->name,
