@@ -2,24 +2,13 @@
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\TournamentList;
+
 class TournamentTest extends TestCase
 {
     public function testTournamentsCanBeListed(): void
     {
-        $query = self::$client->createQuery('tournamentList')
-            ->fields([
-                'id',
-                'name',
-                'matchDays' => [
-                    'id',
-                    'number',
-                    'matches' => [
-                        'id'
-                    ]
-                ]
-            ]);
-
-        $response = self::$client->request($query);
+        $response = self::$client->request(new TournamentList());
 
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('tournamentList', $response->data);

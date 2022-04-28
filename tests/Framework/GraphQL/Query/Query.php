@@ -3,41 +3,33 @@
 namespace HexagonalPlayground\Tests\Framework\GraphQL\Query;
 
 use JsonSerializable;
+use LogicException;
 
 class Query implements JsonSerializable
 {
     private string $name;
+    private array $fields;
     private array $argTypes;
     private array $argValues;
-    private array $fields;
 
-    public function __construct(string $name)
+    public function __construct(string $name, array $fields, array $argTypes = [], array $argValues = [])
     {
+        foreach ($argValues as $field => $value) {
+            if (!isset($argTypes[$field])) {
+                throw new LogicException('Missing argument type definition for field ' . $field);
+            }
+        }
+
+        foreach ($argTypes as $field => $type) {
+            if (str_ends_with($type, '!') && !isset($argValues[$field])) {
+                throw new LogicException('Missing value for required field ' . $field);
+            }
+        }
+
         $this->name = $name;
-        $this->argTypes = [];
-        $this->argValues = [];
-        $this->fields = [];
-    }
-
-    public function argTypes(array $argTypes): self
-    {
-        $this->argTypes = $argTypes;
-
-        return $this;
-    }
-
-    public function argValues(array $argValues): self
-    {
-        $this->argValues = $argValues;
-
-        return $this;
-    }
-
-    public function fields(array $fields): self
-    {
         $this->fields = $fields;
-
-        return $this;
+        $this->argTypes = $argTypes;
+        $this->argValues = $argValues;
     }
 
     public function jsonSerialize(): array

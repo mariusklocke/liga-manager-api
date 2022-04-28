@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use DateTime;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\EventList;
 use Iterator;
 
 class EventTest extends TestCase
@@ -13,25 +14,13 @@ class EventTest extends TestCase
      */
     public function testEventsCanBeListed(array $filter): void
     {
-        $query = self::$client->createQuery('eventList')
-            ->fields([
-                'id',
-                'occurredAt',
-                'type'
-            ])
-            ->argTypes([
-                'filter' => 'EventFilter',
-                'pagination' => 'Pagination'
-            ])
-            ->argValues([
-                'filter' => $filter,
-                'pagination' => [
-                    'limit' => 50,
-                    'offset' => 0
-                ]
-            ]);
-
-        $response = self::$client->request($query);
+        $response = self::$client->request(new EventList([
+            'filter' => $filter,
+            'pagination' => [
+                'limit' => 50,
+                'offset' => 0
+            ]
+        ]));
 
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('eventList', $response->data);

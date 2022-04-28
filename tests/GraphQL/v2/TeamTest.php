@@ -6,6 +6,8 @@ namespace HexagonalPlayground\Tests\GraphQL\v2;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateTeam;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Team;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\TeamList;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class TeamTest extends TestCase
@@ -84,30 +86,7 @@ class TeamTest extends TestCase
 
     public function testTeamsCanBeListed(): void
     {
-        $query = self::$client->createQuery('teamList')
-            ->fields([
-                'id',
-                'name',
-                'createdAt',
-                'contact' => [
-                    'firstName',
-                    'lastName',
-                    'phone',
-                    'email'
-                ],
-                'users' => [
-                    'id',
-                    'email'
-                ],
-                'homeMatches' => [
-                    'id'
-                ],
-                'guestMatches' => [
-                    'id'
-                ]
-            ]);
-
-        $response = self::$client->request($query, $this->defaultAdminAuth);
+        $response = self::$client->request(new TeamList(), $this->defaultAdminAuth);
 
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('teamList', $response->data);
@@ -146,37 +125,14 @@ class TeamTest extends TestCase
 
     public function testListingAssociatedUsersRequiresAdminPermission(): void
     {
-        $query = self::$client->createQuery('teamList')
-            ->fields([
-                'id',
-                'name',
-                'users' => [
-                    'id',
-                    'email'
-                ]
-            ]);
-
+        $query = new TeamList();
         $this->expectClientException();
         self::$client->request($query);
     }
 
     private function getTeam(string $id): ?object
     {
-        $query = self::$client->createQuery('team')
-            ->fields([
-                'id',
-                'name',
-                'contact' => [
-                    'firstName',
-                    'lastName',
-                    'phone',
-                    'email'
-                ]
-            ])
-            ->argTypes(['id' => 'String!'])
-            ->argValues(['id' => $id]);
-
-        $response = self::$client->request($query);
+        $response = self::$client->request(new Team(['id' => $id]));
 
         if (isset($response->data) && isset($response->data->team)) {
             return $response->data->team;

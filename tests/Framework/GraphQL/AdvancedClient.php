@@ -3,8 +3,7 @@
 namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
-use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\Mutation;
-use HexagonalPlayground\Tests\Framework\GraphQL\Query\Query;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\User;
 use HexagonalPlayground\Tests\Framework\JsonResponseParser;
 use HexagonalPlayground\Tests\Framework\PsrSlimClient;
 use JsonSerializable;
@@ -28,16 +27,6 @@ class AdvancedClient
         $this->httpClient = new PsrSlimClient(Bootstrap::bootstrap());
         $this->requestFactory = new Psr17Factory();
         $this->responseParser = new JsonResponseParser();
-    }
-
-    public function createQuery(string $name): Query
-    {
-        return new Query($name);
-    }
-
-    public function createMutation(string $name): Mutation
-    {
-        return new Mutation($name);
     }
 
     /**
@@ -66,7 +55,7 @@ class AdvancedClient
      */
     public function authenticate(BasicAuth $basicAuth): BearerAuth
     {
-        $query = $this->createQuery('user')->fields(['id']);
+        $query = new User();
         $request = $this->buildRequest($query, $basicAuth);
         $response = $this->httpClient->sendRequest($request);
         $token = current($response->getHeader('X-Token'));

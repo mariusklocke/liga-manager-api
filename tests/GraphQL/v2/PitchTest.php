@@ -6,6 +6,8 @@ namespace HexagonalPlayground\Tests\GraphQL\v2;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeletePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdatePitch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Pitch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\PitchList;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class PitchTest extends TestCase
@@ -81,26 +83,7 @@ class PitchTest extends TestCase
 
     public function testPitchesCanBeListed(): void
     {
-        $query = self::$client->createQuery('pitchList')
-            ->fields([
-                'id',
-                'label',
-                'location' => [
-                    'latitude',
-                    'longitude'
-                ],
-                'contact' => [
-                    'firstName',
-                    'lastName',
-                    'phone',
-                    'email'
-                ],
-                'matches' => [
-                    'id'
-                ]
-            ]);
-
-        $response = self::$client->request($query);
+        $response = self::$client->request(new PitchList());
 
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('pitchList', $response->data);
@@ -133,25 +116,7 @@ class PitchTest extends TestCase
 
     private function getPitch(string $id): ?object
     {
-        $query = self::$client->createQuery('pitch')
-            ->fields([
-                'id',
-                'label',
-                'location' => [
-                    'latitude',
-                    'longitude'
-                ],
-                'contact' => [
-                    'firstName',
-                    'lastName',
-                    'phone',
-                    'email'
-                ]
-            ])
-            ->argTypes(['id' => 'String!'])
-            ->argValues(['id' => $id]);
-
-        $response = self::$client->request($query);
+        $response = self::$client->request(new Pitch(['id' => $id]));
 
         if (isset($response->data) && isset($response->data->pitch)) {
             return $response->data->pitch;

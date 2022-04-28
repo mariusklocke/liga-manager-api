@@ -9,6 +9,8 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUserPassword;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\User;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\UserList;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class UserTest extends TestCase
@@ -135,39 +137,14 @@ class UserTest extends TestCase
 
     public function testListingUsersRequiresAdminPermissions(): void
     {
-        $query = self::$client->createQuery('userList')
-            ->fields([
-                'id',
-                'email',
-                'role',
-                'firstName',
-                'lastName',
-                'teams' => [
-                    'id',
-                    'name'
-                ]
-            ]);
-
+        $query = new UserList();
         $this->expectClientException();
         self::$client->request($query);
     }
 
     public function testUsersCanBeListed(): void
     {
-        $query = self::$client->createQuery('userList')
-            ->fields([
-                'id',
-                'email',
-                'role',
-                'firstName',
-                'lastName',
-                'teams' => [
-                    'id',
-                    'name'
-                ]
-            ]);
-
-        $response = self::$client->request($query, $this->defaultAdminAuth);
+        $response = self::$client->request(new UserList(), $this->defaultAdminAuth);
 
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('userList', $response->data);
@@ -191,22 +168,7 @@ class UserTest extends TestCase
 
     private function getUser(?string $id = null, ?Auth $auth = null): ?object
     {
-        $query = self::$client->createQuery('user')
-            ->fields([
-                'id',
-                'email',
-                'firstName',
-                'lastName',
-                'role',
-                'teams' => [
-                    'id',
-                    'name'
-                ]
-            ])
-            ->argTypes(['id' => 'String'])
-            ->argValues(['id' => $id]);
-
-        $response = self::$client->request($query, $auth);
+        $response = self::$client->request(new User(['id' => $id]), $auth);
 
         if (isset($response->data) && isset($response->data->user)) {
             return $response->data->user;

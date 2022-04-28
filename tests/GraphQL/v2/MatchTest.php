@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use DateTime;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\MatchList;
 use Iterator;
 
 class MatchTest extends TestCase
@@ -13,42 +14,9 @@ class MatchTest extends TestCase
      */
     public function testMatchesCanBeListed(array $filter): void
     {
-        $query = self::$client->createQuery('matchList')
-            ->fields([
-                'id',
-                'matchDay' => [
-                    'id'
-                ],
-                'homeTeam' => [
-                    'id',
-                    'name'
-                ],
-                'guestTeam' => [
-                    'id',
-                    'name'
-                ],
-                'kickoff',
-                'pitch' => [
-                    'id',
-                    'label'
-                ],
-                'result' => [
-                    'homeScore',
-                    'guestScore'
-                ],
-                'cancellation' => [
-                    'createdAt',
-                    'reason'
-                ]
-            ])
-            ->argTypes([
-                'filter' => 'MatchFilter'
-            ])
-            ->argValues([
-                'filter' => $filter
-            ]);
-
-        $response = self::$client->request($query);
+        $response = self::$client->request(new MatchList([
+            'filter' => $filter
+        ]));
 
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('matchList', $response->data);

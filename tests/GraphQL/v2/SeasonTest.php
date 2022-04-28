@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Tests\GraphQL\v2;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateSeason;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Season;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\SeasonList;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 use Iterator;
 
@@ -99,59 +101,7 @@ class SeasonTest extends CompetitionTest
      */
     public function testSeasonsCanBeListed(array $filter): void
     {
-        $query = self::$client->createQuery('seasonList')
-            ->fields([
-                'id',
-                'name',
-                'state',
-                'matchDayCount',
-                'teamCount',
-                'matchDays' => [
-                    'id',
-                    'number',
-                    'matches' => [
-                        'id'
-                    ]
-                ],
-                'teams' => [
-                    'id',
-                    'name'
-                ],
-                'ranking' => [
-                    'updatedAt',
-                    'positions' => [
-                        'team' => [
-                            'id'
-                        ],
-                        'sortIndex',
-                        'number',
-                        'matches',
-                        'wins',
-                        'draws',
-                        'losses',
-                        'scoredGoals',
-                        'concededGoals',
-                        'points'
-                    ],
-                    'penalties' => [
-                        'id',
-                        'team' => [
-                            'id'
-                        ],
-                        'reason',
-                        'createdAt',
-                        'points'
-                    ]
-                ]
-            ])
-            ->argTypes([
-                'filter' => 'SeasonFilter'
-            ])
-            ->argValues([
-                'filter' => $filter
-            ]);
-
-        $response = self::$client->request($query);
+        $response = self::$client->request(new SeasonList(['filter' => $filter]));
 
         self::assertObjectHasAttribute('data', $response);
         self::assertObjectHasAttribute('seasonList', $response->data);
@@ -225,19 +175,7 @@ class SeasonTest extends CompetitionTest
 
     private function getSeason(string $id): ?object
     {
-        $query = self::$client->createQuery('season')
-            ->fields([
-                'id',
-                'name',
-                'teams' => [
-                    'id',
-                    'name'
-                ]
-            ])
-            ->argTypes(['id' => 'String!'])
-            ->argValues(['id' => $id]);
-
-        $response = self::$client->request($query);
+        $response = self::$client->request(new Season(['id' => $id]));
 
         if (isset($response->data) && isset($response->data->season)) {
             return $response->data->season;
