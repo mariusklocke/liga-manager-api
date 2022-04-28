@@ -37,8 +37,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $this->expectException(ClientException::class);
     }
 
-    protected static function assertSimilarFloats(float $expected, float $actual, float $tolerance = 0.00001)
+    protected static function assertSimilarFloats(float $expected, float $actual, float $tolerance = 0.00001): void
     {
         self::assertLessThan($tolerance, abs($expected - $actual));
+    }
+
+    protected static function assertArraysHaveEqualValues(array $a, array $b): void
+    {
+        self::assertCount(0, array_diff($a, $b));
+        self::assertCount(0, array_diff($b, $a));
     }
 }
