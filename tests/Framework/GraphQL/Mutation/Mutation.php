@@ -1,8 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\Framework\GraphQL;
+namespace HexagonalPlayground\Tests\Framework\GraphQL\Mutation;
 
 use JsonSerializable;
+use LogicException;
 
 class Mutation implements JsonSerializable
 {
@@ -15,25 +16,23 @@ mutation %s%s {
 }
 GRAPHQL;
 
-    public function __construct(string $name)
+    public function __construct(string $name, array $argTypes = [], array $argValues = [])
     {
+        foreach ($argValues as $field => $value) {
+            if (!isset($argTypes[$field])) {
+                throw new LogicException('Missing argument type definition for field ' . $field);
+            }
+        }
+
+        foreach ($argTypes as $field => $type) {
+            if (str_ends_with($type, '!') && !isset($argValues[$field])) {
+                throw new LogicException('Missing value for required field ' . $field);
+            }
+        }
+
         $this->name = $name;
-        $this->argTypes = [];
-        $this->argValues = [];
-    }
-
-    public function argTypes(array $argTypes): self
-    {
         $this->argTypes = $argTypes;
-
-        return $this;
-    }
-
-    public function argValues(array $argValues): self
-    {
         $this->argValues = $argValues;
-
-        return $this;
     }
 
     public function jsonSerialize(): array

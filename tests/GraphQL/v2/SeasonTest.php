@@ -2,6 +2,9 @@
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateSeason;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteSeason;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateSeason;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 use Iterator;
 
@@ -12,7 +15,12 @@ class SeasonTest extends CompetitionTest
         $id = IdGenerator::generate();
         $name = __METHOD__;
 
-        $this->createSeason($id, $name, self::$teamIds);
+        self::$client->request(new CreateSeason([
+            'id' => $id,
+            'name' => $name,
+            'teamIds' => self::$teamIds
+        ]), $this->defaultAdminAuth);
+
         $season = $this->getSeason($id);
         self::assertIsObject($season);
         self::assertEquals($id, $season->id);
@@ -29,7 +37,11 @@ class SeasonTest extends CompetitionTest
     public function testSeasonCanBeDeleted(string $id): void
     {
         self::assertNotNull($this->getSeason($id));
-        $this->deleteSeason($id);
+
+        self::$client->request(new DeleteSeason([
+            'id' => $id
+        ]), $this->defaultAdminAuth);
+
         self::assertNull($this->getSeason($id));
     }
 
@@ -37,22 +49,46 @@ class SeasonTest extends CompetitionTest
     {
         $id = IdGenerator::generate();
         $name = __METHOD__;
-        $this->createSeason($id, $name, []);
+
+        self::$client->request(new CreateSeason([
+            'id' => $id,
+            'name' => $name,
+            'teamIds' => []
+        ]), $this->defaultAdminAuth);
+
         $season = $this->getSeason($id);
         self::assertIsObject($season);
         self::assertCount(0, $season->teams);
 
-        $this->updateSeason($id, $name, self::$teamIds, 'preparation');
+        self::$client->request(new UpdateSeason([
+            'id' => $id,
+            'name' => $name,
+            'teamIds' => self::$teamIds,
+            'state' => 'preparation'
+        ]), $this->defaultAdminAuth);
+
         $season = $this->getSeason($id);
         self::assertIsObject($season);
         self::assertArraysHaveEqualValues(self::$teamIds, $this->getTeamIdsFromSeason($season));
 
-        $this->updateSeason($id, $name, self::$spareTeamIds, 'preparation');
+        self::$client->request(new UpdateSeason([
+            'id' => $id,
+            'name' => $name,
+            'teamIds' => self::$spareTeamIds,
+            'state' => 'preparation'
+        ]), $this->defaultAdminAuth);
+
         $season = $this->getSeason($id);
         self::assertIsObject($season);
         self::assertArraysHaveEqualValues(self::$spareTeamIds, $this->getTeamIdsFromSeason($season));
 
-        $this->updateSeason($id, $name, [], 'preparation');
+        self::$client->request(new UpdateSeason([
+            'id' => $id,
+            'name' => $name,
+            'teamIds' => [],
+            'state' => 'preparation'
+        ]), $this->defaultAdminAuth);
+
         $season = $this->getSeason($id);
         self::assertIsObject($season);
         self::assertCount(0, $season->teams);
@@ -187,23 +223,6 @@ class SeasonTest extends CompetitionTest
         ]];
     }
 
-    private function createSeason(string $id, string $name, array $teamIds): void
-    {
-        $mutation = self::$client->createMutation('createSeason')
-            ->argTypes([
-                'id' => 'String!',
-                'name' => 'String!',
-                'teamIds' => '[String]!'
-            ])
-            ->argValues([
-                'id' => $id,
-                'name' => $name,
-                'teamIds' => $teamIds
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
     private function getSeason(string $id): ?object
     {
         $query = self::$client->createQuery('season')
@@ -225,34 +244,6 @@ class SeasonTest extends CompetitionTest
         }
 
         return null;
-    }
-
-    private function updateSeason(string $id, string $name, array $teamIds, string $state): void
-    {
-        $mutation = self::$client->createMutation('updateSeason')
-            ->argTypes([
-                'id' => 'String!',
-                'name' => 'String!',
-                'teamIds' => '[String]!',
-                'state' => 'String!'
-            ])
-            ->argValues([
-                'id' => $id,
-                'name' => $name,
-                'teamIds' => $teamIds,
-                'state' => $state
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function deleteSeason(string $id): void
-    {
-        $mutation = self::$client->createMutation('deleteSeason')
-            ->argTypes(['id' => 'String!'])
-            ->argValues(['id' => $id]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function getTeamIdsFromSeason(object $season): array

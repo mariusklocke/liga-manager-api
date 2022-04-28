@@ -3,6 +3,8 @@
 namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\Mutation;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\Query;
 use HexagonalPlayground\Tests\Framework\JsonResponseParser;
 use HexagonalPlayground\Tests\Framework\PsrSlimClient;
 use JsonSerializable;

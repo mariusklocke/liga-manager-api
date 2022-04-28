@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeletePitch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdatePitch;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class PitchTest extends TestCase
@@ -16,7 +19,13 @@ class PitchTest extends TestCase
         $location->longitude = 6.78;
 
         self::assertNull($this->getPitch($id));
-        $this->createPitch($id, $label, $location);
+
+        self::$client->request(new CreatePitch([
+            'id' => $id,
+            'label' => $label,
+            'location' => $location
+        ]), $this->defaultAdminAuth);
+
         $pitch = $this->getPitch($id);
         self::assertIsObject($pitch);
         self::assertEquals($id, $pitch->id);
@@ -39,7 +48,12 @@ class PitchTest extends TestCase
         $location->latitude = 12.34;
         $location->longitude = 5.99;
 
-        $this->updatePitch($id, $label, $location);
+        self::$client->request(new UpdatePitch([
+            'id' => $id,
+            'label' => $label,
+            'location' => $location
+        ]), $this->defaultAdminAuth);
+
         $pitch = $this->getPitch($id);
         self::assertIsObject($pitch);
         self::assertEquals($id, $pitch->id);
@@ -57,7 +71,11 @@ class PitchTest extends TestCase
     public function testPitchCanBeDeleted(string $id): void
     {
         self::assertNotNull($this->getPitch($id));
-        $this->deletePitch($id);
+
+        self::$client->request(new DeletePitch([
+            'id' => $id
+        ]), $this->defaultAdminAuth);
+
         self::assertNull($this->getPitch($id));
     }
 
@@ -111,49 +129,6 @@ class PitchTest extends TestCase
                 self::assertObjectHasAttribute('id', $match);
             }
         }
-    }
-
-    private function createPitch(string $id, string $label, ?object $location): void
-    {
-        $mutation = self::$client->createMutation('createPitch')
-            ->argTypes([
-                'id' => 'String!',
-                'label' => 'String!',
-                'location' => 'GeoLocationInput'
-            ])
-            ->argValues([
-                'id' => $id,
-                'label' => $label,
-                'location' => $location
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function updatePitch(string $id, string $label, ?object $location): void
-    {
-        $mutation = self::$client->createMutation('updatePitch')
-            ->argTypes([
-                'id' => 'String!',
-                'label' => 'String!',
-                'location' => 'GeoLocationInput'
-            ])
-            ->argValues([
-                'id' => $id,
-                'label' => $label,
-                'location' => $location
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function deletePitch(string $id): void
-    {
-        $mutation = self::$client->createMutation('deletePitch')
-            ->argTypes(['id' => 'String!'])
-            ->argValues(['id' => $id]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private function getPitch(string $id): ?object

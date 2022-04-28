@@ -5,6 +5,10 @@ namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use HexagonalPlayground\Tests\Framework\GraphQL\Auth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteUser;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUser;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUserPassword;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class UserTest extends TestCase
@@ -20,7 +24,17 @@ class UserTest extends TestCase
         $teamIds = [];
 
         self::assertNull($this->getUser($id, $this->defaultAdminAuth));
-        $this->createUser($id, $email, $password, $firstName, $lastName, $role, $teamIds);
+
+        self::$client->request(new CreateUser([
+            'id' => $id,
+            'email' => $email,
+            'password' => $password,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'role' => $role,
+            'teamIds' => $teamIds
+        ]), $this->defaultAdminAuth);
+
         sleep(1); // Workaround for issue "Password has changed after token has been issued"
         $userAuth = self::$client->authenticate(new BasicAuth($email, $password));
         $user = $this->getUser($id, $userAuth);
@@ -52,7 +66,13 @@ class UserTest extends TestCase
         $newPassword = self::generatePassword();
 
         $userAuth = self::$client->authenticate(new BasicAuth($email, $oldPassword));
-        $this->updateUserPassword($id, $oldPassword, $newPassword, $userAuth);
+
+        self::$client->request(new UpdateUserPassword([
+            'id' => $id,
+            'oldPassword' => $oldPassword,
+            'newPassword' => $newPassword
+        ]), $userAuth);
+
         sleep(1); // Workaround for issue "Password has changed after token has been issued"
         $userAuth = self::$client->authenticate(new BasicAuth($email, $newPassword));
         $user = $this->getUser($id, $userAuth);
@@ -76,7 +96,15 @@ class UserTest extends TestCase
         $lastName = 'Pinkman';
         $teamIds = [];
 
-        $this->updateUser($id, $email, $firstName, $lastName, $role, $teamIds);
+        self::$client->request(new UpdateUser([
+            'id' => $id,
+            'email' => $email,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'role' => $role,
+            'teamIds' => $teamIds
+        ]), $this->defaultAdminAuth);
+
         $user = $this->getUser($id, $this->defaultAdminAuth);
         self::assertIsObject($user);
         self::assertEquals($id, $user->id);
@@ -97,7 +125,11 @@ class UserTest extends TestCase
     public function testUserCanBeDeleted(string $id): void
     {
         self::assertNotNull($this->getUser($id, $this->defaultAdminAuth));
-        $this->deleteUser($id);
+
+        self::$client->request(new DeleteUser([
+            'id' => $id
+        ]), $this->defaultAdminAuth);
+
         self::assertNull($this->getUser($id, $this->defaultAdminAuth));
     }
 
@@ -157,67 +189,6 @@ class UserTest extends TestCase
         }
     }
 
-    private function createUser(
-        string $id,
-        string $email,
-        string $password,
-        string $firstName,
-        string $lastName,
-        string $role,
-        array $teamIds
-    ): void {
-        $mutation = self::$client->createMutation('createUser')
-            ->argTypes([
-                'id' => 'String!',
-                'email' => 'String!',
-                'password' => 'String!',
-                'firstName' => 'String!',
-                'lastName' => 'String!',
-                'role' => 'String!',
-                'teamIds' => '[String]!'
-            ])
-            ->argValues([
-                'id' => $id,
-                'email' => $email,
-                'password' => $password,
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'role' => $role,
-                'teamIds' => $teamIds
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function updateUser(
-        string $id,
-        string $email,
-        string $firstName,
-        string $lastName,
-        string $role,
-        array $teamIds
-    ): void {
-        $mutation = self::$client->createMutation('updateUser')
-            ->argTypes([
-                'id' => 'String!',
-                'email' => 'String!',
-                'firstName' => 'String!',
-                'lastName' => 'String!',
-                'role' => 'String!',
-                'teamIds' => '[String]!'
-            ])
-            ->argValues([
-                'id' => $id,
-                'email' => $email,
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'role' => $role,
-                'teamIds' => $teamIds
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
     private function getUser(?string $id = null, ?Auth $auth = null): ?object
     {
         $query = self::$client->createQuery('user')
@@ -242,36 +213,6 @@ class UserTest extends TestCase
         }
 
         return null;
-    }
-
-    private function deleteUser(string $id): void
-    {
-        $mutation = self::$client->createMutation('deleteUser')
-            ->argTypes([
-                'id' => 'String!'
-            ])
-            ->argValues([
-                'id' => $id
-            ]);
-
-        $response = self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function updateUserPassword(string $id, string $oldPassword, string $newPassword, ?Auth $auth = null): void
-    {
-        $mutation = self::$client->createMutation('updateUserPassword')
-            ->argTypes([
-                'id' => 'String!',
-                'oldPassword' => 'String!',
-                'newPassword' => 'String!'
-            ])
-            ->argValues([
-                'id' => $id,
-                'oldPassword' => $oldPassword,
-                'newPassword' => $newPassword
-            ]);
-
-        self::$client->request($mutation, $auth);
     }
 
     private static function generatePassword(): string

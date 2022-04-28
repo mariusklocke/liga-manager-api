@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTeam;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteTeam;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateTeam;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class TeamTest extends TestCase
@@ -18,7 +21,11 @@ class TeamTest extends TestCase
         $contact->email = 'marty@example.com';
 
         self::assertNull($this->getTeam($id));
-        $this->createTeam($id, $name, $contact);
+        self::$client->request(new CreateTeam([
+            'id' => $id,
+            'name' => $name,
+            'contact' => $contact
+        ]), $this->defaultAdminAuth);
         $team = $this->getTeam($id);
         self::assertIsObject($team);
         self::assertEquals($id, $team->id);
@@ -45,7 +52,11 @@ class TeamTest extends TestCase
         $contact->phone = '911';
         $contact->email = 'walter.white@example.com';
 
-        $this->updateTeam($id, $name, $contact);
+        self::$client->request(new UpdateTeam([
+            'id' => $id,
+            'name' => $name,
+            'contact' => $contact
+        ]), $this->defaultAdminAuth);
         $team = $this->getTeam($id);
         self::assertIsObject($team);
         self::assertEquals($id, $team->id);
@@ -65,7 +76,9 @@ class TeamTest extends TestCase
     public function testTeamCanBeDeleted(string $id): void
     {
         self::assertNotNull($this->getTeam($id));
-        $this->deleteTeam($id);
+        self::$client->request(new DeleteTeam([
+            'id' => $id
+        ]), $this->defaultAdminAuth);
         self::assertNull($this->getTeam($id));
     }
 
@@ -144,54 +157,7 @@ class TeamTest extends TestCase
             ]);
 
         $this->expectClientException();
-        $response = self::$client->request($query);
-    }
-
-    private function createTeam(string $id, string $name, ?object $contact): void
-    {
-        $mutation = self::$client->createMutation('createTeam')
-            ->argTypes([
-                'id' => 'String!',
-                'name' => 'String!',
-                'contact' => 'ContactInput'
-            ])
-            ->argValues([
-                'id' => $id,
-                'name' => $name,
-                'contact' => $contact
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function updateTeam(string $id, string $name, ?object $contact): void
-    {
-        $mutation = self::$client->createMutation('updateTeam')
-            ->argTypes([
-                'id' => 'String!',
-                'name' => 'String!',
-                'contact' => 'ContactInput'
-            ])
-            ->argValues([
-                'id' => $id,
-                'name' => $name,
-                'contact' => $contact
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function deleteTeam(string $id): void
-    {
-        $mutation = self::$client->createMutation('deleteTeam')
-            ->argTypes([
-                'id' => 'String!',
-            ])
-            ->argValues([
-                'id' => $id
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
+        self::$client->request($query);
     }
 
     private function getTeam(string $id): ?object

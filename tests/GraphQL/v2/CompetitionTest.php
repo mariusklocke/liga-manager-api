@@ -3,6 +3,9 @@
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTeam;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 use Iterator;
 
@@ -42,10 +45,12 @@ abstract class CompetitionTest extends TestCase
     private function generateTeams(int $count): Iterator
     {
         for ($i = 1; $i <= $count; $i++) {
-            $teamId = IdGenerator::generate();
-            $this->createTeam($teamId, $teamId, null);
-
-            yield $teamId;
+            $id = IdGenerator::generate();
+            self::$client->request(new CreateTeam([
+                'id' => $id,
+                'name' => $id
+            ]), $this->defaultAdminAuth);
+            yield $id;
         }
     }
 
@@ -56,15 +61,15 @@ abstract class CompetitionTest extends TestCase
             $email = $userId . '@example.com';
             $password = self::generatePassword();
 
-            $this->createUser(
-                $userId,
-                $email,
-                $password,
-                $userId,
-                $userId,
-                'team_manager',
-                [$teamId]
-            );
+            self::$client->request(new CreateUser([
+                'id' => $userId,
+                'email' => $email,
+                'password' => $password,
+                'firstName' => $userId,
+                'lastName' => $userId,
+                'role' => 'team_manager',
+                'teamIds' => [$teamId]
+            ]), $this->defaultAdminAuth);
 
             yield new BasicAuth($email, $password);
         }
@@ -73,76 +78,13 @@ abstract class CompetitionTest extends TestCase
     private function generatePitches(int $count): Iterator
     {
         for ($i = 1; $i <= $count; $i++) {
-            $pitchId = IdGenerator::generate();
-            $this->createPitch($pitchId, $pitchId, null);
-            yield $pitchId;
+            $id = IdGenerator::generate();
+            self::$client->request(new CreatePitch([
+                'id' => $id,
+                'label' => $id
+            ]), $this->defaultAdminAuth);
+            yield $id;
         }
-    }
-
-    private function createTeam(string $id, string $name, ?object $contact): void
-    {
-        $mutation = self::$client->createMutation('createTeam')
-            ->argTypes([
-                'id' => 'String!',
-                'name' => 'String!',
-                'contact' => 'ContactInput'
-            ])
-            ->argValues([
-                'id' => $id,
-                'name' => $name,
-                'contact' => $contact
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function createUser(
-        string $id,
-        string $email,
-        string $password,
-        string $firstName,
-        string $lastName,
-        string $role,
-        array $teamIds
-    ): void {
-        $mutation = self::$client->createMutation('createUser')
-            ->argTypes([
-                'id' => 'String!',
-                'email' => 'String!',
-                'password' => 'String!',
-                'firstName' => 'String!',
-                'lastName' => 'String!',
-                'role' => 'String!',
-                'teamIds' => '[String]!'
-            ])
-            ->argValues([
-                'id' => $id,
-                'email' => $email,
-                'password' => $password,
-                'firstName' => $firstName,
-                'lastName' => $lastName,
-                'role' => $role,
-                'teamIds' => $teamIds
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
-    }
-
-    private function createPitch(string $id, string $label, ?object $location): void
-    {
-        $mutation = self::$client->createMutation('createPitch')
-            ->argTypes([
-                'id' => 'String!',
-                'label' => 'String!',
-                'location' => 'GeoLocationInput'
-            ])
-            ->argValues([
-                'id' => $id,
-                'label' => $label,
-                'location' => $location
-            ]);
-
-        self::$client->request($mutation, $this->defaultAdminAuth);
     }
 
     private static function generatePassword(): string
