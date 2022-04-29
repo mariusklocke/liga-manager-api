@@ -32,6 +32,22 @@ class Query implements JsonSerializable
         $this->argValues = $argValues;
     }
 
+    public function withArgTypes(array $argTypes): self
+    {
+        $clone = clone $this;
+        $clone->argTypes = array_merge($clone->argTypes, $argTypes);
+
+        return $clone;
+    }
+
+    public function withArgValues(array $argValues): self
+    {
+        $clone = clone $this;
+        $clone->argValues = array_merge($clone->argValues, $argValues);
+
+        return $clone;
+    }
+
     public function jsonSerialize(): array
     {
         $argTypes = [];

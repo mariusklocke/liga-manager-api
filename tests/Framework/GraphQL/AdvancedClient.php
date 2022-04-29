@@ -3,9 +3,11 @@
 namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\Query;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\User;
 use HexagonalPlayground\Tests\Framework\JsonResponseParser;
 use HexagonalPlayground\Tests\Framework\PsrSlimClient;
+use Iterator;
 use JsonSerializable;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7\Stream;
@@ -30,6 +32,8 @@ class AdvancedClient
     }
 
     /**
+     * Sends a query or mutation request
+     *
      * @param JsonSerializable $payload
      * @param Auth|null $auth
      * @return stdClass
@@ -49,6 +53,8 @@ class AdvancedClient
     }
 
     /**
+     * Retrieve a bearer token for a given set of credentials
+     *
      * @param BasicAuth $basicAuth
      * @return BearerAuth
      * @throws Exception
@@ -67,6 +73,45 @@ class AdvancedClient
         return new BearerAuth($token);
     }
 
+    /**
+     * Executes a query with pagination
+     *
+     * @param Query $query
+     * @param Auth|null $auth
+     * @param int $pageSize
+     * @return Iterator|array[]
+     */
+    public function paginate(Query $query, ?Auth $auth = null, int $pageSize = 100): Iterator
+    {
+        $offset = 0;
+        do {
+            $payload = $query
+                ->withArgTypes(['pagination' => 'Pagination'])
+                ->withArgValues(['pagination' => ['limit' => $pageSize, 'offset' => $offset]]);
+            $response = $this->request($payload, $auth);
+
+            if (!isset($response->data) || !is_object($response->data)) {
+                throw new Exception(['Query response did not contain data']);
+            }
+
+            $result = current(get_object_vars($response->data));
+            if (!is_array($result)) {
+                throw new Exception(['Response does not contain data for pagination']);
+            }
+            if (count($result) > 0) {
+                yield $result;
+            }
+
+            $offset += $pageSize;
+
+        } while (count($result) > 0);
+    }
+
+    /**
+     * @param JsonSerializable $payload
+     * @param Auth|null $auth
+     * @return RequestInterface
+     */
     private function buildRequest(JsonSerializable $payload, ?Auth $auth = null): RequestInterface
     {
         $request = $this->requestFactory->createServerRequest('POST', '/api/graphql/v2')
