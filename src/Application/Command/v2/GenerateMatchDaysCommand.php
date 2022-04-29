@@ -15,14 +15,14 @@ class GenerateMatchDaysCommand implements CommandInterface
 
     /**
      * @param string       $seasonId
-     * @param DatePeriod[] $dates
+     * @param DatePeriod[] $matchDayDates
      */
-    public function __construct(string $seasonId, array $dates)
+    public function __construct(string $seasonId, array $matchDayDates)
     {
         $this->seasonId = $seasonId;
         $this->matchDaysDates = array_map(function (DatePeriod $datePeriod) {
             return $datePeriod;
-        }, $dates);
+        }, $matchDayDates);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output;
+namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Enum;
 
 use GraphQL\Type\Definition\EnumType;
 use HexagonalPlayground\Domain\Season;

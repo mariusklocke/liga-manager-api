@@ -9,10 +9,14 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\FieldNameConverter;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\Filter\PitchFilterType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\PaginationType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\PatternFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
+use Iterator;
 
 class PitchType extends ObjectType implements QueryTypeInterface
 {
@@ -68,22 +72,13 @@ class PitchType extends ObjectType implements QueryTypeInterface
 
                     $pitch = $repo->findById($args['id']);
 
-                    /**
-                    if ($pitch !== null) {
-                        if ($pitch['location_latitude'] !== null && $pitch['location_longitude'] !== null) {
-                            $pitch['location']['latitude'] = $pitch['location_latitude'];
-                            $pitch['location']['longitude'] = $pitch['location_longitude'];
-                            unset($pitch['location_latitude']);
-                            unset($pitch['location_longitude']);
-                        }
-                    }**/
-
                     return $pitch !== null ? $converter->convert($pitch) : null;
                 }
             ],
             'pitchList' => [
                 'type' => Type::listOf(TypeRegistry::get(static::class)),
                 'args' => [
+                    'filter' => TypeRegistry::get(PitchFilterType::class),
                     'pagination' => TypeRegistry::get(PaginationType::class)
                 ],
                 'resolve' => function ($root, array $args, AppContext $context) {
@@ -92,14 +87,26 @@ class PitchType extends ObjectType implements QueryTypeInterface
                     /** @var FieldNameConverter $converter */
                     $converter = $context->getContainer()->get(FieldNameConverter::class);
 
+                    $filters = [];
+                    if (isset($args['filter'])) {
+                        $filters = $this->buildFilters($args['filter']);
+                    }
+
                     $pagination = null;
                     if (isset($args['pagination'])) {
                         $pagination = new Pagination($args['pagination']['limit'], $args['pagination']['offset']);
                     }
 
-                    return $converter->convert($repo->findMany([], [], $pagination));
+                    return $converter->convert($repo->findMany($filters, [], $pagination));
                 }
             ]
         ];
+    }
+
+    private function buildFilters(array $values): Iterator
+    {
+        if (isset($values['labelPattern'])) {
+            yield new PatternFilter('label', Filter::MODE_INCLUDE, $values['labelPattern']);
+        }
     }
 }

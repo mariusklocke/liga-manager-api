@@ -49,11 +49,11 @@ class EventTest extends TestCase
     {
         yield 'empty filter' => [[]];
         yield 'simple filter' => [[
-            'occurredAfter' => self::formatDate(new DateTime('yesterday'))
+            'occurredAfter' => self::formatDateTime(new DateTime('yesterday'))
         ]];
         yield 'complete filter' => [[
-            'occurredAfter' => self::formatDate(new DateTime('yesterday')),
-            'occurredBefore' => self::formatDate(new DateTime('tomorrow')),
+            'occurredAfter' => self::formatDateTime(new DateTime('yesterday')),
+            'occurredBefore' => self::formatDateTime(new DateTime('tomorrow')),
             'types' => ['season:created']
         ]];
     }

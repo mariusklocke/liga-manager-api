@@ -22,6 +22,7 @@ class TournamentList extends Query
                 ]
             ],
             [
+                'filter' => 'TournamentFilter',
                 'pagination' => 'Pagination'
             ],
             $argValues

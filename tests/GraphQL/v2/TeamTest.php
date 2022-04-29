@@ -9,6 +9,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Team;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\TeamList;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
+use stdClass;
 
 class TeamTest extends TestCase
 {
@@ -16,7 +17,7 @@ class TeamTest extends TestCase
     {
         $id = IdGenerator::generate();
         $name = __METHOD__;
-        $contact = new \stdClass();
+        $contact = new stdClass();
         $contact->firstName = 'Marty';
         $contact->lastName = 'McFly';
         $contact->phone = '0123456';
@@ -48,7 +49,7 @@ class TeamTest extends TestCase
     public function testTeamCanBeUpdated(string $id): string
     {
         $name = __METHOD__;
-        $contact = new \stdClass();
+        $contact = new stdClass();
         $contact->firstName = 'Walter';
         $contact->lastName = 'White';
         $contact->phone = '911';

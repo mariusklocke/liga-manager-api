@@ -55,11 +55,11 @@ class MatchTest extends TestCase
     {
         yield 'empty filter' => [[]];
         yield 'simple filter' => [[
-            'kickoffAfter' => self::formatDate(new DateTime('1980-01-01'))
+            'kickoffAfter' => self::formatDateTime(new DateTime('1980-01-01'))
         ]];
         yield 'complete filter' => [[
-            'kickoffAfter' => self::formatDate(new DateTime('1980-01-01')),
-            'kickoffBefore' => self::formatDate(new DateTime('2099-01-01'))
+            'kickoffAfter' => self::formatDateTime(new DateTime('1980-01-01')),
+            'kickoffBefore' => self::formatDateTime(new DateTime('2099-01-01'))
         ]];
     }
 }

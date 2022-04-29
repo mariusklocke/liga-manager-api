@@ -10,11 +10,16 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\FieldNameConverter;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Enum\UserRoleType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\Filter\UserFilterType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\PaginationType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 use HexagonalPlayground\Infrastructure\Persistence\Read\UserRepository;
+use Iterator;
 
 class UserType extends ObjectType implements QueryTypeInterface
 {
@@ -44,7 +49,7 @@ class UserType extends ObjectType implements QueryTypeInterface
                         }
                     ],
                     'role' => [
-                        'type' => Type::nonNull(Type::string())
+                        'type' => Type::nonNull(TypeRegistry::get(UserRoleType::class))
                     ],
                     'firstName' => [
                         'type' => Type::nonNull(Type::string())
@@ -87,6 +92,7 @@ class UserType extends ObjectType implements QueryTypeInterface
             'userList' => [
                 'type' => Type::listOf(TypeRegistry::get(static::class)),
                 'args' => [
+                    'filter' => TypeRegistry::get(UserFilterType::class),
                     'pagination' => TypeRegistry::get(PaginationType::class)
                 ],
                 'resolve' => function ($root, array $args, AppContext $context) {
@@ -99,14 +105,26 @@ class UserType extends ObjectType implements QueryTypeInterface
                     /** @var FieldNameConverter $converter */
                     $converter = $context->getContainer()->get(FieldNameConverter::class);
 
+                    $filters = [];
+                    if (isset($args['filter'])) {
+                        $filters = $this->buildFilters($args['filter']);
+                    }
+
                     $pagination = null;
                     if (isset($args['pagination'])) {
                         $pagination = new Pagination($args['pagination']['limit'], $args['pagination']['offset']);
                     }
 
-                    return $converter->convert($repo->findMany([], [], $pagination));
+                    return $converter->convert($repo->findMany($filters, [], $pagination));
                 }
             ]
         ];
+    }
+
+    private function buildFilters(array $values): Iterator
+    {
+        if (isset($values['roles'])) {
+            yield new EqualityFilter('role', Filter::MODE_INCLUDE, $values['roles']);
+        }
     }
 }

@@ -2,8 +2,10 @@
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use DateTime;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteSeason;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\GenerateMatchDays;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Season;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\SeasonList;
@@ -94,6 +96,62 @@ class SeasonTest extends CompetitionTest
         $season = $this->getSeason($id);
         self::assertIsObject($season);
         self::assertCount(0, $season->teams);
+    }
+
+    public function testMatchDaysCanBeGenerated(): string
+    {
+        $matchDayDates = iterator_to_array($this->generateMatchDayDates(count(self::$teamIds) - 1));
+        $seasonId = IdGenerator::generate();
+
+        self::$client->request(new CreateSeason([
+            'id' => $seasonId,
+            'name' => __METHOD__,
+            'teamIds' => self::$teamIds
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+        self::assertCount(0, $season->matchDays);
+
+        self::$client->request(new GenerateMatchDays([
+            'seasonId' => $seasonId,
+            'matchDayDates' => $matchDayDates
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+        self::assertCount(count($matchDayDates), $season->matchDays);
+
+        foreach ($season->matchDays as $matchDay) {
+            self::assertIsArray($matchDay->matches);
+            self::assertCount(count($season->teams) / 2, $matchDay->matches);
+        }
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testMatchDaysCanBeGenerated
+     * @param string $seasonId
+     */
+    public function testSeasonCanBeStarted(string $seasonId): void
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+        self::assertNotEmpty($season->matchDays);
+        self::assertNotEmpty($season->teams);
+
+        self::$client->request(new UpdateSeason([
+            'id' => $season->id,
+            'name' => $season->name,
+            'teamIds' => self::$teamIds,
+            'state' => 'progress'
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+        self::assertNotNull($season->ranking);
+        self::assertEquals('progress', $season->state);
     }
 
     /**
@@ -189,5 +247,19 @@ class SeasonTest extends CompetitionTest
         return array_map(function (object $team) {
             return $team->id;
         }, $season->teams);
+    }
+
+    private function generateMatchDayDates(int $count): Iterator
+    {
+        $start  = new DateTime('next saturday');
+        $end    = $start->modify('+1 day');
+        for ($i = 0; $i < $count; $i++) {
+            yield [
+                'from' => self::formatDate($start),
+                'to'   => self::formatDate($end)
+            ];
+            $start->modify('+7 days');
+            $end->modify('+7 days');
+        }
     }
 }

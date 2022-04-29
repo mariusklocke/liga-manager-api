@@ -10,6 +10,7 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchDayLoader
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\FieldNameConverter;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Enum\SeasonStateType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\Filter\SeasonFilterType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\PaginationType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;

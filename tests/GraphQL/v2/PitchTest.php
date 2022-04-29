@@ -9,6 +9,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdatePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Pitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\PitchList;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
+use stdClass;
 
 class PitchTest extends TestCase
 {
@@ -16,7 +17,7 @@ class PitchTest extends TestCase
     {
         $id = IdGenerator::generate();
         $label = __METHOD__;
-        $location = new \stdClass();
+        $location = new stdClass();
         $location->latitude = 89.99;
         $location->longitude = 6.78;
 
@@ -46,7 +47,7 @@ class PitchTest extends TestCase
     public function testPitchCanBeUpdated(string $id): string
     {
         $label = __METHOD__;
-        $location = new \stdClass();
+        $location = new stdClass();
         $location->latitude = 12.34;
         $location->longitude = 5.99;
 

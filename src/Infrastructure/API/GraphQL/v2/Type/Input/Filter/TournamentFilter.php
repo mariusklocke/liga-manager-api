@@ -4,18 +4,16 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Input\Filter;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Enum\SeasonStateType;
-use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 
-class SeasonFilterType extends InputObjectType
+class TournamentFilter extends InputObjectType
 {
     public function __construct()
     {
         $config = [
-            'fields' => function () {
+            'fields' => function() {
                 return [
-                    'states' => [
-                        'type' => Type::listOf(TypeRegistry::get(SeasonStateType::class))
+                    'namePattern' => [
+                        'type' => Type::string()
                     ]
                 ];
             }

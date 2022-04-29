@@ -27,7 +27,10 @@ class PitchList extends Query
                     'id'
                 ]
             ],
-            [],
+            [
+                'filter' => 'PitchFilter',
+                'pagination' => 'Pagination'
+            ],
             $argValues
         );
     }

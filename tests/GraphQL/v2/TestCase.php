@@ -27,9 +27,14 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         ));
     }
 
-    protected static function formatDate(DateTimeInterface $dateTime): string
+    protected static function formatDateTime(DateTimeInterface $dateTime): string
     {
         return $dateTime->format(DATE_ATOM);
+    }
+
+    protected static function formatDate(DateTimeInterface $dateTime): string
+    {
+        return $dateTime->format('Y-m-d');
     }
 
     protected function expectClientException(): void

@@ -22,6 +22,7 @@ class UserList extends Query
                 ]
             ],
             [
+                'filter' => 'UserFilter',
                 'pagination' => 'Pagination'
             ],
             $argValues

@@ -13,9 +13,20 @@ class Season extends Query
             [
                 'id',
                 'name',
+                'state',
                 'teams' => [
                     'id',
                     'name'
+                ],
+                'matchDays' => [
+                    'id',
+                    'number',
+                    'matches' => [
+                        'id'
+                    ]
+                ],
+                'ranking' => [
+                    'updatedAt'
                 ]
             ],
             [
