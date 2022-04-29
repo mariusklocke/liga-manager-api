@@ -14,39 +14,36 @@ class MatchTest extends TestCase
      */
     public function testMatchesCanBeListed(array $filter): void
     {
-        $response = self::$client->request(new MatchList([
+        $query = new MatchList([
             'filter' => $filter
-        ]));
+        ]);
 
-        self::assertObjectHasAttribute('data', $response);
-        self::assertObjectHasAttribute('matchList', $response->data);
-        self::assertIsArray($response->data->matchList);
-        self::assertNotEmpty($response->data->matchList);
+        foreach (self::$client->paginate($query) as $matchList) {
+            foreach ($matchList as $match) {
+                self::assertObjectHasAttribute('id', $match);
+                self::assertObjectHasAttribute('homeTeam', $match);
+                self::assertObjectHasAttribute('guestTeam', $match);
+                self::assertObjectHasAttribute('matchDay', $match);
+                self::assertObjectHasAttribute('id', $match->matchDay);
 
-        foreach ($response->data->matchList as $match) {
-            self::assertObjectHasAttribute('id', $match);
-            self::assertObjectHasAttribute('homeTeam', $match);
-            self::assertObjectHasAttribute('guestTeam', $match);
-            self::assertObjectHasAttribute('matchDay', $match);
-            self::assertObjectHasAttribute('id', $match->matchDay);
+                if (isset($match->kickoff)) {
+                    self::assertIsString($match->kickoff);
+                }
 
-            if (isset($match->kickoff)) {
-                self::assertIsString($match->kickoff);
-            }
+                if (isset($match->pitch)) {
+                    self::assertObjectHasAttribute('id', $match->pitch);
+                    self::assertObjectHasAttribute('label', $match->pitch);
+                }
 
-            if (isset($match->pitch)) {
-                self::assertObjectHasAttribute('id', $match->pitch);
-                self::assertObjectHasAttribute('label', $match->pitch);
-            }
+                if (isset($match->result)) {
+                    self::assertObjectHasAttribute('homeScore', $match->result);
+                    self::assertObjectHasAttribute('guestScore', $match->result);
+                }
 
-            if (isset($match->result)) {
-                self::assertObjectHasAttribute('homeScore', $match->result);
-                self::assertObjectHasAttribute('guestScore', $match->result);
-            }
-
-            if (isset($match->cancellation)) {
-                self::assertObjectHasAttribute('createdAt', $match->cancellation);
-                self::assertObjectHasAttribute('reason', $match->cancellation);
+                if (isset($match->cancellation)) {
+                    self::assertObjectHasAttribute('createdAt', $match->cancellation);
+                    self::assertObjectHasAttribute('reason', $match->cancellation);
+                }
             }
         }
     }

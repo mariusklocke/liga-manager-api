@@ -14,33 +14,26 @@ class EventTest extends TestCase
      */
     public function testEventsCanBeListed(array $filter): void
     {
-        $response = self::$client->request(new EventList([
-            'filter' => $filter,
-            'pagination' => [
-                'limit' => 50,
-                'offset' => 0
-            ]
-        ]));
+        $query = new EventList([
+            'filter' => $filter
+        ]);
 
-        self::assertObjectHasAttribute('data', $response);
-        self::assertObjectHasAttribute('eventList', $response->data);
-        self::assertIsArray($response->data->eventList);
-        self::assertNotEmpty($response->data->eventList);
+        foreach (self::$client->paginate($query) as $eventList) {
+            foreach ($eventList as $event) {
+                self::assertObjectHasAttribute('id', $event);
+                self::assertObjectHasAttribute('occurredAt', $event);
+                self::assertObjectHasAttribute('type', $event);
 
-        foreach ($response->data->eventList as $event) {
-            self::assertObjectHasAttribute('id', $event);
-            self::assertObjectHasAttribute('occurredAt', $event);
-            self::assertObjectHasAttribute('type', $event);
+                $occurredAt = new DateTime($event->occurredAt);
+                if (isset($filter['occurredAfter'])) {
+                    $occurredAfter = new DateTime($filter['occurredAfter']);
+                    self::assertTrue($occurredAt >= $occurredAfter);
+                }
 
-            $occurredAt = new DateTime($event->occurredAt);
-            if (isset($filter['occurredAfter'])) {
-                $occurredAfter = new DateTime($filter['occurredAfter']);
-                self::assertTrue($occurredAt >= $occurredAfter);
-            }
-
-            if (isset($filter['occurredBefore'])) {
-                $occurredBefore = new DateTime($filter['occurredBefore']);
-                self::assertTrue($occurredAt <= $occurredBefore);
+                if (isset($filter['occurredBefore'])) {
+                    $occurredBefore = new DateTime($filter['occurredBefore']);
+                    self::assertTrue($occurredAt <= $occurredBefore);
+                }
             }
         }
     }
