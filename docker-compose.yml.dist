@@ -27,6 +27,7 @@ services:
     image: mariadb:10.4
     volumes:
       - mysql-data:/var/lib/mysql
+      - mysql-backup:/backup
     ports:
       - "3306:3306"
     env_file:
@@ -61,3 +62,4 @@ services:
 
 volumes:
   mysql-data:
+  mysql-backup:
