@@ -7,6 +7,7 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchDayLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedPitchLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\FieldNameConverter;
@@ -66,7 +67,22 @@ class MatchType extends ObjectType implements QueryTypeInterface
                         'type' => TypeRegistry::get(MatchCancellationType::class)
                     ],
                     'pitch' => [
-                        'type' => TypeRegistry::get(PitchType::class)
+                        'type' => TypeRegistry::get(PitchType::class),
+                        'resolve' => function (array $root, $args, AppContext $context) {
+                            if (null === $root['pitchId']) {
+                                return null;
+                            }
+
+                            /** @var FieldNameConverter $converter */
+                            $converter = $context->getContainer()->get(FieldNameConverter::class);
+                            /** @var BufferedPitchLoader $loader */
+                            $loader = $context->getContainer()->get(BufferedPitchLoader::class);
+                            $loader->addPitch($root['pitchId']);
+
+                            return new Deferred(function () use ($loader, $converter, $root) {
+                                return $converter->convert($loader->getByPitch($root['pitchId']));
+                            });
+                        }
                     ]
                 ];
             }

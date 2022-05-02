@@ -2,11 +2,13 @@
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
-use DateTime;
+use DateTimeImmutable;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\GenerateMatchDays;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\ScheduleMatchesForMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateSeason;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\MatchQuery;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Season;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\SeasonList;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
@@ -133,8 +135,9 @@ class SeasonTest extends CompetitionTest
     /**
      * @depends testMatchDaysCanBeGenerated
      * @param string $seasonId
+     * @return string
      */
-    public function testSeasonCanBeStarted(string $seasonId): void
+    public function testSeasonCanBeStarted(string $seasonId): string
     {
         $season = $this->getSeason($seasonId);
         self::assertIsObject($season);
@@ -152,6 +155,36 @@ class SeasonTest extends CompetitionTest
         self::assertIsObject($season);
         self::assertNotNull($season->ranking);
         self::assertEquals('progress', $season->state);
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testSeasonCanBeStarted
+     * @param string $seasonId
+     * @return string
+     */
+    public function testMatchesCanBeScheduledPerMatchDay(string $seasonId): string
+    {
+        $appointments = $this->createMatchAppointments();
+
+        $season = $this->getSeason($seasonId);
+        foreach ($season->matchDays as $matchDay) {
+            self::$client->request(new ScheduleMatchesForMatchDay([
+                'matchDayId' => $matchDay->id,
+                'matchAppointments' => $appointments
+            ]), $this->defaultAdminAuth);
+
+            foreach ($matchDay->matches as $match) {
+                $match = $this->getMatch($match->id);
+
+                self::assertNotNull($match);
+                self::assertNotNull($match->pitch, 'Invalid match: ' . print_r($match, true));
+                self::assertNotNull($match->kickoff, 'Invalid match: ' . print_r($match, true));
+            }
+        }
+
+        return $seasonId;
     }
 
     /**
@@ -242,6 +275,17 @@ class SeasonTest extends CompetitionTest
         return null;
     }
 
+    private function getMatch(string $id): ?object
+    {
+        $response = self::$client->request(new MatchQuery(['id' => $id]));
+
+        if (isset($response->data) && isset($response->data->match)) {
+            return $response->data->match;
+        }
+
+        return null;
+    }
+
     private function getTeamIdsFromSeason(object $season): array
     {
         return array_map(function (object $team) {
@@ -251,15 +295,48 @@ class SeasonTest extends CompetitionTest
 
     private function generateMatchDayDates(int $count): Iterator
     {
-        $start  = new DateTime('next saturday');
+        $start  = new DateTimeImmutable('next saturday');
         $end    = $start->modify('+1 day');
         for ($i = 0; $i < $count; $i++) {
             yield [
                 'from' => self::formatDate($start),
                 'to'   => self::formatDate($end)
             ];
-            $start->modify('+7 days');
-            $end->modify('+7 days');
+            $start = $start->modify('+7 days');
+            $end   = $end->modify('+7 days');
         }
+    }
+
+    private function createMatchAppointments(): array
+    {
+        $appointments = [];
+        $saturday = new DateTimeImmutable('next saturday');
+        $sunday = $saturday->modify('+1 day');
+
+        $appointments[] = [
+            'kickoff' => self::formatDateTime($saturday->setTime(15, 30)),
+            'unavailableTeamIds' => [],
+            'pitchId' => self::$pitchIds[0]
+        ];
+
+        $appointments[] = [
+            'kickoff' => self::formatDateTime($saturday->setTime(17, 30)),
+            'unavailableTeamIds' => [self::$teamIds[0], self::$teamIds[1]],
+            'pitchId' => self::$pitchIds[1]
+        ];
+
+        $appointments[] = [
+            'kickoff' => self::formatDateTime($sunday->setTime(12, 00)),
+            'unavailableTeamIds' => [self::$teamIds[2]],
+            'pitchId' => self::$pitchIds[0]
+        ];
+
+        $appointments[] = [
+            'kickoff' => self::formatDateTime($sunday->setTime(14, 00)),
+            'unavailableTeamIds' => [],
+            'pitchId' => self::$pitchIds[1]
+        ];
+
+        return $appointments;
     }
 }
