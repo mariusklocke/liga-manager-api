@@ -229,10 +229,14 @@ class Season extends Competition
                 Assert::true($this->state === self::STATE_PREPARATION, 'Invalid state transition');
                 break;
             case self::STATE_PROGRESS:
-                $this->start();
+                if ($this->state !== self::STATE_PROGRESS) {
+                    $this->start();
+                }
                 break;
             case self::STATE_ENDED:
-                $this->end();
+                if ($this->state !== self::STATE_ENDED) {
+                    $this->end();
+                }
                 break;
             default:
                 throw new DomainException('Unknown season state');

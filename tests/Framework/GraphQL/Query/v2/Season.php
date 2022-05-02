@@ -26,7 +26,12 @@ class Season extends Query
                     ]
                 ],
                 'ranking' => [
-                    'updatedAt'
+                    'updatedAt',
+                    'positions' => [
+                        'team' => [
+                            'id'
+                        ]
+                    ]
                 ]
             ],
             [

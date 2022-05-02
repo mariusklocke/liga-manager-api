@@ -188,6 +188,48 @@ class SeasonTest extends CompetitionTest
     }
 
     /**
+     * @depends testMatchesCanBeScheduledPerMatchDay
+     * @param string $seasonId
+     * @return string
+     */
+    public function testTeamCanBeReplacedWhileSeasonInProgress(string $seasonId): string
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertEquals('progress', $season->state);
+        $retiringTeamId = $season->ranking->positions[0]->team->id;
+        $spareTeamId = self::$spareTeamIds[0];
+        self::assertNotEquals($spareTeamId, $retiringTeamId);
+
+        $updatedTeamIds = [];
+
+        foreach (self::$teamIds as $teamId) {
+            if ($teamId !== $retiringTeamId) {
+                $updatedTeamIds[] = $teamId;
+            } else {
+                $updatedTeamIds[] = $spareTeamId;
+            }
+        }
+
+        self::$client->request(new UpdateSeason([
+            'id' => $season->id,
+            'name' => $season->name,
+            'teamIds' => $updatedTeamIds,
+            'state' => 'progress'
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+
+        $rankingTeamIds = [];
+        foreach ($season->ranking->positions as $position) {
+            $rankingTeamIds[] = $position->team->id;
+        }
+
+        self::assertArraysHaveEqualValues($updatedTeamIds, $rankingTeamIds);
+
+        return $seasonId;
+    }
+
+    /**
      * @dataProvider filterProvider
      */
     public function testSeasonsCanBeListed(array $filter): void
