@@ -71,7 +71,7 @@ abstract class CompetitionTest extends TestCase
                 'teamIds' => [$teamId]
             ]), $this->defaultAdminAuth);
 
-            yield new BasicAuth($email, $password);
+            yield $teamId => new BasicAuth($email, $password);
         }
     }
 

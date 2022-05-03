@@ -3,11 +3,16 @@
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateSeason;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeletePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\GenerateMatchDays;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\ScheduleMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\ScheduleMatchesForMatchDay;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\SubmitMatchResult;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateSeason;
+use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\MatchList;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\MatchQuery;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Season;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\SeasonList;
@@ -227,6 +232,175 @@ class SeasonTest extends CompetitionTest
         self::assertArraysHaveEqualValues($updatedTeamIds, $rankingTeamIds);
 
         return $seasonId;
+    }
+
+    /**
+     * @depends testTeamCanBeReplacedWhileSeasonInProgress
+     * @param string $seasonId
+     * @return string
+     */
+    public function testMatchesCanBeQueriedByKickoff(string $seasonId): string
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $minDate = null;
+        $maxDate = null;
+
+        foreach ($season->matchDays as $matchDay) {
+            $startDate = new DateTimeImmutable($matchDay->startDate);
+            $endDate = new DateTimeImmutable($matchDay->endDate);
+
+            if ($minDate === null || $startDate < $minDate) {
+                $minDate = $startDate;
+            }
+
+            if ($maxDate === null || $endDate > $maxDate) {
+                $maxDate = $endDate;
+            }
+        }
+
+        $minDate = $minDate->modify('+ 7 days')->setTime(0, 0, 0);
+        $maxDate = $maxDate->modify('- 7 days')->setTime(23, 59, 59);
+
+        self::assertTrue($minDate < $maxDate);
+
+        $query = new MatchList([
+            'filter' => [
+                'kickoffAfter' => self::formatDateTime($minDate),
+                'kickoffBefore' => self::formatDateTime($maxDate)
+            ]
+        ]);
+
+        $matches = [];
+
+        foreach (self::$client->paginate($query) as $matchList) {
+            foreach ($matchList as $match) {
+                if ($match->kickoff !== null) {
+                    $matches[] = $match;
+                }
+            }
+        }
+
+        self::assertNotEmpty($matches);
+
+        foreach ($matches as $match) {
+            $kickoff = new DateTimeImmutable($match->kickoff);
+
+            self::assertGreaterThanOrEqual($minDate, $kickoff);
+            self::assertLessThanOrEqual($maxDate, $kickoff);
+        }
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testMatchesCanBeQueriedByKickoff
+     * @param string $seasonId
+     * @return string
+     */
+    public function testMatchCanBeLocated(string $seasonId): string
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $matchId = $season->matchDays[0]->matches[0]->id;
+
+        $pitchId = IdGenerator::generate();
+        self::$client->request(new CreatePitch([
+            'id' => $pitchId,
+            'label' => __METHOD__
+        ]), $this->defaultAdminAuth);
+
+        // TODO: Locate match
+        self::markTestIncomplete('Match cannot be located yet');
+
+        /*
+        $match = $this->getMatch($matchId);
+        self::assertIsObject($match);
+        self::assertNotNull($match->pitch);
+        self::assertSame($pitchId, $match->pitch->id);
+        */
+
+        return $matchId;
+    }
+
+    /**
+     * @depends testTeamCanBeReplacedWhileSeasonInProgress
+     * @param string $seasonId
+     * @return string
+     */
+    public function testMatchCanBeScheduled(string $seasonId): string
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $matchId = $season->matchDays[0]->matches[0]->id;
+
+        $match = $this->getMatch($matchId);
+        self::assertIsObject($match);
+
+        $newKickoff = new DateTimeImmutable('next month');
+        self::assertNotEquals($newKickoff->getTimestamp(), (new DateTimeImmutable($match->kickoff))->getTimestamp());
+
+        self::$client->request(new ScheduleMatch([
+            'matchId' => $matchId,
+            'kickoff' => self::formatDateTime($newKickoff)
+        ]), $this->defaultAdminAuth);
+
+        $match = $this->getMatch($matchId);
+        self::assertIsObject($match);
+        self::assertNotNull($match->kickoff);
+        self::assertEquals($newKickoff->getTimestamp(), (new DateTimeImmutable($match->kickoff))->getTimestamp());
+
+        return $matchId;
+    }
+
+    /**
+     * @depends testMatchCanBeScheduled
+     * @param string $matchId
+     */
+    public function testDeletingUsedPitchFails(string $matchId): void
+    {
+        $match = $this->getMatch($matchId);
+        self::assertIsObject($match);
+        self::assertNotNull($match->pitch);
+
+        $this->expectClientException();
+        self::$client->request(new DeletePitch(['id' => $match->pitch->id]), $this->defaultAdminAuth);
+    }
+
+    /**
+     * @depends testSeasonCanBeStarted
+     * @param string $seasonId
+     */
+    public function testSubmittingMatchResultByNonParticipatingTeamFails(string $seasonId): void
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $matchId = $season->matchDays[0]->matches[0]->id;
+        $match = $this->getMatch($matchId);
+        self::assertIsObject($match);
+
+        $nonParticipatingTeamIds = array_filter(self::$teamIds, function (string $teamId) use ($match) {
+            return $teamId !== $match->homeTeam->id && $teamId !== $match->guestTeam->id;
+        });
+
+        $teamId = array_shift($nonParticipatingTeamIds);
+        self::assertIsString($teamId);
+
+        $teamManagerAuth = self::$teamManagerAuths[$teamId];
+        self::assertIsObject($teamManagerAuth);
+
+        $this->expectClientException();
+        self::$client->request(new SubmitMatchResult([
+            'matchId' => $matchId,
+            'matchResult' => [
+                'homeScore' => 4,
+                'guestScore' => 3
+            ]
+        ]), $teamManagerAuth);
     }
 
     /**

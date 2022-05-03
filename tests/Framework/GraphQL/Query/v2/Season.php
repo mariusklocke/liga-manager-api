@@ -23,7 +23,9 @@ class Season extends Query
                     'number',
                     'matches' => [
                         'id'
-                    ]
+                    ],
+                    'startDate',
+                    'endDate'
                 ],
                 'ranking' => [
                     'updatedAt',
