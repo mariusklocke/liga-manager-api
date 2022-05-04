@@ -12,7 +12,9 @@ use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\CustomObjectType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\MutationResponse;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
+use HexagonalPlayground\Infrastructure\Timer;
 use TypeError;
 
 class MutationMapper
@@ -44,7 +46,7 @@ class MutationMapper
         return [
             $name => [
                 'args' => $argTypes,
-                'type' => Type::boolean(),
+                'type' => TypeRegistry::get(MutationResponse::class),
                 'resolve' => function ($val, $argValues, AppContext $context) use ($commandClass, $argTypes) {
                     try {
                         $command = $this->createCommand($commandClass, $argTypes, $argValues);
@@ -61,10 +63,14 @@ class MutationMapper
                         $authContext = $this->authReader->requireAuthContext($context->getRequest());
                     }
 
+                    $timer = new Timer();
+                    $timer->start();
+
                     /** @var CommandBus $commandBus */
                     $commandBus = $context->getContainer()->get(CommandBus::class);
                     $commandBus->execute($command, $authContext);
-                    return true;
+
+                    return ['executionTime' => $timer->stop()];
                 }
             ]
         ];

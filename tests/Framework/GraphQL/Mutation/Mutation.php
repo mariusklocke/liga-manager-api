@@ -41,7 +41,7 @@ class Mutation implements JsonSerializable
         }
 
         $query = sprintf(
-            'mutation %s%s { %s%s }',
+            'mutation %s%s { %s%s { executionTime } }',
             $this->name,
             count($argTypes) ? '(' . implode(', ', $argTypes) . ')' : '',
             $this->name,
