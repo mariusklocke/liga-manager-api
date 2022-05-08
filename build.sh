@@ -25,7 +25,9 @@ echo "MARIADB_VERSION: ${MARIADB_VERSION}"
 echo "REDIS_VERSION: ${REDIS_VERSION}"
 
 # Pull images
-docker pull --quiet $IMAGE:latest mariadb:$MARIADB_VERSION redis:$REDIS_VERSION-alpine
+docker pull --quiet $IMAGE:latest
+docker pull --quiet mariadb:$MARIADB_VERSION
+docker pull --quiet redis:$REDIS_VERSION-alpine
 
 # Build images
 DOCKER_BUILDKIT=1 docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --build-arg PHP_VERSION=$PHP_VERSION --cache-from $IMAGE:latest .
