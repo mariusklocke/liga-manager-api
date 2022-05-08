@@ -8,10 +8,7 @@ case $1 in
     docker compose exec -T mariadb sh -c "find /backup -mtime +$RETENTION_DAYS -type f -name 'lima-db*.sql.gz' -delete"
     TIMESTAMP=$(date +%Y-%m-%d-%H-%M-%S)
     if docker compose exec -T mariadb sh -c "mysqldump -u root -pdev --single-transaction wilde-liga-bremen | gzip > /backup/lima-db-$TIMESTAMP.sql.gz"; then
-        SIZE=$(docker compose exec -T mariadb sh -c "stat --printf='%s' /backup/lima-db-$TIMESTAMP.sql.gz")
-        if [[ $SIZE -gt 0 ]]; then
-            echo "Backup $TIMESTAMP has been created. Bytes written: $SIZE"
-        fi
+        echo "Backup $TIMESTAMP has been created."
     fi
     ;;
   "delete")
@@ -19,7 +16,7 @@ case $1 in
     docker compose exec mariadb sh -c "rm /backup/lima-db-$TIMESTAMP.sql.gz"
     ;;
   "list")
-    docker compose exec mariadb sh -c "find /backup -maxdepth 1 -name 'lima-db-*.sql.gz' -type f"
+    docker compose exec mariadb sh -c "cd /backup && ls -lh lima-db-*.sql.gz 2> /dev/null"
     ;;
   "restore")
     TIMESTAMP=$2
