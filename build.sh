@@ -24,8 +24,8 @@ echo "PHP_VERSION: ${PHP_VERSION}"
 echo "MARIADB_VERSION: ${MARIADB_VERSION}"
 echo "REDIS_VERSION: ${REDIS_VERSION}"
 
-# Pull for having a cache base
-docker pull $IMAGE:latest
+# Pull images
+docker pull --quiet $IMAGE:latest mariadb:$MARIADB_VERSION redis:$REDIS_VERSION-alpine
 
 # Build images
 DOCKER_BUILDKIT=1 docker build -f docker/php/Dockerfile -t $IMAGE:$TAG --build-arg PHP_VERSION=$PHP_VERSION --cache-from $IMAGE:latest .
@@ -41,13 +41,13 @@ trap cleanup EXIT
 
 # Launch containers
 docker network create build
-docker run -d --name=mariadb --network=build --pull=always \
+docker run -d --name=mariadb --network=build \
     -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
     -e MYSQL_DATABASE=test \
     -e MYSQL_USER=test \
     -e MYSQL_PASSWORD=test \
     mariadb:$MARIADB_VERSION
-docker run -d --name=redis --network=build --pull=always redis:$REDIS_VERSION-alpine
+docker run -d --name=redis --network=build redis:$REDIS_VERSION-alpine
 docker run -d --name=php --network=build \
      -e ALLOW_TESTS=1 \
      -e ADMIN_EMAIL=admin@example.com \
@@ -92,5 +92,5 @@ if [[ -n "${PUBLISH_IMAGE}" ]]; then
     echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
 
     # Push image to docker hub
-    docker push $IMAGE:$TAG
+    docker push --quiet $IMAGE:$TAG
 fi
