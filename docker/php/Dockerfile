@@ -1,8 +1,7 @@
 ARG PHP_VERSION
 FROM php:${PHP_VERSION}-fpm-alpine
 
-# git: required by php-coveralls.phar
-ENV RUN_DEPS="gmp ncurses gnupg git" \
+ENV RUN_DEPS="gmp ncurses gnupg" \
     BUILD_DEPS="${PHPIZE_DEPS} gmp-dev" \
     PHP_EXTS="bcmath gmp pcntl pdo_mysql opcache"
 
@@ -47,8 +46,5 @@ COPY --chown=www-data:www-data src src/
 COPY --chown=www-data:www-data public public/
 COPY --chown=www-data:www-data migrations migrations/
 COPY --chown=www-data:www-data config config/
-
-# Add .git folder for php-coversall.phar
-COPY --chown=www-data:www-data .git .git/
 
 CMD init-container && php-fpm

@@ -64,6 +64,7 @@ docker run -d --name=php --network=build \
      -e EMAIL_URL=null://localhost \
      -e EMAIL_SENDER_ADDRESS=noreply@example.com \
      -e EMAIL_SENDER_NAME=noreply \
+     -v $PWD/.git:/var/www/api/.git \
      $IMAGE:$TAG
 
 # Run deptrac
@@ -78,15 +79,16 @@ docker exec -t php gdpr-dump.phar config/gdpr-dump.yml > /dev/null
 # Run phpunit without coverage
 docker exec -t php phpunit.phar --testdox
 
-# Enable xdebug
-docker exec -t -u root php docker-php-ext-enable xdebug
+# Install git && enable xdebug
+docker exec -t -u root php sh -c "apk add git && docker-php-ext-enable xdebug"
 
 # Run tests with coverage
 docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml
 
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     # Upload coverage report to coveralls.io
-    docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
+    docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php \
+        php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
 fi
 
 if [[ -n "${PUBLISH_IMAGE}" ]]; then
