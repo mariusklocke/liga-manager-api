@@ -19,7 +19,7 @@ if (isset($argv[1]) && $argv[1] === 'install') {
             }
 
             $this->output('Installing composer dependencies ...');
-            $this->runCommand('composer.phar install --optimize-autoloader --no-progress');
+            $this->runCommand('composer.phar install --optimize-autoloader --no-progress --no-cache');
             $this->output('Installation complete.');
         }
 
