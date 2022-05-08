@@ -15,11 +15,11 @@
     },
     "extra": {
         "phar-tools": {
-            "composer.phar": "https://github.com/composer/composer/releases/download/2.2.6/composer.phar",
-            "phpunit.phar": "https://phar.phpunit.de/phpunit-9.5.13.phar",
+            "composer.phar": "https://github.com/composer/composer/releases/download/2.3.5/composer.phar",
+            "phpunit.phar": "https://phar.phpunit.de/phpunit-9.5.20.phar",
             "php-coveralls.phar": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar",
-            "deptrac.phar": "https://github.com/qossmic/deptrac/releases/download/0.19.3/deptrac.phar",
-            "gdpr-dump.phar": "https://github.com/Smile-SA/gdpr-dump/releases/download/2.3.1/gdpr-dump.phar"
+            "deptrac.phar": "https://github.com/qossmic/deptrac/releases/download/0.20.0/deptrac.phar",
+            "gdpr-dump.phar": "https://github.com/Smile-SA/gdpr-dump/releases/download/2.3.2/gdpr-dump.phar"
         }
     },
     "require": {
