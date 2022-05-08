@@ -19,7 +19,7 @@ RUN set -xe \
     && docker-php-ext-enable apcu redis \
     && pecl clear-cache \
     && apk del .build-deps \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* /var/cache/*
 
 # Configure PHP
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
