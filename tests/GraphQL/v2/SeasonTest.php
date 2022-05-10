@@ -408,14 +408,11 @@ class SeasonTest extends CompetitionTest
      */
     public function testSeasonsCanBeListed(array $filter): void
     {
-        $response = self::$client->request(new SeasonList(['filter' => $filter]));
+        $seasonList = self::$client->request(new SeasonList(['filter' => $filter]));
 
-        self::assertObjectHasAttribute('data', $response);
-        self::assertObjectHasAttribute('seasonList', $response->data);
-        self::assertIsArray($response->data->seasonList);
-        self::assertNotEmpty($response->data->seasonList);
-
-        foreach ($response->data->seasonList as $season) {
+        self::assertIsArray($seasonList);
+        self::assertNotEmpty($seasonList);
+        foreach ($seasonList as $season) {
             self::assertObjectHasAttribute('id', $season);
             self::assertObjectHasAttribute('name', $season);
             self::assertObjectHasAttribute('state', $season);
@@ -482,24 +479,12 @@ class SeasonTest extends CompetitionTest
 
     private function getSeason(string $id): ?object
     {
-        $response = self::$client->request(new Season(['id' => $id]));
-
-        if (isset($response->data) && isset($response->data->season)) {
-            return $response->data->season;
-        }
-
-        return null;
+        return self::$client->request(new Season(['id' => $id]));
     }
 
     private function getMatch(string $id): ?object
     {
-        $response = self::$client->request(new MatchQuery(['id' => $id]));
-
-        if (isset($response->data) && isset($response->data->match)) {
-            return $response->data->match;
-        }
-
-        return null;
+        return self::$client->request(new MatchQuery(['id' => $id]));
     }
 
     private function getTeamIdsFromSeason(object $season): array

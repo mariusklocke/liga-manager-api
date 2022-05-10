@@ -34,13 +34,14 @@ class AdvancedClient
     /**
      * Sends a query or mutation request
      *
-     * @param JsonSerializable $payload
+     * @param NamedOperation $payload
      * @param Auth|null $auth
-     * @return stdClass
+     * @return stdClass|array|null
      * @throws Exception
      */
-    public function request(JsonSerializable $payload, ?Auth $auth = null): stdClass
+    public function request(NamedOperation $payload, ?Auth $auth = null)
     {
+        $operationName = $payload->getName();
         $request = $this->buildRequest($payload, $auth);
         $response = $this->httpClient->sendRequest($request);
         $parsedResponse = $this->responseParser->parse($response);
@@ -49,7 +50,11 @@ class AdvancedClient
             throw new Exception($parsedResponse->errors);
         }
 
-        return $parsedResponse;
+        if (!isset($parsedResponse->data)) {
+            throw new Exception(['Empty response']);
+        }
+
+        return $parsedResponse->data->$operationName ?? null;
     }
 
     /**
@@ -88,16 +93,12 @@ class AdvancedClient
             $payload = $query
                 ->withArgTypes(['pagination' => 'Pagination'])
                 ->withArgValues(['pagination' => ['limit' => $pageSize, 'offset' => $offset]]);
-            $response = $this->request($payload, $auth);
+            $result = $this->request($payload, $auth);
 
-            if (!isset($response->data) || !is_object($response->data)) {
-                throw new Exception(['Query response did not contain data']);
-            }
-
-            $result = current(get_object_vars($response->data));
             if (!is_array($result)) {
                 throw new Exception(['Response does not contain data for pagination']);
             }
+
             if (count($result) > 0) {
                 yield $result;
             }

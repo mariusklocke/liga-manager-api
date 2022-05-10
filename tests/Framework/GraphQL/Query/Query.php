@@ -2,16 +2,22 @@
 
 namespace HexagonalPlayground\Tests\Framework\GraphQL\Query;
 
-use JsonSerializable;
+use HexagonalPlayground\Tests\Framework\GraphQL\NamedOperation;
 use LogicException;
 
-class Query implements JsonSerializable
+class Query implements NamedOperation
 {
     private string $name;
     private array $fields;
     private array $argTypes;
     private array $argValues;
 
+    /**
+     * @param string $name
+     * @param array $fields
+     * @param array $argTypes
+     * @param array $argValues
+     */
     public function __construct(string $name, array $fields, array $argTypes = [], array $argValues = [])
     {
         foreach ($argValues as $field => $value) {
@@ -32,6 +38,18 @@ class Query implements JsonSerializable
         $this->argValues = $argValues;
     }
 
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param array $argTypes
+     * @return Query
+     */
     public function withArgTypes(array $argTypes): self
     {
         $clone = clone $this;
@@ -40,6 +58,10 @@ class Query implements JsonSerializable
         return $clone;
     }
 
+    /**
+     * @param array $argValues
+     * @return Query
+     */
     public function withArgValues(array $argValues): self
     {
         $clone = clone $this;
@@ -48,6 +70,9 @@ class Query implements JsonSerializable
         return $clone;
     }
 
+    /**
+     * @return array
+     */
     public function jsonSerialize(): array
     {
         $argTypes = [];
@@ -73,6 +98,10 @@ class Query implements JsonSerializable
         ];
     }
 
+    /**
+     * @param array $fields
+     * @return string
+     */
     private function stringifyFields(array $fields): string
     {
         $parts = [];

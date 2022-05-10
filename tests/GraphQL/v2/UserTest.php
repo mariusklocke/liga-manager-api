@@ -144,14 +144,12 @@ class UserTest extends TestCase
 
     public function testUsersCanBeListed(): void
     {
-        $response = self::$client->request(new UserList(), $this->defaultAdminAuth);
+        $userList = self::$client->request(new UserList(), $this->defaultAdminAuth);
 
-        self::assertObjectHasAttribute('data', $response);
-        self::assertObjectHasAttribute('userList', $response->data);
-        self::assertIsArray($response->data->userList);
-        self::assertNotEmpty($response->data->userList);
+        self::assertIsArray($userList);
+        self::assertNotEmpty($userList);
 
-        foreach ($response->data->userList as $user) {
+        foreach ($userList as $user) {
             self::assertObjectHasAttribute('id', $user);
             self::assertObjectHasAttribute('email', $user);
             self::assertObjectHasAttribute('role', $user);
@@ -168,13 +166,7 @@ class UserTest extends TestCase
 
     private function getUser(?string $id = null, ?Auth $auth = null): ?object
     {
-        $response = self::$client->request(new User(['id' => $id]), $auth);
-
-        if (isset($response->data) && isset($response->data->user)) {
-            return $response->data->user;
-        }
-
-        return null;
+        return self::$client->request(new User(['id' => $id]), $auth);
     }
 
     private static function generatePassword(): string

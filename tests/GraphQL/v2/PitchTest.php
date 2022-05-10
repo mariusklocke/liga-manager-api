@@ -84,14 +84,12 @@ class PitchTest extends TestCase
 
     public function testPitchesCanBeListed(): void
     {
-        $response = self::$client->request(new PitchList());
+        $pitchList = self::$client->request(new PitchList());
 
-        self::assertObjectHasAttribute('data', $response);
-        self::assertObjectHasAttribute('pitchList', $response->data);
-        self::assertIsArray($response->data->pitchList);
-        self::assertNotEmpty($response->data->pitchList);
+        self::assertIsArray($pitchList);
+        self::assertNotEmpty($pitchList);
 
-        foreach ($response->data->pitchList as $pitch) {
+        foreach ($pitchList as $pitch) {
             self::assertObjectHasAttribute('id', $pitch);
             self::assertObjectHasAttribute('label', $pitch);
 
@@ -117,12 +115,6 @@ class PitchTest extends TestCase
 
     private function getPitch(string $id): ?object
     {
-        $response = self::$client->request(new Pitch(['id' => $id]));
-
-        if (isset($response->data) && isset($response->data->pitch)) {
-            return $response->data->pitch;
-        }
-
-        return null;
+        return self::$client->request(new Pitch(['id' => $id]));
     }
 }

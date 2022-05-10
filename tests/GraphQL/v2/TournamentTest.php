@@ -129,14 +129,11 @@ class TournamentTest extends CompetitionTest
 
     public function testTournamentsCanBeListed(): void
     {
-        $response = self::$client->request(new TournamentList());
+        $tournamentList = self::$client->request(new TournamentList());
 
-        self::assertObjectHasAttribute('data', $response);
-        self::assertObjectHasAttribute('tournamentList', $response->data);
-        self::assertIsArray($response->data->tournamentList);
-        self::assertNotEmpty($response->data->tournamentList);
-
-        foreach ($response->data->tournamentList as $tournament) {
+        self::assertIsArray($tournamentList);
+        self::assertNotEmpty($tournamentList);
+        foreach ($tournamentList as $tournament) {
             self::assertObjectHasAttribute('id', $tournament);
             self::assertObjectHasAttribute('name', $tournament);
 
@@ -154,12 +151,6 @@ class TournamentTest extends CompetitionTest
 
     private function getTournament(string $id): ?object
     {
-        $response = self::$client->request(new Tournament(['id' => $id]));
-
-        if (isset($response->data) && isset($response->data->tournament)) {
-            return $response->data->tournament;
-        }
-
-        return null;
+        return self::$client->request(new Tournament(['id' => $id]));
     }
 }

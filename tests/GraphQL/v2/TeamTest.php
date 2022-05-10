@@ -87,14 +87,11 @@ class TeamTest extends TestCase
 
     public function testTeamsCanBeListed(): void
     {
-        $response = self::$client->request(new TeamList(), $this->defaultAdminAuth);
+        $teamList = self::$client->request(new TeamList(), $this->defaultAdminAuth);
 
-        self::assertObjectHasAttribute('data', $response);
-        self::assertObjectHasAttribute('teamList', $response->data);
-        self::assertIsArray($response->data->teamList);
-        self::assertNotEmpty($response->data->teamList);
-
-        foreach ($response->data->teamList as $team) {
+        self::assertIsArray($teamList);
+        self::assertNotEmpty($teamList);
+        foreach ($teamList as $team) {
             self::assertObjectHasAttribute('id', $team);
             self::assertObjectHasAttribute('name', $team);
             self::assertObjectHasAttribute('createdAt', $team);
@@ -133,12 +130,6 @@ class TeamTest extends TestCase
 
     private function getTeam(string $id): ?object
     {
-        $response = self::$client->request(new Team(['id' => $id]));
-
-        if (isset($response->data) && isset($response->data->team)) {
-            return $response->data->team;
-        }
-
-        return null;
+        return self::$client->request(new Team(['id' => $id]));
     }
 }

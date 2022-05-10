@@ -2,15 +2,20 @@
 
 namespace HexagonalPlayground\Tests\Framework\GraphQL\Mutation;
 
-use JsonSerializable;
+use HexagonalPlayground\Tests\Framework\GraphQL\NamedOperation;
 use LogicException;
 
-class Mutation implements JsonSerializable
+class Mutation implements NamedOperation
 {
     private string $name;
     private array $argTypes;
     private array $argValues;
 
+    /**
+     * @param string $name
+     * @param array $argTypes
+     * @param array $argValues
+     */
     public function __construct(string $name, array $argTypes = [], array $argValues = [])
     {
         foreach ($argValues as $field => $value) {
@@ -30,6 +35,17 @@ class Mutation implements JsonSerializable
         $this->argValues = $argValues;
     }
 
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return array
+     */
     public function jsonSerialize(): array
     {
         $argTypes = [];
