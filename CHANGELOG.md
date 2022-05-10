@@ -2,6 +2,12 @@
 
 ## NEXT
 
+## 1.12.2 - 2022-05-09
+* Improvement: Updated PHAR tools
+* Improvement: Updated composer libraries
+* Refactoring: Remove unnecessary stuff from docker image
+* Refactoring: Optimize build steps
+
 ## 1.12.1 - 2022-04-19
 * Refactoring: Simplify query criteria building
 * Refactoring: Make pitch location nullable in database
