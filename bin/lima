@@ -13,9 +13,14 @@ if (isset($argv[1]) && $argv[1] === 'install') {
 
             $this->output('Installing PHAR dependencies ...');
 
-            foreach ($this->getTools() as $filename => $source) {
-                $target = getenv('APP_HOME') . '/bin/' . $filename;
-                $this->installTool($target, $source);
+            foreach ($this->getTools() as $definition) {
+                $target = getenv('APP_HOME') . '/' . $definition['target'];
+
+                if (file_exists($target) && hash_file('sha256', $target) === $definition['sha256']) {
+                    continue;
+                }
+
+                $this->installTool($target, $definition['source']);
             }
 
             $this->output('Installing composer dependencies ...');

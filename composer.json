@@ -14,13 +14,33 @@
         "sort-packages": true
     },
     "extra": {
-        "phar-tools": {
-            "composer.phar": "https://github.com/composer/composer/releases/download/2.3.5/composer.phar",
-            "phpunit.phar": "https://phar.phpunit.de/phpunit-9.5.20.phar",
-            "php-coveralls.phar": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar",
-            "deptrac.phar": "https://github.com/qossmic/deptrac/releases/download/0.20.0/deptrac.phar",
-            "gdpr-dump.phar": "https://github.com/Smile-SA/gdpr-dump/releases/download/2.3.2/gdpr-dump.phar"
-        }
+        "phar-tools": [
+            {
+                "target": "bin/composer.phar",
+                "source": "https://github.com/composer/composer/releases/download/2.3.5/composer.phar",
+                "sha256": "3b3b5a899c06a46aec280727bdf50aad14334f6bc40436ea76b07b650870d8f4"
+            },
+            {
+                "target": "bin/phpunit.phar",
+                "source": "https://phar.phpunit.de/phpunit-9.5.20.phar",
+                "sha256": "6becad2da5c37f5ad101cc665ef05a2f1a6a45d2427c8edcc74f72c92fb1e05a"
+            },
+            {
+                "target": "bin/php-coveralls.phar",
+                "source": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar",
+                "sha256": "8bdff7b3228003d77c447ecfd49dc21aa0e0fbc414122235eef295aa14354753"
+            },
+            {
+                "target": "bin/deptrac.phar",
+                "source": "https://github.com/qossmic/deptrac/releases/download/0.20.0/deptrac.phar",
+                "sha256": "5478446815eb32661172e0962ae6ca512761a96aee07d6eebbc888eee65a762d"
+            },
+            {
+                "target": "bin/gdpr-dump.phar",
+                "source": "https://github.com/Smile-SA/gdpr-dump/releases/download/2.3.2/gdpr-dump.phar",
+                "sha256": "8953b016ee62e6bce1b68375f6dd9092157bbba1a6710e0957b945d2b926a8dc"
+            }
+        ]
     },
     "require": {
         "php": "^7.4 | ^8",
