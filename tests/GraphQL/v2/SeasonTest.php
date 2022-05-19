@@ -8,6 +8,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeletePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\GenerateMatchDays;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\LocateMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\ScheduleMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\ScheduleMatchesForMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\SubmitMatchResult;
@@ -312,15 +313,15 @@ class SeasonTest extends CompetitionTest
             'label' => __METHOD__
         ]), $this->defaultAdminAuth);
 
-        // TODO: Locate match
-        self::markTestIncomplete('Match cannot be located yet');
+        self::$client->request(new LocateMatch([
+            'matchId' => $matchId,
+            'pitchId' => $pitchId
+        ]), $this->defaultAdminAuth);
 
-        /*
         $match = $this->getMatch($matchId);
         self::assertIsObject($match);
-        self::assertNotNull($match->pitch);
+        self::assertIsObject($match->pitch);
         self::assertSame($pitchId, $match->pitch->id);
-        */
 
         return $matchId;
     }
