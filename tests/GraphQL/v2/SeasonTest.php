@@ -542,7 +542,7 @@ class SeasonTest extends CompetitionTest
     public function testPenaltiesAffectRanking(string $seasonId): string
     {
         $penaltyId = IdGenerator::generate();
-        $teamId = self::$teamIds[0];
+        $teamId = self::$spareTeamIds[0];
 
         self::$client->request(new CreateRankingPenalty([
             'id' => $penaltyId,
