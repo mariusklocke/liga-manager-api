@@ -32,7 +32,14 @@ class Season extends Query
                     'positions' => [
                         'team' => [
                             'id'
-                        ]
+                        ],
+                        'number',
+                        'wins',
+                        'draws',
+                        'losses',
+                        'scoredGoals',
+                        'concededGoals',
+                        'points'
                     ]
                 ]
             ],

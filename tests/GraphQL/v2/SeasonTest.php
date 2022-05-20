@@ -3,9 +3,12 @@
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CancelMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateRankingPenalty;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeletePitch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteRankingPenalty;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteSeason;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\GenerateMatchDays;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\LocateMatch;
@@ -402,6 +405,182 @@ class SeasonTest extends CompetitionTest
                 'guestScore' => 3
             ]
         ]), $teamManagerAuth);
+    }
+
+    /**
+     * @depends testSeasonCanBeStarted
+     * @param string $seasonId
+     * @return string
+     */
+    public function testSubmittingMatchResultAffectsRanking(string $seasonId): string
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $matchId = $season->matchDays[0]->matches[0]->id;
+        $match = $this->getMatch($matchId);
+        self::assertIsObject($match);
+
+        self::$client->request(new SubmitMatchResult([
+            'matchId' => $matchId,
+            'matchResult' => [
+                'homeScore' => 1,
+                'guestScore' => 1
+            ]
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+        self::assertIsObject($season->ranking);
+
+        foreach ($season->ranking->positions as $position) {
+            if ($position->team->id === $match->homeTeam->id || $position->team->id === $match->guestTeam->id) {
+                self::assertSame(1, $position->number);
+                self::assertSame(0, $position->losses);
+                self::assertSame(1, $position->draws);
+                self::assertSame(0, $position->wins);
+                self::assertSame(1, $position->scoredGoals);
+                self::assertSame(1, $position->concededGoals);
+                self::assertSame(1, $position->points);
+            } else {
+                self::assertGreaterThan(2, $position->number);
+                self::assertSame(0, $position->losses);
+                self::assertSame(0, $position->draws);
+                self::assertSame(0, $position->wins);
+                self::assertSame(0, $position->scoredGoals);
+                self::assertSame(0, $position->concededGoals);
+                self::assertSame(0, $position->points);
+            }
+        }
+
+        $now = time();
+        $updatedAt = strtotime($season->ranking->updatedAt);
+        self::assertLessThan(5, $now - $updatedAt);
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testSubmittingMatchResultAffectsRanking
+     * @param string $seasonId
+     */
+    public function testCancellingMatchByNonParticipatingTeamFails(string $seasonId): void
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $matchId = $season->matchDays[0]->matches[0]->id;
+        $match = $this->getMatch($matchId);
+        self::assertIsObject($match);
+
+        $nonParticipatingTeamIds = array_filter(self::$teamIds, function (string $teamId) use ($match) {
+            return $teamId !== $match->homeTeam->id && $teamId !== $match->guestTeam->id;
+        });
+
+        $teamId = array_shift($nonParticipatingTeamIds);
+        self::assertIsString($teamId);
+
+        $teamManagerAuth = self::$teamManagerAuths[$teamId];
+        self::assertIsObject($teamManagerAuth);
+
+        $this->expectClientException();
+        self::$client->request(new CancelMatch([
+            'matchId' => $matchId,
+            'reason'  => 'Just cause'
+        ]), $teamManagerAuth);
+    }
+
+    /**
+     * @depends testSubmittingMatchResultAffectsRanking
+     * @param string $seasonId
+     * @return string
+     */
+    public function testCancellingMatchAffectsRanking(string $seasonId): string
+    {
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $matchId = $season->matchDays[0]->matches[0]->id;
+        $match = $this->getMatch($matchId);
+        self::assertIsObject($match);
+
+
+        $teamId = $match->homeTeam->id;
+        $teamManagerAuth = self::$teamManagerAuths[$teamId] ?? self::$spareTeamManagerAuths[$teamId];
+        self::assertIsObject($teamManagerAuth);
+
+        self::$client->request(new CancelMatch([
+            'matchId' => $matchId,
+            'reason'  => 'Team did not show up'
+        ]), $teamManagerAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        foreach ($season->ranking->positions as $position) {
+            self::assertSame(0, $position->losses);
+            self::assertSame(0, $position->draws);
+            self::assertSame(0, $position->wins);
+            self::assertSame(0, $position->scoredGoals);
+            self::assertSame(0, $position->concededGoals);
+            self::assertSame(0, $position->points);
+        }
+
+        $now = time();
+        $updatedAt = strtotime($season->ranking->updatedAt);
+        self::assertLessThan(5, $now - $updatedAt);
+
+        return $seasonId;
+    }
+
+    /**
+     * @depends testCancellingMatchAffectsRanking
+     * @depends testCancellingMatchByNonParticipatingTeamFails
+     * @param string $seasonId
+     * @return string
+     */
+    public function testPenaltiesAffectRanking(string $seasonId): string
+    {
+        $penaltyId = IdGenerator::generate();
+        $teamId = self::$teamIds[0];
+
+        self::$client->request(new CreateRankingPenalty([
+            'id' => $penaltyId,
+            'seasonId' => $seasonId,
+            'teamId' => $teamId,
+            'reason' => 'for not partying hard',
+            'points' => 5
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $positions = array_filter($season->ranking->positions, function ($position) use ($teamId) {
+            return $position->team->id === $teamId;
+        });
+        self::assertSame(1, count($positions));
+
+        $position = array_shift($positions);
+        self::assertSame(-5, $position->points);
+
+        $this->markTestIncomplete('DeleteRankingPenalty not implemented yet');
+
+        self::$client->request(new DeleteRankingPenalty([
+            'id' => $penaltyId
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $positions = array_filter($season->ranking->positions, function ($position) use ($teamId) {
+            return $position->team->id === $teamId;
+        });
+        self::assertSame(1, count($positions));
+
+        $position = array_shift($positions);
+        self::assertSame(0, $position->points);
+
+        return $seasonId;
     }
 
     /**
