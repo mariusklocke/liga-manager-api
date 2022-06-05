@@ -10,6 +10,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception as ClientException;
 use HexagonalPlayground\Tests\Framework\MaildevClient;
+use RuntimeException;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -59,5 +60,20 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         self::assertCount(0, array_diff($a, $b));
         self::assertCount(0, array_diff($b, $a));
+    }
+
+    protected static function waitForMailsToArrive(int $timeout = 15): array
+    {
+        $startTime = microtime(true);
+
+        do {
+            if (microtime(true) - $startTime > $timeout) {
+                throw new RuntimeException('Timeout while waiting for mails to arrive');
+            }
+            $mails = self::$mailClient->getMails();
+            sleep(1);
+        } while (count($mails) === 0);
+
+        return $mails;
     }
 }

@@ -137,14 +137,7 @@ class UserTest extends TestCase
             'targetPath' => '/straight/to/hell'
         ]));
 
-        $startTime = microtime(true);
-        do {
-            if (microtime(true) - $startTime > 15) {
-                throw new \Exception('Timeout while waiting for password reset mail to arrive');
-            }
-            $mails = self::$mailClient->getMails();
-            sleep(1);
-        } while (count($mails) === 0);
+        $mails = self::waitForMailsToArrive();
 
         self::assertCount(1, $mails);
         $mail = current($mails);
