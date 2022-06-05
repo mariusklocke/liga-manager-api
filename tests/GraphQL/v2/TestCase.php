@@ -67,13 +67,15 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $startTime = microtime(true);
 
         do {
-            if (microtime(true) - $startTime > $timeout) {
-                throw new RuntimeException('Timeout while waiting for mails to arrive');
-            }
             $mails = self::$mailClient->getMails();
-            sleep(1);
-        } while (count($mails) === 0);
 
-        return $mails;
+            if (count($mails) > 0) {
+                return $mails;
+            }
+
+            sleep(1);
+        } while (microtime(true) - $startTime < $timeout);
+
+        throw new RuntimeException('Timeout while waiting for mails to arrive');
     }
 }
