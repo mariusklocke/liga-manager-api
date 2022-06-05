@@ -18,7 +18,7 @@ else
 fi
 
 cleanup() {
-    docker rm -f php mariadb redis > /dev/null
+    docker rm -f php mariadb redis maildev > /dev/null
     docker network rm build > /dev/null
 }
 
@@ -44,6 +44,10 @@ docker run -d --name=mariadb --network=build \
 docker pull --quiet redis:$REDIS_VERSION-alpine
 docker run -d --name=redis --network=build redis:$REDIS_VERSION-alpine
 
+# Start maildev
+docker pull --quiet maildev/maildev:latest
+docker run -d --name=maildev --network=build maildev/maildev:latest
+
 # Build target image
 docker pull --quiet $IMAGE:latest
 DOCKER_BUILDKIT=1 docker build \
@@ -64,7 +68,7 @@ docker run -d --name=php --network=build \
      -e MYSQL_DATABASE=test \
      -e MYSQL_USER=test \
      -e MYSQL_PASSWORD=test \
-     -e EMAIL_URL=null://localhost \
+     -e EMAIL_URL=smtp://maildev:1025?verify_peer=0 \
      -e EMAIL_SENDER_ADDRESS=noreply@example.com \
      -e EMAIL_SENDER_NAME=noreply \
      -v $PWD/.git:/var/www/api/.git \

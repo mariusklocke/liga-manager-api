@@ -63,6 +63,7 @@
         "ramsey/uuid": "^4.1",
         "slim/slim": "^4.8.1",
         "symfony/console": "^6.0",
+        "symfony/http-client": "^6.1",
         "symfony/mailer": "^6.0",
         "web-auth/webauthn-lib": "^3.3.9",
         "webonyx/graphql-php": "^14.11.3"
