@@ -68,20 +68,21 @@ Configure `user: 1000:1000` in `docker-compose.yml` if you want to mount the pro
 ### Singular vs. Plural
 
 * PHP classes: Singular
-* REST resources: Plural (if resource can have multiple instances)
+* GraphQL Types: Singular
 * DB tables: Plural
 
 ### CamelCase vs. snake_case
 
 * PHP classes: UpperCamelCase
 * PHP methods and properties: lowerCamelCase
-* JSON fields: snake_case
+* GraphQL types: UpperCamelCase
+* GraphQL fields: lowerCamelCase
 * DB tables and columns: snake_case
 
 ### Domain Events
 
-* Class name must start with a context subject like "Match" or "Team"
-* Class name must contain a verb in past tense
+* Name must start with a context subject like "Match" or "Team"
+* Name must contain a verb in past tense like "Created" or "Updated"
 
 ### Inspired by
 
