@@ -7,6 +7,8 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Auth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteUser;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\InvalidateAccessTokens;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\SendInviteMail;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\SendPasswordResetMail;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUserPassword;
@@ -151,8 +153,85 @@ class UserTest extends TestCase
         return $userId;
     }
 
+    public function testPasswordResetDoesNotErrorWithUnknownEmail(): void
+    {
+        self::$mailClient->deleteMails();
+        self::$client->request(new SendPasswordResetMail([
+            'email' => 'mister.secret@example.com',
+            'targetPath' => '/nowhere'
+        ]));
+
+        $mails = self::waitForMailsToArrive();
+
+        self::assertCount(0, $mails);
+    }
+
     /**
      * @depends testPasswordResetSendsAnEmail
+     * @param string $userId
+     * @return string
+     */
+    public function testSendingInviteEmail(string $userId): string
+    {
+        $user = $this->getUser($userId, $this->defaultAdminAuth);
+        self::assertIsObject($user);
+
+        self::$mailClient->deleteMails();
+        self::$client->request(new SendInviteMail([
+            'userId' => $userId,
+            'targetPath' => '/nowhere'
+        ]), $this->defaultAdminAuth);
+
+        $mails = self::waitForMailsToArrive();
+
+        self::assertCount(1, $mails);
+        $mail = current($mails);
+        self::assertIsObject($mail);
+        $recipients = $mail->to;
+        self::assertCount(1, $recipients);
+        $recipient = current($recipients);
+        self::assertIsObject($recipient);
+        self::assertEquals($user->email, $recipient->address);
+
+        return $userId;
+    }
+
+    public function testAccessTokensCanBeInvalidated(): void
+    {
+        $id = IdGenerator::generate();
+        $email = 'walter.jr.white@example.com';
+        $password = self::generatePassword();
+        $role = 'team_manager';
+        $firstName = 'Walter Junior';
+        $lastName = 'White';
+        $teamIds = [];
+
+        self::assertNull($this->getUser($id, $this->defaultAdminAuth));
+
+        self::$client->request(new CreateUser([
+            'id' => $id,
+            'email' => $email,
+            'password' => $password,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'role' => $role,
+            'teamIds' => $teamIds
+        ]), $this->defaultAdminAuth);
+
+        sleep(1); // Workaround for issue "Password has changed after token has been issued"
+
+        $bearerAuth = self::$client->authenticate(new BasicAuth($email, $password));
+
+        self::$client->request(new InvalidateAccessTokens([
+            'userId' => $id
+        ]), $bearerAuth);
+
+        $this->expectClientException();
+        $this->getUser($id, $bearerAuth);
+    }
+
+    /**
+     * @depends testSendingInviteEmail
      * @param string $id
      */
     public function testUserCanBeDeleted(string $id): void
