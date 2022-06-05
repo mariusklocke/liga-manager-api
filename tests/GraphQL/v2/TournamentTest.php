@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
-use DateTime;
+use DateTimeImmutable;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTournament;
@@ -65,8 +65,8 @@ class TournamentTest extends CompetitionTest
     public function testMatchDaysCanBeCreated(string $tournamentId): string
     {
         $matchDayId = IdGenerator::generate();
-        $startDate = new DateTime('next saturday');
-        $endDate = (clone $startDate)->modify('+1 day');
+        $startDate = new DateTimeImmutable('next saturday');
+        $endDate = $startDate->modify('+1 day');
         $datePeriod = ['from' => $this->formatDate($startDate), 'to' => $this->formatDate($endDate)];
         $number = 1;
 
@@ -97,8 +97,8 @@ class TournamentTest extends CompetitionTest
         self::assertIsObject($matchDay);
 
         $updatedDatePeriod = [
-            'from' => (new \DateTimeImmutable($matchDay->startDate))->modify('+1 week'),
-            'to' => (new \DateTimeImmutable($matchDay->endDate))->modify('+1 week')
+            'from' => (new DateTimeImmutable($matchDay->startDate))->modify('+1 week'),
+            'to' => (new DateTimeImmutable($matchDay->endDate))->modify('+1 week')
         ];
 
         self::$client->request(new UpdateMatchDay([
@@ -128,9 +128,8 @@ class TournamentTest extends CompetitionTest
     public function testMatchDaysCanDeDeleted(string $tournamentId): string
     {
         $matchDayId = IdGenerator::generate();
-        $startDate = new DateTime('next saturday');
-        $startDate->modify('+1 week');
-        $endDate = (clone $startDate)->modify('+1 day');
+        $startDate = (new DateTimeImmutable('next saturday'))->modify('+1 week');
+        $endDate = $startDate->modify('+1 day');
         $datePeriod = ['from' => $this->formatDate($startDate), 'to' => $this->formatDate($endDate)];
         $number = 2;
 
