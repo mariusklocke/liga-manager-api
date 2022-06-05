@@ -563,8 +563,6 @@ class SeasonTest extends CompetitionTest
         $position = array_shift($positions);
         self::assertSame(-5, $position->points);
 
-        $this->markTestIncomplete('DeleteRankingPenalty not implemented yet');
-
         self::$client->request(new DeleteRankingPenalty([
             'id' => $penaltyId
         ]), $this->defaultAdminAuth);

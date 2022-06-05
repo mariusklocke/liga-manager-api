@@ -20,6 +20,7 @@ use HexagonalPlayground\Application\Repository\EventRepositoryInterface;
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
+use HexagonalPlayground\Application\Repository\RankingPenaltyRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
@@ -33,6 +34,7 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayReposi
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\PitchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\PublicKeyCredentialRepository;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\RankingPenaltyRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
@@ -123,6 +125,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             MatchRepositoryInterface::class => DI\get(MatchRepository::class),
             MatchDayRepositoryInterface::class => DI\get(MatchDayRepository::class),
             PitchRepositoryInterface::class => DI\get(PitchRepository::class),
+            RankingPenaltyRepositoryInterface::class => DI\get(RankingPenaltyRepository::class),
             SeasonRepositoryInterface::class => DI\get(SeasonRepository::class),
             TeamRepositoryInterface::class => DI\get(TeamRepository::class),
             TournamentRepositoryInterface::class => DI\get(TournamentRepository::class),

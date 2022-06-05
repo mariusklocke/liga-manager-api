@@ -66,4 +66,20 @@ class RankingPenalty extends Entity
     {
         return $this->points;
     }
+
+    /**
+     * @return Ranking
+     */
+    public function getRanking(): Ranking
+    {
+        return $this->ranking;
+    }
+
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
 }

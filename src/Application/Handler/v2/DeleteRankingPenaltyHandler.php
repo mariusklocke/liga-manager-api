@@ -5,11 +5,20 @@ namespace HexagonalPlayground\Application\Handler\v2;
 use HexagonalPlayground\Application\Command\v2\DeleteRankingPenaltyCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
 use HexagonalPlayground\Application\Permission\IsAdmin;
+use HexagonalPlayground\Application\Repository\RankingPenaltyRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
+use HexagonalPlayground\Domain\RankingPenalty;
 
 class DeleteRankingPenaltyHandler implements AuthAwareHandler
 {
+    private RankingPenaltyRepositoryInterface $rankingPenaltyRepository;
+
+    public function __construct(RankingPenaltyRepositoryInterface $rankingPenaltyRepository)
+    {
+        $this->rankingPenaltyRepository = $rankingPenaltyRepository;
+    }
+
     /**
      * @param DeleteRankingPenaltyCommand $command
      * @param AuthContext $authContext
@@ -20,8 +29,20 @@ class DeleteRankingPenaltyHandler implements AuthAwareHandler
         $isAdmin = new IsAdmin($authContext->getUser());
         $isAdmin->check();
 
-        // TODO: Implement with custom repository
+        /** @var RankingPenalty $penalty */
+        $penalty = $this->rankingPenaltyRepository->find($command->getId());
+        $ranking = $penalty->getRanking();
+        $ranking->removePenalty($penalty);
 
-        return [];
+        $events = [];
+        $events[] = new Event('ranking:penalty:removed', [
+            'seasonId'   => $ranking->getSeason()->getId(),
+            'teamId'     => $penalty->getTeam()->getId(),
+            'reason'     => $penalty->getReason(),
+            'points'     => $penalty->getPoints(),
+            'userId'     => $authContext->getUser()->getId()
+        ]);
+
+        return $events;
     }
 }

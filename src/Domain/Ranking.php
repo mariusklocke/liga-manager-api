@@ -160,4 +160,12 @@ class Ranking
 
         return $this->positions[$teamId];
     }
+
+    /**
+     * @return Season
+     */
+    public function getSeason(): Season
+    {
+        return $this->season;
+    }
 }
