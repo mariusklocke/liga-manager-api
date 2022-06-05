@@ -36,9 +36,12 @@ class TournamentType extends ObjectType implements QueryTypeInterface
                         'resolve' => function (array $root, $args, AppContext $context) {
                             /** @var BufferedMatchDayLoader $loader */
                             $loader = $context->getContainer()->get(BufferedMatchDayLoader::class);
+                            /** @var FieldNameConverter $converter */
+                            $converter = $context->getContainer()->get(FieldNameConverter::class);
+
                             $loader->addTournament($root['id']);
-                            return new Deferred(function() use ($root, $loader) {
-                                return $loader->getByTournament($root['id']);
+                            return new Deferred(function() use ($root, $loader, $converter) {
+                                return $converter->convert($loader->getByTournament($root['id']));
                             });
                         }
                     ]

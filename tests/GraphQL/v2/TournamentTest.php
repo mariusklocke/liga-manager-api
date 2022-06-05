@@ -9,6 +9,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteTournament;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateTournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Tournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\TournamentList;
@@ -84,7 +85,43 @@ class TournamentTest extends CompetitionTest
     }
 
     /**
-     * @depends testTournamentCanBeUpdated
+     * @depends testMatchDaysCanBeCreated
+     * @param string $tournamentId
+     * @return string
+     */
+    public function testMatchDaysCanBeUpdated(string $tournamentId): string
+    {
+        $tournament = $this->getTournament($tournamentId);
+        self::assertIsObject($tournament);
+        $matchDay = $this->getMatchDayByNumber($tournament, 1);
+        self::assertIsObject($matchDay);
+
+        $updatedDatePeriod = [
+            'from' => (new \DateTimeImmutable($matchDay->startDate))->modify('+1 week'),
+            'to' => (new \DateTimeImmutable($matchDay->endDate))->modify('+1 week')
+        ];
+
+        self::$client->request(new UpdateMatchDay([
+            'id' => $matchDay->id,
+            'datePeriod' => [
+                'from' => self::formatDate($updatedDatePeriod['from']),
+                'to' => self::formatDate($updatedDatePeriod['to'])
+            ]
+        ]), $this->defaultAdminAuth);
+
+        $tournament = $this->getTournament($tournamentId);
+        self::assertIsObject($tournament);
+        $matchDay = $this->getMatchDayByNumber($tournament, 1);
+        self::assertIsObject($matchDay);
+
+        self::assertEquals(self::formatDate($updatedDatePeriod['from']), $matchDay->startDate);
+        self::assertEquals(self::formatDate($updatedDatePeriod['to']), $matchDay->endDate);
+
+        return $tournamentId;
+    }
+
+    /**
+     * @depends testMatchDaysCanBeUpdated
      * @param string $tournamentId
      * @return string
      */

@@ -16,6 +16,8 @@ class Tournament extends Query
                 'matchDays' => [
                     'id',
                     'number',
+                    'startDate',
+                    'endDate',
                     'matches' => [
                         'id'
                     ]
