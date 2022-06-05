@@ -2,9 +2,12 @@
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use DateTime;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTournament;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteMatch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteTournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateTournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Tournament;
@@ -61,7 +64,7 @@ class TournamentTest extends CompetitionTest
     public function testMatchDaysCanBeCreated(string $tournamentId): string
     {
         $matchDayId = IdGenerator::generate();
-        $startDate = new \DateTime('next saturday');
+        $startDate = new DateTime('next saturday');
         $endDate = (clone $startDate)->modify('+1 day');
         $datePeriod = ['from' => $this->formatDate($startDate), 'to' => $this->formatDate($endDate)];
         $number = 1;
@@ -76,6 +79,44 @@ class TournamentTest extends CompetitionTest
         $tournament = $this->getTournament($tournamentId);
         self::assertIsObject($tournament);
         self::assertCount(1, $tournament->matchDays);
+
+        return $tournamentId;
+    }
+
+    /**
+     * @depends testTournamentCanBeUpdated
+     * @param string $tournamentId
+     * @return string
+     */
+    public function testMatchDaysCanDeDeleted(string $tournamentId): string
+    {
+        $matchDayId = IdGenerator::generate();
+        $startDate = new DateTime('next saturday');
+        $startDate->modify('+1 week');
+        $endDate = (clone $startDate)->modify('+1 day');
+        $datePeriod = ['from' => $this->formatDate($startDate), 'to' => $this->formatDate($endDate)];
+        $number = 2;
+
+        self::$client->request(new CreateMatchDay([
+            'id' => $matchDayId,
+            'tournamentId' => $tournamentId,
+            'number' => $number,
+            'datePeriod' => $datePeriod
+        ]), $this->defaultAdminAuth);
+
+        $tournament = $this->getTournament($tournamentId);
+        self::assertIsObject($tournament);
+        $matchDay = $this->getMatchDayByNumber($tournament, 2);
+        self::assertIsObject($matchDay);
+
+        self::$client->request(new DeleteMatchDay([
+            'id' => $matchDayId
+        ]), $this->defaultAdminAuth);
+
+        $tournament = $this->getTournament($tournamentId);
+        self::assertIsObject($tournament);
+        $matchDay = $this->getMatchDayByNumber($tournament, 2);
+        self::assertNull($matchDay);
 
         return $tournamentId;
     }
@@ -116,6 +157,38 @@ class TournamentTest extends CompetitionTest
 
     /**
      * @depends testMatchesCanBeCreated
+     * @param string $tournamentId
+     * @return string
+     */
+    public function testMatchesCanBeDeleted(string $tournamentId): string
+    {
+        $tournament = $this->getTournament($tournamentId);
+        self::assertIsObject($tournament);
+
+        self::assertNotEmpty($tournament->matchDays);
+        foreach ($tournament->matchDays as $matchDay) {
+            self::assertNotEmpty($matchDay->matches);
+
+            foreach ($matchDay->matches as $match) {
+                self::$client->request(new DeleteMatch([
+                    'id' => $match->id
+                ]), $this->defaultAdminAuth);
+            }
+        }
+
+        $tournament = $this->getTournament($tournamentId);
+        self::assertIsObject($tournament);
+
+        self::assertNotEmpty($tournament->matchDays);
+        foreach ($tournament->matchDays as $matchDay) {
+            self::assertEmpty($matchDay->matches);
+        }
+
+        return $tournamentId;
+    }
+
+    /**
+     * @depends testMatchesCanBeDeleted
      * @param string $id
      */
     public function testTournamentCanBeDeleted(string $id): void
@@ -152,5 +225,16 @@ class TournamentTest extends CompetitionTest
     private function getTournament(string $id): ?object
     {
         return self::$client->request(new Tournament(['id' => $id]));
+    }
+
+    private function getMatchDayByNumber(object $tournament, int $number): ?object
+    {
+        foreach ($tournament->matchDays as $matchDay) {
+            if ($matchDay->number === $number) {
+                return $matchDay;
+            }
+        }
+
+        return null;
     }
 }
