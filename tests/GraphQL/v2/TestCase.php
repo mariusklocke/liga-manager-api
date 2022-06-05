@@ -9,6 +9,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\AdvancedClient;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception as ClientException;
+use HexagonalPlayground\Tests\Framework\MaildevClient;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -16,11 +17,18 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected static ?AdvancedClient $client = null;
 
+    protected static ?MaildevClient $mailClient = null;
+
     protected function setUp(): void
     {
         if (null === self::$client) {
             self::$client = new AdvancedClient();
         }
+
+        if (null === self::$mailClient) {
+            self::$mailClient = new MaildevClient();
+        }
+
         $this->defaultAdminAuth = self::$client->authenticate(new BasicAuth(
             Environment::get('ADMIN_EMAIL'),
             Environment::get('ADMIN_PASSWORD')

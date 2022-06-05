@@ -7,6 +7,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Auth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteUser;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\SendPasswordResetMail;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUserPassword;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\User;
@@ -122,6 +123,43 @@ class UserTest extends TestCase
 
     /**
      * @depends testUserCanBeUpdated
+     * @param string $userId
+     * @return string
+     */
+    public function testPasswordResetSendsAnEmail(string $userId): string
+    {
+        $user = $this->getUser($userId, $this->defaultAdminAuth);
+        self::assertIsObject($user);
+
+        self::$mailClient->deleteMails();
+        self::$client->request(new SendPasswordResetMail([
+            'email' => $user->email,
+            'targetPath' => '/straight/to/hell'
+        ]));
+
+        $startTime = microtime(true);
+        do {
+            if (microtime(true) - $startTime > 15) {
+                throw new \Exception('Timeout while waiting for password reset mail to arrive');
+            }
+            $mails = self::$mailClient->getMails();
+            sleep(1);
+        } while (count($mails) === 0);
+
+        self::assertCount(1, $mails);
+        $mail = current($mails);
+        self::assertIsObject($mail);
+        $recipients = $mail->to;
+        self::assertCount(1, $recipients);
+        $recipient = current($recipients);
+        self::assertIsObject($recipient);
+        self::assertEquals($user->email, $recipient->address);
+
+        return $userId;
+    }
+
+    /**
+     * @depends testPasswordResetSendsAnEmail
      * @param string $id
      */
     public function testUserCanBeDeleted(string $id): void
