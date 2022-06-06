@@ -61,6 +61,28 @@ class UserTest extends TestCase
     /**
      * @depends testUserCanBeCreated
      * @param object $user
+     */
+    public function testChangingUserPasswordFailsIfOldPasswordWrong(object $user): void
+    {
+        $email = $user->email;
+        $id = $user->id;
+        $oldPassword = $user->password;
+        $newPassword = DataGenerator::generatePassword();
+
+        $userAuth = self::$client->authenticate(new BasicAuth($email, $oldPassword));
+
+        $this->expectClientException();
+
+        self::$client->request(new UpdateUserPassword([
+            'id' => $id,
+            'oldPassword' => $oldPassword . '_invalid',
+            'newPassword' => $newPassword
+        ]), $userAuth);
+    }
+
+    /**
+     * @depends testUserCanBeCreated
+     * @param object $user
      * @return string
      */
     public function testUserCanChangePassword(object $user): string
@@ -96,7 +118,7 @@ class UserTest extends TestCase
     public function testUserCanBeUpdated(string $id): string
     {
         $email = DataGenerator::generateEmail();
-        $role = 'team_manager';
+        $role = 'admin';
         $firstName = DataGenerator::generateString(8);
         $lastName = DataGenerator::generateString(8);
         $teamIds = [];
