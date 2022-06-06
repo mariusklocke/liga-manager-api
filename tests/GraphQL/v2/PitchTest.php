@@ -3,23 +3,20 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeletePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdatePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Pitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\PitchList;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
-use stdClass;
 
 class PitchTest extends TestCase
 {
     public function testPitchCanBeCreated(): string
     {
-        $id = IdGenerator::generate();
-        $label = __METHOD__;
-        $location = new stdClass();
-        $location->latitude = 89.99;
-        $location->longitude = 6.78;
+        $id = DataGenerator::generateId();
+        $label = DataGenerator::generateString(8);
+        $location = DataGenerator::generateGeoLocation();
 
         self::assertNull($this->getPitch($id));
 
@@ -46,10 +43,8 @@ class PitchTest extends TestCase
      */
     public function testPitchCanBeUpdated(string $id): string
     {
-        $label = __METHOD__;
-        $location = new stdClass();
-        $location->latitude = 12.34;
-        $location->longitude = 5.99;
+        $label = DataGenerator::generateString(8);
+        $location = DataGenerator::generateGeoLocation();
 
         self::$client->request(new UpdatePitch([
             'id' => $id,

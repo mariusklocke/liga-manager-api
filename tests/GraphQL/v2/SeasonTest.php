@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CancelMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateRankingPenalty;
@@ -20,15 +21,14 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\MatchList;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\MatchQuery;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Season;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\SeasonList;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
 use Iterator;
 
 class SeasonTest extends CompetitionTest
 {
     public function testSeasonCanBeCreated(): string
     {
-        $id = IdGenerator::generate();
-        $name = __METHOD__;
+        $id = DataGenerator::generateId();
+        $name = DataGenerator::generateString(8);
 
         self::$client->request(new CreateSeason([
             'id' => $id,
@@ -62,8 +62,8 @@ class SeasonTest extends CompetitionTest
 
     public function testTeamsInSeasonCanBeChanged(): void
     {
-        $id = IdGenerator::generate();
-        $name = __METHOD__;
+        $id = DataGenerator::generateId();
+        $name = DataGenerator::generateString(8);
 
         self::$client->request(new CreateSeason([
             'id' => $id,
@@ -112,11 +112,12 @@ class SeasonTest extends CompetitionTest
     public function testMatchDaysCanBeGenerated(): string
     {
         $matchDayDates = iterator_to_array($this->generateMatchDayDates(count(self::$teamIds) - 1));
-        $seasonId = IdGenerator::generate();
+        $seasonId = DataGenerator::generateId();
+        $seasonName = DataGenerator::generateString(8);
 
         self::$client->request(new CreateSeason([
             'id' => $seasonId,
-            'name' => __METHOD__,
+            'name' => $seasonName,
             'teamIds' => self::$teamIds
         ]), $this->defaultAdminAuth);
 
@@ -310,10 +311,11 @@ class SeasonTest extends CompetitionTest
 
         $matchId = $season->matchDays[0]->matches[0]->id;
 
-        $pitchId = IdGenerator::generate();
+        $pitchId = DataGenerator::generateId();
+        $label = DataGenerator::generateString(8);
         self::$client->request(new CreatePitch([
             'id' => $pitchId,
-            'label' => __METHOD__
+            'label' => $label
         ]), $this->defaultAdminAuth);
 
         self::$client->request(new LocateMatch([
@@ -541,7 +543,7 @@ class SeasonTest extends CompetitionTest
      */
     public function testPenaltiesAffectRanking(string $seasonId): string
     {
-        $penaltyId = IdGenerator::generate();
+        $penaltyId = DataGenerator::generateId();
         $teamId = self::$spareTeamIds[0];
 
         self::$client->request(new CreateRankingPenalty([

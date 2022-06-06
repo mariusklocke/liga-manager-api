@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateMatch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTournament;
@@ -13,14 +14,13 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateTournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Tournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\TournamentList;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class TournamentTest extends CompetitionTest
 {
     public function testTournamentCanBeCreated(): string
     {
-        $id = IdGenerator::generate();
-        $name = __METHOD__;
+        $id = DataGenerator::generateId();
+        $name = DataGenerator::generateString(8);
 
         self::$client->request(new CreateTournament([
             'id' => $id,
@@ -42,7 +42,7 @@ class TournamentTest extends CompetitionTest
      */
     public function testTournamentCanBeUpdated(string $id): string
     {
-        $name = __METHOD__;
+        $name = DataGenerator::generateString(8);
 
         self::$client->request(new UpdateTournament([
             'id' => $id,
@@ -64,7 +64,7 @@ class TournamentTest extends CompetitionTest
      */
     public function testMatchDaysCanBeCreated(string $tournamentId): string
     {
-        $matchDayId = IdGenerator::generate();
+        $matchDayId = DataGenerator::generateId();
         $startDate = new DateTimeImmutable('next saturday');
         $endDate = $startDate->modify('+1 day');
         $datePeriod = ['from' => $this->formatDate($startDate), 'to' => $this->formatDate($endDate)];
@@ -127,7 +127,7 @@ class TournamentTest extends CompetitionTest
      */
     public function testMatchDaysCanDeDeleted(string $tournamentId): string
     {
-        $matchDayId = IdGenerator::generate();
+        $matchDayId = DataGenerator::generateId();
         $startDate = (new DateTimeImmutable('next saturday'))->modify('+1 week');
         $endDate = $startDate->modify('+1 day');
         $datePeriod = ['from' => $this->formatDate($startDate), 'to' => $this->formatDate($endDate)];
@@ -171,7 +171,7 @@ class TournamentTest extends CompetitionTest
 
         foreach (array_chunk(self::$teamIds, 2) as $chunk) {
             list($homeTeamId, $guestTeamId) = $chunk;
-            $matchId = IdGenerator::generate();
+            $matchId = DataGenerator::generateId();
 
             self::$client->request(new CreateMatch([
                 'id' => $matchId,

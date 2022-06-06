@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Auth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
@@ -14,18 +15,17 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateUserPassword;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\User;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\UserList;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 class UserTest extends TestCase
 {
     public function testUserCanBeCreated(): object
     {
-        $id = IdGenerator::generate();
-        $email = 'skyler.white@example.com';
-        $password = self::generatePassword();
+        $id = DataGenerator::generateId();
+        $email = DataGenerator::generateEmail();
+        $password = DataGenerator::generatePassword();
         $role = 'team_manager';
-        $firstName = 'Skyler';
-        $lastName = 'White';
+        $firstName = DataGenerator::generateString(8);
+        $lastName = DataGenerator::generateString(8);
         $teamIds = [];
 
         self::assertNull($this->getUser($id, $this->defaultAdminAuth));
@@ -68,7 +68,7 @@ class UserTest extends TestCase
         $email = $user->email;
         $id = $user->id;
         $oldPassword = $user->password;
-        $newPassword = self::generatePassword();
+        $newPassword = DataGenerator::generatePassword();
 
         $userAuth = self::$client->authenticate(new BasicAuth($email, $oldPassword));
 
@@ -95,10 +95,10 @@ class UserTest extends TestCase
      */
     public function testUserCanBeUpdated(string $id): string
     {
-        $email = 'jessie.pinkman@example.com';
+        $email = DataGenerator::generateEmail();
         $role = 'team_manager';
-        $firstName = 'Jessie';
-        $lastName = 'Pinkman';
+        $firstName = DataGenerator::generateString(8);
+        $lastName = DataGenerator::generateString(8);
         $teamIds = [];
 
         self::$client->request(new UpdateUser([
@@ -157,7 +157,7 @@ class UserTest extends TestCase
     {
         self::$mailClient->deleteMails();
         self::$client->request(new SendPasswordResetMail([
-            'email' => 'mister.secret@example.com',
+            'email' => DataGenerator::generateEmail(),
             'targetPath' => '/nowhere'
         ]));
 
@@ -198,12 +198,12 @@ class UserTest extends TestCase
 
     public function testAccessTokensCanBeInvalidated(): void
     {
-        $id = IdGenerator::generate();
-        $email = 'walter.jr.white@example.com';
-        $password = self::generatePassword();
+        $id = DataGenerator::generateId();
+        $email = DataGenerator::generateEmail();
+        $password = DataGenerator::generatePassword();
         $role = 'team_manager';
-        $firstName = 'Walter Junior';
-        $lastName = 'White';
+        $firstName = DataGenerator::generateString(8);
+        $lastName = DataGenerator::generateString(8);
         $teamIds = [];
 
         self::assertNull($this->getUser($id, $this->defaultAdminAuth));
@@ -277,10 +277,5 @@ class UserTest extends TestCase
     private function getUser(?string $id = null, ?Auth $auth = null): ?object
     {
         return self::$client->request(new User(['id' => $id]), $auth);
-    }
-
-    private static function generatePassword(): string
-    {
-        return bin2hex(random_bytes(8));
     }
 }

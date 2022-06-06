@@ -2,11 +2,11 @@
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
 use Iterator;
 
 abstract class CompetitionTest extends TestCase
@@ -45,10 +45,11 @@ abstract class CompetitionTest extends TestCase
     private function generateTeams(int $count): Iterator
     {
         for ($i = 1; $i <= $count; $i++) {
-            $id = IdGenerator::generate();
+            $id = DataGenerator::generateId();
+            $name = DataGenerator::generateString(8);
             self::$client->request(new CreateTeam([
                 'id' => $id,
-                'name' => $id
+                'name' => $name
             ]), $this->defaultAdminAuth);
             yield $id;
         }
@@ -57,9 +58,9 @@ abstract class CompetitionTest extends TestCase
     private function generateTeamsManagers(array $teamIds): Iterator
     {
         foreach ($teamIds as $teamId) {
-            $userId = IdGenerator::generate();
-            $email = $userId . '@example.com';
-            $password = self::generatePassword();
+            $userId = DataGenerator::generateId();
+            $email = DataGenerator::generateEmail();
+            $password = DataGenerator::generatePassword();
 
             self::$client->request(new CreateUser([
                 'id' => $userId,
@@ -78,17 +79,13 @@ abstract class CompetitionTest extends TestCase
     private function generatePitches(int $count): Iterator
     {
         for ($i = 1; $i <= $count; $i++) {
-            $id = IdGenerator::generate();
+            $id = DataGenerator::generateId();
+            $label = DataGenerator::generateString(8);
             self::$client->request(new CreatePitch([
                 'id' => $id,
-                'label' => $id
+                'label' => $label
             ]), $this->defaultAdminAuth);
             yield $id;
         }
-    }
-
-    private static function generatePassword(): string
-    {
-        return bin2hex(random_bytes(8));
     }
 }

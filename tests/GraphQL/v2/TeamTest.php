@@ -3,25 +3,25 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Team;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\TeamList;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
 use stdClass;
 
 class TeamTest extends TestCase
 {
     public function testTeamCanBeCreated(): string
     {
-        $id = IdGenerator::generate();
-        $name = __METHOD__;
+        $id = DataGenerator::generateId();
+        $name = DataGenerator::generateString(8);
         $contact = new stdClass();
-        $contact->firstName = 'Marty';
-        $contact->lastName = 'McFly';
-        $contact->phone = '0123456';
-        $contact->email = 'marty@example.com';
+        $contact->firstName = DataGenerator::generateString(8);
+        $contact->lastName = DataGenerator::generateString(8);
+        $contact->phone = DataGenerator::generateString(8);
+        $contact->email = DataGenerator::generateEmail();
 
         self::assertNull($this->getTeam($id));
         self::$client->request(new CreateTeam([
@@ -48,12 +48,12 @@ class TeamTest extends TestCase
      */
     public function testTeamCanBeUpdated(string $id): string
     {
-        $name = __METHOD__;
+        $name = DataGenerator::generateString(8);
         $contact = new stdClass();
-        $contact->firstName = 'Walter';
-        $contact->lastName = 'White';
-        $contact->phone = '911';
-        $contact->email = 'walter.white@example.com';
+        $contact->firstName = DataGenerator::generateString(8);
+        $contact->lastName = DataGenerator::generateString(8);
+        $contact->phone = DataGenerator::generateString(8);
+        $contact->email = DataGenerator::generateEmail();
 
         self::$client->request(new UpdateTeam([
             'id' => $id,
