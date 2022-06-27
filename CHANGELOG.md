@@ -2,6 +2,10 @@
 
 ## NEXT
 
+## 1.12.3 - 2022-06-27
+* Improvement: Updated PHAR tools
+* Improvement: Updated composer libraries
+
 ## 1.12.2 - 2022-05-09
 * Improvement: Updated PHAR tools
 * Improvement: Updated composer libraries
