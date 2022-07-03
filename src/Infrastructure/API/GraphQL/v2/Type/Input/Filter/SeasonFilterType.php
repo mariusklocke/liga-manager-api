@@ -16,6 +16,9 @@ class SeasonFilterType extends InputObjectType
                 return [
                     'states' => [
                         'type' => Type::listOf(TypeRegistry::get(SeasonStateType::class))
+                    ],
+                    'namePattern' => [
+                        'type' => Type::string()
                     ]
                 ];
             }

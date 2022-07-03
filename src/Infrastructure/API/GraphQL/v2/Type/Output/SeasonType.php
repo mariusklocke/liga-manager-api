@@ -17,6 +17,7 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\PatternFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\RankingRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\SeasonRepository;
 use Iterator;
@@ -138,6 +139,9 @@ class SeasonType extends ObjectType implements QueryTypeInterface
     {
         if (isset($values['states'])) {
             yield new EqualityFilter('state', Filter::MODE_INCLUDE, $values['states']);
+        }
+        if (isset($values['namePattern'])) {
+            yield new PatternFilter('name', Filter::MODE_INCLUDE, $values['namePattern']);
         }
     }
 }

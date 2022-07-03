@@ -684,7 +684,8 @@ class SeasonTest extends CompetitionTest
             'states' => ['preparation']
         ]];
         yield 'complete filter' => [[
-            'states' => ['preparation', 'progress', 'ended']
+            'states' => ['preparation', 'progress', 'ended'],
+            'namePattern' => '*'
         ]];
     }
 
