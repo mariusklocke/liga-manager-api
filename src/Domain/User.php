@@ -258,4 +258,12 @@ class User extends Entity
             return $team->getId();
         }, $this->teams->toArray());
     }
+
+    /**
+     * @param Team $team
+     */
+    public function removeTeam(Team $team): void
+    {
+        $this->teams->remove($team->getId());
+    }
 }

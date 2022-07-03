@@ -62,32 +62,22 @@ class UpdateUserHandler implements AuthAwareHandler
         $user->setFirstName($command->getFirstName());
         $user->setLastName($command->getLastName());
 
-        if (!$this->areArraysEqual($command->getTeamIds(), $user->getTeamIds())) {
-            $isAdmin->check();
+        // Add teams
+        foreach (array_diff($command->getTeamIds(), $user->getTeamIds()) as $teamId) {
+            /** @var Team $team */
+            $team = $this->teamRepository->find($teamId);
+            $user->addTeam($team);
+        }
 
-            $user->clearTeams();
-            foreach ($command->getTeamIds() as $teamId) {
-                /** @var Team $team */
-                $team = $this->teamRepository->find($teamId);
-                $user->addTeam($team);
-            }
+        // Remove teams
+        foreach (array_diff($user->getTeamIds(), $command->getTeamIds()) as $teamId) {
+            /** @var Team $team */
+            $team = $this->teamRepository->find($teamId);
+            $user->removeTeam($team);
         }
 
         $this->userRepository->save($user);
 
         return [];
-    }
-
-    private function areArraysEqual(array $array1, array $array2): bool
-    {
-        if (count(array_diff($array1, $array2)) > 0) {
-            return false;
-        }
-
-        if (count(array_diff($array2, $array1)) > 0) {
-            return false;
-        }
-
-        return true;
     }
 }
