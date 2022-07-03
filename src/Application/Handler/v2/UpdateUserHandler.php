@@ -62,15 +62,17 @@ class UpdateUserHandler implements AuthAwareHandler
         $user->setFirstName($command->getFirstName());
         $user->setLastName($command->getLastName());
 
-        // Add teams
+        // Adding teams requires admin rights
         foreach (array_diff($command->getTeamIds(), $user->getTeamIds()) as $teamId) {
+            $isAdmin->check();
             /** @var Team $team */
             $team = $this->teamRepository->find($teamId);
             $user->addTeam($team);
         }
 
-        // Remove teams
+        // Removing teams requires admin rights
         foreach (array_diff($user->getTeamIds(), $command->getTeamIds()) as $teamId) {
+            $isAdmin->check();
             /** @var Team $team */
             $team = $this->teamRepository->find($teamId);
             $user->removeTeam($team);
