@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Tests\GraphQL\v2;
 use DateTimeImmutable;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CancelMatch;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateMatchDay;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreatePitch;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateRankingPenalty;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateSeason;
@@ -107,6 +108,36 @@ class SeasonTest extends CompetitionTest
         $season = $this->getSeason($id);
         self::assertIsObject($season);
         self::assertCount(0, $season->teams);
+    }
+
+    public function testMatchDaysCanBeCreated(): void
+    {
+        $seasonId = DataGenerator::generateId();
+
+        self::$client->request(new CreateSeason([
+            'id' => $seasonId,
+            'name' => DataGenerator::generateString(8),
+            'teamIds' => self::$teamIds
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+
+        $matchDayId = DataGenerator::generateId();
+        $startDate = new DateTimeImmutable('next saturday');
+        $endDate = $startDate->modify('+1 day');
+        $datePeriod = ['from' => $this->formatDate($startDate), 'to' => $this->formatDate($endDate)];
+
+        self::$client->request(new CreateMatchDay([
+            'id' => $matchDayId,
+            'seasonId' => $seasonId,
+            'number' => 1,
+            'datePeriod' => $datePeriod
+        ]), $this->defaultAdminAuth);
+
+        $season = $this->getSeason($seasonId);
+        self::assertIsObject($season);
+        self::assertCount(1, $season->matchDays);
     }
 
     public function testMatchDaysCanBeGenerated(): string
