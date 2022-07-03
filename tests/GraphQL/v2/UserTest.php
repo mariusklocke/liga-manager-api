@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Tests\GraphQL\v2;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Auth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
+use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\DeleteUser;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\InvalidateAccessTokens;
@@ -26,7 +27,7 @@ class UserTest extends TestCase
         $role = 'team_manager';
         $firstName = DataGenerator::generateString(8);
         $lastName = DataGenerator::generateString(8);
-        $teamIds = [];
+        $teamIds = [$this->createTeam()];
 
         self::assertNull($this->getUser($id, $this->defaultAdminAuth));
 
@@ -121,7 +122,7 @@ class UserTest extends TestCase
         $role = 'admin';
         $firstName = DataGenerator::generateString(8);
         $lastName = DataGenerator::generateString(8);
-        $teamIds = [];
+        $teamIds = [$this->createTeam()];
 
         self::$client->request(new UpdateUser([
             'id' => $id,
@@ -333,5 +334,17 @@ class UserTest extends TestCase
     private function getUser(?string $id = null, ?Auth $auth = null): ?object
     {
         return self::$client->request(new User(['id' => $id]), $auth);
+    }
+
+    private function createTeam(): string
+    {
+        $id = DataGenerator::generateId();
+
+        self::$client->request(new CreateTeam([
+            'id' => $id,
+            'name' => DataGenerator::generateString(8)
+        ]), $this->defaultAdminAuth);
+
+        return $id;
     }
 }
