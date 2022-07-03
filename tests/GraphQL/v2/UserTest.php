@@ -218,7 +218,7 @@ class UserTest extends TestCase
         return $userId;
     }
 
-    public function testAccessTokensCanBeInvalidated(): void
+    public function testAccessTokensCanBeInvalidatedByUser(): void
     {
         $id = DataGenerator::generateId();
         $email = DataGenerator::generateEmail();
@@ -247,6 +247,40 @@ class UserTest extends TestCase
         self::$client->request(new InvalidateAccessTokens([
             'userId' => $id
         ]), $bearerAuth);
+
+        $this->expectClientException();
+        $this->getUser($id, $bearerAuth);
+    }
+
+    public function testAccessTokensCanBeInvalidatedByAdmin(): void
+    {
+        $id = DataGenerator::generateId();
+        $email = DataGenerator::generateEmail();
+        $password = DataGenerator::generatePassword();
+        $role = 'team_manager';
+        $firstName = DataGenerator::generateString(8);
+        $lastName = DataGenerator::generateString(8);
+        $teamIds = [];
+
+        self::assertNull($this->getUser($id, $this->defaultAdminAuth));
+
+        self::$client->request(new CreateUser([
+            'id' => $id,
+            'email' => $email,
+            'password' => $password,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'role' => $role,
+            'teamIds' => $teamIds
+        ]), $this->defaultAdminAuth);
+
+        sleep(1); // Workaround for issue "Password has changed after token has been issued"
+
+        $bearerAuth = self::$client->authenticate(new BasicAuth($email, $password));
+
+        self::$client->request(new InvalidateAccessTokens([
+            'userId' => $id
+        ]), $this->defaultAdminAuth);
 
         $this->expectClientException();
         $this->getUser($id, $bearerAuth);
