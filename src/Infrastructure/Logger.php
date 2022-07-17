@@ -2,6 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure;
 
+use InvalidArgumentException;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 use RecursiveArrayIterator;
@@ -28,18 +29,29 @@ class Logger extends AbstractLogger
 
     private static ?Logger $instance = null;
 
-    public function __construct()
+    private function __construct($stream, string $minLevel)
     {
-        $this->stream = STDOUT;
-        $this->minLevel = getenv('LOG_LEVEL') ?: LogLevel::NOTICE;
+        if (!is_resource($stream)) {
+            throw new InvalidArgumentException('Invalid argument: stream is not a resource');
+        }
+
+        if (!array_key_exists($minLevel, self::$severityMap)) {
+            throw new InvalidArgumentException('Invalid argument: minLevel is not a valid log level');
+        }
+
+        $this->stream = $stream;
+        $this->minLevel = $minLevel;
+    }
+
+    public static function init($stream, $minLevel): self
+    {
+        self::$instance = new self($stream, $minLevel);
+
+        return self::$instance;
     }
 
     public static function getInstance(): self
     {
-        if (self::$instance === null) {
-            self::$instance = new self;
-        }
-
         return self::$instance;
     }
 
