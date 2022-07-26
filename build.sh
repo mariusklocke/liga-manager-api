@@ -93,6 +93,9 @@ docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml
 set +x
 
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
+    # Workaround for git's "dubious ownership" issue
+    docker exec -t php git config --global --add safe.directory /var/www/api
+
     # Upload coverage report to coveralls.io
     docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php \
         php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
