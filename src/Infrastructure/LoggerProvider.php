@@ -13,7 +13,7 @@ class LoggerProvider implements ServiceProviderInterface
     {
         return [
             LoggerInterface::class => DI\factory(function () {
-                Logger::init(STDOUT, getenv('LOG_LEVEL') ?: 'notice');
+                Logger::init(fopen('php://stdout', 'w'), getenv('LOG_LEVEL') ?: 'notice');
 
                 return Logger::getInstance();
             })
