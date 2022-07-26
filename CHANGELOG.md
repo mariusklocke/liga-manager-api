@@ -2,6 +2,10 @@
 
 ## NEXT
 
+## 1.12.4 - 2022-07-26
+* Improvement: Replace `monolog/monolog` with custom logger
+* Improvement: Updated composer libraries
+
 ## 1.12.3 - 2022-06-27
 * Improvement: Updated PHAR tools
 * Improvement: Updated composer libraries
