@@ -29,6 +29,10 @@ class Logger extends AbstractLogger
 
     private static ?Logger $instance = null;
 
+    /**
+     * @param resource $stream
+     * @param string $minLevel
+     */
     private function __construct($stream, string $minLevel)
     {
         if (!is_resource($stream)) {
@@ -43,18 +47,32 @@ class Logger extends AbstractLogger
         $this->minLevel = $minLevel;
     }
 
-    public static function init($stream, $minLevel): self
+    /**
+     * @param resource $stream
+     * @param string $minLevel
+     * @return static
+     */
+    public static function init($stream, string $minLevel): self
     {
         self::$instance = new self($stream, $minLevel);
 
         return self::$instance;
     }
 
+    /**
+     * @return static
+     */
     public static function getInstance(): self
     {
         return self::$instance;
     }
 
+    /**
+     * @param string $level
+     * @param string $message
+     * @param array $context
+     * @return void
+     */
     public function log($level, $message, array $context = array())
     {
         if (self::$severityMap[$level] < self::$severityMap[$this->minLevel]) {
@@ -73,6 +91,11 @@ class Logger extends AbstractLogger
         fwrite($this->stream, $line);
     }
 
+    /**
+     * @param string $message
+     * @param array $context
+     * @return string
+     */
     private function resolvePlaceholders(string $message, array $context): string
     {
         $replacements = [];
@@ -86,6 +109,10 @@ class Logger extends AbstractLogger
         return strtr($message, $replacements);
     }
 
+    /**
+     * @param array $input
+     * @return array
+     */
     private function flattenArray(array $input): array
     {
         $iterator = new RecursiveIteratorIterator(new RecursiveArrayIterator($input));
