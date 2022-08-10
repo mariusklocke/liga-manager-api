@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\Read\Criteria;
 use DateTimeInterface;
 use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\FloatField;
@@ -63,6 +64,7 @@ class RangeFilter extends Filter
                 };
                 break;
             case DateTimeField::class:
+            case DateField::class:
                 $validator = function ($value) use ($inputName): void {
                     TypeAssert::assertInstanceOf($value, DateTimeInterface::class, $inputName);
                 };

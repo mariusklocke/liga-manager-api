@@ -9,6 +9,7 @@ use HexagonalPlayground\Application\Command\v2\CommandInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\EventType;
+use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\MatchDayType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\MatchType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\PitchType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output\SeasonType;
@@ -26,6 +27,7 @@ class ServiceProvider implements ServiceProviderInterface
             Schema::class => DI\factory(function (ContainerInterface $container) {
                 $queryTypes = [
                     EventType::class,
+                    MatchDayType::class,
                     MatchType::class,
                     PitchType::class,
                     SeasonType::class,

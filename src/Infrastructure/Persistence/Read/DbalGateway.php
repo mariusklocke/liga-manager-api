@@ -70,6 +70,7 @@ class DbalGateway implements ReadDbGatewayInterface
         $this->parameterInc = 0;
 
         foreach ($filters as $filter) {
+            /** @var Field|null $field */
             $field = $fields[$filter->getField()] ?? null;
 
             if ($field === null) {

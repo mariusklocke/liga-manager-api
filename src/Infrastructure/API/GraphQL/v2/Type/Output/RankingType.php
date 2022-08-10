@@ -6,6 +6,7 @@ use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedSeasonLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\FieldNameConverter;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Scalar\DateTimeType;
 use HexagonalPlayground\Infrastructure\API\GraphQL\v2\TypeRegistry;
@@ -44,6 +45,21 @@ class RankingType extends ObjectType
 
                             return new Deferred(function () use ($repository, $converter, $root) {
                                 return $converter->convert($repository->findRankingPenalties($root['seasonId']));
+                            });
+                        }
+                    ],
+                    'season' => [
+                        'type' => Type::nonNull(TypeRegistry::get(SeasonType::class)),
+                        'resolve' => function (array $root, $args, AppContext $context) {
+                            /** @var BufferedSeasonLoader $loader */
+                            $loader = $context->getContainer()->get(BufferedSeasonLoader::class);
+                            $loader->addSeasonId($root['seasonId']);
+
+                            /** @var FieldNameConverter $converter */
+                            $converter = $context->getContainer()->get(FieldNameConverter::class);
+
+                            return new Deferred(function () use ($loader, $converter, $root) {
+                                return $converter->convert($loader->getBySeason($root['seasonId']));
                             });
                         }
                     ]
