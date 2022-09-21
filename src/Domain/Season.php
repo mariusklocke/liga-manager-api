@@ -203,6 +203,9 @@ class Season extends Competition
         if ($this->ranking) {
             $this->ranking->replaceTeam($from, $to);
         }
+
+        $this->teams->removeElement($from);
+        $this->teams->add($to);
     }
 
     private function updateMatchDayCount(): void
