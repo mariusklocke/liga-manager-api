@@ -28,7 +28,6 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
-use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
