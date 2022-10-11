@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\Migrations\Configuration\Configuration;
-use Doctrine\Migrations\Configuration\Connection\ExistingConnection;
+use Doctrine\Migrations\Configuration\Connection\ConnectionLoader;
 use Doctrine\Migrations\Configuration\Migration\ExistingConfiguration;
 use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\Tools\Console\Command\CurrentCommand;
@@ -27,8 +27,8 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
+use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider\SingleManagerProvider;
-use Exception;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
@@ -39,50 +39,38 @@ class ApplicationFactory
     {
         $app = new Application();
         $app->setCatchExceptions(true);
+
+        // Own commands
         $app->addCommands([
             new PrintGraphQlSchemaCommand($container),
             new MaintenanceModeCommand($container),
             new SendTestMailCommand($container),
             new SetupEnvCommand($container),
-            new HealthCommand($container)
+            new HealthCommand($container),
+            new CreateUserCommand($container),
+            new DeleteUserCommand($container),
+            new ListUserCommand($container),
+            new L98ImportCommand($container),
+            new LoadDemoDataCommand($container),
+            new WipeDbCommand($container)
         ]);
 
-        try {
-            /** @var Connection $dbConnection */
-            $dbConnection = $container->get(Connection::class);
-            $dbConnection->executeQuery('SELECT 1');
-        } catch (Exception $e) {
-            $dbConnection = null;
+        foreach ($this->getDoctrineMigrationsCommands($container) as $command) {
+            $app->add($command);
         }
 
-        if ($dbConnection !== null) {
-            // Own commands
-            $app->addCommands([
-                new CreateUserCommand($container),
-                new DeleteUserCommand($container),
-                new ListUserCommand($container),
-                new L98ImportCommand($container),
-                new LoadDemoDataCommand($container),
-                new WipeDbCommand($container)
-            ]);
-
-            foreach ($this->getDoctrineMigrationsCommands($dbConnection) as $command) {
-                $app->add($command);
-            }
-
-            foreach ($this->getDoctrineOrmCommands($container->get(EntityManagerInterface::class)) as $command) {
-                $app->add($command);
-            }
+        foreach ($this->getDoctrineOrmCommands($container) as $command) {
+            $app->add($command);
         }
 
         return $app;
     }
 
     /**
-     * @param Connection $dbConnection
+     * @param ContainerInterface $container
      * @return Iterator
      */
-    private function getDoctrineMigrationsCommands(Connection $dbConnection): Iterator
+    private function getDoctrineMigrationsCommands(ContainerInterface $container): Iterator
     {
         $migrationsConfig = new Configuration();
         $migrationsConfig->addMigrationsDirectory(
@@ -90,9 +78,23 @@ class ApplicationFactory
             getenv('APP_HOME') . '/migrations'
         );
 
+        $connectionLoader = new class($container) implements ConnectionLoader {
+            private ContainerInterface $container;
+
+            public function __construct(ContainerInterface $container)
+            {
+                $this->container = $container;
+            }
+
+            public function getConnection(?string $name = null): Connection
+            {
+                return $this->container->get(Connection::class);
+            }
+        };
+
         $dependencyFactory = DependencyFactory::fromConnection(
             new ExistingConfiguration($migrationsConfig),
-            new ExistingConnection($dbConnection)
+            $connectionLoader
         );
 
         yield new CurrentCommand($dependencyFactory);
@@ -110,12 +112,29 @@ class ApplicationFactory
     }
 
     /**
-     * @param EntityManagerInterface $entityManager
+     * @param ContainerInterface $container
      * @return Iterator
      */
-    private function getDoctrineOrmCommands(EntityManagerInterface $entityManager): Iterator
+    private function getDoctrineOrmCommands(ContainerInterface $container): Iterator
     {
-        $emProvider = new SingleManagerProvider($entityManager);
+        $emProvider = new class($container) implements EntityManagerProvider {
+            private ContainerInterface $container;
+
+            public function __construct(ContainerInterface $container)
+            {
+                $this->container = $container;
+            }
+
+            public function getDefaultManager(): EntityManagerInterface
+            {
+                return $this->container->get(EntityManagerInterface::class);
+            }
+
+            public function getManager(string $name): EntityManagerInterface
+            {
+                return $this->container->get(EntityManagerInterface::class);
+            }
+        };
 
         yield new CreateCommand($emProvider);
         yield new UpdateCommand($emProvider);
