@@ -52,6 +52,7 @@ class EventServiceProvider implements ServiceProviderInterface
                             'attempt' => $attempt
                         ]);
                         $exception = $e;
+                        sleep(5);
                     }
 
                     $attempt++;
