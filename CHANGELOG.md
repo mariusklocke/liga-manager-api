@@ -2,6 +2,9 @@
 
 ## NEXT
 
+## 1.12.7 - 2022-10-12
+* Improvement: Retry in case of failed connection to MariaDB or Redis
+
 ## 1.12.6 - 2022-09-21
 * Bugfix: Fix issue with replacing team in season
 * Improvement: Updated composer libraries
