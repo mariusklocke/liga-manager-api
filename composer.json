@@ -17,28 +17,28 @@
         "phar-tools": [
             {
                 "target": "bin/composer.phar",
-                "source": "https://github.com/composer/composer/releases/download/2.3.7/composer.phar",
-                "sha256": "3f2d46787d51070f922bf991aa08324566f726f186076c2a5e4e8b01a8ea3fd0"
+                "source": "https://github.com/composer/composer/releases/download/2.4.2/composer.phar",
+                "sha256": "8fe98a01050c92cc6812b8ead3bd5b6e0bcdc575ce7a93b242bde497a31d7732"
             },
             {
                 "target": "bin/phpunit.phar",
-                "source": "https://phar.phpunit.de/phpunit-9.5.21.phar",
-                "sha256": "cafb2681fa0ad01201b08b9ba89f7dbb41975147dfe93ffef14b76c06b31fea2"
+                "source": "https://phar.phpunit.de/phpunit-9.5.24.phar",
+                "sha256": "c6ea563d53fb64192d163c11fa7dd25fbca2ba638873138710451f58304289fc"
             },
             {
                 "target": "bin/php-coveralls.phar",
-                "source": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.2/php-coveralls.phar",
-                "sha256": "8bdff7b3228003d77c447ecfd49dc21aa0e0fbc414122235eef295aa14354753"
+                "source": "https://github.com/php-coveralls/php-coveralls/releases/download/v2.5.3/php-coveralls.phar",
+                "sha256": "50418a6981ac407e15a1fd4e8a3683366518c38c4746d2888e029cda0a7fc17b"
             },
             {
                 "target": "bin/deptrac.phar",
-                "source": "https://github.com/qossmic/deptrac/releases/download/0.23.0/deptrac.phar",
-                "sha256": "0503c242c66112df6b1c678aade0f1f1a7cc378d9b52e5d03419af66acf15ca2"
+                "source": "https://github.com/qossmic/deptrac/releases/download/0.24.0/deptrac.phar",
+                "sha256": "57767b426a707afb453d7b4ecce72aade06b769a4bbf4d7fc186e0d46c5a9b7c"
             },
             {
                 "target": "bin/gdpr-dump.phar",
-                "source": "https://github.com/Smile-SA/gdpr-dump/releases/download/2.3.2/gdpr-dump.phar",
-                "sha256": "8953b016ee62e6bce1b68375f6dd9092157bbba1a6710e0957b945d2b926a8dc"
+                "source": "https://github.com/Smile-SA/gdpr-dump/releases/download/3.1.0/gdpr-dump.phar",
+                "sha256": "fabce052f36af052835a35b1ad84f198bab3032911ac3b9f1ebefca54a0fd0cc"
             }
         ]
     },
@@ -53,7 +53,7 @@
         "ext-redis": "*",
         "doctrine/dbal": "^3.3.0",
         "doctrine/migrations": "^3.2",
-        "doctrine/orm": "~2.12.0",
+        "doctrine/orm": "~2.13.0",
         "firebase/php-jwt": "^6.0",
         "middlewares/trailing-slash": "^2.0",
         "nyholm/psr7": "^1.4.1",

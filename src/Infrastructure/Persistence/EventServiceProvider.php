@@ -9,8 +9,9 @@ use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 use Redis;
-use RuntimeException;
+use RedisException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -35,12 +36,27 @@ class EventServiceProvider implements ServiceProviderInterface
 
             HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
 
-            Redis::class => DI\factory(function () {
+            Redis::class => DI\factory(function (ContainerInterface $container) {
                 $redis = new Redis();
 
-                if (false === $redis->connect(Environment::get('REDIS_HOST'))) {
-                    throw new RuntimeException('Could not connect to redis');
-                }
+                $attempt = 1;
+                do {
+                    $exception = null;
+
+                    try {
+                        @$redis->connect(Environment::get('REDIS_HOST'));
+                    } catch (RedisException $e) {
+                        /** @var LoggerInterface $logger */
+                        $logger = $container->get(LoggerInterface::class);
+                        $logger->warning('Failed to connect to redis.', [
+                            'attempt' => $attempt
+                        ]);
+                        $exception = $e;
+                        sleep(5);
+                    }
+
+                    $attempt++;
+                } while ($exception !== null && $attempt < 10);
 
                 return $redis;
             })

@@ -2,6 +2,14 @@
 
 ## NEXT
 
+## 1.12.7 - 2022-10-12
+* Improvement: Retry in case of failed connection to MariaDB or Redis
+
+## 1.12.6 - 2022-09-21
+* Bugfix: Fix issue with replacing team in season
+* Improvement: Updated composer libraries
+* Improvement: Updated PHAR tools
+
 ## 1.12.5 - 2022-07-26
 * Bugfix: Fix issue with undefined constant in FPM context
 

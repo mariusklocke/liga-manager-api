@@ -7,6 +7,7 @@ use DI;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Exception\ConnectionException;
 use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
@@ -75,6 +76,25 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 if (!Type::hasType(CustomDateTimeType::NAME)) {
                     Type::addType(CustomDateTimeType::NAME, CustomDateTimeType::class);
                 }
+
+                $attempt = 1;
+                $platform = null;
+
+                do {
+                    try {
+                        $platform = $connection->getDatabasePlatform();
+                    } catch (ConnectionException $e) {
+                        /** @var LoggerInterface $logger */
+                        $logger = $container->get(LoggerInterface::class);
+                        $logger->warning('Failed to connect to database.', [
+                            'attempt' => $attempt,
+                            'exception' => $e
+                        ]);
+                        sleep(5);
+                    }
+
+                    $attempt++;
+                } while ($platform === null && $attempt < 10);
 
                 $connection
                     ->getDatabasePlatform()
