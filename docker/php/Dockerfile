@@ -23,7 +23,6 @@ RUN set -xe \
 
 # Configure PHP
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
-COPY docker/php/docker-php-entrypoint.sh /usr/local/bin/docker-php-entrypoint
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
 
 # Prepare application source directory
@@ -47,5 +46,4 @@ COPY --chown=www-data:www-data public public/
 COPY --chown=www-data:www-data migrations migrations/
 COPY --chown=www-data:www-data config config/
 
-ENTRYPOINT ["docker-php-entrypoint"]
-CMD ["php-fpm"]
+CMD lima migrations:migrate -n && php-fpm
