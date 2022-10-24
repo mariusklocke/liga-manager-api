@@ -23,14 +23,14 @@ class MailServiceProvider implements ServiceProviderInterface
             MailerInterface::class => DI\get(SymfonyMailer::class),
             SymfonyMailer::class => DI\factory(function (ContainerInterface $container) {
                 $transport = Transport::fromDsn(
-                    Environment::get('EMAIL_URL'),
+                    getenv('EMAIL_URL') ?: 'null://localhost',
                     $container->get(EventDispatcherInterface::class)
                 );
 
                 return new SymfonyMailer(
                     new Mailer($transport),
-                    Environment::get('EMAIL_SENDER_ADDRESS'),
-                    Environment::get('EMAIL_SENDER_NAME')
+                    getenv('EMAIL_SENDER_ADDRESS') ?: 'noreply@example.com',
+                    getenv('EMAIL_SENDER_NAME') ?: 'No Reply'
                 );
             }),
             TemplateRendererInterface::class => DI\get(TemplateRenderer::class),

@@ -64,9 +64,6 @@ docker run -d --name=php --network=build \
      -e MYSQL_DATABASE=test \
      -e MYSQL_USER=test \
      -e MYSQL_PASSWORD=test \
-     -e EMAIL_URL=null://localhost \
-     -e EMAIL_SENDER_ADDRESS=noreply@example.com \
-     -e EMAIL_SENDER_NAME=noreply \
      -v $PWD/.git:/var/www/api/.git \
      $IMAGE:$TAG
 
