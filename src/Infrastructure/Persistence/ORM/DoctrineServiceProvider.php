@@ -7,8 +7,8 @@ use DI;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Exception\ConnectionException;
 use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -38,6 +38,7 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonReposito
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\UserRepository;
+use HexagonalPlayground\Infrastructure\Retry;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -75,31 +76,15 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     Type::addType(CustomDateTimeType::NAME, CustomDateTimeType::class);
                 }
 
-                $attempt = 1;
-                $platform = null;
+                $retry = new Retry($container->get(LoggerInterface::class), 60, 5);
 
-                do {
-                    try {
-                        $platform = $connection->getDatabasePlatform();
-                    } catch (ConnectionException $e) {
-                        /** @var LoggerInterface $logger */
-                        $logger = $container->get(LoggerInterface::class);
-                        $logger->warning('Failed to connect to database.', [
-                            'attempt' => $attempt,
-                            'exception' => $e
-                        ]);
-                        sleep(5);
-                    }
+                /** @var AbstractPlatform $platform */
+                $platform = $retry(function () use ($connection) {
+                    return $connection->getDatabasePlatform();
+                });
 
-                    $attempt++;
-                } while ($platform === null && $attempt < 10);
-
-                $connection
-                    ->getDatabasePlatform()
-                    ->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
-                $connection
-                    ->getDatabasePlatform()
-                    ->registerDoctrineTypeMapping('CustomDateTime', CustomDateTimeType::NAME);
+                $platform->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
+                $platform->registerDoctrineTypeMapping('CustomDateTime', CustomDateTimeType::NAME);
 
                 return $connection;
             }),
