@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Retry;
 use Psr\Container\ContainerInterface;
@@ -41,7 +41,7 @@ class EventServiceProvider implements ServiceProviderInterface
 
                 return $retry(function () {
                     $redis = new Redis();
-                    @$redis->connect(Environment::get('REDIS_HOST'));
+                    @$redis->connect(Config::getInstance()->redisHost);
 
                     return $redis;
                 });

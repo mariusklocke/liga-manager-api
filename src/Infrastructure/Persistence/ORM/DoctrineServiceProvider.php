@@ -27,7 +27,7 @@ use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
-use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
@@ -58,11 +58,13 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Connection::class => DI\factory(function (ContainerInterface $container) {
+                $config = Config::getInstance();
+
                 $params = [
-                    'dbname' => Environment::get('MYSQL_DATABASE'),
-                    'user' => Environment::get('MYSQL_USER'),
-                    'password' => Environment::get('MYSQL_PASSWORD'),
-                    'host' => Environment::get('MYSQL_HOST'),
+                    'dbname' => $config->mysqlDatabase,
+                    'user' => $config->mysqlUser,
+                    'password' => $config->mysqlPassword,
+                    'host' => $config->mysqlHost,
                     'driver' => 'pdo_mysql',
                     'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
                 ];
@@ -96,7 +98,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
                 $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
-                if (getenv('LOG_LEVEL') === 'debug') {
+                if (Config::getInstance()->logLevel === 'debug') {
                     $config->setMiddlewares([new LoggingMiddleware($container->get(LoggerInterface::class))]);
                 }
 
@@ -106,7 +108,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
             SimplifiedXmlDriver::class => DI\factory(function () {
-                $basePath = Environment::get('APP_HOME');
+                $basePath = Config::getInstance()->appHome;
                 $driver = new SimplifiedXmlDriver([
                     $basePath . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
                     => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",

@@ -4,7 +4,6 @@ namespace HexagonalPlayground\Tests\GraphQL;
 
 use ArrayObject;
 use HexagonalPlayground\Infrastructure\API\Bootstrap;
-use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\SlimClient;
@@ -54,7 +53,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function useAdminAuth(): void
     {
-        $this->client->useCredentials(Environment::get('ADMIN_EMAIL'), Environment::get('ADMIN_PASSWORD'));
+        $this->client->useCredentials(getenv('ADMIN_EMAIL'), getenv('ADMIN_PASSWORD'));
         $token = $this->client->createToken();
         $this->client->useToken($token);
     }

@@ -28,6 +28,7 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
+use HexagonalPlayground\Infrastructure\Config;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;
@@ -74,7 +75,7 @@ class ApplicationFactory
         $migrationsConfig = new Configuration();
         $migrationsConfig->addMigrationsDirectory(
             'Migrations',
-            getenv('APP_HOME') . '/migrations'
+            Config::getInstance()->appHome . '/migrations'
         );
 
         $connectionLoader = new class($container) implements ConnectionLoader {

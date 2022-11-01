@@ -2,7 +2,6 @@
 
 namespace HexagonalPlayground\Tests\WebAuthn;
 
-use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Tests\Framework\HttpTest;
 
 class AuthTest extends HttpTest
@@ -34,7 +33,7 @@ class AuthTest extends HttpTest
         $request = $this->createRequest(
             'POST',
             '/api/webauthn/login/options',
-            ['email' => Environment::get('ADMIN_EMAIL')]
+            ['email' => getenv('ADMIN_EMAIL')]
         );
 
         $response = $this->client->sendRequest($request);

@@ -8,7 +8,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Security\TokenInterface;
-use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Config;
 
 final class JsonWebToken implements TokenInterface
 {
@@ -96,7 +96,7 @@ final class JsonWebToken implements TokenInterface
     private static function getSecret(): string
     {
         if (null === self::$secret) {
-            self::$secret = hex2bin(Environment::get('JWT_SECRET'));
+            self::$secret = hex2bin(Config::getInstance()->jwtSecret);
         }
         return self::$secret;
     }
