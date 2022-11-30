@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## NEXT
+
+## 1.12.8 - 2022-11-30
 * Improvement: Add assertions for replacing team in season
 * Improvement: Update composer libraries
 * Improvement: Refactor retry logic into dedicated class
