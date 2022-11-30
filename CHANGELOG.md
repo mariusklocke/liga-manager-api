@@ -1,6 +1,10 @@
 # CHANGELOG
 
 ## NEXT
+* Improvement: Add assertions for replacing team in season
+* Improvement: Update composer libraries
+* Improvement: Refactor retry logic into dedicated class
+* Improvement: Do not override ENTRYPOINT in docker image
 
 ## 1.12.7 - 2022-10-12
 * Improvement: Retry in case of failed connection to MariaDB or Redis
