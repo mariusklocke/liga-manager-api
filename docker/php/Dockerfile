@@ -2,7 +2,7 @@ ARG PHP_VERSION
 FROM php:${PHP_VERSION}-fpm-alpine
 
 ENV RUN_DEPS="gmp ncurses gnupg" \
-    BUILD_DEPS="${PHPIZE_DEPS} gmp-dev" \
+    BUILD_DEPS="${PHPIZE_DEPS} gmp-dev linux-headers" \
     PHP_EXTS="bcmath gmp pcntl pdo_mysql opcache"
 
 # Install packages & PHP extensions
