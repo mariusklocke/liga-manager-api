@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\PostLoadEventArgs;
 use Psr\Log\LoggerInterface;
 use ReflectionProperty;
 
@@ -31,9 +31,9 @@ class DoctrineEmbeddableListener
         $this->logger = $logger;
     }
 
-    public function postLoad(LifecycleEventArgs $eventArgs)
+    public function postLoad(PostLoadEventArgs $eventArgs)
     {
-        $entity = $eventArgs->getEntity();
+        $entity = $eventArgs->getObject();
         $metadata = $this->entityManager->getClassMetadata(get_class($entity));
         $properties = array_keys($metadata->embeddedClasses);
         foreach ($properties as $property) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use DI;
+use Doctrine\Common\EventManager;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -49,12 +50,19 @@ class DoctrineServiceProvider implements ServiceProviderInterface
     {
         return [
             EntityManagerInterface::class => DI\factory(function (ContainerInterface $container) {
-                $em = EntityManager::create($container->get(Connection::class), $container->get(Configuration::class));
-                $em->getEventManager()->addEventListener(
-                    [Events::postLoad],
-                    new DoctrineEmbeddableListener($em, $container->get(LoggerInterface::class))
+                $eventManager  = new EventManager();
+                $entityManager = new EntityManager(
+                    $container->get(Connection::class),
+                    $container->get(Configuration::class),
+                    $eventManager
                 );
-                return $em;
+
+                $eventManager->addEventListener(
+                    [Events::postLoad],
+                    new DoctrineEmbeddableListener($entityManager, $container->get(LoggerInterface::class))
+                );
+
+                return $entityManager;
             }),
 
             Connection::class => DI\factory(function (ContainerInterface $container) {
