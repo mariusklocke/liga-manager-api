@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\GraphQL\v2;
 
 use DateTimeInterface;
-use HexagonalPlayground\Infrastructure\Environment;
 use HexagonalPlayground\Tests\Framework\GraphQL\AdvancedClient;
 use HexagonalPlayground\Tests\Framework\GraphQL\BasicAuth;
 use HexagonalPlayground\Tests\Framework\GraphQL\BearerAuth;
@@ -30,8 +29,8 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
 
         $this->defaultAdminAuth = self::$client->authenticate(new BasicAuth(
-            Environment::get('ADMIN_EMAIL'),
-            Environment::get('ADMIN_PASSWORD')
+            getenv('ADMIN_EMAIL'),
+            getenv('ADMIN_PASSWORD')
         ));
     }
 
