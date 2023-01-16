@@ -17,13 +17,13 @@
         "phar-tools": [
             {
                 "target": "bin/composer.phar",
-                "source": "https://github.com/composer/composer/releases/download/2.4.2/composer.phar",
-                "sha256": "8fe98a01050c92cc6812b8ead3bd5b6e0bcdc575ce7a93b242bde497a31d7732"
+                "source": "https://github.com/composer/composer/releases/download/2.5.1/composer.phar",
+                "sha256": "f1b94fee11a5bd6a1aae5d77c8da269df27c705fcc806ebf4c8c2e6fa8645c20"
             },
             {
                 "target": "bin/phpunit.phar",
-                "source": "https://phar.phpunit.de/phpunit-9.5.24.phar",
-                "sha256": "c6ea563d53fb64192d163c11fa7dd25fbca2ba638873138710451f58304289fc"
+                "source": "https://phar.phpunit.de/phpunit-9.5.28.phar",
+                "sha256": "d8b2b96468c0b66ceeb2c345ed14925248089fe76cb76c7b591ab99aa04d319a"
             },
             {
                 "target": "bin/php-coveralls.phar",
@@ -32,13 +32,13 @@
             },
             {
                 "target": "bin/deptrac.phar",
-                "source": "https://github.com/qossmic/deptrac/releases/download/0.24.0/deptrac.phar",
-                "sha256": "57767b426a707afb453d7b4ecce72aade06b769a4bbf4d7fc186e0d46c5a9b7c"
+                "source": "https://github.com/qossmic/deptrac/releases/download/1.0.2/deptrac.phar",
+                "sha256": "aebf8664b280f7e7e9fdc7dea386488ae43cfb2e9a482788df113d8bb3d061c6"
             },
             {
                 "target": "bin/gdpr-dump.phar",
-                "source": "https://github.com/Smile-SA/gdpr-dump/releases/download/3.1.0/gdpr-dump.phar",
-                "sha256": "fabce052f36af052835a35b1ad84f198bab3032911ac3b9f1ebefca54a0fd0cc"
+                "source": "https://github.com/Smile-SA/gdpr-dump/releases/download/4.0.0/gdpr-dump.phar",
+                "sha256": "ffdbd11471b1bd6056f4e9e1627742e949de6c57bb832c3f060882f7f70dab19"
             }
         ]
     },
