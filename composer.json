@@ -65,6 +65,6 @@
         "symfony/http-client": "^6.1",
         "symfony/mailer": "^6.0",
         "web-auth/webauthn-lib": "^3.3.9",
-        "webonyx/graphql-php": "^14.11.3"
+        "webonyx/graphql-php": "^15.0.1"
     }
 }

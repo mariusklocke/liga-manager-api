@@ -4,15 +4,22 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use DateTimeImmutable;
+use GraphQL\Error\Error;
+use GraphQL\Error\SerializationError;
 use GraphQL\Language\AST\Node;
-use GraphQL\Type\Definition\StringType;
+use GraphQL\Language\AST\StringValueNode;
+use GraphQL\Language\Printer;
+use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils\Utils;
 use HexagonalPlayground\Application\InputParser;
 
-class DateType extends StringType
+class DateType extends ScalarType
 {
     use SingletonTrait;
 
-    public $name = 'Date';
+    public string $name = 'Date';
+
+    public ?string $description = '';
 
     /**
      * @param mixed $value
@@ -20,7 +27,7 @@ class DateType extends StringType
      */
     public function parseValue($value): ?DateTimeImmutable
     {
-        return $value !== null ? InputParser::parseDate(parent::parseValue($value)) : null;
+        return $value !== null ? InputParser::parseDate($value) : null;
     }
 
     /**
@@ -30,6 +37,25 @@ class DateType extends StringType
      */
     public function parseLiteral($valueNode, ?array $variables = null): ?DateTimeImmutable
     {
-        return $this->parseValue($this->parseLiteral($valueNode, $variables));
+        if ($valueNode instanceof StringValueNode) {
+            return $this->parseValue($valueNode->value);
+        }
+
+        $notString = Printer::doPrint($valueNode);
+        throw new Error("DateType cannot represent a non string value: {$notString}", $valueNode);
+    }
+
+    public function serialize($value)
+    {
+        $canCast = \is_scalar($value)
+            || (\is_object($value) && \method_exists($value, '__toString'))
+            || $value === null;
+
+        if (! $canCast) {
+            $notStringable = Utils::printSafe($value);
+            throw new SerializationError("DateType cannot represent value: {$notStringable}");
+        }
+
+        return (string) $value;
     }
 }
