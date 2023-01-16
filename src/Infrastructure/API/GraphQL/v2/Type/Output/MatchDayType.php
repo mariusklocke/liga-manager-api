@@ -58,30 +58,38 @@ class MatchDayType extends ObjectType implements QueryTypeInterface
                     'season' => [
                         'type' => TypeRegistry::get(SeasonType::class),
                         'resolve' => function ($root, array $args, AppContext $context) {
+                            if ($root['seasonId'] === null) {
+                                return null;
+                            }
+
                             /** @var BufferedSeasonLoader $loader */
                             $loader = $context->getContainer()->get(BufferedSeasonLoader::class);
                             /** @var FieldNameConverter $converter */
                             $converter = $context->getContainer()->get(FieldNameConverter::class);
 
-                            $loader->addSeasonId($root['id']);
+                            $loader->addSeasonId($root['seasonId']);
 
                             return new Deferred(function() use ($loader, $converter, $root) {
-                                return $converter->convert($loader->getBySeason($root['id']));
+                                return $converter->convert($loader->getBySeason($root['seasonId']));
                             });
                         }
                     ],
                     'tournament' => [
                         'type' => TypeRegistry::get(TournamentType::class),
                         'resolve' => function ($root, array $args, AppContext $context) {
+                            if ($root['tournamentId'] === null) {
+                                return null;
+                            }
+
                             /** @var BufferedTournamentLoader $loader */
                             $loader = $context->getContainer()->get(BufferedTournamentLoader::class);
                             /** @var FieldNameConverter $converter */
                             $converter = $context->getContainer()->get(FieldNameConverter::class);
 
-                            $loader->addTournamentId($root['id']);
+                            $loader->addTournamentId($root['tournamentId']);
 
                             return new Deferred(function() use ($loader, $converter, $root) {
-                                return $converter->convert($loader->getByTournament($root['id']));
+                                return $converter->convert($loader->getByTournament($root['tournamentId']));
                             });
                         }
                     ],
