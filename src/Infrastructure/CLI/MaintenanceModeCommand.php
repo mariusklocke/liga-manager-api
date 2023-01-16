@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,7 +22,7 @@ class MaintenanceModeCommand extends Command
     {
         $io        = $this->getStyledIO($input, $output);
         $mode      = (string)$input->getOption('mode');
-        $filePath  = Environment::get('APP_HOME') . '/.maintenance_mode';
+        $filePath  = Config::getInstance()->appHome . '/.maintenance_mode';
         $isEnabled = file_exists($filePath);
 
         switch ($mode) {

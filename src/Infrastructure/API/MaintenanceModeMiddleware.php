@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Config;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -16,7 +16,7 @@ class MaintenanceModeMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (file_exists(Environment::get('APP_HOME') . '/.maintenance_mode')) {
+        if (file_exists(Config::getInstance()->appHome . '/.maintenance_mode')) {
             throw new MaintenanceModeException('API unavailable due to maintenance work.');
         }
 

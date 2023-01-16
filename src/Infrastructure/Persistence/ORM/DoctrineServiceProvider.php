@@ -4,11 +4,12 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use DI;
+use Doctrine\Common\EventManager;
 use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Exception\ConnectionException;
 use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -28,7 +29,7 @@ use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
-use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
@@ -40,6 +41,7 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonReposito
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\UserRepository;
+use HexagonalPlayground\Infrastructure\Retry;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -50,20 +52,29 @@ class DoctrineServiceProvider implements ServiceProviderInterface
     {
         return [
             EntityManagerInterface::class => DI\factory(function (ContainerInterface $container) {
-                $em = EntityManager::create($container->get(Connection::class), $container->get(Configuration::class));
-                $em->getEventManager()->addEventListener(
-                    [Events::postLoad],
-                    new DoctrineEmbeddableListener($em, $container->get(LoggerInterface::class))
+                $eventManager  = new EventManager();
+                $entityManager = new EntityManager(
+                    $container->get(Connection::class),
+                    $container->get(Configuration::class),
+                    $eventManager
                 );
-                return $em;
+
+                $eventManager->addEventListener(
+                    [Events::postLoad],
+                    new DoctrineEmbeddableListener($entityManager, $container->get(LoggerInterface::class))
+                );
+
+                return $entityManager;
             }),
 
             Connection::class => DI\factory(function (ContainerInterface $container) {
+                $config = Config::getInstance();
+
                 $params = [
-                    'dbname' => Environment::get('MYSQL_DATABASE'),
-                    'user' => Environment::get('MYSQL_USER'),
-                    'password' => Environment::get('MYSQL_PASSWORD'),
-                    'host' => Environment::get('MYSQL_HOST'),
+                    'dbname' => $config->mysqlDatabase,
+                    'user' => $config->mysqlUser,
+                    'password' => $config->mysqlPassword,
+                    'host' => $config->mysqlHost,
                     'driver' => 'pdo_mysql',
                     'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
                 ];
@@ -77,31 +88,15 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     Type::addType(CustomDateTimeType::NAME, CustomDateTimeType::class);
                 }
 
-                $attempt = 1;
-                $platform = null;
+                $retry = new Retry($container->get(LoggerInterface::class), 60, 5);
 
-                do {
-                    try {
-                        $platform = $connection->getDatabasePlatform();
-                    } catch (ConnectionException $e) {
-                        /** @var LoggerInterface $logger */
-                        $logger = $container->get(LoggerInterface::class);
-                        $logger->warning('Failed to connect to database.', [
-                            'attempt' => $attempt,
-                            'exception' => $e
-                        ]);
-                        sleep(5);
-                    }
+                /** @var AbstractPlatform $platform */
+                $platform = $retry(function () use ($connection) {
+                    return $connection->getDatabasePlatform();
+                });
 
-                    $attempt++;
-                } while ($platform === null && $attempt < 10);
-
-                $connection
-                    ->getDatabasePlatform()
-                    ->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
-                $connection
-                    ->getDatabasePlatform()
-                    ->registerDoctrineTypeMapping('CustomDateTime', CustomDateTimeType::NAME);
+                $platform->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
+                $platform->registerDoctrineTypeMapping('CustomDateTime', CustomDateTimeType::NAME);
 
                 return $connection;
             }),
@@ -113,7 +108,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
                 $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
-                if (getenv('LOG_LEVEL') === 'debug') {
+                if (Config::getInstance()->logLevel === 'debug') {
                     $config->setMiddlewares([new LoggingMiddleware($container->get(LoggerInterface::class))]);
                 }
 
@@ -123,7 +118,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
             SimplifiedXmlDriver::class => DI\factory(function () {
-                $basePath = Environment::get('APP_HOME');
+                $basePath = Config::getInstance()->appHome;
                 $driver = new SimplifiedXmlDriver([
                     $basePath . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
                     => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",

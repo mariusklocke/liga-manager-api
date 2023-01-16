@@ -4,10 +4,10 @@ if [[ -z "${PHP_VERSION}" ]]; then
     PHP_VERSION="8.1"
 fi
 if [[ -z "${MARIADB_VERSION}" ]]; then
-    MARIADB_VERSION="10.4"
+    MARIADB_VERSION="10.6"
 fi
 if [[ -z "${REDIS_VERSION}" ]]; then
-    REDIS_VERSION="5"
+    REDIS_VERSION="6"
 fi
 
 IMAGE="mklocke/liga-manager-api"

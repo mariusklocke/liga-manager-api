@@ -5,13 +5,13 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\Environment;
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
+use HexagonalPlayground\Infrastructure\Retry;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Redis;
-use RedisException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -37,28 +37,14 @@ class EventServiceProvider implements ServiceProviderInterface
             HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
 
             Redis::class => DI\factory(function (ContainerInterface $container) {
-                $redis = new Redis();
+                $retry = new Retry($container->get(LoggerInterface::class), 60, 5);
 
-                $attempt = 1;
-                do {
-                    $exception = null;
+                return $retry(function () {
+                    $redis = new Redis();
+                    @$redis->connect(Config::getInstance()->redisHost);
 
-                    try {
-                        @$redis->connect(Environment::get('REDIS_HOST'));
-                    } catch (RedisException $e) {
-                        /** @var LoggerInterface $logger */
-                        $logger = $container->get(LoggerInterface::class);
-                        $logger->warning('Failed to connect to redis.', [
-                            'attempt' => $attempt
-                        ]);
-                        $exception = $e;
-                        sleep(5);
-                    }
-
-                    $attempt++;
-                } while ($exception !== null && $attempt < 10);
-
-                return $redis;
+                    return $redis;
+                });
             })
         ];
     }

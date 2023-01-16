@@ -46,11 +46,20 @@ class Season extends Competition
 
     /**
      * @param Team $team
+     * @return bool
+     */
+    public function hasTeam(Team $team): bool
+    {
+        return $this->teams->contains($team);
+    }
+
+    /**
+     * @param Team $team
      */
     public function addTeam(Team $team): void
     {
         Assert::false($this->hasStarted(), 'Cannot add teams to season which has already started');
-        if (!$this->teams->contains($team)) {
+        if (!$this->hasTeam($team)) {
             $this->teams[] = $team;
             $this->teamCount++;
         }
@@ -62,7 +71,7 @@ class Season extends Competition
     public function removeTeam(Team $team): void
     {
         Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
-        if ($this->teams->contains($team)) {
+        if ($this->hasTeam($team)) {
             $this->teams->removeElement($team);
             $this->teamCount--;
         }
@@ -196,6 +205,9 @@ class Season extends Competition
      */
     public function replaceTeam(Team $from, Team $to): void
     {
+        Assert::true($this->hasTeam($from), 'Cannot replace a team which is not part of season');
+        Assert::false($this->hasTeam($to), 'Cannot replace a team with a team which is already part of season');
+
         foreach ($this->matchDays as $matchDay) {
             foreach ($matchDay->getMatches() as $match) {
                 if ($match->getHomeTeam()->equals($from)) {
