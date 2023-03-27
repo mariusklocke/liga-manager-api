@@ -74,13 +74,13 @@ docker exec -t php bin/deptrac.phar --no-progress
 docker exec -t php gdpr-dump.phar config/gdpr-dump.yml > /dev/null
 
 # Run phpunit without coverage
-docker exec -t php phpunit.phar --testdox
+docker exec -t php phpunit.phar --display-deprecations
 
 # Install git && enable xdebug
 docker exec -t -u root php sh -c "apk add git && docker-php-ext-enable xdebug"
 
 # Run tests with coverage
-docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml
+docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml --display-deprecations
 
 # Disable printing the following commands to prevent credential leaking
 set +x

@@ -22,8 +22,8 @@
             },
             {
                 "target": "bin/phpunit.phar",
-                "source": "https://phar.phpunit.de/phpunit-9.6.5.phar",
-                "sha256": "087db3a95feb50a1445e5723902b51000364a02d5a9b2f0f8e3fdfdeb282d259"
+                "source": "https://phar.phpunit.de/phpunit-10.0.18.phar",
+                "sha256": "8410ab10e43212f3f5cc9cc0436ccb1c833bafc8994781f9729ffb0a5800e0ab"
             },
             {
                 "target": "bin/php-coveralls.phar",
