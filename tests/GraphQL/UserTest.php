@@ -36,10 +36,10 @@ class UserTest extends TestCase
 
         foreach ($users as $user) {
             foreach ($requiredAttributes as $requiredAttribute) {
-                self::assertObjectHasAttribute($requiredAttribute, $user);
+                self::assertTrue(property_exists($user, $requiredAttribute));
             }
             foreach ($sensitiveAttributes as $sensitiveAttribute) {
-                self::assertObjectNotHasAttribute($sensitiveAttribute, $user);
+                self::assertFalse(property_exists($user, $sensitiveAttribute));
             }
         }
 

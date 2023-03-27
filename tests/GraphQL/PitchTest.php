@@ -54,8 +54,7 @@ class PitchTest extends TestCase
         $this->client->updatePitchContact($pitchId, $contact);
         $pitch = $this->client->getPitchById($pitchId);
 
-        self::assertNotNull($pitch);
-        self::assertObjectHasAttribute('contact', $pitch);
+        self::assertIsObject($pitch);
         self::assertEquals($contact, (array)$pitch->contact);
 
         return $pitchIds;
