@@ -2,6 +2,9 @@
 
 ## NEXT
 
+## 1.12.10 - 2023-03-29
+* Improvement: Updated dependencies
+
 ## 1.12.9 - 2023-01-16
 * Improvement: Updated composer libraries
 
