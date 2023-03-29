@@ -32,7 +32,7 @@ class RequestOptionsFactory
     {
         $options = new PublicKeyCredentialRequestOptions($this->challengeGenerator->generate());
         $options->setRpId($hostName);
-        $options->allowCredentials($descriptors);
+        $options->allowCredentials(...$descriptors);
         $options->setTimeout($this->timeout);
 
         return $options;

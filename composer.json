@@ -59,11 +59,12 @@
         "nyholm/psr7": "^1.4.1",
         "nyholm/psr7-server": "^1.0.2",
         "php-di/php-di": "^7.0",
+        "psr/log": "^1.0",
         "ramsey/uuid": "^4.1",
         "slim/slim": "^4.8.1",
         "symfony/console": "^6.0",
         "symfony/mailer": "^6.0",
-        "web-auth/webauthn-lib": "^3.3.9",
+        "web-auth/webauthn-lib": "^4.5.1",
         "webonyx/graphql-php": "^14.11.3"
     }
 }
