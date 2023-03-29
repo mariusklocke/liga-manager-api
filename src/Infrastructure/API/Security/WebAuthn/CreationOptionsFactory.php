@@ -40,19 +40,16 @@ class CreationOptionsFactory
      */
     public function create(PublicKeyCredentialRpEntity $rpEntity, PublicKeyCredentialUserEntity $userEntity): PublicKeyCredentialCreationOptions
     {
-        $authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria();
-
-        return new PublicKeyCredentialCreationOptions(
+        $options = new PublicKeyCredentialCreationOptions(
             $rpEntity,
             $userEntity,
             $this->challengeGenerator->generate(),
             $this->buildCredentialParametersList(),
-            $this->timeout,
-            [],
-            $authenticatorSelectionCriteria,
-            PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT,
-            null
         );
+        $options->setTimeout($this->timeout);
+        $options->setAttestation(PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT);
+
+        return $options;
     }
 
     /**

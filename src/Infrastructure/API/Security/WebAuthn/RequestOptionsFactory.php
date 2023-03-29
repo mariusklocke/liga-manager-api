@@ -30,11 +30,11 @@ class RequestOptionsFactory
      */
     public function create(string $hostName, array $descriptors): PublicKeyCredentialRequestOptions
     {
-        return new PublicKeyCredentialRequestOptions(
-            $this->challengeGenerator->generate(),
-            $this->timeout,
-            $hostName,
-            $descriptors
-        );
+        $options = new PublicKeyCredentialRequestOptions($this->challengeGenerator->generate());
+        $options->setRpId($hostName);
+        $options->allowCredentials($descriptors);
+        $options->setTimeout($this->timeout);
+
+        return $options;
     }
 }
