@@ -58,7 +58,7 @@
         "middlewares/trailing-slash": "^2.0",
         "nyholm/psr7": "^1.4.1",
         "nyholm/psr7-server": "^1.0.2",
-        "php-di/php-di": "^6.0",
+        "php-di/php-di": "^7.0",
         "ramsey/uuid": "^4.1",
         "slim/slim": "^4.8.1",
         "symfony/console": "^6.0",
