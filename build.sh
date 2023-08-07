@@ -18,21 +18,25 @@ else
 fi
 
 cleanup() {
+    echo "Removing containers ..."
     docker rm -f php mariadb redis > /dev/null
+    echo "Removing network ..."
     docker network rm build > /dev/null
+    echo "Cleanup completed"
 }
 
-# Make sure we clean up running containers in case of error
+# Make sure we clean up containers and networks in case of error
 trap cleanup EXIT
 
-# Enable strict error handling and writing commands to stdout
-set -ex
+# Enable strict error handling
+set -e
 
-# Creating build network
+echo "Creating network ..."
 docker network create build
 
-# Start MariaDB
+echo "Pulling MariaDB image ..."
 docker pull --quiet mariadb:$MARIADB_VERSION
+echo "Starting MariaDB container ..."
 docker run -d --name=mariadb --network=build \
     -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
     -e MYSQL_DATABASE=test \
@@ -40,19 +44,21 @@ docker run -d --name=mariadb --network=build \
     -e MYSQL_PASSWORD=test \
     mariadb:$MARIADB_VERSION
 
-# Start Redis
+echo "Pulling Redis image ..."
 docker pull --quiet redis:$REDIS_VERSION-alpine
+echo "Starting Redis container ..."
 docker run -d --name=redis --network=build redis:$REDIS_VERSION-alpine
 
-# Build target image
+echo "Pulling the target image ..."
 docker pull --quiet $IMAGE:latest
+echo "Building the target image ..."
 DOCKER_BUILDKIT=1 docker build \
     -f docker/php/Dockerfile \
     -t $IMAGE:$TAG \
     --build-arg PHP_VERSION=$PHP_VERSION \
     --cache-from $IMAGE:latest .
 
-# Start built image
+echo "Starting the target image ..."
 docker run -d --name=php --network=build \
      -e ALLOW_TESTS=1 \
      -e ADMIN_EMAIL=admin@example.com \
@@ -67,47 +73,47 @@ docker run -d --name=php --network=build \
      -v $PWD/.git:/var/www/api/.git \
      $IMAGE:$TAG
 
-# Wait until containers are ready
 attempt=0
 while [ $attempt -le 10 ]; do
     attempt=$(( $attempt + 1 ))
+    echo "Waiting until containers are ready ... Attempt $attempt"
     if docker exec -t php pgrep php-fpm ; then
+        echo "Containers are ready for testing"
         break
     fi
     sleep 2
 done
 
-# Run deptrac
+echo "Running deptrac ..."
 docker exec -t php bin/deptrac.phar --no-progress
 
-# Test gdpr-dump config
+echo "Testing gdpr-dump config ..."
 docker exec -t php gdpr-dump.phar config/gdpr-dump.yml > /dev/null
 
-# Run phpunit without coverage
+echo "Running phpunit tests ..."
 docker exec -t php phpunit.phar --display-deprecations
 
-# Install git && enable xdebug
+echo "Installing git and enabling xdebug ..."
 docker exec -t -u root php sh -c "apk add git && docker-php-ext-enable xdebug"
 
-# Run tests with coverage
+echo "Running phpunit tests with coverage ..."
 docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml --display-deprecations
 
-# Disable printing the following commands to prevent credential leaking
-set +x
-
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
-    # Workaround for git's "dubious ownership" issue
+    echo "Applying fix for git's dubious ownership issue ..."
     docker exec -t php git config --global --add safe.directory /var/www/api
 
-    # Upload coverage report to coveralls.io
+    echo "Uploading coverage report to coveralls.io ..."
     docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php \
         php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
 fi
 
 if [[ -n "${PUBLISH_IMAGE}" ]]; then
-    # Login to docker hub
+    echo "Logging in to docker hub ..."
     echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
 
-    # Push image to docker hub
+    echo "Pushing image to docker hub ..."
     docker push --quiet $IMAGE:$TAG
 fi
+
+echo "Build completed"
