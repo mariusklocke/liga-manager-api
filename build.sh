@@ -67,6 +67,16 @@ docker run -d --name=php --network=build \
      -v $PWD/.git:/var/www/api/.git \
      $IMAGE:$TAG
 
+# Wait until containers are ready
+attempt=0
+while [ $attempt -le 10 ]; do
+    attempt=$(( $attempt + 1 ))
+    if docker exec -t php pgrep php-fpm ; then
+        break
+    fi
+    sleep 2
+done
+
 # Run deptrac
 docker exec -t php bin/deptrac.phar --no-progress
 
