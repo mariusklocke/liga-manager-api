@@ -79,6 +79,7 @@ class ApplicationFactory
         yield new L98ImportCommand($container);
         yield new LoadDemoDataCommand($container);
         yield new WipeDbCommand($container);
+        yield new BrowseDbCommand($container);
     }
 
     /**
