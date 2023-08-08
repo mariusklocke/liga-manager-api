@@ -77,7 +77,7 @@ attempt=0
 while [ $attempt -le 10 ]; do
     attempt=$(( $attempt + 1 ))
     echo "Waiting until containers are ready ... Attempt $attempt"
-    if docker exec -t php pgrep php-fpm ; then
+    if docker exec -t php pgrep -o php-fpm > /dev/null ; then
         echo "Containers are ready for testing"
         break
     fi
@@ -93,13 +93,16 @@ docker exec -t php gdpr-dump.phar config/gdpr-dump.yml > /dev/null
 echo "Running phpunit tests ..."
 docker exec -t php phpunit.phar --display-deprecations
 
-echo "Installing git and enabling xdebug ..."
-docker exec -t -u root php sh -c "apk add git && docker-php-ext-enable xdebug"
+echo "Enabling xdebug ..."
+docker exec -t -u root php docker-php-ext-enable xdebug
 
 echo "Running phpunit tests with coverage ..."
 docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml --display-deprecations
 
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
+    echo "Installing git ..."
+    docker exec -t -u root php apk add git
+
     echo "Applying fix for git's dubious ownership issue ..."
     docker exec -t php git config --global --add safe.directory /var/www/api
 
