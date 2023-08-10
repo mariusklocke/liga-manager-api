@@ -10,12 +10,16 @@ if [[ -z "${REDIS_VERSION}" ]]; then
     REDIS_VERSION="6"
 fi
 
-IMAGE="mklocke/liga-manager-api"
+PHP_IMAGE="php:${PHP_VERSION}-fpm-alpine"
+MARIADB_IMAGE="mariadb:${MARIADB_VERSION}"
+REDIS_IMAGE="redis:${REDIS_VERSION}-alpine"
+
 if [[ $GITHUB_REF == *"refs/tags"* ]]; then
   TAG=$(sed 's#refs/tags/##' <<< "${GITHUB_REF}")
 else
   TAG="latest"
 fi
+TARGET_IMAGE="mklocke/liga-manager-api:${TAG}"
 
 cleanup() {
     echo "Removing containers ..."
@@ -34,31 +38,31 @@ set -e
 echo "Creating network ..."
 docker network create build
 
-echo "Pulling MariaDB image ..."
-docker pull --quiet mariadb:$MARIADB_VERSION
+echo "Pulling image ${MARIADB_IMAGE} ..."
+docker pull --quiet ${MARIADB_IMAGE}
 echo "Starting MariaDB container ..."
 docker run -d --name=mariadb --network=build \
     -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
     -e MYSQL_DATABASE=test \
     -e MYSQL_USER=test \
     -e MYSQL_PASSWORD=test \
-    mariadb:$MARIADB_VERSION
+    ${MARIADB_IMAGE}
 
-echo "Pulling Redis image ..."
-docker pull --quiet redis:$REDIS_VERSION-alpine
+echo "Pulling image ${REDIS_IMAGE} ..."
+docker pull --quiet ${REDIS_IMAGE}
 echo "Starting Redis container ..."
-docker run -d --name=redis --network=build redis:$REDIS_VERSION-alpine
+docker run -d --name=redis --network=build ${REDIS_IMAGE}
 
-echo "Pulling the target image ..."
-docker pull --quiet $IMAGE:latest
-echo "Building the target image ..."
+echo "Pulling image ${PHP_IMAGE} ..."
+docker pull --quiet ${PHP_IMAGE}
+echo "Building image ${TARGET_IMAGE} ..."
 DOCKER_BUILDKIT=1 docker build \
     -f docker/php/Dockerfile \
-    -t $IMAGE:$TAG \
-    --build-arg PHP_VERSION=$PHP_VERSION \
-    --cache-from $IMAGE:latest .
+    -t ${TARGET_IMAGE} \
+    --build-arg PHP_IMAGE=$PHP_IMAGE \
+    --cache-from ${TARGET_IMAGE} .
 
-echo "Starting the target image ..."
+echo "Starting container from image ${TARGET_IMAGE} ..."
 docker run -d --name=php --network=build \
      -e ALLOW_TESTS=1 \
      -e ADMIN_EMAIL=admin@example.com \
@@ -71,7 +75,7 @@ docker run -d --name=php --network=build \
      -e MYSQL_USER=test \
      -e MYSQL_PASSWORD=test \
      -v $PWD/.git:/var/www/api/.git \
-     $IMAGE:$TAG
+     ${TARGET_IMAGE}
 
 attempt=0
 while [ $attempt -le 10 ]; do
@@ -116,7 +120,7 @@ if [[ -n "${PUBLISH_IMAGE}" ]]; then
     echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
 
     echo "Pushing image to docker hub ..."
-    docker push --quiet $IMAGE:$TAG
+    docker push --quiet ${TARGET_IMAGE}
 fi
 
 echo "Build completed"

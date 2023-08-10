@@ -1,5 +1,5 @@
-ARG PHP_VERSION
-FROM php:${PHP_VERSION}-fpm-alpine
+ARG PHP_IMAGE
+FROM ${PHP_IMAGE}
 
 ENV RUN_DEPS="gmp ncurses gnupg" \
     BUILD_DEPS="${PHPIZE_DEPS} gmp-dev linux-headers" \
