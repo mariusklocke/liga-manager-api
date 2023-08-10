@@ -53,7 +53,7 @@
         "ext-redis": "*",
         "doctrine/dbal": "^3.3.0",
         "doctrine/migrations": "^3.2",
-        "doctrine/orm": "~2.14.0",
+        "doctrine/orm": "~2.16.1",
         "firebase/php-jwt": "^6.0",
         "middlewares/trailing-slash": "^2.0",
         "nyholm/psr7": "^1.4.1",
