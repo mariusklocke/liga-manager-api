@@ -2,8 +2,8 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Security;
 
-use HexagonalPlayground\Application\Exception\AuthenticationException;
-use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Security\AuthenticationException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\AuthContext;
 
 class PasswordAuthenticator extends Authenticator

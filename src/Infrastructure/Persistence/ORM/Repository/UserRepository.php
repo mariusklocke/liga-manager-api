@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM\Repository;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Exception\UniquenessException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
+use HexagonalPlayground\Domain\Exception\UniquenessException;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 

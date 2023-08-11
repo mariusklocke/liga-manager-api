@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Exception;
+namespace HexagonalPlayground\Application\Security;
 
 use Exception;
 use HexagonalPlayground\Domain\Exception\ExceptionInterface;

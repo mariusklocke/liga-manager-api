@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Repository;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 
 interface EntityRepositoryInterface
 {

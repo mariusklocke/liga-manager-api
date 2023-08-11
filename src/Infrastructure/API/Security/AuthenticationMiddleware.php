@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\Security;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Application\Exception\AuthenticationException;
+use HexagonalPlayground\Application\Security\AuthenticationException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;

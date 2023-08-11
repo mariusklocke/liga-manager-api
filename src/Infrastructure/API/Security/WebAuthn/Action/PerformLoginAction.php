@@ -4,9 +4,9 @@ namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use DateTimeImmutable;
 use Exception;
-use HexagonalPlayground\Application\Exception\AuthenticationException;
-use HexagonalPlayground\Application\Exception\InvalidInputException;
-use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Application\Security\AuthenticationException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;

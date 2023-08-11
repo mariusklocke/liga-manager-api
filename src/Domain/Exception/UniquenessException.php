@@ -1,18 +1,18 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Exception;
+namespace HexagonalPlayground\Domain\Exception;
 
 use Exception;
 use HexagonalPlayground\Domain\Exception\ExceptionInterface;
 
-class NotFoundException extends Exception implements ExceptionInterface
+class UniquenessException extends Exception implements ExceptionInterface
 {
     /** @var string */
-    protected $code = 'ERR-NOT-FOUND';
+    protected $code = 'ERR-UNIQUENESS';
 
     public function getHttpResponseCode(): int
     {
-        return 404; // Not found
+        return 400; // Bad Request
     }
 }

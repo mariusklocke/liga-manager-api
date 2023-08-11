@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM\Repository;
 
 use Doctrine\Persistence\ObjectManager;
-use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Repository\EntityRepositoryInterface;
 use HexagonalPlayground\Domain\Util\StringUtils;
 

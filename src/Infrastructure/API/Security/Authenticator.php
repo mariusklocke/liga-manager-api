@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Security;
 
-use HexagonalPlayground\Application\Exception\AuthenticationException;
+use HexagonalPlayground\Application\Security\AuthenticationException;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 
 abstract class Authenticator

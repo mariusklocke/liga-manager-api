@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Application\Security;
 
-use HexagonalPlayground\Application\Exception\AuthenticationException;
+use HexagonalPlayground\Application\Security\AuthenticationException;
 
 class AuthChecker
 {
