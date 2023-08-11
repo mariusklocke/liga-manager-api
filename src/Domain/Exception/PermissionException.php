@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain\Exception;
 
 use Exception;
-use HexagonalPlayground\Domain\Exception\ExceptionInterface;
 
 class PermissionException extends Exception implements ExceptionInterface
 {
