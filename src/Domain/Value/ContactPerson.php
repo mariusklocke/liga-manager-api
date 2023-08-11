@@ -27,6 +27,7 @@ class ContactPerson extends ValueObject
      */
     public function __construct(string $firstName, string $lastName, string $phone, string $email)
     {
+        // TODO: This should become InvalidInputException
         Assert::emailAddress($email, 'Invalid email address for contact');
         $this->firstName = $firstName;
         $this->lastName = $lastName;

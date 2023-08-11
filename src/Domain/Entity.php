@@ -16,6 +16,7 @@ abstract class Entity
     public function __construct(?string $id = null)
     {
         if ($id !== null) {
+            // TODO: This should trigger an InvalidInputException
             Assert::minLength($id, 1, "An entity id cannot be blank");
             $this->id = $id;
         } else {

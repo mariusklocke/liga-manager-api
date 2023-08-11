@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\Persistence\Read\UserRepository;
@@ -70,7 +69,7 @@ class UserType extends ObjectType implements QueryTypeInterface
                     /** @var UserRepository $repo */
                     $repo = $context->getContainer()->get(UserRepository::class);
                     $user = (new AuthReader())->requireAuthContext($context->getRequest())->getUser();
-                    (new IsAdmin($user))->check();
+                    $user->assertIsAdmin();
 
                     return $repo->findMany();
                 }

@@ -42,7 +42,9 @@ class MatchResult extends ValueObject
      */
     private function assertValidScoreValue(int $value)
     {
+        // TODO: This should become InvalidInputException
         Assert::true($value >= 0, 'Match scores have to be greater or equal than 0');
+        // TODO: This should become InvalidInputException
         Assert::true($value <= 99, 'Match scores have to be less or equal than 99');
     }
 }

@@ -26,6 +26,7 @@ class Pitch extends Entity
     public function __construct(string $id, string $label, ?GeographicLocation $location = null)
     {
         parent::__construct($id);
+        // TODO: This should become a InvalidInputException
         Assert::minLength($label, 1, "A pitch's label cannot be blank");
         Assert::maxLength($label, 255, "A pitch's label cannot exceed 255 characters");
         $this->label = $label;
@@ -72,6 +73,7 @@ class Pitch extends Entity
      */
     public function assertDeletable(): void
     {
+        // TODO: This should become a ConflictException
         Assert::true($this->matches->isEmpty(), 'Cannot delete pitch which is used in matches');
     }
 }

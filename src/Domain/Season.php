@@ -36,7 +36,9 @@ class Season extends Competition
     public function __construct(string $id, string $name)
     {
         parent::__construct($id);
+        // TODO: This should become a InvalidInputException
         Assert::minLength($name, 1, "A season's name cannot be blank");
+        // TODO: This should become a InvalidInputException
         Assert::maxLength($name, 255, "A season's name cannot exceed 255 characters");
         $this->name = $name;
         $this->teams = new ArrayCollection();
@@ -60,6 +62,7 @@ class Season extends Competition
      */
     public function addTeam(Team $team): void
     {
+        // TODO: This should become a ConflictException
         Assert::false($this->hasStarted(), 'Cannot add teams to season which has already started');
         if (!$this->hasTeam($team)) {
             $this->teams[] = $team;
@@ -72,6 +75,7 @@ class Season extends Competition
      */
     public function removeTeam(Team $team): void
     {
+        // TODO: This should become a ConflictException
         Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
         if ($this->hasTeam($team)) {
             $this->teams->removeElement($team);
@@ -92,6 +96,7 @@ class Season extends Competition
      */
     public function clearTeams(): void
     {
+        // TODO: This should become a ConflictException
         Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
         $this->teams->clear();
         $this->teamCount = 0;
@@ -102,6 +107,7 @@ class Season extends Competition
      */
     public function clearMatchDays(): void
     {
+        // TODO: This should become a ConflictException
         Assert::false($this->hasStarted(), 'Cannot remove matches from a season which has already started');
         foreach ($this->matchDays as $matchDay) {
             /** @var MatchDay $matchDay */
@@ -140,7 +146,9 @@ class Season extends Competition
      */
     public function start(): void
     {
+        // TODO: This should become a ConflictException
         Assert::false($this->hasStarted(), 'Cannot start a season which has already been started');
+        // TODO: This should become a ConflictException
         Assert::true($this->hasMatches(), 'Cannot start a season which has no matches');
         $this->ranking = new Ranking($this);
         $this->state = self::STATE_PROGRESS;
@@ -151,6 +159,7 @@ class Season extends Competition
      */
     public function end(): void
     {
+        // TODO: This should become a ConflictException
         Assert::true($this->hasStarted(), 'Cannot end a season which has not been started');
         $this->state = self::STATE_ENDED;
     }
@@ -174,6 +183,7 @@ class Season extends Competition
      */
     public function getRanking(): Ranking
     {
+        // TODO: This should become a ConflictException
         Assert::false(
             $this->ranking === null,
             'Cannot access ranking for a season which has not been started'
@@ -197,7 +207,9 @@ class Season extends Competition
      */
     public function replaceTeam(Team $from, Team $to): void
     {
+        // TODO: This should become a ConflictException
         Assert::true($this->hasTeam($from), 'Cannot replace a team which is not part of season');
+        // TODO: This should become a ConflictException
         Assert::false($this->hasTeam($to), 'Cannot replace a team with a team which is already part of season');
 
         foreach ($this->matchDays as $matchDay) {

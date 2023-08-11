@@ -76,7 +76,9 @@ class User extends Entity
     public function setPassword(?string $password): void
     {
         if (null !== $password) {
+            // TODO: This should become InvalidInputException
             Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
+            // TODO: This should become InvalidInputException
             Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
             $this->password = password_hash($password, PASSWORD_BCRYPT);
         } else {
@@ -143,6 +145,7 @@ class User extends Entity
      */
     public function setRole(string $role): void
     {
+        // TODO: This should become InvalidInputException
         Assert::oneOf($role, [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER], 'Invalid role value. Valid: [%s], Got: %s');
         $this->role = $role;
     }
@@ -200,6 +203,7 @@ class User extends Entity
      */
     public function setEmail(string $email): void
     {
+        // TODO: This should become InvalidInputException
         Assert::emailAddress($email, 'Invalid email address for user');
         $this->email = $email;
     }
@@ -247,5 +251,55 @@ class User extends Entity
         ];
 
         return $data;
+    }
+
+    /**
+     * @throws PermissionException if user is not admin
+     */
+    public function assertIsAdmin()
+    {
+        if ($this->hasRole(User::ROLE_ADMIN)) {
+            return;
+        }
+
+        throw new PermissionException('This action requires admin rights');
+    }
+
+    /**
+     * @param MatchEntity $match
+     * @throws PermissionException if user cannot change the match
+     */
+    public function assertCanChangeMatch(MatchEntity $match): void
+    {
+        if ($this->hasRole(User::ROLE_ADMIN)) {
+            return;
+        }
+
+        if ($this->isInTeam($match->getHomeTeam())) {
+            return;
+        }
+
+        if ($this->isInTeam($match->getGuestTeam())) {
+            return;
+        }
+
+        throw new PermissionException('User is not permitted to change this match');
+    }
+
+    /**
+     * @param Team $team
+     * @throws PermissionException if user cannot manage the team
+     */
+    public function assertCanManageTeam(Team $team): void
+    {
+        if ($this->hasRole(User::ROLE_ADMIN)) {
+            return;
+        }
+
+        if ($this->isInTeam($team)) {
+            return;
+        }
+
+        throw new PermissionException('User is not permitted to manage this team');
     }
 }

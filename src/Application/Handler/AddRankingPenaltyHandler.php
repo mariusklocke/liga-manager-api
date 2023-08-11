@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\AddRankingPenaltyCommand;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
@@ -38,10 +37,7 @@ class AddRankingPenaltyHandler implements AuthAwareHandler
      */
     public function __invoke(AddRankingPenaltyCommand $command, AuthContext $authContext): array
     {
-        $events = [];
-
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var Season $season */
         $season  = $this->seasonRepository->find($command->getSeasonId());
@@ -61,6 +57,7 @@ class AddRankingPenaltyHandler implements AuthAwareHandler
 
         $this->seasonRepository->save($season);
 
+        $events = [];
         $events[] = new Event('ranking:penalty:added', [
             'seasonId'   => $season->getId(),
             'teamId'     => $team->getId(),

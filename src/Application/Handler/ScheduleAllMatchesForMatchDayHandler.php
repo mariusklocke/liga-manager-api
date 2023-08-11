@@ -3,7 +3,6 @@
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\ScheduleAllMatchesForMatchDayCommand;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
@@ -45,8 +44,7 @@ class ScheduleAllMatchesForMatchDayHandler implements AuthAwareHandler
      */
     public function __invoke(ScheduleAllMatchesForMatchDayCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var MatchDay $matchDay */
         $matchDay = $this->matchDayRepository->find($command->getMatchDayId());

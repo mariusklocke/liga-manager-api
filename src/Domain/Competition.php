@@ -24,6 +24,7 @@ abstract class Competition extends Entity
      */
     public function createMatchDay(?string $id, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate): MatchDay
     {
+        // TODO: This should trigger an UniquenessException
         Assert::false($this->matchDays->containsKey($number), 'Cannot create match day. Number already exists');
         $this->matchDays[$number] = new MatchDay($id, $this, $number, $startDate, $endDate);
 

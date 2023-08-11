@@ -44,6 +44,7 @@ class MatchEntity extends Entity
     public function __construct(?string $id, MatchDay $matchDay, Team $homeTeam, Team $guestTeam)
     {
         parent::__construct($id);
+        // TODO: Should become ConflictException
         Assert::false($homeTeam->equals($guestTeam), 'A team cannot play against itself');
         $this->matchDay = $matchDay;
         $this->setHomeTeam($homeTeam);
@@ -82,6 +83,7 @@ class MatchEntity extends Entity
      */
     public function cancel(string $reason): void
     {
+        // TODO: Should become InvalidInputException
         Assert::maxLength($reason, 255, 'Cancellation reason exceeds maximum length of 255');
 
         if ($this->hasResult()) {

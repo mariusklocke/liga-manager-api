@@ -19,7 +19,9 @@ class Tournament extends Competition
     public function __construct(string $id, string $name)
     {
         parent::__construct($id);
+        // TODO: This should become InvalidInputException
         Assert::minLength($name, 1, "A tournament's name cannot be blank");
+        // TODO: This should become InvalidInputException
         Assert::maxLength($name, 255, "A tournament's name cannot exceed 255 characters");
         $this->name = $name;
         $this->matchDays = new ArrayCollection();

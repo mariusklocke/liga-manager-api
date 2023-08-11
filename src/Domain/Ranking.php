@@ -43,6 +43,7 @@ class Ranking
      */
     public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult)
     {
+        // TODO: This should become a ConflictException
         Assert::true($this->season->isInProgress(), 'Cannot add a result to a season which is not in progress');
 
         $this->getPositionForTeam($homeTeamId)->addResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
@@ -57,6 +58,7 @@ class Ranking
      */
     public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult)
     {
+        // TODO: This should become a ConflictException
         Assert::true($this->season->isInProgress(), 'Cannot revert a result from a season which is not in progress');
 
         $this->getPositionForTeam($homeTeamId)->revertResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
@@ -70,10 +72,12 @@ class Ranking
      */
     public function addPenalty(RankingPenalty $penalty): void
     {
+        // TODO: This should become a ConflictException
         Assert::true(
             $this->season->isInProgress(),
             'Cannot add a penalty to season which is not in progress'
         );
+        // TODO: This should become a UniquenessException
         Assert::true($this->getPenalty($penalty->getId()) === null, sprintf(
             'Ranking penalty with ID %s already exists',
             $penalty->getId()
@@ -98,10 +102,13 @@ class Ranking
      */
     public function removePenalty(RankingPenalty $penalty): void
     {
+        // TODO: This should become a ConflictException
         Assert::true(
             $this->season->isInProgress(),
             'Cannot remove a penalty from a season which is not in progress'
         );
+
+        // TODO: This should become a NotFoundException
         Assert::true($this->getPenalty($penalty->getId()) !== null, sprintf(
             'Ranking penalty with ID %s does not exist',
             $penalty->getId()
@@ -156,6 +163,7 @@ class Ranking
      */
     private function getPositionForTeam(string $teamId): RankingPosition
     {
+        // TODO: This should become a NotFoundException
         Assert::true(isset($this->positions[$teamId]), sprintf('Team %s is not ranked', $teamId));
 
         return $this->positions[$teamId];
