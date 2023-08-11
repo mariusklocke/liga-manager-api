@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\StringUtils;
 
 class Season extends Competition
 {
@@ -37,9 +38,9 @@ class Season extends Competition
     {
         parent::__construct($id);
         // TODO: This should become a InvalidInputException
-        Assert::minLength($name, 1, "A season's name cannot be blank");
+        Assert::true(StringUtils::length($name) > 0, "A season's name cannot be blank");
         // TODO: This should become a InvalidInputException
-        Assert::maxLength($name, 255, "A season's name cannot exceed 255 characters");
+        Assert::true(StringUtils::length($name) <= 255, "A season's name cannot exceed 255 characters");
         $this->name = $name;
         $this->teams = new ArrayCollection();
         $this->matchDays = new ArrayCollection();

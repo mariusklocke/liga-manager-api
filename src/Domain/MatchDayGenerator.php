@@ -30,6 +30,7 @@ class MatchDayGenerator
         $matchDaysPerHalf = count($teams) - 1;
         $possibleMatchDayCounts = [$matchDaysPerHalf, $matchDaysPerHalf * 2];
 
+        // TODO: This should be a ConflictException
         Assert::oneOf(
             count($matchDayDates),
             $possibleMatchDayCounts,

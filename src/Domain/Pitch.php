@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Domain;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 use HexagonalPlayground\Domain\Value\GeographicLocation;
 
@@ -27,8 +28,8 @@ class Pitch extends Entity
     {
         parent::__construct($id);
         // TODO: This should become a InvalidInputException
-        Assert::minLength($label, 1, "A pitch's label cannot be blank");
-        Assert::maxLength($label, 255, "A pitch's label cannot exceed 255 characters");
+        Assert::true(StringUtils::length($label) > 0, "A pitch's label cannot be blank");
+        Assert::true(StringUtils::length($label) <= 255, "A pitch's label cannot exceed 255 characters");
         $this->label = $label;
         $this->location = $location;
         $this->matches = new ArrayCollection();

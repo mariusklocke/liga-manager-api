@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Exception\PermissionException;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\StringUtils;
 
 class User extends Entity
 {
@@ -78,9 +79,9 @@ class User extends Entity
     {
         if (null !== $password) {
             // TODO: This should become InvalidInputException
-            Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
+            Assert::true(StringUtils::length($password) >= 6, 'Password does not reach the minimum length of 6 characters');
             // TODO: This should become InvalidInputException
-            Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
+            Assert::true(StringUtils::length($password) <= 255, 'Password exceeds maximum length of 255 characters');
             $this->password = password_hash($password, PASSWORD_BCRYPT);
         } else {
             $this->password = null;
@@ -205,7 +206,7 @@ class User extends Entity
     public function setEmail(string $email): void
     {
         // TODO: This should become InvalidInputException
-        Assert::emailAddress($email, 'Invalid email address for user');
+        Assert::true(StringUtils::isValidEmailAddress($email), 'Invalid email address for user');
         $this->email = $email;
     }
 

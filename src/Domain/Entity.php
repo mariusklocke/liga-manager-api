@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Util\Uuid;
 
 abstract class Entity
@@ -17,7 +18,7 @@ abstract class Entity
     {
         if ($id !== null) {
             // TODO: This should trigger an InvalidInputException
-            Assert::minLength($id, 1, "An entity id cannot be blank");
+            Assert::true(StringUtils::length($id) > 0, "An entity id cannot be blank");
             $this->id = $id;
         } else {
             $this->id = Uuid::create();

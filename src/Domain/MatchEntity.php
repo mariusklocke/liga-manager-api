@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
 class MatchEntity extends Entity
@@ -84,7 +85,7 @@ class MatchEntity extends Entity
     public function cancel(string $reason): void
     {
         // TODO: Should become InvalidInputException
-        Assert::maxLength($reason, 255, 'Cancellation reason exceeds maximum length of 255');
+        Assert::true(StringUtils::length($reason) <= 255, 'Cancellation reason exceeds maximum length of 255');
 
         if ($this->hasResult()) {
             $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);

@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 
 class Team extends Entity
@@ -55,9 +56,9 @@ class Team extends Entity
     public function setName(string $name): void
     {
         // TODO: This should become InvalidInputException
-        Assert::minLength($name, 1, "A team's name cannot be blank");
+        Assert::true(StringUtils::length($name) > 0, "A team's name cannot be blank");
         // TODO: This should become InvalidInputException
-        Assert::maxLength($name, 255, "A team's name cannot exceed 255 characters");
+        Assert::true(StringUtils::length($name) <= 255, "A team's name cannot exceed 255 characters");
         $this->name = $name;
     }
 }

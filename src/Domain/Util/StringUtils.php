@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain\Util;
 
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
+
 class StringUtils
 {
     /**
@@ -32,5 +35,27 @@ class StringUtils
         $pos = strrpos($className, '\\');
 
         return false !== $pos ? substr($className, $pos + 1) : $className;
+    }
+
+    /**
+     * Calculates the string length (multibyte character is counted as 1)
+     *
+     * @param string $value
+     * @return int
+     */
+    public static function length(string $value): int
+    {
+        return mb_strlen($value);
+    }
+
+    /**
+     * Determines if a string is valid email address
+     *
+     * @param string $value
+     * @return bool
+     */
+    public static function isValidEmailAddress(string $value): bool
+    {
+        return (new EmailValidator())->isValid($value, new RFCValidation());
     }
 }
