@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Domain\Util;
 
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
-use HexagonalPlayground\Domain\DomainException;
+use HexagonalPlayground\Domain\Exception\DomainException;
 
 class Assert
 {

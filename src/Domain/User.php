@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\PermissionException;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class User extends Entity

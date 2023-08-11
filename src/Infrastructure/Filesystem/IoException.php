@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure\Filesystem;
 
-use HexagonalPlayground\Domain\ExceptionInterface;
+use HexagonalPlayground\Domain\Exception\ExceptionInterface;
 use RuntimeException;
 
 class IoException extends RuntimeException implements ExceptionInterface
