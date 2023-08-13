@@ -154,7 +154,6 @@ class User extends Entity
      */
     public function setRole(string $role): void
     {
-        // TODO: This should become InvalidInputException
         Assert::oneOf(
             $role,
             [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER],
