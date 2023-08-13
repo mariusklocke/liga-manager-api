@@ -75,7 +75,6 @@ input does not cause errors in the API.
 | ERR-CONFLICT         | 409 - Conflict              | Request conflicts with the current state of an object   |
 | ERR-INTERNAL         | 500 - Internal Server Error | Internal error, report to developer                     |
 | ERR-INVALID-INPUT    | 400 - Bad Request           | Request contains invalid input values                   |
-| ! ERR-IO             | 500 - Internal Server Error | Errors with I/O (replace with ERR-INTERNAL-ERROR)       |
 | ERR-MAINTENANCE-MODE | 503 - Service Unavailable   | Service is temporarily not available due to maintenance |
 | ERR-NOT-FOUND        | 404 - Not Found             | Requested object could not be found in database         |
 | ERR-PERMISSION       | 403 - Forbidden             | Request is not permitted to the current user            |
