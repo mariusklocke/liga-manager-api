@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Tournament;
 use HexagonalPlayground\Domain\Util\Assert;
@@ -38,8 +39,18 @@ class SetTournamentRoundHandler implements AuthAwareHandler
     public function __invoke(SetTournamentRoundCommand $command, AuthContext $authContext): array
     {
         $authContext->getUser()->assertIsAdmin();
-        Assert::false(empty($command->getTeamIdPairs()), 'Team pairs cannot be empty');
-        Assert::false(count($command->getTeamIdPairs()) > 64, 'Request exceeds maximum amount of 64 team pairs');
+
+        Assert::true(
+            count($command->getTeamIdPairs()) > 0,
+            'Team pairs cannot be empty',
+            InvalidInputException::class
+        );
+
+        Assert::true(
+            count($command->getTeamIdPairs()) <= 64,
+            'Request exceeds maximum amount of 64 team pairs',
+            InvalidInputException::class
+        );
 
         /** @var Tournament $tournament */
         $tournament = $this->tournamentRepository->find($command->getTournamentId());

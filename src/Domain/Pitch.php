@@ -5,6 +5,8 @@ namespace HexagonalPlayground\Domain;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\ConflictException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Value\ContactPerson;
@@ -27,9 +29,16 @@ class Pitch extends Entity
     public function __construct(string $id, string $label, ?GeographicLocation $location = null)
     {
         parent::__construct($id);
-        // TODO: This should become a InvalidInputException
-        Assert::true(StringUtils::length($label) > 0, "A pitch's label cannot be blank");
-        Assert::true(StringUtils::length($label) <= 255, "A pitch's label cannot exceed 255 characters");
+        Assert::true(
+            StringUtils::length($label) > 0,
+            "A pitch's label cannot be blank",
+            InvalidInputException::class
+        );
+        Assert::true(
+            StringUtils::length($label) <= 255,
+            "A pitch's label cannot exceed 255 characters",
+            InvalidInputException::class
+        );
         $this->label = $label;
         $this->location = $location;
         $this->matches = new ArrayCollection();
@@ -74,7 +83,10 @@ class Pitch extends Entity
      */
     public function assertDeletable(): void
     {
-        // TODO: This should become a ConflictException
-        Assert::true($this->matches->isEmpty(), 'Cannot delete pitch which is used in matches');
+        Assert::true(
+            $this->matches->isEmpty(),
+            'Cannot delete pitch which is used in matches',
+            ConflictException::class
+        );
     }
 }

@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\PermissionException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
@@ -78,10 +79,16 @@ class User extends Entity
     public function setPassword(?string $password): void
     {
         if (null !== $password) {
-            // TODO: This should become InvalidInputException
-            Assert::true(StringUtils::length($password) >= 6, 'Password does not reach the minimum length of 6 characters');
-            // TODO: This should become InvalidInputException
-            Assert::true(StringUtils::length($password) <= 255, 'Password exceeds maximum length of 255 characters');
+            Assert::true(
+                StringUtils::length($password) >= 6,
+                'Password does not reach the minimum length of 6 characters',
+                InvalidInputException::class
+            );
+            Assert::true(
+                StringUtils::length($password) <= 255,
+                'Password exceeds maximum length of 255 characters',
+                InvalidInputException::class
+            );
             $this->password = password_hash($password, PASSWORD_BCRYPT);
         } else {
             $this->password = null;
@@ -148,7 +155,12 @@ class User extends Entity
     public function setRole(string $role): void
     {
         // TODO: This should become InvalidInputException
-        Assert::oneOf($role, [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER], 'Invalid role value. Valid: [%s], Got: %s');
+        Assert::oneOf(
+            $role,
+            [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER],
+            'Invalid role value. Valid: [%s], Got: %s',
+            InvalidInputException::class
+        );
         $this->role = $role;
     }
 
@@ -205,8 +217,11 @@ class User extends Entity
      */
     public function setEmail(string $email): void
     {
-        // TODO: This should become InvalidInputException
-        Assert::true(StringUtils::isValidEmailAddress($email), 'Invalid email address for user');
+        Assert::true(
+            StringUtils::isValidEmailAddress($email),
+            'Invalid email address for user',
+            InvalidInputException::class
+        );
         $this->email = $email;
     }
 

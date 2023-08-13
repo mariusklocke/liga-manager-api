@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Domain\Exception;
 
 use Exception;
 
+/**
+ * Exception is thrown if a required object could not be found
+ */
 class NotFoundException extends Exception implements ExceptionInterface
 {
     /** @var string */

@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\UniquenessException;
 use HexagonalPlayground\Domain\Util\Assert;
 
 abstract class Competition extends Entity
@@ -24,8 +25,12 @@ abstract class Competition extends Entity
      */
     public function createMatchDay(?string $id, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate): MatchDay
     {
-        // TODO: This should trigger an UniquenessException
-        Assert::false($this->matchDays->containsKey($number), 'Cannot create match day. Number already exists');
+        Assert::false(
+            $this->matchDays->containsKey($number),
+            'Cannot create match day. Number already exists',
+            UniquenessException::class
+        );
+
         $this->matchDays[$number] = new MatchDay($id, $this, $number, $startDate, $endDate);
 
         return $this->matchDays[$number];

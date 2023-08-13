@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Domain\Exception;
 
 use Exception;
 
+/**
+ * Exception is thrown if a value violates a uniqueness constraint
+ */
 class UniquenessException extends Exception implements ExceptionInterface
 {
     /** @var string */

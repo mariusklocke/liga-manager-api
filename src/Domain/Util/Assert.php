@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain\Util;
 
-use HexagonalPlayground\Domain\Exception\DomainException;
-
 class Assert
 {
     private function __construct()
@@ -18,15 +16,13 @@ class Assert
      * @param mixed $value
      * @param array $whitelist
      * @param string $message
-     * @throws DomainException
+     * @param string $exceptionClass
      */
-    public static function oneOf($value, array $whitelist, string $message)
+    public static function oneOf($value, array $whitelist, string $message, string $exceptionClass)
     {
-        self::true(in_array($value, $whitelist, true), sprintf(
-            $message,
-            implode(',', $whitelist),
-            $value
-        ));
+        if (!in_array($value, $whitelist, true)) {
+            throw new $exceptionClass(sprintf($message, implode(',', $whitelist), $value));
+        }
     }
 
     /**
@@ -34,12 +30,12 @@ class Assert
      *
      * @param bool $value
      * @param string $message
-     * @throws DomainException
+     * @param string $exceptionClass
      */
-    public static function false(bool $value, string $message): void
+    public static function false(bool $value, string $message, string $exceptionClass): void
     {
         if ($value) {
-            self::throwException($message);
+            throw new $exceptionClass($message);
         }
     }
 
@@ -48,21 +44,12 @@ class Assert
      *
      * @param bool $value
      * @param string $message
-     * @throws DomainException
+     * @param string $exceptionClass
      */
-    public static function true(bool $value, string $message): void
+    public static function true(bool $value, string $message, string $exceptionClass): void
     {
         if (!$value) {
-            self::throwException($message);
+            throw new $exceptionClass($message);
         }
-    }
-
-    /**
-     * @param string $message
-     * @throws DomainException
-     */
-    private static function throwException(string $message): void
-    {
-        throw new DomainException($message);
     }
 }

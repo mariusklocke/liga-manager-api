@@ -72,9 +72,8 @@ input does not cause errors in the API.
 | Code                 | HTTP Status Code            | Description                                             |
 |----------------------|-----------------------------|---------------------------------------------------------|
 | ERR-AUTHENTICATION   | 401 - Unauthorized          | User could not be authorized                            |
-| * ERR-CONFLICT       | 409 - Conflict              | Request conflicts with the current state of an object   |
-| ! ERR-DOMAIN         | 400 - Bad Request           | Request violates a domain logic constraint              |
-| * ERR-INTERNAL-ERROR | 500 - Internal Server Error | Internal error, report to developer                     |
+| ERR-CONFLICT         | 409 - Conflict              | Request conflicts with the current state of an object   |
+| ERR-INTERNAL         | 500 - Internal Server Error | Internal error, report to developer                     |
 | ERR-INVALID-INPUT    | 400 - Bad Request           | Request contains invalid input values                   |
 | ! ERR-IO             | 500 - Internal Server Error | Errors with I/O (replace with ERR-INTERNAL-ERROR)       |
 | ERR-MAINTENANCE-MODE | 503 - Service Unavailable   | Service is temporarily not available due to maintenance |

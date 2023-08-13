@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 
@@ -20,10 +21,16 @@ class Tournament extends Competition
     public function __construct(string $id, string $name)
     {
         parent::__construct($id);
-        // TODO: This should become InvalidInputException
-        Assert::true(StringUtils::length($name) > 0, "A tournament's name cannot be blank");
-        // TODO: This should become InvalidInputException
-        Assert::true(StringUtils::length($name) <= 255, "A tournament's name cannot exceed 255 characters");
+        Assert::true(
+            StringUtils::length($name) > 0,
+            "A tournament's name cannot be blank",
+            InvalidInputException::class
+        );
+        Assert::true(
+            StringUtils::length($name) <= 255,
+            "A tournament's name cannot exceed 255 characters",
+            InvalidInputException::class
+        );
         $this->name = $name;
         $this->matchDays = new ArrayCollection();
         $this->updateRoundCount();

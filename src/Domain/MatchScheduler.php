@@ -4,7 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Domain\Exception\DomainException;
+use HexagonalPlayground\Domain\Exception\ConflictException;
+use HexagonalPlayground\Domain\Exception\InternalException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchAppointment;
 
@@ -14,16 +16,15 @@ class MatchScheduler
      * @param MatchDay $matchDay
      * @param MatchAppointment[] $appointments
      * @param Pitch[] $pitches
-     * @throws DomainException
      */
     public function scheduleMatchesForMatchDay(MatchDay $matchDay, array $appointments, array $pitches): void
     {
         $matches = $matchDay->getMatches();
 
-        // TODO: This should become a ConflictException
         Assert::true(
             count($appointments) >= count($matches),
-            'Cannot schedule MatchDay with less appointments than matches.'
+            'Cannot schedule MatchDay with less appointments than matches.',
+            ConflictException::class
         );
 
         shuffle($appointments);
@@ -45,10 +46,10 @@ class MatchScheduler
                 }
             }
 
-            // TODO: This should become a InternalErrorException
             Assert::true(
                 $selectedAppointment !== null,
-                'Cannot find appointment for match ' . $match->getId()
+                'Cannot find appointment for match ' . $match->getId(),
+                InternalException::class
             );
 
             $kickoff = $this->calcKickoff($matchDay, $selectedAppointment);
@@ -57,10 +58,10 @@ class MatchScheduler
 
             $pitch = $pitches[$selectedAppointment->getPitchId()] ?? null;
 
-            // TODO: This should become a NotFoundException
             Assert::true(
                 $pitch !== null,
-                sprintf('Failed to find pitch with ID %s', $selectedAppointment->getPitchId())
+                sprintf('Failed to find pitch with ID %s', $selectedAppointment->getPitchId()),
+                NotFoundException::class
             );
 
             $match->locate($pitch);
@@ -100,10 +101,10 @@ class MatchScheduler
                 break;
             }
             $kickoff = $kickoff->modify('+ 1 day');
-            // TODO: This should become an InternalErrorException
             Assert::true(
                 $kickoff <= $matchDay->getEndDate()->setTime(23, 59, 59),
-                'Cannot determine kickoff day'
+                'Cannot determine kickoff day',
+                InternalException::class
             );
         }
 

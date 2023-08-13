@@ -6,6 +6,8 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\ConflictException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
@@ -39,8 +41,11 @@ class MatchDay extends Entity
     public function __construct(?string $id, Competition $competition, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate)
     {
         parent::__construct($id);
-        Assert::true($startDate <= $endDate, 'Invalid date range: Start date cannot be after end date');
-
+        Assert::true(
+            $startDate <= $endDate,
+            'Invalid date range: Start date cannot be after end date',
+            InvalidInputException::class
+        );
         $this->setCompetition($competition);
         $this->number = $number;
         $this->startDate = $startDate;
@@ -82,7 +87,8 @@ class MatchDay extends Entity
     {
         Assert::false(
             $this->hasMatchWithResult(),
-            'Cannot clear matches with result. Failed for matchDay ' . $this->number
+            'Cannot clear matches with result. Failed for matchDay ' . $this->number,
+            ConflictException::class
         );
         $this->matches->clear();
     }
@@ -93,7 +99,11 @@ class MatchDay extends Entity
      */
     public function reschedule(DateTimeImmutable $startDate, DateTimeImmutable $endDate): void
     {
-        Assert::true($startDate <= $endDate, 'Invalid date range: Start date cannot be after end date');
+        Assert::true(
+            $startDate <= $endDate,
+            'Invalid date range: Start date cannot be after end date',
+            InvalidInputException::class
+        );
         $this->startDate = $startDate;
         $this->endDate   = $endDate;
     }

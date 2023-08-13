@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain\Value;
 
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class MatchResult extends ValueObject
@@ -42,9 +43,15 @@ class MatchResult extends ValueObject
      */
     private function assertValidScoreValue(int $value)
     {
-        // TODO: This should become InvalidInputException
-        Assert::true($value >= 0, 'Match scores have to be greater or equal than 0');
-        // TODO: This should become InvalidInputException
-        Assert::true($value <= 99, 'Match scores have to be less or equal than 99');
+        Assert::true(
+            $value >= 0,
+            'Match scores have to be greater or equal than 0',
+            InvalidInputException::class
+        );
+        Assert::true(
+            $value <= 99,
+            'Match scores have to be less or equal than 99',
+            InvalidInputException::class
+        );
     }
 }

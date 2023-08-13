@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Domain\Exception;
 
 use Exception;
 
+/**
+ * Exception is thrown if an input value is invalid
+ */
 class InvalidInputException extends Exception implements ExceptionInterface
 {
     /** @var string */

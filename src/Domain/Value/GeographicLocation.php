@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain\Value;
 
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class GeographicLocation extends ValueObject
@@ -19,10 +20,16 @@ class GeographicLocation extends ValueObject
      */
     public function __construct(float $longitude, float $latitude)
     {
-        // TODO: This should become InvalidInputException
-        Assert::true(abs($longitude) <= 180.0, 'Invalid longitude: Has to be a float between -180.0 and 180.0');
-        // TODO: This should become InvalidInputException
-        Assert::true(abs($latitude) <= 90.0, 'Invalid latitude: Has to be a float between -90.0 and 90.0');
+        Assert::true(
+            abs($longitude) <= 180.0,
+            'Invalid longitude: Has to be a float between -180.0 and 180.0',
+            InvalidInputException::class
+        );
+        Assert::true(
+            abs($latitude) <= 90.0,
+            'Invalid latitude: Has to be a float between -90.0 and 90.0',
+            InvalidInputException::class
+        );
         $this->longitude = $longitude;
         $this->latitude = $latitude;
     }

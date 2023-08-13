@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Domain\Exception;
 
 use Exception;
 
+/**
+ * Exception is thrown if a user has insufficient permissions for an action
+ */
 class PermissionException extends Exception implements ExceptionInterface
 {
     /** @var string */

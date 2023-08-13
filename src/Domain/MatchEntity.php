@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Value\MatchResult;
@@ -45,8 +46,11 @@ class MatchEntity extends Entity
     public function __construct(?string $id, MatchDay $matchDay, Team $homeTeam, Team $guestTeam)
     {
         parent::__construct($id);
-        // TODO: Should become ConflictException
-        Assert::false($homeTeam->equals($guestTeam), 'A team cannot play against itself');
+        Assert::false(
+            $homeTeam->equals($guestTeam),
+            'A team cannot play against itself',
+            InvalidInputException::class
+        );
         $this->matchDay = $matchDay;
         $this->setHomeTeam($homeTeam);
         $this->setGuestTeam($guestTeam);
@@ -84,8 +88,11 @@ class MatchEntity extends Entity
      */
     public function cancel(string $reason): void
     {
-        // TODO: Should become InvalidInputException
-        Assert::true(StringUtils::length($reason) <= 255, 'Cancellation reason exceeds maximum length of 255');
+        Assert::true(
+            StringUtils::length($reason) <= 255,
+            'Cancellation reason exceeds maximum length of 255',
+            InvalidInputException::class
+        );
 
         if ($this->hasResult()) {
             $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
