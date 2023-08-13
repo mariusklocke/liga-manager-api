@@ -14,10 +14,10 @@ PHP_IMAGE="php:${PHP_VERSION}-fpm-alpine"
 MARIADB_IMAGE="mariadb:${MARIADB_VERSION}"
 REDIS_IMAGE="redis:${REDIS_VERSION}-alpine"
 
-if [[ $GITHUB_REF == *"refs/tags"* ]]; then
-  TAG=$(sed 's#refs/tags/##' <<< "${GITHUB_REF}")
+if [[ -n "$GITHUB_REF_NAME" ]]; then
+    TAG=${GITHUB_REF_NAME}
 else
-  TAG="latest"
+    TAG="latest"
 fi
 TARGET_IMAGE="mklocke/liga-manager-api:${TAG}"
 
