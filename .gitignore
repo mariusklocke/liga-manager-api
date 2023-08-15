@@ -7,3 +7,4 @@ docker-compose.yml
 docker/_volumes
 import
 *.sql.gz
+docker/nginx/certs
