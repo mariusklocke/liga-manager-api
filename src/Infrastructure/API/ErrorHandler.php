@@ -54,19 +54,19 @@ class ErrorHandler implements ErrorHandlerInterface
     ): ResponseInterface {
         switch (true) {
             case ($exception instanceof ExceptionInterface):
-                $response = $this->createResponse($exception->getHttpResponseCode(), $exception->getMessage());
+                $response = $this->createResponse($exception->getHttpResponseCode(), $exception->getMessage(), $exception->getCode());
                 break;
             case ($exception instanceof HttpNotFoundException):
-                $response = $this->createResponse(404, 'Route not found');
+                $response = $this->createResponse(404, 'Route not found', 'ERR-NOT-FOUND');
                 break;
             case ($exception instanceof HttpMethodNotAllowedException):
                 $message = 'HTTP Method not allowed. See Allow-Header for a list of allowed methods';
                 $response = $this
-                    ->createResponse(405, $message)
+                    ->createResponse(405, $message, 'ERR-METHOD-NOT-ALLOWED')
                     ->withHeader('Allow', implode(', ', $exception->getAllowedMethods()));
                 break;
             default:
-                $response = $this->createResponse(500, 'Internal Server Error');
+                $response = $this->createResponse(500, 'Internal Server Error', 'ERR-INTERNAL');
                 break;
         }
 
@@ -90,15 +90,17 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * @param int $statusCode
      * @param string $message
+     * @param string $errorCode
      * @return ResponseInterface
      */
-    private function createResponse(int $statusCode, string $message): ResponseInterface
+    private function createResponse(int $statusCode, string $message, string $errorCode): ResponseInterface
     {
         $response = $this->responseFactory->createResponse($statusCode);
 
         return $this->responseWriter->write($response, [
             'errors' => [
                 [
+                    'code' => $errorCode,
                     'message' => $message
                 ]
             ]

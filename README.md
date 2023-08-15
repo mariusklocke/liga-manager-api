@@ -69,16 +69,17 @@ In case of error the client will be supplied with a human-readable message, a sp
 starting with "ERR"-) and an associated HTTP status code. A client should implement its own validation to ensure user
 input does not cause errors in the API.
 
-| Code                 | HTTP Status Code            | Description                                             |
-|----------------------|-----------------------------|---------------------------------------------------------|
-| ERR-AUTHENTICATION   | 401 - Unauthorized          | User could not be authorized                            |
-| ERR-CONFLICT         | 409 - Conflict              | Request conflicts with the current state of an object   |
-| ERR-INTERNAL         | 500 - Internal Server Error | Internal error, report to developer                     |
-| ERR-INVALID-INPUT    | 400 - Bad Request           | Request contains invalid input values                   |
-| ERR-MAINTENANCE-MODE | 503 - Service Unavailable   | Service is temporarily not available due to maintenance |
-| ERR-NOT-FOUND        | 404 - Not Found             | Requested object could not be found in database         |
-| ERR-PERMISSION       | 403 - Forbidden             | Request is not permitted to the current user            |
-| ERR-UNIQUENESS       | 400 - Bad Request           | A Value violates a uniqueness constraint                |
+| Code                   | HTTP Status Code            | Description                                             |
+|------------------------|-----------------------------|---------------------------------------------------------|
+| ERR-AUTHENTICATION     | 401 - Unauthorized          | User could not be authorized                            |
+| ERR-CONFLICT           | 409 - Conflict              | Request conflicts with the current state of an object   |
+| ERR-INTERNAL           | 500 - Internal Server Error | Internal error, report to developer                     |
+| ERR-INVALID-INPUT      | 400 - Bad Request           | Request contains invalid input values                   |
+| ERR-MAINTENANCE-MODE   | 503 - Service Unavailable   | Service is temporarily not available due to maintenance |
+| ERR-METHOD-NOT-ALLOWED | 405 - Method Not Allowed    | HTTP method is not allowed for this URL                 |
+| ERR-NOT-FOUND          | 404 - Not Found             | Requested object could not be found in database         |
+| ERR-PERMISSION         | 403 - Forbidden             | Request is not permitted to the current user            |
+| ERR-UNIQUENESS         | 400 - Bad Request           | A Value violates a uniqueness constraint                |
 
 ## Naming Conventions
 
