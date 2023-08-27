@@ -4,7 +4,6 @@ namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\DeleteRankingPenaltyCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\RankingPenaltyRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -26,8 +25,7 @@ class DeleteRankingPenaltyHandler implements AuthAwareHandler
      */
     public function __invoke(DeleteRankingPenaltyCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var RankingPenalty $penalty */
         $penalty = $this->rankingPenaltyRepository->find($command->getId());

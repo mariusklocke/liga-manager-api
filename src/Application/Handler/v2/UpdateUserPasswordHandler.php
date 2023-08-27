@@ -4,9 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\UpdateUserPasswordCommand;
-use HexagonalPlayground\Application\Exception\AuthenticationException;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Application\Security\AuthenticationException;
 use HexagonalPlayground\Domain\Event\Event;
 
 class UpdateUserPasswordHandler implements AuthAwareHandler

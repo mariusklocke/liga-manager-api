@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\CreateTeamCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -33,8 +32,7 @@ class CreateTeamHandler implements AuthAwareHandler
     {
         $events = [];
 
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         $team = new Team($command->getId(), $command->getName(), $command->getContact());
         $this->teamRepository->save($team);

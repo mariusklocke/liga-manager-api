@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\DeleteMatchDayCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\IsAdmin;
+
 use HexagonalPlayground\Application\Repository\MatchDayRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -30,8 +30,7 @@ class DeleteMatchDayHandler implements AuthAwareHandler
      */
     public function __invoke(DeleteMatchDayCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var MatchDay $matchDay */
         $matchDay = $this->matchDayRepository->find($command->getId());

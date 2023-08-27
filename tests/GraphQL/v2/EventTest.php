@@ -20,9 +20,9 @@ class EventTest extends TestCase
 
         foreach (self::$client->paginate($query) as $eventList) {
             foreach ($eventList as $event) {
-                self::assertObjectHasAttribute('id', $event);
-                self::assertObjectHasAttribute('occurredAt', $event);
-                self::assertObjectHasAttribute('type', $event);
+                self::assertObjectHasProperty('id', $event);
+                self::assertObjectHasProperty('occurredAt', $event);
+                self::assertObjectHasProperty('type', $event);
 
                 $occurredAt = new DateTime($event->occurredAt);
                 if (isset($filter['occurredAfter'])) {
@@ -38,7 +38,7 @@ class EventTest extends TestCase
         }
     }
 
-    public function filterProvider(): Iterator
+    public static function filterProvider(): Iterator
     {
         yield 'empty filter' => [[]];
         yield 'simple filter' => [[

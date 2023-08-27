@@ -52,7 +52,7 @@ class UserTest extends TestCase
         self::assertEquals($lastName, $user->lastName);
         self::assertEmpty(array_diff($teamIds, array_column($user->teams, 'id')));
         self::assertEmpty(array_diff(array_column($user->teams, 'id'), $teamIds));
-        self::assertObjectNotHasAttribute('password', $user);
+        self::assertObjectNotHasProperty('password', $user);
 
         $user->password = $password;
 
@@ -317,16 +317,16 @@ class UserTest extends TestCase
         self::assertNotEmpty($userList);
 
         foreach ($userList as $user) {
-            self::assertObjectHasAttribute('id', $user);
-            self::assertObjectHasAttribute('email', $user);
-            self::assertObjectHasAttribute('role', $user);
-            self::assertObjectHasAttribute('firstName', $user);
-            self::assertObjectHasAttribute('lastName', $user);
+            self::assertObjectHasProperty('id', $user);
+            self::assertObjectHasProperty('email', $user);
+            self::assertObjectHasProperty('role', $user);
+            self::assertObjectHasProperty('firstName', $user);
+            self::assertObjectHasProperty('lastName', $user);
 
             self::assertIsArray($user->teams);
             foreach ($user->teams as $team) {
-                self::assertObjectHasAttribute('id', $team);
-                self::assertObjectHasAttribute('name', $team);
+                self::assertObjectHasProperty('id', $team);
+                self::assertObjectHasProperty('name', $team);
             }
         }
     }
@@ -346,5 +346,10 @@ class UserTest extends TestCase
         ]), $this->defaultAdminAuth);
 
         return $id;
+    }
+
+    private static function assertObjectNotHasProperty(string $property, object $object): void
+    {
+        self::assertFalse(property_exists($object, $property), "Failed to assert that object NOT has property $property");
     }
 }

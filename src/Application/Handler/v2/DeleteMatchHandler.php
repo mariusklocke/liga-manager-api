@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\DeleteMatchCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\IsAdmin;
+
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -30,8 +30,7 @@ class DeleteMatchHandler implements AuthAwareHandler
      */
     public function __invoke(DeleteMatchCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var MatchEntity $match */
         $match = $this->matchRepository->find($command->getId());

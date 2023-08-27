@@ -243,16 +243,16 @@ class TournamentTest extends CompetitionTest
         self::assertIsArray($tournamentList);
         self::assertNotEmpty($tournamentList);
         foreach ($tournamentList as $tournament) {
-            self::assertObjectHasAttribute('id', $tournament);
-            self::assertObjectHasAttribute('name', $tournament);
+            self::assertObjectHasProperty('id', $tournament);
+            self::assertObjectHasProperty('name', $tournament);
 
             self::assertIsArray($tournament->matchDays);
             foreach ($tournament->matchDays as $matchDay) {
-                self::assertObjectHasAttribute('id', $matchDay);
-                self::assertObjectHasAttribute('number', $matchDay);
+                self::assertObjectHasProperty('id', $matchDay);
+                self::assertObjectHasProperty('number', $matchDay);
                 self::assertIsArray($matchDay->matches);
                 foreach ($matchDay->matches as $match) {
-                    self::assertObjectHasAttribute('id', $match);
+                    self::assertObjectHasProperty('id', $match);
                 }
             }
         }

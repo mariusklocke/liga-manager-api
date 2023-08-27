@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output;
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\QueryTypeInterface;
@@ -82,7 +81,7 @@ class UserType extends ObjectType implements QueryTypeInterface
                     }
 
                     // Fetching other user's data requires admin role
-                    (new IsAdmin($authContext->getUser()))->check();
+                    $authContext->getUser()->assertIsAdmin();
 
                     $user = $repo->findById($args['id']);
 
@@ -98,7 +97,7 @@ class UserType extends ObjectType implements QueryTypeInterface
                 'resolve' => function ($root, array $args, AppContext $context) {
                     $authContext = (new AuthReader())->requireAuthContext($context->getRequest());
                     // Listing user data requires admin role
-                    (new IsAdmin($authContext->getUser()))->check();
+                    $authContext->getUser()->assertIsAdmin();
 
                     /** @var UserRepository $repo */
                     $repo = $context->getContainer()->get(UserRepository::class);

@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\InvalidateAccessTokensCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\IsAdmin;
+
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Domain\Event\Event;
@@ -31,8 +31,7 @@ class InvalidateAccessTokensHandler implements AuthAwareHandler
     {
         if ($command->getUserId() !== $authContext->getUser()->getId()) {
             // Invalidating other users access tokens requires admin role
-            $isAdmin = new IsAdmin($authContext->getUser());
-            $isAdmin->check();
+            $authContext->getUser()->assertIsAdmin();
 
             $user = $this->userRepository->find($command->getUserId());
         } else {

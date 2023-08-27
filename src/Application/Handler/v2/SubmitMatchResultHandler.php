@@ -5,12 +5,10 @@ namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\MatchEntity;
-use HexagonalPlayground\Domain\Value\MatchResult;
 
 class SubmitMatchResultHandler implements AuthAwareHandler
 {
@@ -36,8 +34,7 @@ class SubmitMatchResultHandler implements AuthAwareHandler
 
         /** @var MatchEntity $match */
         $match = $this->matchRepository->find($command->getMatchId());
-        $canChangeMatch = new CanChangeMatch($authContext->getUser(), $match);
-        $canChangeMatch->check();
+        $authContext->getUser()->assertCanChangeMatch($match);
         $match->submitResult($command->getMatchResult());
 
         $events[] = new Event('match:result:submitted', [

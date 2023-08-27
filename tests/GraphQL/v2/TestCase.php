@@ -76,4 +76,9 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         return [];
     }
+
+    protected static function assertObjectHasProperty(string $property, object $object): void
+    {
+        self::assertTrue(property_exists($object, $property), "Failed to assert that object has property $property");
+    }
 }

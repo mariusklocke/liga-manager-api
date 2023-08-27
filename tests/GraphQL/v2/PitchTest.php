@@ -85,25 +85,25 @@ class PitchTest extends TestCase
         self::assertNotEmpty($pitchList);
 
         foreach ($pitchList as $pitch) {
-            self::assertObjectHasAttribute('id', $pitch);
-            self::assertObjectHasAttribute('label', $pitch);
+            self::assertObjectHasProperty('id', $pitch);
+            self::assertObjectHasProperty('label', $pitch);
 
             if (isset($pitch->location)) {
-                self::assertObjectHasAttribute('latitude', $pitch->location);
-                self::assertObjectHasAttribute('longitude', $pitch->location);
+                self::assertObjectHasProperty('latitude', $pitch->location);
+                self::assertObjectHasProperty('longitude', $pitch->location);
             }
 
             if (isset($pitch->contact)) {
-                self::assertObjectHasAttribute('firstName', $pitch->contact);
-                self::assertObjectHasAttribute('lastName', $pitch->contact);
-                self::assertObjectHasAttribute('phone', $pitch->contact);
-                self::assertObjectHasAttribute('email', $pitch->contact);
+                self::assertObjectHasProperty('firstName', $pitch->contact);
+                self::assertObjectHasProperty('lastName', $pitch->contact);
+                self::assertObjectHasProperty('phone', $pitch->contact);
+                self::assertObjectHasProperty('email', $pitch->contact);
             }
 
-            self::assertObjectHasAttribute('matches', $pitch);
+            self::assertObjectHasProperty('matches', $pitch);
             self::assertIsArray($pitch->matches);
             foreach ($pitch->matches as $match) {
-                self::assertObjectHasAttribute('id', $match);
+                self::assertObjectHasProperty('id', $match);
             }
         }
     }

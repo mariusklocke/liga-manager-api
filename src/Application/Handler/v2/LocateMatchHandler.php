@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\LocateMatchCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
@@ -44,8 +43,8 @@ class LocateMatchHandler implements AuthAwareHandler
         $match = $this->matchRepository->find($command->getMatchId());
         /** @var Pitch $pitch */
         $pitch = $this->pitchRepository->find($command->getPitchId());
-        $canChangeMatch = new CanChangeMatch($authContext->getUser(), $match);
-        $canChangeMatch->check();
+
+        $authContext->getUser()->assertCanChangeMatch($match);
 
         $match->locate($pitch);
 

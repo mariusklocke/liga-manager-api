@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL\v2\Type\Output;
 use GraphQL\Deferred;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Infrastructure\API\GraphQL\AppContext;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchLoader;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedUserLoader;
@@ -47,7 +46,7 @@ class TeamType extends ObjectType implements QueryTypeInterface
                         'resolve' => function (array $root, $args, AppContext $context) {
                             $authContext = (new AuthReader())->requireAuthContext($context->getRequest());
                             // Listing user data requires admin role
-                            (new IsAdmin($authContext->getUser()))->check();
+                            $authContext->getUser()->assertIsAdmin();
 
                             /** @var FieldNameConverter $converter */
                             $converter = $context->getContainer()->get(FieldNameConverter::class);

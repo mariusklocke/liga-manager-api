@@ -4,13 +4,12 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\CreateMatchDayCommand;
-use HexagonalPlayground\Application\Exception\InvalidInputException;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Competition;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 
 class CreateMatchDayHandler implements AuthAwareHandler
 {
@@ -32,8 +31,7 @@ class CreateMatchDayHandler implements AuthAwareHandler
 
     public function __invoke(CreateMatchDayCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         [$repository, $competition] = $this->findCompetition($command);
 

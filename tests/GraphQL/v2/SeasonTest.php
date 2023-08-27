@@ -624,60 +624,60 @@ class SeasonTest extends CompetitionTest
         self::assertIsArray($seasonList);
         self::assertNotEmpty($seasonList);
         foreach ($seasonList as $season) {
-            self::assertObjectHasAttribute('id', $season);
-            self::assertObjectHasAttribute('name', $season);
-            self::assertObjectHasAttribute('state', $season);
-            self::assertObjectHasAttribute('matchDayCount', $season);
-            self::assertObjectHasAttribute('teamCount', $season);
+            self::assertObjectHasProperty('id', $season);
+            self::assertObjectHasProperty('name', $season);
+            self::assertObjectHasProperty('state', $season);
+            self::assertObjectHasProperty('matchDayCount', $season);
+            self::assertObjectHasProperty('teamCount', $season);
 
             self::assertIsArray($season->matchDays);
             foreach ($season->matchDays as $matchDay) {
-                self::assertObjectHasAttribute('id', $matchDay);
-                self::assertObjectHasAttribute('number', $matchDay);
+                self::assertObjectHasProperty('id', $matchDay);
+                self::assertObjectHasProperty('number', $matchDay);
                 self::assertIsArray($matchDay->matches);
                 foreach ($matchDay->matches as $match) {
-                    self::assertObjectHasAttribute('id', $match);
+                    self::assertObjectHasProperty('id', $match);
                 }
             }
 
             self::assertIsArray($season->teams);
             foreach ($season->teams as $team) {
-                self::assertObjectHasAttribute('id', $team);
-                self::assertObjectHasAttribute('name', $team);
+                self::assertObjectHasProperty('id', $team);
+                self::assertObjectHasProperty('name', $team);
             }
 
             if ($season->state !== 'preparation') {
-                self::assertObjectHasAttribute('ranking', $season);
-                self::assertObjectHasAttribute('updatedAt', $season->ranking);
-                self::assertObjectHasAttribute('positions', $season->ranking);
+                self::assertObjectHasProperty('ranking', $season);
+                self::assertObjectHasProperty('updatedAt', $season->ranking);
+                self::assertObjectHasProperty('positions', $season->ranking);
 
                 self::assertIsArray($season->ranking->positions);
                 foreach ($season->ranking->positions as $position) {
-                    self::assertObjectHasAttribute('team', $position);
-                    self::assertObjectHasAttribute('sortIndex', $position);
-                    self::assertObjectHasAttribute('number', $position);
-                    self::assertObjectHasAttribute('matches', $position);
-                    self::assertObjectHasAttribute('wins', $position);
-                    self::assertObjectHasAttribute('draws', $position);
-                    self::assertObjectHasAttribute('losses', $position);
-                    self::assertObjectHasAttribute('scoredGoals', $position);
-                    self::assertObjectHasAttribute('concededGoals', $position);
-                    self::assertObjectHasAttribute('points', $position);
+                    self::assertObjectHasProperty('team', $position);
+                    self::assertObjectHasProperty('sortIndex', $position);
+                    self::assertObjectHasProperty('number', $position);
+                    self::assertObjectHasProperty('matches', $position);
+                    self::assertObjectHasProperty('wins', $position);
+                    self::assertObjectHasProperty('draws', $position);
+                    self::assertObjectHasProperty('losses', $position);
+                    self::assertObjectHasProperty('scoredGoals', $position);
+                    self::assertObjectHasProperty('concededGoals', $position);
+                    self::assertObjectHasProperty('points', $position);
                 }
 
                 self::assertIsArray($season->ranking->penalties);
                 foreach ($season->ranking->penalties as $penalty) {
-                    self::assertObjectHasAttribute('id', $penalty);
-                    self::assertObjectHasAttribute('team', $penalty);
-                    self::assertObjectHasAttribute('reason', $penalty);
-                    self::assertObjectHasAttribute('createdAt', $penalty);
-                    self::assertObjectHasAttribute('points', $penalty);
+                    self::assertObjectHasProperty('id', $penalty);
+                    self::assertObjectHasProperty('team', $penalty);
+                    self::assertObjectHasProperty('reason', $penalty);
+                    self::assertObjectHasProperty('createdAt', $penalty);
+                    self::assertObjectHasProperty('points', $penalty);
                 }
             }
         }
     }
 
-    public function filterProvider(): Iterator
+    public static function filterProvider(): Iterator
     {
         yield 'empty filter' => [[]];
         yield 'simple filter' => [[

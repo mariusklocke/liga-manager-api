@@ -6,11 +6,11 @@ namespace HexagonalPlayground\Application\Handler\v2;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\v2\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Domain\Event\Event;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 
 class SendPasswordResetMailHandler
 {

@@ -4,9 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\CancelMatchCommand;
-use HexagonalPlayground\Application\Exception\NotFoundException;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\CanChangeMatch;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -29,7 +27,6 @@ class CancelMatchHandler implements AuthAwareHandler
      * @param CancelMatchCommand $command
      * @param AuthContext $authContext
      * @return array|Event[]
-     * @throws NotFoundException
      */
     public function __invoke(CancelMatchCommand $command, AuthContext $authContext): array
     {
@@ -38,8 +35,7 @@ class CancelMatchHandler implements AuthAwareHandler
         /** @var MatchEntity $match */
         $match = $this->matchRepository->find($command->getMatchId());
 
-        $canChangeMatch = new CanChangeMatch($authContext->getUser(), $match);
-        $canChangeMatch->check();
+        $authContext->getUser()->assertCanChangeMatch($match);
 
         $previousResult = $match->getMatchResult();
         $match->cancel($command->getReason());

@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Application\Handler\v2;
 
 use HexagonalPlayground\Application\Command\v2\UpdateUserCommand;
 use HexagonalPlayground\Application\Handler\AuthAwareHandler;
-use HexagonalPlayground\Application\Permission\IsAdmin;
+
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
@@ -40,16 +40,15 @@ class UpdateUserHandler implements AuthAwareHandler
     {
         /** @var User $user */
         $user = $this->userRepository->find($command->getId());
-        $isAdmin = new IsAdmin($authContext->getUser());
 
         // Changing other users than oneself requires admin rights
         if (!$user->equals($authContext->getUser())) {
-            $isAdmin->check();
+            $authContext->getUser()->assertIsAdmin();
         }
 
         // Changing user role requires admin rights
         if ($command->getRole() !== $user->getRole()) {
-            $isAdmin->check();
+            $authContext->getUser()->assertIsAdmin();
             $user->setRole($command->getRole());
         }
 
@@ -64,7 +63,7 @@ class UpdateUserHandler implements AuthAwareHandler
 
         // Adding teams requires admin rights
         foreach (array_diff($command->getTeamIds(), $user->getTeamIds()) as $teamId) {
-            $isAdmin->check();
+            $authContext->getUser()->assertIsAdmin();
             /** @var Team $team */
             $team = $this->teamRepository->find($teamId);
             $user->addTeam($team);
@@ -72,7 +71,7 @@ class UpdateUserHandler implements AuthAwareHandler
 
         // Removing teams requires admin rights
         foreach (array_diff($user->getTeamIds(), $command->getTeamIds()) as $teamId) {
-            $isAdmin->check();
+            $authContext->getUser()->assertIsAdmin();
             /** @var Team $team */
             $team = $this->teamRepository->find($teamId);
             $user->removeTeam($team);

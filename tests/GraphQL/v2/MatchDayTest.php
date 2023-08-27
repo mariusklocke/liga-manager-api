@@ -20,15 +20,15 @@ class MatchDayTest extends TestCase
 
         foreach (self::$client->paginate($query) as $matchDayList) {
             foreach ($matchDayList as $matchDay) {
-                self::assertObjectHasAttribute('id', $matchDay);
-                self::assertObjectHasAttribute('number', $matchDay);
-                self::assertObjectHasAttribute('startDate', $matchDay);
-                self::assertObjectHasAttribute('endDate', $matchDay);
+                self::assertObjectHasProperty('id', $matchDay);
+                self::assertObjectHasProperty('number', $matchDay);
+                self::assertObjectHasProperty('startDate', $matchDay);
+                self::assertObjectHasProperty('endDate', $matchDay);
             }
         }
     }
 
-    public function filterProvider(): Iterator
+    public static function filterProvider(): Iterator
     {
         yield 'empty filter' => [[]];
         yield 'simple filter' => [[
