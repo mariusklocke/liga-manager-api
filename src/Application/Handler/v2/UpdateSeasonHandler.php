@@ -9,6 +9,7 @@ use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
+use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Domain\Util\Assert;
@@ -43,7 +44,8 @@ class UpdateSeasonHandler implements AuthAwareHandler
         if ($season->isInProgress()) {
             Assert::true(
                 count($addTeamIds) === count($removeTeamIds),
-                'Team count must not change when season in progress'
+                'Team count must not change when season in progress',
+                ConflictException::class
             );
 
             $teamSwaps = array_combine(array_values($removeTeamIds), array_values($addTeamIds));
