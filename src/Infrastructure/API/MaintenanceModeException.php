@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use Exception;
-use HexagonalPlayground\Domain\ExceptionInterface;
+use HexagonalPlayground\Domain\Exception\ExceptionInterface;
 
 class MaintenanceModeException extends Exception implements ExceptionInterface
 {

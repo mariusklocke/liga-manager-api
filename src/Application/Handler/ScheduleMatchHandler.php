@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\ScheduleMatchCommand;
-use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Permission\CanChangeMatch;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Repository\MatchRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -36,8 +35,9 @@ class ScheduleMatchHandler implements AuthAwareHandler
 
         /** @var MatchEntity $match */
         $match = $this->matchRepository->find($command->getMatchId());
-        $canChangeMatch = new CanChangeMatch($authContext->getUser(), $match);
-        $canChangeMatch->check();
+
+        $authContext->getUser()->assertCanChangeMatch($match);
+
         $match->schedule($command->getKickoff());
 
         $events[] = new Event('match:scheduled', [

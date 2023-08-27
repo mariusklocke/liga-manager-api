@@ -3,8 +3,8 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use Base64Url\Base64Url;
-use HexagonalPlayground\Application\Exception\InvalidInputException;
-use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;

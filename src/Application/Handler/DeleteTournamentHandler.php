@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -30,8 +29,7 @@ class DeleteTournamentHandler implements AuthAwareHandler
      */
     public function __invoke(DeleteTournamentCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var Tournament $tournament */
         $tournament = $this->repository->find($command->getTournamentId());

@@ -1,5 +1,5 @@
-ARG PHP_VERSION
-FROM php:${PHP_VERSION}-fpm-alpine
+ARG PHP_IMAGE
+FROM ${PHP_IMAGE}
 
 ENV RUN_DEPS="gmp ncurses gnupg" \
     BUILD_DEPS="${PHPIZE_DEPS} gmp-dev linux-headers" \
@@ -11,7 +11,7 @@ RUN set -xe \
     && apk upgrade \
     && apk add --no-cache $RUN_DEPS \
     && apk add --no-cache --virtual .build-deps $BUILD_DEPS \
-    && docker-php-ext-install $PHP_EXTS > /dev/null \
+    && docker-php-ext-install $PHP_EXTS > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
     && pecl channel-update pecl.php.net \
     && pecl install apcu > /dev/null \
     && pecl install redis > /dev/null \

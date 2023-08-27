@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
-use HexagonalPlayground\Application\Exception\NotFoundException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;

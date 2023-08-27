@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Exception;
+namespace HexagonalPlayground\Application\Security;
 
 use Exception;
-use HexagonalPlayground\Domain\ExceptionInterface;
+use HexagonalPlayground\Domain\Exception\ExceptionInterface;
 
 class AuthenticationException extends Exception implements ExceptionInterface
 {

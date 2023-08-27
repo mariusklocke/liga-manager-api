@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Application;
 
 use DateTimeImmutable;
 use Exception;
-use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 
 class InputParser
 {

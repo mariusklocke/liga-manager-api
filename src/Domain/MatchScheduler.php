@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Exception\ConflictException;
+use HexagonalPlayground\Domain\Exception\InternalException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchAppointment;
 
@@ -13,7 +16,6 @@ class MatchScheduler
      * @param MatchDay $matchDay
      * @param MatchAppointment[] $appointments
      * @param Pitch[] $pitches
-     * @throws DomainException
      */
     public function scheduleMatchesForMatchDay(MatchDay $matchDay, array $appointments, array $pitches): void
     {
@@ -21,7 +23,8 @@ class MatchScheduler
 
         Assert::true(
             count($appointments) >= count($matches),
-            'Cannot schedule MatchDay with less appointments than matches.'
+            'Cannot schedule MatchDay with less appointments than matches.',
+            ConflictException::class
         );
 
         shuffle($appointments);
@@ -45,7 +48,8 @@ class MatchScheduler
 
             Assert::true(
                 $selectedAppointment !== null,
-                'Cannot find appointment for match ' . $match->getId()
+                'Cannot find appointment for match ' . $match->getId(),
+                InternalException::class
             );
 
             $kickoff = $this->calcKickoff($matchDay, $selectedAppointment);
@@ -56,7 +60,8 @@ class MatchScheduler
 
             Assert::true(
                 $pitch !== null,
-                sprintf('Failed to find pitch with ID %s', $selectedAppointment->getPitchId())
+                sprintf('Failed to find pitch with ID %s', $selectedAppointment->getPitchId()),
+                NotFoundException::class
             );
 
             $match->locate($pitch);
@@ -98,7 +103,8 @@ class MatchScheduler
             $kickoff = $kickoff->modify('+ 1 day');
             Assert::true(
                 $kickoff <= $matchDay->getEndDate()->setTime(23, 59, 59),
-                'Cannot determine kickoff day'
+                'Cannot determine kickoff day',
+                InternalException::class
             );
         }
 

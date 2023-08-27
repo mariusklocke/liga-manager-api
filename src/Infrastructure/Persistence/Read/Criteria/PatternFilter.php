@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Criteria;
 
-use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
-use HexagonalPlayground\Application\Permission\CanManageTeam;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -35,8 +34,9 @@ class UpdateTeamContactHandler implements AuthAwareHandler
 
         /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());
-        $canManageTeam = new CanManageTeam($team, $authContext->getUser());
-        $canManageTeam->check();
+
+        $authContext->getUser()->assertCanManageTeam($team);
+
         $oldContact = $team->getContact();
         $newContact = new ContactPerson(
             $command->getFirstName(),

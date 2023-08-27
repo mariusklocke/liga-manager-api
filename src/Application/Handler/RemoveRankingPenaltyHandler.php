@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
@@ -32,8 +31,7 @@ class RemoveRankingPenaltyHandler implements AuthAwareHandler
     {
         $events = [];
 
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var Season $season */
         $season  = $this->seasonRepository->find($command->getSeasonId());

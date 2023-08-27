@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Handler;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
@@ -48,8 +47,7 @@ class SendInviteMailHandler implements AuthAwareHandler
      */
     public function __invoke(SendInviteMailCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var User $user */
         $user  = $this->userRepository->find($command->getUserId());

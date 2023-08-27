@@ -5,7 +5,10 @@ namespace HexagonalPlayground\Domain;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\ConflictException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 use HexagonalPlayground\Domain\Value\GeographicLocation;
 
@@ -71,7 +74,11 @@ class Pitch extends Entity
      */
     public function assertDeletable(): void
     {
-        Assert::true($this->matches->isEmpty(), 'Cannot delete pitch which is used in matches');
+        Assert::true(
+            $this->matches->isEmpty(),
+            'Cannot delete pitch which is used in matches',
+            ConflictException::class
+        );
     }
 
     /**
@@ -87,8 +94,16 @@ class Pitch extends Entity
      */
     public function setLabel(string $label): void
     {
-        Assert::minLength($label, 1, "A pitch's label cannot be blank");
-        Assert::maxLength($label, 255, "A pitch's label cannot exceed 255 characters");
+        Assert::true(
+            StringUtils::length($label) > 0,
+            "A pitch's label cannot be blank",
+            InvalidInputException::class
+        );
+        Assert::true(
+            StringUtils::length($label) <= 255,
+            "A pitch's label cannot exceed 255 characters",
+            InvalidInputException::class
+        );
         $this->label = $label;
     }
 }

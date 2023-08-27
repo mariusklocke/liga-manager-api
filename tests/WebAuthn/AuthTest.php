@@ -22,10 +22,10 @@ class AuthTest extends HttpTest
 
         $options = $this->parser->parse($response);
         self::assertIsObject($options);
-        self::assertObjectHasAttribute('challenge', $options);
-        self::assertObjectHasAttribute('user', $options);
+        self::assertTrue(property_exists($options, 'challenge'));
+        self::assertTrue(property_exists($options, 'user'));
         self::assertIsObject($options->user);
-        self::assertObjectHasAttribute('id', $options->user);
+        self::assertTrue(property_exists($options->user, 'id'));
     }
 
     public function testLoginOptionsCanBeRequested(): void
@@ -41,8 +41,8 @@ class AuthTest extends HttpTest
 
         $options = $this->parser->parse($response);
         self::assertIsObject($options);
-        self::assertObjectHasAttribute('challenge', $options);
-        self::assertObjectHasAttribute('timeout', $options);
+        self::assertTrue(property_exists($options, 'challenge'));
+        self::assertTrue(property_exists($options, 'timeout'));
     }
 
     public function testCredentialsCanBeFound(): void

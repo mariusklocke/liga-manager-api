@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Import;
 
-use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use Psr\Http\Message\StreamInterface;
 
 class L98IniParser

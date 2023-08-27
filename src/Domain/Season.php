@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class Season extends Competition
@@ -58,7 +59,11 @@ class Season extends Competition
      */
     public function addTeam(Team $team): void
     {
-        Assert::false($this->hasStarted(), 'Cannot add teams to season which has already started');
+        Assert::false(
+            $this->hasStarted(),
+            'Cannot add teams to season which has already started',
+            ConflictException::class
+        );
         if (!$this->hasTeam($team)) {
             $this->teams[] = $team;
             $this->teamCount++;
@@ -70,7 +75,11 @@ class Season extends Competition
      */
     public function removeTeam(Team $team): void
     {
-        Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
+        Assert::false(
+            $this->hasStarted(),
+            'Cannot remove teams from a season which has already started',
+            ConflictException::class
+        );
         if ($this->hasTeam($team)) {
             $this->teams->removeElement($team);
             $this->teamCount--;
@@ -100,7 +109,11 @@ class Season extends Competition
      */
     public function clearTeams(): void
     {
-        Assert::false($this->hasStarted(), 'Cannot remove teams from a season which has already started');
+        Assert::false(
+            $this->hasStarted(),
+            'Cannot remove teams from a season which has already started',
+            ConflictException::class
+        );
         $this->teams->clear();
         $this->teamCount = 0;
     }
@@ -110,7 +123,11 @@ class Season extends Competition
      */
     public function clearMatchDays(): void
     {
-        Assert::false($this->hasStarted(), 'Cannot remove matches from a season which has already started');
+        Assert::false(
+            $this->hasStarted(),
+            'Cannot remove matches from a season which has already started',
+            ConflictException::class
+        );
         foreach ($this->matchDays as $matchDay) {
             /** @var MatchDay $matchDay */
             $matchDay->clearMatches();
@@ -148,8 +165,16 @@ class Season extends Competition
      */
     public function start(): void
     {
-        Assert::false($this->hasStarted(), 'Cannot start a season which has already been started');
-        Assert::true($this->hasMatches(), 'Cannot start a season which has no matches');
+        Assert::false(
+            $this->hasStarted(),
+            'Cannot start a season which has already been started',
+            ConflictException::class
+        );
+        Assert::true(
+            $this->hasMatches(),
+            'Cannot start a season which has no matches',
+            ConflictException::class
+        );
         $this->ranking = new Ranking($this);
         $this->state = self::STATE_PROGRESS;
     }
@@ -159,7 +184,11 @@ class Season extends Competition
      */
     public function end(): void
     {
-        Assert::true($this->hasStarted(), 'Cannot end a season which has not been started');
+        Assert::true(
+            $this->hasStarted(),
+            'Cannot end a season which has not been started',
+            ConflictException::class
+        );
         $this->state = self::STATE_ENDED;
     }
 
@@ -184,7 +213,8 @@ class Season extends Competition
     {
         Assert::false(
             $this->ranking === null,
-            'Cannot access ranking for a season which has not been started'
+            'Cannot access ranking for a season which has not been started',
+            ConflictException::class
         );
         return $this->ranking;
     }
@@ -205,8 +235,16 @@ class Season extends Competition
      */
     public function replaceTeam(Team $from, Team $to): void
     {
-        Assert::true($this->hasTeam($from), 'Cannot replace a team which is not part of season');
-        Assert::false($this->hasTeam($to), 'Cannot replace a team with a team which is already part of season');
+        Assert::true(
+            $this->hasTeam($from),
+            'Cannot replace a team which is not part of season',
+            ConflictException::class
+        );
+        Assert::false(
+            $this->hasTeam($to),
+            'Cannot replace a team with a team which is already part of season',
+            ConflictException::class
+        );
 
         foreach ($this->matchDays as $matchDay) {
             foreach ($matchDay->getMatches() as $match) {

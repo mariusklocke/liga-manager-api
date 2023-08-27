@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Infrastructure\API\Security;
 use DateTimeImmutable;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use HexagonalPlayground\Application\Exception\AuthenticationException;
+use HexagonalPlayground\Application\Security\AuthenticationException;
 use HexagonalPlayground\Application\Security\TokenInterface;
 use HexagonalPlayground\Infrastructure\Config;
 

@@ -2,6 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure\Filesystem;
 
+use HexagonalPlayground\Domain\Exception\InternalException;
 use Psr\Http\Message\StreamInterface;
 
 class FileStream implements StreamInterface
@@ -18,14 +19,8 @@ class FileStream implements StreamInterface
      */
     public function __construct(string $path, string $mode = 'r')
     {
-        if (!$handle = fopen($path, $mode)) {
-            throw new IoException(sprintf(
-                'Cannot open file %s in mode "%s"',
-                $path,
-                $mode
-            ));
-        }
-        $this->stream = $handle;
+        $this->stream = fopen($path, $mode);
+        $this->assertThat(is_resource($this->stream), 'Failed to open file %s in mode "%s"');
         $size = filesize($path);
         $this->size = is_int($size) ? $size : null;
     }
@@ -72,9 +67,8 @@ class FileStream implements StreamInterface
     public function tell(): int
     {
         $position = ftell($this->stream);
-        if (false === $position) {
-            throw new IoException('Failed getting current position of FileStream.');
-        }
+
+        $this->assertThat(is_int($position), 'Failed getting current position of FileStream.');
 
         return $position;
     }
@@ -101,12 +95,7 @@ class FileStream implements StreamInterface
     public function seek($offset, $whence = SEEK_SET): void
     {
         $code = fseek($this->stream, $offset, $whence);
-        if ($code === -1) {
-            throw new IoException(sprintf(
-                'Failed to seek to position %d in stream.',
-                $offset
-            ));
-        }
+        $this->assertThat($code !== -1, sprintf('Failed to seek to position %d in stream.', $offset));
     }
 
     /**
@@ -136,9 +125,8 @@ class FileStream implements StreamInterface
     public function write($string): int
     {
         $written = fwrite($this->stream, $string);
-        if (false === $written) {
-            throw new IoException('Failed writing to stream.');
-        }
+
+        $this->assertThat(is_int($written), 'Failed writing to stream.');
 
         $this->size += $written;
 
@@ -164,9 +152,8 @@ class FileStream implements StreamInterface
     public function read($length): string
     {
         $read = fread($this->stream, $length);
-        if (false === $read) {
-            throw new IoException('Failed reading from stream.');
-        }
+
+        $this->assertThat(is_string($read), 'Failed reading from stream.');
 
         return $read;
     }
@@ -195,5 +182,12 @@ class FileStream implements StreamInterface
         }
 
         return $metadata[$key] ?? null;
+    }
+
+    private function assertThat(bool $condition, string $message): void
+    {
+        if (!$condition) {
+            throw new InternalException($message);
+        }
     }
 }

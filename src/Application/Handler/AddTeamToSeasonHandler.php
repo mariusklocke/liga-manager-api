@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\AddTeamToSeasonCommand;
-use HexagonalPlayground\Application\Exception\NotFoundException;
-use HexagonalPlayground\Application\Permission\IsAdmin;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
@@ -39,8 +38,7 @@ class AddTeamToSeasonHandler implements AuthAwareHandler
      */
     public function __invoke(AddTeamToSeasonCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

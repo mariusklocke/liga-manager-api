@@ -4,11 +4,11 @@ if ! [ $(id -u) = 0 ]; then
    exit 1
 fi
 
-ROOT_CA_CERT=/etc/ssl/certs/local-ca.crt
-ROOT_CA_KEY=/etc/ssl/private/local-ca.key
-SITE_CERT=/etc/ssl/certs/lima.local.crt
-SITE_CSR=/etc/ssl/certs/lima.local.csr
-SITE_KEY=/etc/ssl/private/lima.local.key
+ROOT_CA_CERT=/etc/pki/ca-trust/source/anchors/local-ca.crt
+ROOT_CA_KEY=/etc/pki/ca-trust/source/anchors/local-ca.key
+SITE_CERT=certs/lima.local.crt
+SITE_CSR=certs/lima.local.csr
+SITE_KEY=certs/lima.local.key
 SITE_EXT=$(mktemp)
 
 cat <<EOF >> "${SITE_EXT}"

@@ -40,26 +40,22 @@ class ApplicationFactory
         $app = new Application();
         $app->setCatchExceptions(true);
 
-        // Own commands
-        $app->addCommands([
-            new PrintGraphQlSchemaCommand($container),
-            new MaintenanceModeCommand($container),
-            new SendTestMailCommand($container),
-            new SetupEnvCommand($container),
-            new HealthCommand($container),
-            new CreateUserCommand($container),
-            new DeleteUserCommand($container),
-            new ListUserCommand($container),
-            new L98ImportCommand($container),
-            new LoadDemoDataCommand($container),
-            new WipeDbCommand($container)
-        ]);
-
-        foreach ($this->getDoctrineMigrationsCommands($container) as $command) {
+        foreach ($this->getOwnCommands($container) as $command) {
             $app->add($command);
         }
 
-        foreach ($this->getDoctrineOrmCommands($container) as $command) {
+        $migrationsDependencyFactory = $this->getDoctrineMigrationsDependencyFactory(
+            $this->getDoctrineMigrationConfig(),
+            $this->getDoctrineMigrationsConnectionLoader($container)
+        );
+
+        foreach ($this->getDoctrineMigrationsCommands($migrationsDependencyFactory) as $command) {
+            $app->add($command);
+        }
+
+        $entityManagerProvider = $this->getDoctrineOrmEntityManagerProvider($container);
+
+        foreach ($this->getDoctrineOrmCommands($entityManagerProvider) as $command) {
             $app->add($command);
         }
 
@@ -70,7 +66,26 @@ class ApplicationFactory
      * @param ContainerInterface $container
      * @return Iterator
      */
-    private function getDoctrineMigrationsCommands(ContainerInterface $container): Iterator
+    private function getOwnCommands(ContainerInterface $container): Iterator
+    {
+        yield new PrintGraphQlSchemaCommand($container);
+        yield new MaintenanceModeCommand($container);
+        yield new SendTestMailCommand($container);
+        yield new SetupEnvCommand($container);
+        yield new HealthCommand($container);
+        yield new CreateUserCommand($container);
+        yield new DeleteUserCommand($container);
+        yield new ListUserCommand($container);
+        yield new L98ImportCommand($container);
+        yield new LoadDemoDataCommand($container);
+        yield new WipeDbCommand($container);
+        yield new BrowseDbCommand($container);
+    }
+
+    /**
+     * @return Configuration
+     */
+    private function getDoctrineMigrationConfig(): Configuration
     {
         $migrationsConfig = new Configuration();
         $migrationsConfig->addMigrationsDirectory(
@@ -78,7 +93,16 @@ class ApplicationFactory
             Config::getInstance()->appHome . '/migrations'
         );
 
-        $connectionLoader = new class($container) implements ConnectionLoader {
+        return $migrationsConfig;
+    }
+
+    /**
+     * @param ContainerInterface $container
+     * @return ConnectionLoader
+     */
+    private function getDoctrineMigrationsConnectionLoader(ContainerInterface $container): ConnectionLoader
+    {
+        return new class($container) implements ConnectionLoader {
             private ContainerInterface $container;
 
             public function __construct(ContainerInterface $container)
@@ -91,12 +115,24 @@ class ApplicationFactory
                 return $this->container->get(Connection::class);
             }
         };
+    }
 
-        $dependencyFactory = DependencyFactory::fromConnection(
-            new ExistingConfiguration($migrationsConfig),
-            $connectionLoader
-        );
+    /**
+     * @param Configuration $config
+     * @param ConnectionLoader $connectionLoader
+     * @return DependencyFactory
+     */
+    private function getDoctrineMigrationsDependencyFactory(Configuration $config, ConnectionLoader $connectionLoader): DependencyFactory
+    {
+        return DependencyFactory::fromConnection(new ExistingConfiguration($config), $connectionLoader);
+    }
 
+    /**
+     * @param DependencyFactory $dependencyFactory
+     * @return Iterator
+     */
+    private function getDoctrineMigrationsCommands(DependencyFactory $dependencyFactory): Iterator
+    {
         yield new CurrentCommand($dependencyFactory);
         yield new DumpSchemaCommand($dependencyFactory);
         yield new ExecuteCommand($dependencyFactory);
@@ -113,11 +149,11 @@ class ApplicationFactory
 
     /**
      * @param ContainerInterface $container
-     * @return Iterator
+     * @return EntityManagerProvider
      */
-    private function getDoctrineOrmCommands(ContainerInterface $container): Iterator
+    private function getDoctrineOrmEntityManagerProvider(ContainerInterface $container): EntityManagerProvider
     {
-        $emProvider = new class($container) implements EntityManagerProvider {
+        return new class($container) implements EntityManagerProvider {
             private ContainerInterface $container;
 
             public function __construct(ContainerInterface $container)
@@ -135,7 +171,14 @@ class ApplicationFactory
                 return $this->container->get(EntityManagerInterface::class);
             }
         };
+    }
 
+    /**
+     * @param EntityManagerProvider $emProvider
+     * @return Iterator
+     */
+    private function getDoctrineOrmCommands(EntityManagerProvider $emProvider): Iterator
+    {
         yield new CreateCommand($emProvider);
         yield new UpdateCommand($emProvider);
         yield new DropCommand($emProvider);

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application;
 
-use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 
 class TypeAssert
 {

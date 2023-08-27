@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Exception;
+namespace HexagonalPlayground\Domain\Exception;
 
 use Exception;
-use HexagonalPlayground\Domain\ExceptionInterface;
 
+/**
+ * Exception is thrown if a user has insufficient permissions for an action
+ */
 class PermissionException extends Exception implements ExceptionInterface
 {
     /** @var string */

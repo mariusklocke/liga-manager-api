@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Domain;
 
+use HexagonalPlayground\Domain\Exception\ConflictException;
+use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Value\DatePeriod;
 use HexagonalPlayground\Domain\Util\Assert;
 
@@ -20,7 +22,11 @@ class MatchDayGenerator
     public function generateMatchDaysForSeason(Season $season, array $matchDayDates): void
     {
         $teams = array_values($season->getTeams());
-        Assert::true(count($teams) >= 2, 'Cannot create matches for season with less than 2 teams');
+        Assert::true(
+            count($teams) >= 2,
+            'Cannot create matches for season with less than 2 teams',
+            ConflictException::class
+        );
 
         if (count($teams) % 2 != 0) {
             $teams[] = null;
@@ -34,6 +40,7 @@ class MatchDayGenerator
             count($matchDayDates),
             $possibleMatchDayCounts,
             'Count of MatchDay dates does not match. Expected: [%s]. Got: %s',
+            ConflictException::class
         );
 
         /** @var DatePeriod[] $secondHalfMatchDayDates */
@@ -96,10 +103,11 @@ class MatchDayGenerator
         }
 
         // This should never happen, but a check doesn't hurt and a potential algorithmic flaw can be found early
-        Assert::true(count($teams) === 2, sprintf(
-            'MatchDay generation algorithm failed: Expected 2 teams left. Actual: %d teams',
-            count($teams)
-        ));
+        Assert::true(
+            count($teams) === 2,
+            sprintf('MatchDay generation algorithm failed: Expected 2 teams left. Actual: %d teams', count($teams)),
+            InternalException::class
+        );
 
         $k = max(array_keys($teams));
         $l = min(array_keys($teams));

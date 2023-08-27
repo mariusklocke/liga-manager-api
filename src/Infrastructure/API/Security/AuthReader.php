@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Security;
 
-use HexagonalPlayground\Application\Exception\AuthenticationException;
+use HexagonalPlayground\Application\Security\AuthenticationException;
 use HexagonalPlayground\Application\Security\AuthChecker;
 use HexagonalPlayground\Application\Security\AuthContext;
 use Psr\Http\Message\ServerRequestInterface;

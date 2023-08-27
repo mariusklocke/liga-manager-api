@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Exception;
+namespace HexagonalPlayground\Domain\Exception;
 
 use Exception;
-use HexagonalPlayground\Domain\ExceptionInterface;
 
+/**
+ * Exception is thrown if a required object could not be found
+ */
 class NotFoundException extends Exception implements ExceptionInterface
 {
     /** @var string */

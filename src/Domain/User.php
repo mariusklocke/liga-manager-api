@@ -6,7 +6,10 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\PermissionException;
 use HexagonalPlayground\Domain\Util\Assert;
+use HexagonalPlayground\Domain\Util\StringUtils;
 
 class User extends Entity
 {
@@ -76,8 +79,16 @@ class User extends Entity
     public function setPassword(?string $password): void
     {
         if (null !== $password) {
-            Assert::minLength($password, 6, 'Password does not reach the minimum length of 6 characters');
-            Assert::maxLength($password, 255, 'Password exceeds maximum length of 255 characters');
+            Assert::true(
+                StringUtils::length($password) >= 6,
+                'Password does not reach the minimum length of 6 characters',
+                InvalidInputException::class
+            );
+            Assert::true(
+                StringUtils::length($password) <= 255,
+                'Password exceeds maximum length of 255 characters',
+                InvalidInputException::class
+            );
             $this->password = password_hash($password, PASSWORD_BCRYPT);
         } else {
             $this->password = null;
@@ -143,7 +154,12 @@ class User extends Entity
      */
     public function setRole(string $role): void
     {
-        Assert::oneOf($role, [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER], 'Invalid role value. Valid: [%s], Got: %s');
+        Assert::oneOf(
+            $role,
+            [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER],
+            'Invalid role value. Valid: [%s], Got: %s',
+            InvalidInputException::class
+        );
         $this->role = $role;
     }
 
@@ -200,7 +216,11 @@ class User extends Entity
      */
     public function setEmail(string $email): void
     {
-        Assert::emailAddress($email, 'Invalid email address for user');
+        Assert::true(
+            StringUtils::isValidEmailAddress($email),
+            'Invalid email address for user',
+            InvalidInputException::class
+        );
         $this->email = $email;
     }
 
@@ -265,5 +285,55 @@ class User extends Entity
     public function removeTeam(Team $team): void
     {
         $this->teams->remove($team->getId());
+    }
+
+    /**
+     * @throws PermissionException if user is not admin
+     */
+    public function assertIsAdmin()
+    {
+        if ($this->hasRole(User::ROLE_ADMIN)) {
+            return;
+        }
+
+        throw new PermissionException('This action requires admin rights');
+    }
+
+    /**
+     * @param MatchEntity $match
+     * @throws PermissionException if user cannot change the match
+     */
+    public function assertCanChangeMatch(MatchEntity $match): void
+    {
+        if ($this->hasRole(User::ROLE_ADMIN)) {
+            return;
+        }
+
+        if ($this->isInTeam($match->getHomeTeam())) {
+            return;
+        }
+
+        if ($this->isInTeam($match->getGuestTeam())) {
+            return;
+        }
+
+        throw new PermissionException('User is not permitted to change this match');
+    }
+
+    /**
+     * @param Team $team
+     * @throws PermissionException if user cannot manage the team
+     */
+    public function assertCanManageTeam(Team $team): void
+    {
+        if ($this->hasRole(User::ROLE_ADMIN)) {
+            return;
+        }
+
+        if ($this->isInTeam($team)) {
+            return;
+        }
+
+        throw new PermissionException('User is not permitted to manage this team');
     }
 }

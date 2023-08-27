@@ -1,8 +1,11 @@
 <?php
 declare(strict_types=1);
 
-namespace HexagonalPlayground\Domain;
+namespace HexagonalPlayground\Domain\Exception;
 
+/**
+ * Common interface for all custom exceptions
+ */
 interface ExceptionInterface
 {
     /**

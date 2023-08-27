@@ -3,7 +3,6 @@
 namespace HexagonalPlayground\Application\Handler;
 
 use HexagonalPlayground\Application\Command\ScheduleAllMatchesForSeasonCommand;
-use HexagonalPlayground\Application\Permission\IsAdmin;
 use HexagonalPlayground\Application\Repository\PitchRepositoryInterface;
 use HexagonalPlayground\Application\Repository\SeasonRepositoryInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
@@ -45,8 +44,7 @@ class ScheduleAllMatchesForSeasonHandler implements AuthAwareHandler
      */
     public function __invoke(ScheduleAllMatchesForSeasonCommand $command, AuthContext $authContext): array
     {
-        $isAdmin = new IsAdmin($authContext->getUser());
-        $isAdmin->check();
+        $authContext->getUser()->assertIsAdmin();
 
         /** @var Season $season */
         $season = $this->seasonRepository->find($command->getSeasonId());

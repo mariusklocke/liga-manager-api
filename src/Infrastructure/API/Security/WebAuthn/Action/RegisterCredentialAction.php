@@ -3,7 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use Exception;
-use HexagonalPlayground\Application\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
