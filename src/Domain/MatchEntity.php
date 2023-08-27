@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
@@ -186,6 +187,10 @@ class MatchEntity extends Entity
 
     public function assertDeletable(): void
     {
-        Assert::false($this->hasResult(), 'Cannot delete a match with submitted result');
+        Assert::false(
+            $this->hasResult(),
+            'Cannot delete a match with submitted result',
+            ConflictException::class
+        );
     }
 }

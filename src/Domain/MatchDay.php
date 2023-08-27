@@ -175,6 +175,10 @@ class MatchDay extends Entity
 
     public function assertDeletable(): void
     {
-        Assert::false($this->hasMatchWithResult(), 'Cannot delete a match day containing match results');
+        Assert::false(
+            $this->hasMatchWithResult(),
+            'Cannot delete a match day containing match results',
+            ConflictException::class
+        );
     }
 }
