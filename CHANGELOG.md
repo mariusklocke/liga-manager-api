@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## NEXT
+
+## 1.13.0 - 2023-08-27
 * Feature: Add CLI command to browse the database interactively
 * Improvement: Refactor exception handling
 * Improvement: Add error code in API response
