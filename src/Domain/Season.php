@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Exception\ConflictException;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 
 class Season extends Competition
@@ -279,7 +280,11 @@ class Season extends Competition
     {
         switch ($state) {
             case self::STATE_PREPARATION:
-                Assert::true($this->state === self::STATE_PREPARATION, 'Invalid state transition');
+                Assert::true(
+                    $this->state === self::STATE_PREPARATION,
+                    'Invalid state transition',
+                    ConflictException::class
+                );
                 break;
             case self::STATE_PROGRESS:
                 if ($this->state !== self::STATE_PROGRESS) {
@@ -292,7 +297,7 @@ class Season extends Competition
                 }
                 break;
             default:
-                throw new DomainException('Unknown season state');
+                throw new InvalidInputException('Unknown season state');
         }
     }
 }
