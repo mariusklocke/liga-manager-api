@@ -9,7 +9,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateTeam;
 use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\CreateUser;
 use Iterator;
 
-abstract class CompetitionTest extends TestCase
+abstract class CompetitionTestCase extends TestCase
 {
     protected static array $teamIds = [];
     protected static array $spareTeamIds = [];

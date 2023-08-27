@@ -7,9 +7,11 @@
             <directory suffix=".php">src</directory>
         </include>
     </coverage>
+    <!-- TODO: Adapt to phpunit's new event system
     <extensions>
-        <extension class="HexagonalPlayground\Tests\Hook\MemoryUsageHook"/>
+        <bootstrap class="HexagonalPlayground\Tests\Hook\MemoryUsageHook"/>
     </extensions>
+    -->
     <testsuites>
         <testsuite name="CLI">
             <directory>tests/CLI</directory>

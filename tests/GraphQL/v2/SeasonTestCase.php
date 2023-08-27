@@ -24,7 +24,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Season;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\SeasonList;
 use Iterator;
 
-class SeasonTest extends CompetitionTest
+class SeasonTestCase extends CompetitionTestCase
 {
     public function testSeasonCanBeCreated(): string
     {

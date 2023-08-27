@@ -15,7 +15,7 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Mutation\v2\UpdateTournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\Tournament;
 use HexagonalPlayground\Tests\Framework\GraphQL\Query\v2\TournamentList;
 
-class TournamentTest extends CompetitionTest
+class TournamentTestCase extends CompetitionTestCase
 {
     public function testTournamentCanBeCreated(): string
     {
