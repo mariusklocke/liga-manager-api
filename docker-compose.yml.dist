@@ -24,7 +24,7 @@ services:
       - .env
 
   mariadb:
-    image: mariadb:10.4
+    image: mariadb:10.11
     volumes:
       - mysql-data:/var/lib/mysql
       - mysql-backup:/backup
@@ -34,7 +34,7 @@ services:
       - .env
 
   redis:
-    image: redis:5-alpine
+    image: redis:6-alpine
     ports:
       - "6379:6379"
 
