@@ -34,16 +34,15 @@ class DoctrineEmbeddableListener
     public function postLoad(PostLoadEventArgs $eventArgs)
     {
         $entity = $eventArgs->getObject();
-        $metadata = $this->entityManager->getClassMetadata(get_class($entity));
+        $entityClass = get_class($entity);
+        $metadata = $this->entityManager->getClassMetadata($entityClass);
         $properties = array_keys($metadata->embeddedClasses);
         foreach ($properties as $property) {
             $reflectionProperty = $metadata->getReflectionProperty($property);
             $embeddable = $reflectionProperty->getValue($entity);
             if (is_object($embeddable) && $this->hasOnlyNullProperties($embeddable)) {
                 $reflectionProperty->setValue($entity, null);
-                $this->logger->debug(
-                    sprintf('Nullified property %s of entity %s', $property, get_class($entity))
-                );
+                $this->logger->debug("Nullified property $property of entity $entityClass");
             }
         }
     }

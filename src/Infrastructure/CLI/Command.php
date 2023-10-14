@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\Timer;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,15 +35,21 @@ abstract class Command extends SymfonyCommand
      */
     public function run(InputInterface $input, OutputInterface $output): int
     {
+        /** @var LoggerInterface $logger */
+        $logger = $this->container->get(LoggerInterface::class);
+        $logger->debug("Starting command {$this->getName()}");
+
         $timer = new Timer();
         $timer->start();
 
         $exitCode = parent::run($input, $output);
+        $executionTime = $timer->stop();
+        $memoryUsage = memory_get_peak_usage() / 1024 / 1024;
+        $logger->debug("Finished command {$this->getName()} with exit code $exitCode within $executionTime ms");
 
         if ($output->isVerbose()) {
-            $memory = memory_get_peak_usage() / 1024 / 1024;
-            $output->writeln(sprintf('Execution time: %d ms', $timer->stop()));
-            $output->writeln(sprintf('Peak memory usage: %.1f MiB', $memory));
+            $output->writeln(sprintf('Execution time: %d ms', $executionTime));
+            $output->writeln(sprintf('Peak memory usage: %.1f MiB', $memoryUsage));
         }
 
         return $exitCode;

@@ -24,7 +24,7 @@ class Bootstrap
         $container = ContainerBuilder::build();
 
         $app = new App(new Psr17Factory(), $container);
-        $app->add(new ProfilingMiddleware($container));
+        $app->add(new LoggingMiddleware($container));
         $app->add(new TrailingSlash());
         $app->add(new JsonParserMiddleware());
         $app->add(new AuthenticationMiddleware($container));

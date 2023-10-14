@@ -20,9 +20,8 @@ class LoggerTest extends TestCase
     public function testLoggerRespectsMinLevel(): void
     {
         $message = 'This is a log message';
-        Logger::init($this->stream, 'info');
+        $logger = new Logger($this->stream, 'info');
 
-        $logger = Logger::getInstance();
         $logger->emergency($message);
         $logger->alert($message);
         $logger->critical($message);
@@ -32,7 +31,8 @@ class LoggerTest extends TestCase
         $logger->info($message);
         $logger->debug($message);
 
-        $output = $this->getStreamContent();
+        rewind($this->stream);
+        $output = stream_get_contents($this->stream);
         $expectedLevels = [
             LogLevel::EMERGENCY,
             LogLevel::ALERT,
@@ -49,37 +49,15 @@ class LoggerTest extends TestCase
         self::assertStringNotContainsString('DEBUG', $output);
     }
 
-    public function testMessagePlaceholderAreResolved(): void
-    {
-        Logger::init($this->stream, 'info');
-
-        $logger = Logger::getInstance();
-        $logger->error('Encountered {count} errors', ['count' => 5]);
-        $output = $this->getStreamContent();
-        self::assertStringContainsString('ERROR: Encountered 5 errors', $output);
-    }
-
     public function testInitiatingWithInvalidStreamFails(): void
     {
         self::expectException(InvalidArgumentException::class);
-        Logger::init('/just/a/path', 'debug');
+        new Logger('/just/a/path', 'debug');
     }
 
     public function testInitiatingWithInvalidMinLevelFails(): void
     {
         self::expectException(InvalidArgumentException::class);
-        Logger::init($this->stream, 'invalid');
-    }
-
-    private function getStreamContent(): string
-    {
-        $data = '';
-
-        rewind($this->stream);
-        while (!feof($this->stream)) {
-            $data .= fread($this->stream, 4096);
-        }
-
-        return $data;
+        new Logger($this->stream, 'invalid');
     }
 }
