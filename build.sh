@@ -61,6 +61,7 @@ DOCKER_BUILDKIT=1 docker build \
     -f docker/php/Dockerfile \
     -t ${TARGET_IMAGE} \
     --build-arg PHP_IMAGE=$PHP_IMAGE \
+    --build-arg APP_VERSION=$TAG \
     --cache-from ${TARGET_IMAGE} .
 
 echo "Starting container from image ${TARGET_IMAGE} ..."

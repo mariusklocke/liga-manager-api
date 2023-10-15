@@ -44,8 +44,6 @@ class Application extends \Symfony\Component\Console\Application
 
     public function __construct()
     {
-        parent::__construct();
-
         $this->container = ContainerBuilder::build([
             new HealthServiceProvider(),
             new ApplicationServiceProvider(),
@@ -57,6 +55,11 @@ class Application extends \Symfony\Component\Console\Application
             new GraphQLProvider(),
             new CliServiceProvider(),
         ]);
+
+        parent::__construct(
+            'Liga-Manager',
+            $this->container->get('version')
+        );
 
         foreach ($this->getOwnCommands() as $command) {
             $this->add($command);

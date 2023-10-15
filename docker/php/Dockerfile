@@ -1,6 +1,7 @@
 ARG PHP_IMAGE
 FROM ${PHP_IMAGE}
 
+ARG APP_VERSION
 ENV RUN_DEPS="gmp ncurses gnupg" \
     BUILD_DEPS="${PHPIZE_DEPS} gmp-dev linux-headers" \
     PHP_EXTS="bcmath gmp pcntl pdo_mysql opcache"
@@ -37,6 +38,7 @@ RUN chmod +x bin/*
 USER www-data
 ENV PATH="${PATH}:${APP_HOME}/bin"
 RUN bin/lima install
+RUN echo "$APP_VERSION" > VERSION
 
 # Install own application sources
 COPY --chown=www-data:www-data tests tests/
