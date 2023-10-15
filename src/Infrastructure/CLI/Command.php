@@ -45,12 +45,10 @@ abstract class Command extends SymfonyCommand
         $exitCode = parent::run($input, $output);
         $executionTime = $timer->stop();
         $memoryUsage = memory_get_peak_usage() / 1024 / 1024;
-        $logger->debug("Finished command {$this->getName()} with exit code $exitCode within $executionTime ms");
 
-        if ($output->isVerbose()) {
-            $output->writeln(sprintf('Execution time: %d ms', $executionTime));
-            $output->writeln(sprintf('Peak memory usage: %.1f MiB', $memoryUsage));
-        }
+        $logger->debug("Finished command {$this->getName()} with exit code $exitCode");
+        $logger->debug("Execution time: $executionTime ms");
+        $logger->debug(sprintf('Peak memory usage: %.1f MiB', $memoryUsage));
 
         return $exitCode;
     }

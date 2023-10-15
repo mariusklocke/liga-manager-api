@@ -15,6 +15,7 @@ class Config
     public string $emailUrl;
     public string $jwtSecret;
     public string $logLevel;
+    public string $logPath;
     public string $mysqlDatabase;
     public string $mysqlHost;
     public string $mysqlPassword;
@@ -30,7 +31,8 @@ class Config
         $this->emailSenderName = getenv('EMAIL_SENDER_NAME') ?: 'No Reply';
         $this->emailUrl = getenv('EMAIL_URL') ?: 'null://localhost';
         $this->jwtSecret = getenv('JWT_SECRET') ?: '';
-        $this->logLevel = getenv('LOG_LEVEL') ?: 'notice';
+        $this->logLevel = getenv('LOG_LEVEL') ?: 'debug';
+        $this->logPath = getenv('LOG_PATH') ?: 'php://stdout';
         $this->mysqlDatabase = getenv('MYSQL_DATABASE') ?: '';
         $this->mysqlHost = getenv('MYSQL_HOST') ?: '';
         $this->mysqlPassword = getenv('MYSQL_PASSWORD') ?: '';

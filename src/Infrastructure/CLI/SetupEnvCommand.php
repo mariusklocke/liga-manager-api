@@ -22,7 +22,8 @@ class SetupEnvCommand extends Command
         $io = $this->getStyledIO($input, $output);
 
         $env = [];
-        $env['LOG_LEVEL'] = $io->ask('Enter log level', 'notice');
+        $env['LOG_LEVEL'] = $io->ask('Enter log level', 'debug');
+        $env['LOG_PATH'] = $io->ask('Enter log path', 'php://stdout');
         $env['REDIS_HOST'] = $io->ask('Enter Redis hostname', 'redis');
         $env['MYSQL_HOST'] = $io->ask('Enter MySQL hostname', 'mariadb');
         $env['MYSQL_DATABASE'] = $io->ask('Enter MySQL database name', 'liga-manager');

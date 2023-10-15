@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Tests\Framework;
 
-use HexagonalPlayground\Infrastructure\API\Bootstrap;
+use HexagonalPlayground\Infrastructure\API\Application;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
@@ -30,7 +30,7 @@ abstract class HttpTest extends TestCase
     protected function setUp(): void
     {
         if (null === self::$app) {
-            self::$app = Bootstrap::bootstrap();
+            self::$app = new Application();
         }
 
         $this->client = new PsrSlimClient(self::$app);

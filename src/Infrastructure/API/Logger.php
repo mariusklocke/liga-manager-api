@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure;
+namespace HexagonalPlayground\Infrastructure\API;
 
 use InvalidArgumentException;
 use Psr\Log\AbstractLogger;

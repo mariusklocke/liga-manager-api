@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\CLI;
 
+use HexagonalPlayground\Infrastructure\CLI\Application;
 use HexagonalPlayground\Infrastructure\CLI\CreateUserCommand;
 use HexagonalPlayground\Infrastructure\CLI\DeleteUserCommand;
 use HexagonalPlayground\Infrastructure\CLI\ListUserCommand;
@@ -14,19 +15,16 @@ use HexagonalPlayground\Infrastructure\CLI\MaintenanceModeCommand;
 use HexagonalPlayground\Infrastructure\CLI\SendTestMailCommand;
 use HexagonalPlayground\Infrastructure\CLI\SetupEnvCommand;
 use HexagonalPlayground\Infrastructure\CLI\WipeDbCommand;
-use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class CliTest extends TestCase
 {
-    /** @var Application */
-    private $app;
+    private Application $app;
 
     protected function setUp(): void
     {
-        $this->app = ContainerBuilder::build()->get(Application::class);
+        $this->app = new Application();
     }
 
     public function testSetupEnv(): void

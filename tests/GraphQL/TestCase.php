@@ -3,7 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use ArrayObject;
-use HexagonalPlayground\Infrastructure\API\Bootstrap;
+use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\SlimClient;
@@ -23,7 +23,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         if (null === self::$app) {
-            self::$app = Bootstrap::bootstrap();
+            self::$app = new Application();
         }
         $this->client = new Client(new SlimClient(self::$app, new Psr17Factory()));
     }

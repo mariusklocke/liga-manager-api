@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Tests\Unit;
 
-use HexagonalPlayground\Infrastructure\Logger;
+use HexagonalPlayground\Infrastructure\API\Logger;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
