@@ -9,10 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class BrowseDbCommand extends Command
 {
-    public const NAME = 'app:db:browse';
-
     protected function configure(): void
     {
+        $this->setName('app:db:browse');
         $this->setDescription('Browse the database interactively');
     }
 

@@ -9,10 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class PrintGraphQlSchemaCommand extends Command
 {
-    public const NAME = 'app:graphql:schema';
-
     protected function configure()
     {
+        $this->setName('app:graphql:schema');
         $this->setDescription('Print the current GraphQL schema');
     }
 

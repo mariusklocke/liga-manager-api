@@ -10,10 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class MaintenanceModeCommand extends Command
 {
-    public const NAME = 'app:maintenance';
-
     protected function configure(): void
     {
+        $this->setName('app:maintenance');
         $this->setDescription('Configure maintenance mode');
         $this->addOption('mode', null, InputOption::VALUE_REQUIRED, 'Set Maintenance Mode');
     }

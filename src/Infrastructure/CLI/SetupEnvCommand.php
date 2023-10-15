@@ -10,10 +10,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SetupEnvCommand extends Command
 {
-    public const NAME = 'app:env:setup';
-
     protected function configure(): void
     {
+        $this->setName('app:env:setup');
         $this->setDescription('Setup environment config interactively');
     }
 

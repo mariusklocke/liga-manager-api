@@ -4,17 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\CLI;
 
 use HexagonalPlayground\Infrastructure\CLI\Application;
-use HexagonalPlayground\Infrastructure\CLI\CreateUserCommand;
-use HexagonalPlayground\Infrastructure\CLI\DeleteUserCommand;
-use HexagonalPlayground\Infrastructure\CLI\ListUserCommand;
-use HexagonalPlayground\Infrastructure\CLI\PrintGraphQlSchemaCommand;
-use HexagonalPlayground\Infrastructure\CLI\HealthCommand;
-use HexagonalPlayground\Infrastructure\CLI\L98ImportCommand;
-use HexagonalPlayground\Infrastructure\CLI\LoadDemoDataCommand;
-use HexagonalPlayground\Infrastructure\CLI\MaintenanceModeCommand;
-use HexagonalPlayground\Infrastructure\CLI\SendTestMailCommand;
-use HexagonalPlayground\Infrastructure\CLI\SetupEnvCommand;
-use HexagonalPlayground\Infrastructure\CLI\WipeDbCommand;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -31,6 +20,7 @@ class CliTest extends TestCase
     {
         $input = [
             'notice',
+            'php://stdout',
             'redis',
             'mariadb',
             'db1',
@@ -41,20 +31,20 @@ class CliTest extends TestCase
             'smtp://127.0.0.1:25'
         ];
 
-        $tester = $this->getCommandTester(SetupEnvCommand::NAME);
+        $tester = $this->getCommandTester('app:env:setup');
         $tester->setInputs($input);
         self::assertExecutionSuccess($tester->execute([], ['interactive' => true]));
     }
 
     public function testCheckingHealth(): void
     {
-        $tester = $this->getCommandTester(HealthCommand::NAME);
+        $tester = $this->getCommandTester('app:health');
         self::assertExecutionSuccess($tester->execute([]));
     }
 
     public function testWipingDatabase(): void
     {
-        $tester = $this->getCommandTester(WipeDbCommand::NAME);
+        $tester = $this->getCommandTester('app:db:wipe');
         $tester->setInputs(['y']);
         self::assertExecutionSuccess($tester->execute([], ['interactive' => true]));
     }
@@ -67,11 +57,11 @@ class CliTest extends TestCase
 
     public function testCreatingUser(): void
     {
-        $tester = $this->getCommandTester(CreateUserCommand::NAME);
+        $tester = $this->getCommandTester('app:user:create');
         $tester->setInputs(['mary.poppins@example.com', '123456', 'Mary', 'Poppins', 'admin']);
         self::assertExecutionSuccess($tester->execute([]));
 
-        $tester = $this->getCommandTester(CreateUserCommand::NAME);
+        $tester = $this->getCommandTester('app:user:create');
         self::assertExecutionSuccess($tester->execute(['--default' => null]));
     }
 
@@ -81,7 +71,7 @@ class CliTest extends TestCase
      */
     public function testListingUsers(): array
     {
-        $tester = $this->getCommandTester(ListUserCommand::NAME);
+        $tester = $this->getCommandTester('app:user:list');
         $exitCode = $tester->execute([]);
         $output = $tester->getDisplay();
 
@@ -116,19 +106,19 @@ class CliTest extends TestCase
         self::assertNotEmpty($deletable);
 
         $user = array_shift($deletable);
-        $tester = $this->getCommandTester(DeleteUserCommand::NAME);
+        $tester = $this->getCommandTester('app:user:delete');
         self::assertExecutionSuccess($tester->execute(['userId' => $user['id']]));
     }
 
     public function testLoadingDemoData(): void
     {
-        $tester = $this->getCommandTester(LoadDemoDataCommand::NAME);
+        $tester = $this->getCommandTester('app:db:demo-data');
         self::assertExecutionSuccess($tester->execute([]));
     }
 
     public function testSeasonsCanBeImportedFromLegacyFiles(): void
     {
-        $tester = $this->getCommandTester(L98ImportCommand::NAME);
+        $tester = $this->getCommandTester('app:import:season');
         $exitCode = $tester->execute(['path' => __DIR__ . '/data/*.l98'], ['interactive' => false]);
         $output = $tester->getDisplay();
         self::assertExecutionSuccess($exitCode);
@@ -137,7 +127,7 @@ class CliTest extends TestCase
 
     public function testGraphqlSchemaCanBeDumped(): void
     {
-        $tester = $this->getCommandTester(PrintGraphQlSchemaCommand::NAME);
+        $tester = $this->getCommandTester('app:graphql:schema');
         $exitCode = $tester->execute([]);
         $output = $tester->getDisplay();
         self::assertExecutionSuccess($exitCode);
@@ -147,7 +137,7 @@ class CliTest extends TestCase
 
     public function testMaintenanceMode(): void
     {
-        $tester = $this->getCommandTester(MaintenanceModeCommand::NAME);
+        $tester = $this->getCommandTester('app:maintenance');
 
         // Has to be off by default
         $exitCode = $tester->execute([]);
@@ -167,7 +157,7 @@ class CliTest extends TestCase
 
     public function testSendingMail(): void
     {
-        $tester = $this->getCommandTester(SendTestMailCommand::NAME);
+        $tester = $this->getCommandTester('app:send-test-mail');
 
         self::assertExecutionSuccess($tester->execute(['recipient' => 'test@example.com']));
     }

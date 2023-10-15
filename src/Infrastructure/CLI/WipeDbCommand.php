@@ -9,10 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class WipeDbCommand extends Command
 {
-    public const NAME = 'app:db:wipe';
-
     protected function configure(): void
     {
+        $this->setName('app:db:wipe');
         $this->setDescription('Erase all data from the current database');
     }
 

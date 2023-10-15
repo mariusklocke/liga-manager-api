@@ -9,10 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ListUserCommand extends Command
 {
-    public const NAME = 'app:user:list';
-
     protected function configure(): void
     {
+        $this->setName('app:user:list');
         $this->setDescription('List users');
     }
 

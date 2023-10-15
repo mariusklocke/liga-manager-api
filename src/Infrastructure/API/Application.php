@@ -55,7 +55,7 @@ class Application extends App
         $errorMiddleware = $this->addErrorMiddleware(false, false, false);
         $errorMiddleware->setDefaultErrorHandler(new ErrorHandler(
             $container->get(LoggerInterface::class),
-            new Psr17Factory(),
+            $responseFactory,
             $container->get(JsonResponseWriter::class)
         ));
 

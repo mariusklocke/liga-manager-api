@@ -11,10 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class HealthCommand extends Command
 {
-    public const NAME = 'app:health';
-
     protected function configure()
     {
+        $this->setName('app:health');
         $this->setDescription('Check application health');
         $this->addOption('retries', null, InputOption::VALUE_REQUIRED, 'Retry attempts');
         $this->addOption('skip', null, InputOption::VALUE_REQUIRED);

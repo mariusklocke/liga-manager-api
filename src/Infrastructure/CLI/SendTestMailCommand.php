@@ -9,10 +9,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendTestMailCommand extends Command
 {
-    public const NAME = 'app:send-test-mail';
-
     protected function configure(): void
     {
+        $this->setName('app:send-test-mail');
         $this->addArgument('recipient', InputArgument::REQUIRED, 'Sends a test email');
     }
 

@@ -16,10 +16,9 @@ use Symfony\Component\Console\Style\StyleInterface;
 
 class L98ImportCommand extends Command
 {
-    public const NAME = 'app:import:season';
-
     protected function configure(): void
     {
+        $this->setName('app:import:season');
         $this->setDescription('Import season data from L98 files');
         $this
             ->setDefinition([

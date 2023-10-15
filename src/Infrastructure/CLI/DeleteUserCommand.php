@@ -11,10 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DeleteUserCommand extends Command
 {
-    public const NAME = 'app:user:delete';
-
     protected function configure(): void
     {
+        $this->setName('app:user:delete');
         $this->setDescription('Delete a user');
         $this->addArgument('userId', InputArgument::REQUIRED, 'ID of user to delete');
     }

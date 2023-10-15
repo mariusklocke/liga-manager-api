@@ -16,8 +16,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 abstract class Command extends SymfonyCommand
 {
-    public const NAME = null;
-
     /** @var AuthContext|null */
     private ?AuthContext $authContext = null;
 
@@ -26,7 +24,7 @@ abstract class Command extends SymfonyCommand
 
     public function __construct(ContainerInterface $container)
     {
-        parent::__construct(static::NAME);
+        parent::__construct();
         $this->container = $container;
     }
 

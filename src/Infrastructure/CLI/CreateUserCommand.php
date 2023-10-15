@@ -13,10 +13,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateUserCommand extends Command
 {
-    public const NAME = 'app:user:create';
-
     protected function configure(): void
     {
+        $this->setName('app:user:create');
         $this->setDescription('Create a user');
         $this->addOption('email', null, InputOption::VALUE_REQUIRED);
         $this->addOption('password', null, InputOption::VALUE_REQUIRED);
