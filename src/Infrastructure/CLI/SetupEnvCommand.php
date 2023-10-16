@@ -33,7 +33,7 @@ class SetupEnvCommand extends Command
         $env['EMAIL_URL'] = $io->ask('Enter URL to use for sending email', 'smtp://maildev:25?verify_peer=0');
         $env['JWT_SECRET'] = JsonWebToken::generateSecret();
 
-        $envPath = getenv('APP_HOME') . '/.env';
+        $envPath = join(DIRECTORY_SEPARATOR, [getenv('APP_HOME'), '.env']);
 
         if (is_writeable($envPath)) {
             $confirmed = $io->confirm(

@@ -14,16 +14,15 @@ class ContainerBuilder
      */
     public static function build(array $serviceProviders): ContainerInterface
     {
+        $versionFilePath = join(DIRECTORY_SEPARATOR, [getenv('APP_HOME'), 'VERSION']);
+
         $builder = new DI\ContainerBuilder();
         $builder->useAutowiring(true);
+        $builder->addDefinitions(['version' => @file_get_contents($versionFilePath) ?: 'development']);
 
         foreach ($serviceProviders as $provider) {
             $builder->addDefinitions($provider->getDefinitions());
         }
-
-        $version = @file_get_contents(getenv('APP_HOME') . '/VERSION') ?: 'development';
-
-        $builder->addDefinitions(['version' => $version]);
 
         return $builder->build();
     }
