@@ -81,6 +81,28 @@ input does not cause errors in the API.
 | ERR-PERMISSION         | 403 - Forbidden             | Request is not permitted to the current user            |
 | ERR-UNIQUENESS         | 400 - Bad Request           | A Value violates a uniqueness constraint                |
 
+## Environment variables
+
+The following table lists the environment variables used in the application. Dynamic values are populated automatically
+by the application. Static values must be supplied from the outside (e.g. by using a `.env` file)
+
+| Name                 | Mode    | Description                              |
+|----------------------|---------|------------------------------------------|
+| ADMIN_EMAIL          | Static  | Email address for default admin user     |
+| ADMIN_PASSWORD       | Static  | Password for default admin user          |
+| APP_HOME             | Dynamic | Path to application home directory       |
+| EMAIL_SENDER_ADDRESS | Static  | Sender address for outbound emails       |
+| EMAIL_SENDER_NAME    | Static  | Sender name for outbound emails          |
+| EMAIL_URL            | Static  | URL to use for outbound emails (gateway) |
+| JWT_SECRET           | Static  | Hex-encoded secret for JSON Web Tokens   |
+| LOG_LEVEL            | Static  | Minimum level for log messages           |
+| LOG_PATH             | Static  | Path to log file                         |
+| MYSQL_DATABASE       | Static  | MySQL database name                      |
+| MYSQL_HOST           | Static  | Hostname or IP address running MySQL     |
+| MYSQL_PASSWORD       | Static  | Password for authenticating with MySQL   |
+| MYSQL_USER           | Static  | Username for authenticating with MySQL   |
+| REDIS_HOST           | Static  | Hostname or IP address running Redis     |
+
 ## Naming Conventions
 
 ### Singular vs. Plural
@@ -101,7 +123,7 @@ input does not cause errors in the API.
 * Class name must start with a context subject like "Match" or "Team"
 * Class name must contain a verb in past tense
 
-### Inspired by
+## Inspired by
 
 * https://apihandyman.io/writing-openapi-swagger-specification-tutorial-part-3-simplifying-specification-file/
 * https://fideloper.com/hexagonal-architecture
