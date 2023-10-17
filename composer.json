@@ -8,7 +8,14 @@
         }
     ],
     "autoload": {
-        "psr-4": { "HexagonalPlayground\\": "src/"}
+        "psr-4": {
+            "HexagonalPlayground\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HexagonalPlayground\\Tests\\": "tests/"
+        }
     },
     "config": {
         "sort-packages": true
