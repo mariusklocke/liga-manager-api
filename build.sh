@@ -90,20 +90,23 @@ while [ $attempt -le 10 ]; do
     sleep 2
 done
 
+echo "Install dev dependencies ..."
+docker exec -t php composer install --dev --no-cache --no-progress
+
 echo "Running deptrac ..."
-docker exec -t php bin/deptrac.phar --no-progress
+docker exec -t php vendor/bin/deptrac --no-progress
 
 echo "Testing gdpr-dump config ..."
-docker exec -t php gdpr-dump.phar config/gdpr-dump.yml > /dev/null
+docker exec -t php gdpr-dump config/gdpr-dump.yml > /dev/null
 
 echo "Running phpunit tests ..."
-docker exec -t php phpunit.phar --display-deprecations
+docker exec -t php vendor/bin/phpunit
 
 echo "Enabling xdebug ..."
 docker exec -t -u root php docker-php-ext-enable xdebug
 
 echo "Running phpunit tests with coverage ..."
-docker exec -t php phpunit.phar --coverage-clover /tmp/clover.xml --display-deprecations
+docker exec -t php vendor/bin/phpunit --coverage-clover /tmp/clover.xml --display-deprecations
 
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     echo "Installing git ..."
@@ -114,7 +117,7 @@ if [[ -n "${UPLOAD_COVERAGE}" ]]; then
 
     echo "Uploading coverage report to coveralls.io ..."
     docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php \
-        php-coveralls.phar -v -x /tmp/clover.xml -o /tmp/coveralls.json
+        vendor/bin/php-coveralls -v -x /tmp/clover.xml -o /tmp/coveralls.json
 fi
 
 if [[ -n "${PUBLISH_IMAGE}" ]]; then
