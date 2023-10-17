@@ -91,7 +91,7 @@ while [ $attempt -le 10 ]; do
 done
 
 echo "Install dev dependencies ..."
-docker exec -t php composer install --dev --no-cache --no-progress
+docker exec -t php composer install --no-cache --no-progress
 
 echo "Running deptrac ..."
 docker exec -t php vendor/bin/deptrac --no-progress
