@@ -94,19 +94,19 @@ echo "Install dev dependencies ..."
 docker exec -t php composer install --no-cache --no-progress
 
 echo "Running deptrac ..."
-docker exec -t php vendor/bin/deptrac --no-progress
+docker exec -t php vendor/bin/deptrac --no-progress --config-file=config/deptrac.yaml
 
 echo "Testing gdpr-dump config ..."
 docker exec -t php gdpr-dump config/gdpr-dump.yml > /dev/null
 
 echo "Running phpunit tests ..."
-docker exec -t php vendor/bin/phpunit
+docker exec -t php vendor/bin/phpunit -c config/phpunit.xml
 
 echo "Enabling xdebug ..."
 docker exec -t -u root php docker-php-ext-enable xdebug
 
 echo "Running phpunit tests with coverage ..."
-docker exec -t php vendor/bin/phpunit --coverage-clover /tmp/clover.xml --display-deprecations
+docker exec -t php vendor/bin/phpunit -c config/phpunit.xml --coverage-clover /tmp/clover.xml --display-deprecations
 
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     echo "Installing git ..."

@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd" bootstrap="tests/bootstrap.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd" bootstrap="../tests/bootstrap.php"
          beStrictAboutOutputDuringTests="true" cacheResult="false" cacheDirectory=".phpunit.cache">
     <coverage>
         <include>
-            <directory suffix=".php">src</directory>
+            <directory suffix=".php">../src</directory>
         </include>
     </coverage>
     <testsuites>
         <testsuite name="CLI">
-            <directory>tests/CLI</directory>
+            <directory>../tests/CLI</directory>
         </testsuite>
         <testsuite name="GraphQL">
-            <directory>tests/GraphQL</directory>
+            <directory>../tests/GraphQL</directory>
         </testsuite>
         <testsuite name="Health">
-            <directory>tests/Health</directory>
+            <directory>../tests/Health</directory>
         </testsuite>
         <testsuite name="WebAuthn">
-            <directory>tests/WebAuthn</directory>
+            <directory>../tests/WebAuthn</directory>
         </testsuite>
         <testsuite name="Unit">
-            <directory>tests/Unit</directory>
+            <directory>../tests/Unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>

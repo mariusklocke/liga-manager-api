@@ -38,24 +38,26 @@ RUN wget -O /usr/local/bin/composer https://github.com/composer/composer/release
 
 # Prepare application source directory
 ENV APP_HOME="/var/www/api"
-RUN mkdir -p ${APP_HOME} && chown www-data:www-data ${APP_HOME}
+RUN mkdir ${APP_HOME}
 WORKDIR ${APP_HOME}
 
 # Install dependencies first
-COPY --chown=www-data:www-data bin bin/
-COPY --chown=www-data:www-data composer.lock composer.json deptrac.yaml phpunit.xml ./
-RUN chmod +x bin/*
-USER www-data
-ENV PATH="${PATH}:${APP_HOME}/bin"
+COPY composer.lock composer.json ./
 RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
 RUN echo "$APP_VERSION" > VERSION
 
 # Install own application sources
-COPY --chown=www-data:www-data tests tests/
-COPY --chown=www-data:www-data templates templates/
-COPY --chown=www-data:www-data src src/
-COPY --chown=www-data:www-data public public/
-COPY --chown=www-data:www-data migrations migrations/
-COPY --chown=www-data:www-data config config/
+COPY tests tests/
+COPY templates templates/
+COPY src src/
+COPY public public/
+COPY migrations migrations/
+COPY config config/
+COPY bin bin/
+
+# Configure ownership and permissions
+RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*
+USER www-data
+ENV PATH="${PATH}:${APP_HOME}/bin"
 
 CMD lima migrations:migrate -n && php-fpm
