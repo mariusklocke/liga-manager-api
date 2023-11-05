@@ -66,7 +66,6 @@ DOCKER_BUILDKIT=1 docker build \
 
 echo "Starting container from image ${TARGET_IMAGE} ..."
 docker run -d --name=php --network=build \
-     -e ALLOW_TESTS=1 \
      -e ADMIN_EMAIL=admin@example.com \
      -e ADMIN_PASSWORD=123456 \
      -e LOG_LEVEL=warning \
@@ -76,7 +75,8 @@ docker run -d --name=php --network=build \
      -e MYSQL_DATABASE=test \
      -e MYSQL_USER=test \
      -e MYSQL_PASSWORD=test \
-     -v $PWD/.git:/var/www/api/.git \
+     -v "$PWD/.git:/var/www/api/.git" \
+     -v "$PWD/tests:/var/www/api/tests" \
      ${TARGET_IMAGE}
 
 attempt=0

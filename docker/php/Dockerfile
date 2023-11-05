@@ -47,7 +47,6 @@ RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
 RUN echo "$APP_VERSION" > VERSION
 
 # Install own application sources
-COPY tests tests/
 COPY templates templates/
 COPY src src/
 COPY public public/
