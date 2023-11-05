@@ -22,19 +22,16 @@ RUN set -xe \
     && apk del .build-deps \
     && rm -rf /tmp/* /var/cache/*
 
+# Install PHAR tools
+COPY docker/php/install-phar.sh /usr/local/bin/install-phar.sh
+RUN chmod +x /usr/local/bin/install-phar.sh \
+    && install-phar.sh /usr/local/bin/composer https://github.com/composer/composer/releases/download/2.5.5/composer.phar 566a6d1cf4be1cc3ac882d2a2a13817ffae54e60f5aa7c9137434810a5809ffc \
+    && install-phar.sh /usr/local/bin/gdpr-dump https://github.com/Smile-SA/gdpr-dump/releases/download/4.0.0/gdpr-dump.phar ffdbd11471b1bd6056f4e9e1627742e949de6c57bb832c3f060882f7f70dab19 \
+    && rm /usr/local/bin/install-phar.sh
+
 # Configure PHP
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
-
-# Install PHAR tools
-RUN wget -O /usr/local/bin/composer https://github.com/composer/composer/releases/download/2.5.5/composer.phar \
-    && wget -O /usr/local/bin/gdpr-dump https://github.com/Smile-SA/gdpr-dump/releases/download/4.0.0/gdpr-dump.phar \
-    && echo "566a6d1cf4be1cc3ac882d2a2a13817ffae54e60f5aa7c9137434810a5809ffc /usr/local/bin/composer" > composer.sha256 \
-    && echo "ffdbd11471b1bd6056f4e9e1627742e949de6c57bb832c3f060882f7f70dab19 /usr/local/bin/gdpr-dump" > gdpr-dump.sha256 \
-    && sha256sum -c composer.sha256 \
-    && sha256sum -c gdpr-dump.sha256 \
-    && rm composer.sha256 gdpr-dump.sha256 \
-    && chmod +x /usr/local/bin/composer /usr/local/bin/gdpr-dump
 
 # Prepare application source directory
 ENV APP_HOME="/var/www/api"
@@ -57,6 +54,6 @@ COPY bin bin/
 # Configure ownership and permissions
 RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*
 USER www-data
-ENV PATH="${PATH}:${APP_HOME}/bin"
+ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 
 CMD lima migrations:migrate -n && php-fpm

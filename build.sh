@@ -94,19 +94,19 @@ echo "Install dev dependencies ..."
 docker exec -t php composer install --no-cache --no-progress
 
 echo "Running deptrac ..."
-docker exec -t php vendor/bin/deptrac --no-progress --config-file=config/deptrac.yaml
+docker exec -t php deptrac --no-progress --config-file=config/deptrac.yaml
 
 echo "Testing gdpr-dump config ..."
 docker exec -t php gdpr-dump config/gdpr-dump.yml > /dev/null
 
 echo "Running phpunit tests ..."
-docker exec -t php vendor/bin/phpunit -c config/phpunit.xml
+docker exec -t php phpunit -c config/phpunit.xml
 
 echo "Enabling xdebug ..."
 docker exec -t -u root php docker-php-ext-enable xdebug
 
 echo "Running phpunit tests with coverage ..."
-docker exec -t php vendor/bin/phpunit -c config/phpunit.xml --coverage-clover /tmp/clover.xml --display-deprecations
+docker exec -t php phpunit -c config/phpunit.xml --coverage-clover clover.xml --display-deprecations
 
 if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     echo "Installing git ..."
@@ -116,8 +116,7 @@ if [[ -n "${UPLOAD_COVERAGE}" ]]; then
     docker exec -t php git config --global --add safe.directory /var/www/api
 
     echo "Uploading coverage report to coveralls.io ..."
-    docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php \
-        vendor/bin/php-coveralls -v -x /tmp/clover.xml -o /tmp/coveralls.json
+    docker exec -t -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls -v -x clover.xml -o coveralls.json
 fi
 
 if [[ -n "${PUBLISH_IMAGE}" ]]; then
