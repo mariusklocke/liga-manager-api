@@ -100,7 +100,7 @@ echo "Testing gdpr-dump config ..."
 docker exec -t php gdpr-dump config/gdpr-dump.yml > /dev/null
 
 echo "Running phpunit tests ..."
-docker exec -t php phpunit -c config/phpunit.xml
+docker exec -t php phpunit -c config/phpunit.xml --display-deprecations
 
 echo "Enabling xdebug ..."
 docker exec -t -u root php docker-php-ext-enable xdebug
