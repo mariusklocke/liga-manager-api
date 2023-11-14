@@ -2,6 +2,13 @@
 
 ## NEXT
 
+## 1.13.1 - 2023-11-14
+* Improvement: Refactor logging
+* Improvement: Refactor installer
+* Improvement: Do not ship dev tools in docker image
+* Improvement: Update dependencies
+* Improvement: Documentation of environment variables
+
 ## 1.13.0 - 2023-08-27
 * Feature: Add CLI command to browse the database interactively
 * Improvement: Refactor exception handling
