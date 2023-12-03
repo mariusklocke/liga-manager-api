@@ -20,7 +20,7 @@ class UploadAction implements ActionInterface
 
     public function __construct(LoggerInterface $logger)
     {
-        $this->storageBasePath = '/mnt/logos';
+        $this->storageBasePath = '/var/www/logos';
         $this->publicBasePath  = '/logos';
         $this->logger = $logger;
     }
