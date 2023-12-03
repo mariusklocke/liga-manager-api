@@ -28,8 +28,8 @@ class UploadAction implements ActionInterface
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
         $file = $this->getUploadedFile($request);
+
         $this->checkForUploadError($file);
-        $fileId = $this->generateFileId();
 
         $fileSize = (int)$file->getSize();
         if ($fileSize === 0) {
@@ -40,6 +40,8 @@ class UploadAction implements ActionInterface
         if ($mediaType !== 'image/webp') {
             throw new InvalidInputException("Invalid media type. Expected: image/webp. Got: $mediaType");
         }
+
+        $fileId = $this->generateFileId();
 
         $file->moveTo($this->buildStoragePath($fileId));
 
@@ -59,35 +61,6 @@ class UploadAction implements ActionInterface
     private function generateFileId(): string
     {
         return Uuid::create();
-    }
-
-    private function getMaxFileSize(): int
-    {
-        $value = ini_get('upload_max_filesize');
-        $value = trim($value);
-
-        if (is_numeric($value)) {
-            return (int)$value;
-        }
-
-        $unit = substr($value, -1);
-        $value = substr($value, 0, -1);
-
-        switch (strtolower($unit)) {
-            case 'g':
-                $value *= 2**30;
-                break;
-            case 'm':
-                $value *= 2**20;
-                break;
-            case 'k':
-                $value *= 2**10;
-                break;
-            default:
-                throw new InternalException('Invalid unit suffix in "upload_max_filesize"');
-        }
-
-        return (int)$value;
     }
 
     private function getUploadedFile(ServerRequestInterface $request): UploadedFileInterface

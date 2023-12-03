@@ -16,7 +16,6 @@ services:
 
   php:
     image: mklocke/liga-manager-api:latest
-    user: 1000:1000
     volumes:
       - .:/var/www/api
       - logos:/mnt/logos

@@ -33,6 +33,10 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
 
+# Add entrypoint
+COPY docker/php/entrypoint.sh /usr/local/bin/docker-php-entrypoint
+RUN chmod +x /usr/local/bin/docker-php-entrypoint
+
 # Prepare application source directory
 ENV APP_HOME="/var/www/api"
 RUN mkdir ${APP_HOME}
@@ -53,7 +57,6 @@ COPY bin bin/
 
 # Configure ownership and permissions
 RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*
-USER www-data
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 
 CMD lima migrations:migrate -n && php-fpm
