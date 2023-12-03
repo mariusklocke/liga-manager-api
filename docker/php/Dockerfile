@@ -37,7 +37,11 @@ COPY docker/php/php.ini /usr/local/etc/php/php.ini
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
 
-# Prepare application source directory
+# Prepare logos directory
+ENV APP_LOGOS_PATH="/var/www/logos"
+RUN mkdir ${APP_LOGOS_PATH}
+
+# Prepare application directory
 ENV APP_HOME="/var/www/api"
 RUN mkdir ${APP_HOME}
 WORKDIR ${APP_HOME}
@@ -57,6 +61,7 @@ COPY bin bin/
 
 # Configure ownership and permissions
 RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*
+RUN chown www-data:www-data ${APP_LOGOS_PATH}
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 
 CMD lima migrations:migrate -n && php-fpm

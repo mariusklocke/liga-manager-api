@@ -10,6 +10,7 @@ class Config
     public string $adminEmail;
     public string $adminPassword;
     public string $appHome;
+    public string $appLogosPath;
     public string $emailSenderAddress;
     public string $emailSenderName;
     public string $emailUrl;
@@ -27,6 +28,7 @@ class Config
         $this->adminEmail = getenv('ADMIN_EMAIL') ?: '';
         $this->adminPassword = getenv('ADMIN_PASSWORD') ?: '';
         $this->appHome = getenv('APP_HOME') ?: '';
+        $this->appLogosPath = getenv('APP_LOGOS_PATH') ?: '';
         $this->emailSenderAddress = getenv('EMAIL_SENDER_ADDRESS') ?: 'noreply@example.com';
         $this->emailSenderName = getenv('EMAIL_SENDER_NAME') ?: 'No Reply';
         $this->emailUrl = getenv('EMAIL_URL') ?: 'null://localhost';

@@ -91,6 +91,7 @@ by the application. Static values must be supplied from the outside (e.g. by usi
 | ADMIN_EMAIL          | Static  | Email address for default admin user     |
 | ADMIN_PASSWORD       | Static  | Password for default admin user          |
 | APP_HOME             | Dynamic | Path to application home directory       |
+| APP_LOGOS_PATH       | Dynamic | Path to directory for logos              |
 | EMAIL_SENDER_ADDRESS | Static  | Sender address for outbound emails       |
 | EMAIL_SENDER_NAME    | Static  | Sender name for outbound emails          |
 | EMAIL_URL            | Static  | URL to use for outbound emails (gateway) |
