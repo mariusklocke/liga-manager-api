@@ -28,6 +28,7 @@ class DeleteAction implements ActionInterface
             $this->deleteLogo($team->getLogoId());
             $team->setLogoId(null);
             $this->teamRepository->save($team);
+            $this->teamRepository->flush();
             $this->logger->info('Team logo has been deleted', [
                 'teamId' => $team->getId()
             ]);

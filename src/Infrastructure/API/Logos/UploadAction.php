@@ -47,6 +47,7 @@ class UploadAction implements ActionInterface
         $fileId = $this->saveLogo($file);
         $team->setLogoId($fileId);
         $this->teamRepository->save($team);
+        $this->teamRepository->flush();
 
         $this->logger->info("Uploaded team logo has been saved", [
             'teamId' => $team->getId(),
