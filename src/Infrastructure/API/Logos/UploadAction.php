@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Logos;
 
+use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Domain\Util\Uuid;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,53 +14,46 @@ use Psr\Log\LoggerInterface;
 
 class UploadAction implements ActionInterface
 {
-    private string $storageBasePath;
-    private string $publicBasePath;
+    use TeamLogoTrait;
     private LoggerInterface $logger;
 
-    public function __construct(string $storageBasePath, string $publicBasePath, LoggerInterface $logger)
+    public function __construct(TeamRepositoryInterface $teamRepository, LoggerInterface $logger)
     {
-        $this->storageBasePath = $storageBasePath;
-        $this->publicBasePath  = $publicBasePath;
+        $this->teamRepository = $teamRepository;
         $this->logger = $logger;
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $team = $this->findTeam($request->getQueryParams());
         $file = $this->getUploadedFile($request);
 
-        $this->checkForUploadError($file);
+        $this->logger->info("Processing team logo upload", [
+            'teamId' => $team->getId(),
+            'uploadedFile' => [
+                'size' => $file->getSize(),
+                'error' => $file->getError(),
+                'clientFilename' => $file->getClientFilename(),
+                'clientMediaType' => $file->getClientMediaType()
+            ]
+        ]);
 
-        $fileSize = (int)$file->getSize();
-        if ($fileSize === 0) {
-            throw new InvalidInputException("Uploaded file is empty");
+        $this->checkUploadedFile($file);
+
+        if ($team->getLogoId() !== null) {
+            $this->deleteLogo($team->getLogoId());
         }
 
-        $mediaType = $file->getClientMediaType();
-        if ($mediaType !== 'image/webp') {
-            throw new InvalidInputException("Invalid media type. Expected: image/webp. Got: $mediaType");
-        }
+        $fileId = $this->saveLogo($file);
+        $team->setLogoId($fileId);
+        $this->teamRepository->save($team);
 
-        $fileId = $this->generateFileId();
+        $this->logger->info("Uploaded team logo has been saved", [
+            'teamId' => $team->getId(),
+            'fileId' => $team->getLogoId()
+        ]);
 
-        $file->moveTo($this->buildStoragePath($fileId));
-
-        return $response->withHeader('Location', $this->buildPublicPath($fileId));
-    }
-
-    private function buildStoragePath(string $fileId): string
-    {
-        return join(DIRECTORY_SEPARATOR, [$this->storageBasePath, "$fileId.webp"]);
-    }
-
-    private function buildPublicPath(string $fileId): string
-    {
-        return join('/', [$this->publicBasePath, "$fileId.webp"]);
-    }
-
-    private function generateFileId(): string
-    {
-        return Uuid::create();
+        return $response->withStatus(201);
     }
 
     private function getUploadedFile(ServerRequestInterface $request): UploadedFileInterface
@@ -78,21 +71,27 @@ class UploadAction implements ActionInterface
         return $file;
     }
 
-    private function checkForUploadError(UploadedFileInterface $uploadedFile): void
+    private function checkUploadedFile(UploadedFileInterface $uploadedFile): void
     {
         $errorCode = $uploadedFile->getError();
         switch ($errorCode) {
             case UPLOAD_ERR_OK:
-                return;
+                break;
             case UPLOAD_ERR_INI_SIZE:
                 $maxSize = ini_get('upload_max_filesize');
                 throw new InvalidInputException("Invalid file upload: File exceeds max size of $maxSize");
             default:
-                $this->logger->error("Unexpected file upload error", [
-                    'errorCode' => $errorCode,
-                    'files' => $_FILES
-                ]);
                 throw new InternalException("Invalid file upload: Code $errorCode");
+        }
+
+        $fileSize = (int)$uploadedFile->getSize();
+        if ($fileSize === 0) {
+            throw new InvalidInputException("Uploaded file is empty");
+        }
+
+        $mediaType = $uploadedFile->getClientMediaType();
+        if ($mediaType !== 'image/webp') {
+            throw new InvalidInputException("Invalid media type. Expected: image/webp. Got: $mediaType");
         }
     }
 }
