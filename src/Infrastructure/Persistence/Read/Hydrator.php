@@ -61,7 +61,7 @@ class Hydrator
      * @param array $row
      * @return array
      */
-    private function hydrate(array $row): array
+    protected function hydrate(array $row): array
     {
         $result = [];
 

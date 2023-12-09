@@ -5,18 +5,21 @@ namespace HexagonalPlayground\Infrastructure\API\Logos;
 
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
+use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class DeleteAction implements ActionInterface
 {
-    use TeamLogoTrait;
+    use TeamFinderTrait;
+    private TeamLogoRepository $teamLogoRepository;
     private LoggerInterface $logger;
 
-    public function __construct(TeamRepositoryInterface $teamRepository, LoggerInterface $logger)
+    public function __construct(TeamRepositoryInterface $teamRepository, TeamLogoRepository $teamLogoRepository, LoggerInterface $logger)
     {
         $this->teamRepository = $teamRepository;
+        $this->teamLogoRepository = $teamLogoRepository;
         $this->logger = $logger;
     }
 
@@ -25,7 +28,7 @@ class DeleteAction implements ActionInterface
         $team = $this->findTeam($request->getQueryParams());
 
         if ($team->getLogoId() !== null) {
-            $this->deleteLogo($team->getLogoId());
+            $this->teamLogoRepository->delete($team->getLogoId());
             $team->setLogoId(null);
             $this->teamRepository->save($team);
             $this->teamRepository->flush();

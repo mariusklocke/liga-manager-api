@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
+use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
@@ -14,12 +15,14 @@ use Psr\Log\LoggerInterface;
 
 class UploadAction implements ActionInterface
 {
-    use TeamLogoTrait;
+    use TeamFinderTrait;
+    private TeamLogoRepository $teamLogoRepository;
     private LoggerInterface $logger;
 
-    public function __construct(TeamRepositoryInterface $teamRepository, LoggerInterface $logger)
+    public function __construct(TeamRepositoryInterface $teamRepository, TeamLogoRepository $teamLogoRepository, LoggerInterface $logger)
     {
         $this->teamRepository = $teamRepository;
+        $this->teamLogoRepository = $teamLogoRepository;
         $this->logger = $logger;
     }
 
@@ -41,10 +44,10 @@ class UploadAction implements ActionInterface
         $this->checkUploadedFile($file);
 
         if ($team->getLogoId() !== null) {
-            $this->deleteLogo($team->getLogoId());
+            $this->teamLogoRepository->delete($team->getLogoId());
         }
 
-        $fileId = $this->saveLogo($file);
+        $fileId = $this->teamLogoRepository->save($file);
         $team->setLogoId($fileId);
         $this->teamRepository->save($team);
         $this->teamRepository->flush();
