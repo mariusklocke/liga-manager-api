@@ -82,8 +82,30 @@ class TeamTest extends TestCase
     /**
      * @depends testTeamContactCanBeUpdated
      * @param string $teamId
+     * @return string
      */
-    public function testTeamCanBeDeleted(string $teamId)
+    public function testTeamLogoCanBeUploaded(string $teamId): string
+    {
+        $tempFile = $this->generateRandomFile();
+        try {
+            $method = 'POST';
+            $url = "/api/logos?teamId=$teamId";
+            $fileMediaType = 'image/webp';
+            $headers = [];
+            $response = $this->slimClient->sendUploadRequest($method, $url, $tempFile, $fileMediaType, $headers);
+            self::assertSame(201, $response->getStatusCode());
+        } finally {
+            unlink($tempFile);
+        }
+
+        return $teamId;
+    }
+
+    /**
+     * @depends testTeamLogoCanBeUploaded
+     * @param string $teamId
+     */
+    public function testTeamCanBeDeleted(string $teamId): void
     {
         $team = $this->client->getTeamById($teamId);
         self::assertNotNull($team);
@@ -92,5 +114,15 @@ class TeamTest extends TestCase
 
         $team = $this->client->getTeamById($teamId);
         self::assertNull($team);
+    }
+
+    private function generateRandomFile(): string
+    {
+        $tempFilename = sprintf("random_image_%s.webp", uniqid());
+        $tempPath = join(DIRECTORY_SEPARATOR, [sys_get_temp_dir(), $tempFilename]);
+
+        file_put_contents($tempPath, bin2hex(random_bytes(16)));
+
+        return $tempPath;
     }
 }
