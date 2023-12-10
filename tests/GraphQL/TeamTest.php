@@ -92,8 +92,15 @@ class TeamTest extends TestCase
             $url = "/api/logos?teamId=$teamId";
             $fileMediaType = 'image/webp';
             $headers = [];
+
+            // Upload logo
             $response = $this->slimClient->sendUploadRequest($method, $url, $tempFile, $fileMediaType, $headers);
             self::assertSame(201, $response->getStatusCode());
+
+            // Verify logo is present
+            $response = $this->slimClient->get($url, $headers);
+            self::assertSame(302, $response->getStatusCode());
+            self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
         } finally {
             unlink($tempFile);
         }
@@ -103,6 +110,24 @@ class TeamTest extends TestCase
 
     /**
      * @depends testTeamLogoCanBeUploaded
+     * @param string $teamId
+     * @return string
+     */
+    public function testTeamLogoCanDeDeleted(string $teamId): string
+    {
+        $url = "/api/logos?teamId=$teamId";
+        $headers = [];
+        $response = $this->slimClient->delete($url, $headers);
+        self::assertSame(204, $response->getStatusCode());
+
+        $response = $this->slimClient->get($url, $headers);
+        self::assertSame(404, $response->getStatusCode());
+
+        return $teamId;
+    }
+
+    /**
+     * @depends testTeamLogoCanDeDeleted
      * @param string $teamId
      */
     public function testTeamCanBeDeleted(string $teamId): void
