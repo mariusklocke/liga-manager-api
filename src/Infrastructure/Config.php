@@ -18,6 +18,7 @@ class Config
     public string $jwtSecret;
     public string $logLevel;
     public string $logPath;
+    public string $maintenanceMode;
     public string $mysqlDatabase;
     public string $mysqlHost;
     public string $mysqlPassword;
@@ -37,6 +38,7 @@ class Config
         $this->jwtSecret = getenv('JWT_SECRET') ?: '';
         $this->logLevel = getenv('LOG_LEVEL') ?: 'debug';
         $this->logPath = getenv('LOG_PATH') ?: 'php://stdout';
+        $this->maintenanceMode = getenv('MAINTENANCE_MODE') ?: 'off';
         $this->mysqlDatabase = getenv('MYSQL_DATABASE') ?: '';
         $this->mysqlHost = getenv('MYSQL_HOST') ?: '';
         $this->mysqlPassword = getenv('MYSQL_PASSWORD') ?: '';

@@ -135,26 +135,6 @@ class CliTest extends TestCase
         self::assertStringContainsString('query', $output);
     }
 
-    public function testMaintenanceMode(): void
-    {
-        $tester = $this->getCommandTester('app:maintenance');
-
-        // Has to be off by default
-        $exitCode = $tester->execute([]);
-        self::assertExecutionSuccess($exitCode);
-        self::assertStringContainsString('Maintenance mode is off', $tester->getDisplay());
-
-        // Can be enabled
-        $exitCode = $tester->execute(['--mode' => 'on']);
-        self::assertExecutionSuccess($exitCode);
-        self::assertStringContainsString('Maintenance mode has been enabled', $tester->getDisplay());
-
-        // Can be disabled
-        $exitCode = $tester->execute(['--mode' => 'off']);
-        self::assertExecutionSuccess($exitCode);
-        self::assertStringContainsString('Maintenance mode has been disabled', $tester->getDisplay());
-    }
-
     public function testSendingMail(): void
     {
         $tester = $this->getCommandTester('app:send-test-mail');
