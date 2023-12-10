@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Logos;
 
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
+use HexagonalPlayground\Infrastructure\API\Security\AuthorizationTrait;
 use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -13,6 +14,7 @@ use Psr\Log\LoggerInterface;
 class DeleteAction implements ActionInterface
 {
     use TeamFinderTrait;
+    use AuthorizationTrait;
     private TeamLogoRepository $teamLogoRepository;
     private LoggerInterface $logger;
 
@@ -25,6 +27,8 @@ class DeleteAction implements ActionInterface
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $this->assertIsAdmin($request);
+
         $team = $this->findTeam($request->getQueryParams());
 
         if ($team->getLogoId() !== null) {

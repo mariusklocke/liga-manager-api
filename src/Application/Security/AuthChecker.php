@@ -2,8 +2,6 @@
 
 namespace HexagonalPlayground\Application\Security;
 
-use HexagonalPlayground\Application\Security\AuthenticationException;
-
 class AuthChecker
 {
     public function check(?AuthContext $authContext): void

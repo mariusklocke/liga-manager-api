@@ -88,10 +88,11 @@ class TeamTest extends TestCase
     {
         $tempFile = $this->generateRandomFile();
         try {
+            $token = $this->createAdminToken();
             $method = 'POST';
             $url = "/api/logos?teamId=$teamId";
             $fileMediaType = 'image/webp';
-            $headers = [];
+            $headers = ['Authorization' => "Bearer $token"];
 
             // Upload logo
             $response = $this->slimClient->sendUploadRequest($method, $url, $tempFile, $fileMediaType, $headers);
@@ -115,8 +116,9 @@ class TeamTest extends TestCase
      */
     public function testTeamLogoCanDeDeleted(string $teamId): string
     {
+        $token = $this->createAdminToken();
         $url = "/api/logos?teamId=$teamId";
-        $headers = [];
+        $headers = ['Authorization' => "Bearer $token"];
         $response = $this->slimClient->delete($url, $headers);
         self::assertSame(204, $response->getStatusCode());
 

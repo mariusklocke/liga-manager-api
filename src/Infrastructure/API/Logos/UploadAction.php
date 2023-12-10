@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
+use HexagonalPlayground\Infrastructure\API\Security\AuthorizationTrait;
 use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,6 +17,7 @@ use Psr\Log\LoggerInterface;
 class UploadAction implements ActionInterface
 {
     use TeamFinderTrait;
+    use AuthorizationTrait;
     private TeamLogoRepository $teamLogoRepository;
     private LoggerInterface $logger;
 
@@ -28,6 +30,8 @@ class UploadAction implements ActionInterface
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
+        $this->assertIsAdmin($request);
+
         $team = $this->findTeam($request->getQueryParams());
         $file = $this->getUploadedFile($request);
 
