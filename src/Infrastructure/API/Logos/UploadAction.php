@@ -52,6 +52,7 @@ class UploadAction implements ActionInterface
         }
 
         $fileId = $this->teamLogoRepository->save($file);
+        $publicPath = $this->teamLogoRepository->generatePublicPath($fileId);
         $team->setLogoId($fileId);
         $this->teamRepository->save($team);
         $this->teamRepository->flush();
@@ -61,7 +62,7 @@ class UploadAction implements ActionInterface
             'fileId' => $team->getLogoId()
         ]);
 
-        return $response->withStatus(201);
+        return $response->withStatus(201)->withHeader('Location', $publicPath);
     }
 
     private function getUploadedFile(ServerRequestInterface $request): UploadedFileInterface

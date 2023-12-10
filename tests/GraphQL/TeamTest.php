@@ -97,6 +97,7 @@ class TeamTest extends TestCase
             // Upload logo
             $response = $this->slimClient->sendUploadRequest($method, $url, $tempFile, $fileMediaType, $headers);
             self::assertSame(201, $response->getStatusCode());
+            self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
 
             // Verify logo is present
             $response = $this->slimClient->get($url, $headers);
