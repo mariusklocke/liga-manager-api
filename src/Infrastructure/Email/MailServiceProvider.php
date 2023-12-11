@@ -21,7 +21,8 @@ class MailServiceProvider implements ServiceProviderInterface
         return [
             MailerInterface::class => DI\get(SymfonyMailer::class),
             SymfonyMailer::class => DI\factory(function (ContainerInterface $container) {
-                $config = Config::getInstance();
+                /** @var Config $config */
+                $config = $container->get(Config::class);
 
                 $transport = Transport::fromDsn(
                     $config->emailUrl,
@@ -35,8 +36,11 @@ class MailServiceProvider implements ServiceProviderInterface
                 );
             }),
             TemplateRendererInterface::class => DI\get(TemplateRenderer::class),
-            TemplateRenderer::class => DI\factory(function () {
-                return new TemplateRenderer(Config::getInstance()->appHome . '/templates');
+            TemplateRenderer::class => DI\factory(function (ContainerInterface $container) {
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+
+                return new TemplateRenderer($config->appHome . '/templates');
             })
         ];
     }

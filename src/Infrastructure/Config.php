@@ -22,7 +22,7 @@ class Config
     public string $mysqlUser;
     public string $redisHost;
 
-    private function __construct()
+    public function __construct()
     {
         $this->adminEmail = getenv('ADMIN_EMAIL') ?: '';
         $this->adminPassword = getenv('ADMIN_PASSWORD') ?: '';

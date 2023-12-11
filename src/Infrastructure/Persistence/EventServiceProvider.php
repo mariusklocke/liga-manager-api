@@ -37,11 +37,13 @@ class EventServiceProvider implements ServiceProviderInterface
             HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
 
             Redis::class => DI\factory(function (ContainerInterface $container) {
-                $retry = new Retry($container->get(LoggerInterface::class), 60, 5);
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+                $retry  = new Retry($container->get(LoggerInterface::class), 60, 5);
 
-                return $retry(function () {
+                return $retry(function () use ($config) {
                     $redis = new Redis();
-                    @$redis->connect(Config::getInstance()->redisHost);
+                    @$redis->connect($config->redisHost);
 
                     return $redis;
                 });
