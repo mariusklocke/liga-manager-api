@@ -49,7 +49,6 @@ WORKDIR ${APP_HOME}
 # Install dependencies first
 COPY composer.lock composer.json ./
 RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
-RUN echo "$APP_VERSION" > VERSION
 
 # Install own application sources
 COPY templates templates/
@@ -58,6 +57,9 @@ COPY public public/
 COPY migrations migrations/
 COPY config config/
 COPY bin bin/
+
+# Apply version branding
+RUN sed -i "s/APP_VERSION=development/APP_VERSION=$APP_VERSION/" src/init.php
 
 # Configure ownership and permissions
 RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*
