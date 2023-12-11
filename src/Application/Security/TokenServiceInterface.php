@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Security;
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\User;
 
-interface TokenFactoryInterface
+interface TokenServiceInterface
 {
     /**
      * Create a new token for the given user
@@ -16,4 +16,20 @@ interface TokenFactoryInterface
      * @return TokenInterface
      */
     public function create(User $user, DateTimeImmutable $expiresAt): TokenInterface;
+
+    /**
+     * Encodes a token to string
+     *
+     * @param TokenInterface $token
+     * @return string
+     */
+    public function encode(TokenInterface $token): string;
+
+    /**
+     * Decodes a token from string
+     *
+     * @param string $encodedToken
+     * @return TokenInterface
+     */
+    public function decode(string $encodedToken): TokenInterface;
 }

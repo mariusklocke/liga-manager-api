@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Security;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Security\AuthenticationException;
-use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,7 +14,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class AuthenticationMiddleware implements MiddlewareInterface
 {
-    /** @var ContainerInterface */
     private ContainerInterface $container;
 
     /**
@@ -71,11 +70,16 @@ class AuthenticationMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
 
+        /** @var TokenServiceInterface $tokenService */
+        $tokenService = $this->container->get(TokenServiceInterface::class);
+
         list($type, $secret) = $this->parseAuthHeader($rawHeaderValue);
         switch (strtolower($type)) {
             case 'basic':
+                /** @var PasswordAuthenticator $authenticator */
+                $authenticator = $this->container->get(PasswordAuthenticator::class);
                 list($email, $password) = $this->parseCredentials($secret);
-                $context  = $this->container->get(PasswordAuthenticator::class)->authenticate($email, $password);
+                $context  = $authenticator->authenticate($email, $password);
                 $response = $handler->handle($request->withAttribute('auth', $context));
 
                 /**
@@ -86,16 +90,15 @@ class AuthenticationMiddleware implements MiddlewareInterface
                  * @see TokenAuthenticator::authenticate()
                  */
 
-                $token = $this->container->get(TokenFactoryInterface::class)->create(
-                    $context->getUser(),
-                    new DateTimeImmutable('now + 1 year')
-                );
+                $token = $tokenService->create($context->getUser(), new DateTimeImmutable('now + 1 year'));
 
-                return $response->withHeader('X-Token', $token->encode());
+                return $response->withHeader('X-Token', $tokenService->encode($token));
 
             case 'bearer':
-                $token   = JsonWebToken::decode($secret);
-                $context = $this->container->get(TokenAuthenticator::class)->authenticate($token);
+                /** @var TokenAuthenticator $authenticator */
+                $authenticator = $this->container->get(TokenAuthenticator::class);
+                $token         = $tokenService->decode($secret);
+                $context       = $authenticator->authenticate($token);
 
                 return $handler->handle($request->withAttribute('auth', $context));
         }

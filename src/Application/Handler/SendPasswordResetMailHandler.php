@@ -6,35 +6,28 @@ namespace HexagonalPlayground\Application\Handler;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
-use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Domain\Event\Event;
 
 class SendPasswordResetMailHandler
 {
-    /** @var TokenFactoryInterface */
-    private TokenFactoryInterface $tokenFactory;
-
-    /** @var UserRepositoryInterface */
+    private TokenServiceInterface $tokenService;
     private UserRepositoryInterface $userRepository;
-
-    /** @var TemplateRendererInterface */
     private TemplateRendererInterface $templateRenderer;
-
-    /** @var MailerInterface */
     private MailerInterface $mailer;
 
     /**
-     * @param TokenFactoryInterface     $tokenFactory
+     * @param TokenServiceInterface     $tokenService
      * @param UserRepositoryInterface   $userRepository
      * @param TemplateRendererInterface $templateRenderer
      * @param MailerInterface           $mailer
      */
-    public function __construct(TokenFactoryInterface $tokenFactory, UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
+    public function __construct(TokenServiceInterface $tokenService, UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
     {
-        $this->tokenFactory     = $tokenFactory;
+        $this->tokenService     = $tokenService;
         $this->userRepository   = $userRepository;
         $this->templateRenderer = $templateRenderer;
         $this->mailer           = $mailer;
@@ -52,12 +45,12 @@ class SendPasswordResetMailHandler
             return []; // Simply do nothing, when user cannot be found to prevent user discovery attacks
         }
 
-        $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 day'));
+        $token = $this->tokenService->create($user, new DateTimeImmutable('now + 1 day'));
 
         $targetUri = $command
             ->getBaseUri()
             ->withPath($command->getTargetPath())
-            ->withQuery(http_build_query(['token' => $token->encode()]));
+            ->withQuery(http_build_query(['token' => $this->tokenService->encode($token)]));
 
         $message = $this->mailer->createMessage(
             [$user->getEmail() => $user->getFullName()],

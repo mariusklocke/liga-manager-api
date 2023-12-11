@@ -31,7 +31,7 @@ class SetupEnvCommand extends Command
         $env['EMAIL_SENDER_ADDRESS'] = $io->ask('Enter sender address for outbound email', 'noreply@example.com');
         $env['EMAIL_SENDER_NAME'] = $io->ask('Enter sender name for outbound email', 'No Reply');
         $env['EMAIL_URL'] = $io->ask('Enter URL to use for sending email', 'smtp://maildev:25?verify_peer=0');
-        $env['JWT_SECRET'] = JsonWebToken::generateSecret();
+        $env['JWT_SECRET'] = bin2hex(random_bytes(32));
 
         $envPath = join(DIRECTORY_SEPARATOR, [getenv('APP_HOME'), '.env']);
 
