@@ -82,9 +82,9 @@ docker run -d --name=php --network=build \
 attempt=0
 while [ $attempt -le 10 ]; do
     attempt=$(( $attempt + 1 ))
-    echo "Waiting until containers are ready ... Attempt $attempt"
-    if docker exec -t php pgrep -o php-fpm > /dev/null ; then
-        echo "Containers are ready for testing"
+    echo "Waiting for PHP container to be become healthy ... Attempt $attempt"
+    if docker exec -t php docker-php-fpm-healthcheck > /dev/null ; then
+        echo "PHP container is healthy"
         break
     fi
     sleep 2
