@@ -1,9 +1,10 @@
 #!/bin/sh
+# Inspired by: https://github.com/renatomefi/php-fpm-healthcheck/tree/master
 set -eu
 
 REQUEST_METHOD="GET" \
-REQUEST_URI="/api/health" \
-SCRIPT_FILENAME="public/index.php" \
+SCRIPT_NAME="/_status" \
+SCRIPT_FILENAME="/_status" \
 cgi-fcgi -bind -connect 127.0.0.1:9000
 
 # Line feed
