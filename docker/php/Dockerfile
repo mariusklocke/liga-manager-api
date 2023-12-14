@@ -2,7 +2,7 @@ ARG PHP_IMAGE
 FROM ${PHP_IMAGE}
 
 ARG APP_VERSION
-ENV RUN_DEPS="gmp ncurses gnupg" \
+ENV RUN_DEPS="fcgi gmp gnupg ncurses" \
     BUILD_DEPS="${PHPIZE_DEPS} gmp-dev linux-headers" \
     PHP_EXTS="bcmath gmp pcntl pdo_mysql opcache"
 
@@ -32,6 +32,8 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
 # Configure PHP
 COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
+COPY docker/php/healthcheck.sh /usr/local/bin/docker-php-fpm-healthcheck
+RUN chmod +x /usr/local/bin/docker-php-fpm-healthcheck
 
 # Prepare application source directory
 ENV APP_HOME="/var/www/api"
@@ -58,4 +60,5 @@ RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*
 USER www-data
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 
+HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-fpm-healthcheck || exit 1
 CMD lima migrations:migrate -n && php-fpm

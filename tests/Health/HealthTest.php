@@ -19,7 +19,7 @@ class HealthTest extends HttpTest
         $status = $this->parser->parse($response);
         self::assertIsObject($status);
 
-        $checks = ['redis', 'doctrine', 'fpm'];
+        $checks = ['redis', 'doctrine'];
 
         foreach ($checks as $name) {
             self::assertTrue(property_exists($status, $name));
