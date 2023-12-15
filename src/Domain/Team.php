@@ -11,14 +11,10 @@ use HexagonalPlayground\Domain\Value\ContactPerson;
 
 class Team extends Entity
 {
-    /** @var string */
     private string $name;
-
-    /** @var DateTimeImmutable */
     private DateTimeImmutable $createdAt;
-
-    /** @var ContactPerson|null */
     private ?ContactPerson $contact = null;
+    private ?string $logoId = null;
 
     public function __construct(string $id, string $name)
     {
@@ -67,5 +63,22 @@ class Team extends Entity
             InvalidInputException::class
         );
         $this->name = $name;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLogoId(): ?string
+    {
+        return $this->logoId;
+    }
+
+    /**
+     * @param string|null $logoId
+     * @return void
+     */
+    public function setLogoId(?string $logoId): void
+    {
+        $this->logoId = $logoId;
     }
 }

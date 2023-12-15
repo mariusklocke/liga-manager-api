@@ -29,6 +29,12 @@ class TeamType extends ObjectType implements QueryTypeInterface
                     ],
                     'contact' => [
                         'type' => ContactType::getInstance()
+                    ],
+                    'logo_id' => [
+                        'type' => Type::string(),
+                    ],
+                    'logo_path' => [
+                        'type' => Type::string()
                     ]
                 ];
             }

@@ -7,25 +7,22 @@ use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\SlimClient;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Slim\App;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
-    /** @var Client */
-    protected $client;
-
-    /** @var App */
-    private static $app;
+    protected Client $client;
+    protected SlimClient $slimClient;
+    private static ?Application $app = null;
 
     protected function setUp(): void
     {
         if (null === self::$app) {
             self::$app = new Application();
         }
-        $this->client = new Client(new SlimClient(self::$app, new Psr17Factory()));
+        $this->slimClient = new SlimClient(self::$app);
+        $this->client = new Client($this->slimClient);
     }
 
     /**
@@ -53,9 +50,15 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function useAdminAuth(): void
     {
-        $this->client->useCredentials(getenv('ADMIN_EMAIL'), getenv('ADMIN_PASSWORD'));
-        $token = $this->client->createToken();
+        $token = $this->createAdminToken();
         $this->client->useToken($token);
+    }
+
+    protected function createAdminToken(): string
+    {
+        $this->client->useCredentials(getenv('ADMIN_EMAIL'), getenv('ADMIN_PASSWORD'));
+
+        return $this->client->createToken();
     }
 
     protected function expectClientException(): void

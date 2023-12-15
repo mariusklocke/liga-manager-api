@@ -8,6 +8,8 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRoute
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Logos\RouteProvider as LogosRouteProvider;
+use HexagonalPlayground\Infrastructure\API\Logos\ServiceProvider as LogosServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RouteProvider as WebAuthnRouteProvider;
@@ -39,7 +41,8 @@ class Application extends App
             new MailServiceProvider(),
             new EventServiceProvider(),
             new GraphQLServiceProvider(),
-            new WebAuthnServiceProvider()
+            new WebAuthnServiceProvider(),
+            new LogosServiceProvider()
         ];
 
         $container = ContainerBuilder::build($serviceProviders);
@@ -63,7 +66,8 @@ class Application extends App
             $routeProviders = [
                 new GraphQLRouteProvider(),
                 new WebAuthnRouteProvider(),
-                new HealthRouteProvider()
+                new HealthRouteProvider(),
+                new LogosRouteProvider()
             ];
 
             foreach ($routeProviders as $provider) {

@@ -35,7 +35,15 @@ COPY docker/php/php.ini /usr/local/etc/php/php.ini
 COPY docker/php/healthcheck.sh /usr/local/bin/docker-php-fpm-healthcheck
 RUN chmod +x /usr/local/bin/docker-php-fpm-healthcheck
 
-# Prepare application source directory
+# Add entrypoint
+COPY docker/php/entrypoint.sh /usr/local/bin/docker-php-entrypoint
+RUN chmod +x /usr/local/bin/docker-php-entrypoint
+
+# Prepare logos directory
+ENV APP_LOGOS_PATH="/var/www/logos"
+RUN mkdir ${APP_LOGOS_PATH}
+
+# Prepare application directory
 ENV APP_HOME="/var/www/api"
 RUN mkdir ${APP_HOME}
 WORKDIR ${APP_HOME}
@@ -57,7 +65,7 @@ RUN sed -i "s/APP_VERSION=development/APP_VERSION=$APP_VERSION/" src/init.php
 
 # Configure ownership and permissions
 RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*
-USER www-data
+RUN chown www-data:www-data ${APP_LOGOS_PATH}
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 
 HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-fpm-healthcheck || exit 1

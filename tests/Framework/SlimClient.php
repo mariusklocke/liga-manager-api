@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\Framework;
 
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -12,20 +12,16 @@ use RuntimeException;
 
 class SlimClient
 {
-    /** @var RequestHandlerInterface */
-    private $app;
-
-    /** @var ServerRequestFactoryInterface */
-    private $requestFactory;
+    private RequestHandlerInterface $app;
+    private Psr17Factory $requestFactory;
 
     /**
      * @param RequestHandlerInterface $app
-     * @param ServerRequestFactoryInterface $requestFactory
      */
-    public function __construct(RequestHandlerInterface $app, ServerRequestFactoryInterface $requestFactory)
+    public function __construct(RequestHandlerInterface $app)
     {
         $this->app = $app;
-        $this->requestFactory = $requestFactory;
+        $this->requestFactory = new Psr17Factory();
     }
 
     /**
@@ -37,7 +33,7 @@ class SlimClient
      */
     public function get(string $uri, array $headers = []) : ResponseInterface
     {
-        return $this->processRequest($this->createRequest('GET', $uri, [], $headers));
+        return $this->processRequest($this->createJsonRequest('GET', $uri, [], $headers));
     }
 
     /**
@@ -50,7 +46,7 @@ class SlimClient
      */
     public function post(string $uri, array $bodyData = [], array $headers = []) : ResponseInterface
     {
-        return $this->processRequest($this->createRequest('POST', $uri, $bodyData, $headers));
+        return $this->processRequest($this->createJsonRequest('POST', $uri, $bodyData, $headers));
     }
 
     /**
@@ -62,7 +58,7 @@ class SlimClient
      */
     public function delete(string $uri, array $headers = []) : ResponseInterface
     {
-        return $this->processRequest($this->createRequest('DELETE', $uri, [], $headers));
+        return $this->processRequest($this->createJsonRequest('DELETE', $uri, [], $headers));
     }
 
     /**
@@ -75,7 +71,7 @@ class SlimClient
      */
     public function put(string $uri, array $bodyData = [], array $headers = []) : ResponseInterface
     {
-        return $this->processRequest($this->createRequest('PUT', $uri, $bodyData, $headers));
+        return $this->processRequest($this->createJsonRequest('PUT', $uri, $bodyData, $headers));
     }
 
     /**
@@ -88,7 +84,7 @@ class SlimClient
      */
     public function patch(string $uri, array $bodyData = [], array $headers = []): ResponseInterface
     {
-        return $this->processRequest($this->createRequest('PATCH', $uri, $bodyData, $headers));
+        return $this->processRequest($this->createJsonRequest('PATCH', $uri, $bodyData, $headers));
     }
 
     /**
@@ -113,7 +109,7 @@ class SlimClient
      * @param array $headers
      * @return ServerRequestInterface
      */
-    private function createRequest(string $method, string $uri, array $bodyData, array $headers = []) : ServerRequestInterface
+    private function createJsonRequest(string $method, string $uri, array $bodyData, array $headers = []) : ServerRequestInterface
     {
         $request = $this->requestFactory->createServerRequest($method, $uri);
 
@@ -125,6 +121,26 @@ class SlimClient
         }
 
         return $request;
+    }
+
+    public function sendUploadRequest(string $method, string $uri, string $filePath, string $fileMediaType, array $headers = []): ResponseInterface
+    {
+        $file = $this->requestFactory->createUploadedFile(
+            $this->requestFactory->createStreamFromFile($filePath),
+            filesize($filePath),
+            0,
+            basename($filePath),
+            $fileMediaType
+        );
+
+        $request = $this->requestFactory->createServerRequest($method, $uri);
+        $request = $request->withUploadedFiles(['file' => $file]);
+
+        foreach ($headers as $key => $value) {
+            $request = $request->withHeader($key, $value);
+        }
+
+        return $this->processRequest($request);
     }
 
     /**

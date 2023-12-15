@@ -8,5 +8,6 @@
         <field name="name" type="string" />
         <field name="createdAt" column="created_at" type="custom_datetime"/>
         <embedded name="contact" class="HexagonalPlayground\Domain\Value\ContactPerson" />
+        <field name="logoId" column="logo_id" type="string" />
     </entity>
 </doctrine-mapping>

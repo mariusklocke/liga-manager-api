@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
+use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
@@ -11,6 +12,12 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
 
 class TeamRepository extends AbstractRepository
 {
+    public function __construct(ReadDbGatewayInterface $gateway, TeamLogoRepository $teamLogoRepository)
+    {
+        parent::__construct($gateway);
+        $this->hydrator = new TeamHydrator($this->getFieldDefinitions(), $teamLogoRepository);
+    }
+
     protected function getTableName(): string
     {
         return 'teams';
@@ -27,7 +34,8 @@ class TeamRepository extends AbstractRepository
                 new StringField('first_name', false),
                 new StringField('last_name', false),
                 new StringField('phone', false)
-            ])
+            ]),
+            new StringField('logo_id', true)
         ];
     }
 

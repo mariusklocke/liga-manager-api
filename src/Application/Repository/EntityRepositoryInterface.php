@@ -34,4 +34,9 @@ interface EntityRepositoryInterface
      * @param object $entity
      */
     public function delete($entity): void;
+
+    /**
+     * @return void
+     */
+    public function flush(): void;
 }

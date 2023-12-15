@@ -94,4 +94,9 @@ abstract class EntityRepository implements EntityRepositoryInterface
     {
         $this->manager->remove($entity);
     }
+
+    public function flush(): void
+    {
+        $this->manager->flush();
+    }
 }

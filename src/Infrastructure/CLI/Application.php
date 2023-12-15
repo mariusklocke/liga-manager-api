@@ -88,7 +88,6 @@ class Application extends \Symfony\Component\Console\Application
     private function getOwnCommands(): Iterator
     {
         yield new PrintGraphQlSchemaCommand($this->container);
-        yield new MaintenanceModeCommand($this->container);
         yield new SendTestMailCommand($this->container);
         yield new SetupEnvCommand($this->container);
         yield new HealthCommand($this->container);

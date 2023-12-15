@@ -16,7 +16,7 @@ class MaintenanceModeMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (file_exists(Config::getInstance()->appHome . '/.maintenance_mode')) {
+        if (Config::getInstance()->maintenanceMode === 'on') {
             throw new MaintenanceModeException('API unavailable due to maintenance work.');
         }
 

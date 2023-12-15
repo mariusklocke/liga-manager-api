@@ -21,8 +21,8 @@ require:
 require-dev:
 	docker compose exec ${container} composer require --dev
 
-shell:
-	docker compose exec ${container} sh
+user-shell:
+	docker compose exec -u 1000:1000 ${container} sh
 
 root-shell:
 	docker compose exec -u root ${container} sh
