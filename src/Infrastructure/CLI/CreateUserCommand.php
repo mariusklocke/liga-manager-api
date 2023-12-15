@@ -49,7 +49,7 @@ class CreateUserCommand extends Command
     private function getEmail(InputInterface $input, OutputInterface $output): ?string
     {
         if ($input->getOption('default')) {
-            return Config::getInstance()->adminEmail;
+            return $this->getConfig()->adminEmail;
         }
 
         if ($input->getOption('email')) {
@@ -62,7 +62,7 @@ class CreateUserCommand extends Command
     private function getPassword(InputInterface $input, OutputInterface $output): ?string
     {
         if ($input->getOption('default')) {
-            return Config::getInstance()->adminPassword;
+            return $this->getConfig()->adminPassword;
         }
 
         if ($input->getOption('password')) {
@@ -113,5 +113,10 @@ class CreateUserCommand extends Command
         }
 
         return null;
+    }
+
+    private function getConfig(): Config
+    {
+        return $this->container->get(Config::class);
     }
 }

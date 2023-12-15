@@ -5,9 +5,9 @@ namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 use DateTimeImmutable;
 use Exception;
 use HexagonalPlayground\Application\Security\AuthenticationException;
+use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
-use HexagonalPlayground\Application\Security\TokenFactoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
@@ -22,22 +22,11 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 
 class PerformLoginAction implements ActionInterface
 {
-    /** @var OptionsStoreInterface */
     private OptionsStoreInterface $optionsStore;
-
-    /** @var PublicKeyCredentialLoader */
     private PublicKeyCredentialLoader $credentialLoader;
-
-    /** @var AuthenticatorAssertionResponseValidator */
     private AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator;
-
-    /** @var UserRepositoryInterface */
     private UserRepositoryInterface $userRepository;
-
-    /** @var TokenFactoryInterface */
-    private TokenFactoryInterface $tokenFactory;
-
-    /** @var JsonResponseWriter */
+    private TokenServiceInterface $tokenService;
     private JsonResponseWriter $responseWriter;
 
     /**
@@ -45,16 +34,16 @@ class PerformLoginAction implements ActionInterface
      * @param PublicKeyCredentialLoader $credentialLoader
      * @param AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator
      * @param UserRepositoryInterface $userRepository
-     * @param TokenFactoryInterface $tokenFactory
+     * @param TokenServiceInterface $tokenService
      * @param JsonResponseWriter $responseWriter
      */
-    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenFactoryInterface $tokenFactory, JsonResponseWriter $responseWriter)
+    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenServiceInterface $tokenService, JsonResponseWriter $responseWriter)
     {
         $this->optionsStore = $optionsStore;
         $this->credentialLoader = $credentialLoader;
         $this->authenticatorAssertionResponseValidator = $authenticatorAssertionResponseValidator;
         $this->userRepository = $userRepository;
-        $this->tokenFactory = $tokenFactory;
+        $this->tokenService = $tokenService;
         $this->responseWriter = $responseWriter;
     }
 
@@ -103,10 +92,10 @@ class PerformLoginAction implements ActionInterface
             throw new AuthenticationException('Authentication failed');
         }
 
-        $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 year'));
+        $token = $this->tokenService->create($user, new DateTimeImmutable('now + 1 year'));
 
         $response = $response->withStatus(200)
-            ->withHeader('X-Token', $token->encode());
+            ->withHeader('X-Token', $this->tokenService->encode($token));
 
         return $this->responseWriter->write($response, $user->getPublicProperties());
     }

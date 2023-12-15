@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
-use HexagonalPlayground\Application\Security\TokenFactoryInterface;
+use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Domain\Event\Event;
@@ -14,27 +14,20 @@ use HexagonalPlayground\Domain\User;
 
 class SendInviteMailHandler implements AuthAwareHandler
 {
-    /** @var TokenFactoryInterface */
-    private TokenFactoryInterface $tokenFactory;
-
-    /** @var UserRepositoryInterface */
+    private TokenServiceInterface $tokenService;
     private UserRepositoryInterface $userRepository;
-
-    /** @var TemplateRendererInterface */
     private TemplateRendererInterface $templateRenderer;
-
-    /** @var MailerInterface */
     private MailerInterface $mailer;
 
     /**
-     * @param TokenFactoryInterface $tokenFactory
+     * @param TokenServiceInterface $tokenService
      * @param UserRepositoryInterface $userRepository
      * @param TemplateRendererInterface $templateRenderer
      * @param MailerInterface $mailer
      */
-    public function __construct(TokenFactoryInterface $tokenFactory, UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
+    public function __construct(TokenServiceInterface $tokenService, UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
     {
-        $this->tokenFactory = $tokenFactory;
+        $this->tokenService = $tokenService;
         $this->userRepository = $userRepository;
         $this->templateRenderer = $templateRenderer;
         $this->mailer = $mailer;
@@ -51,11 +44,11 @@ class SendInviteMailHandler implements AuthAwareHandler
 
         /** @var User $user */
         $user  = $this->userRepository->find($command->getUserId());
-        $token = $this->tokenFactory->create($user, new DateTimeImmutable('now + 1 week'));
+        $token = $this->tokenService->create($user, new DateTimeImmutable('now + 1 week'));
 
         $targetUri = $command->getBaseUri()
             ->withPath($command->getTargetPath())
-            ->withQuery(http_build_query(['token' => $token->encode()]));
+            ->withQuery(http_build_query(['token' => $this->tokenService->encode($token)]));
 
         $message = $this->mailer->createMessage(
             [$user->getEmail() => $user->getFullName()],

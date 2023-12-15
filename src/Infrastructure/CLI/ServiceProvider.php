@@ -27,12 +27,12 @@ class ServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            Configuration::class => DI\factory(function () {
-                $namespace = 'Migrations';
-                $path = Config::getInstance()->appHome . '/migrations';
+            Configuration::class => DI\factory(function (ContainerInterface $container) {
+                /** @var Config $config */
+                $config = $container->get(Config::class);
 
                 $migrationsConfig = new Configuration();
-                $migrationsConfig->addMigrationsDirectory($namespace, $path);
+                $migrationsConfig->addMigrationsDirectory('Migrations', $config->appHome . '/migrations');
 
                 return $migrationsConfig;
             }),

@@ -66,7 +66,8 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Connection::class => DI\factory(function (ContainerInterface $container) {
-                $config = Config::getInstance();
+                /** @var Config $config */
+                $config = $container->get(Config::class);
 
                 $params = [
                     'dbname' => $config->mysqlDatabase,
@@ -100,13 +101,16 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Configuration::class => DI\factory(function (ContainerInterface $container) {
+                /** @var Config $appConfig */
+                $appConfig = $container->get(Config::class);
+
                 $config = new Configuration();
                 $config->setProxyDir(sys_get_temp_dir());
                 $config->setProxyNamespace('DoctrineProxies');
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
                 $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
-                if (Config::getInstance()->logLevel === 'debug') {
+                if ($appConfig->logLevel === 'debug') {
                     $config->setMiddlewares([new LoggingMiddleware($container->get(LoggerInterface::class))]);
                 }
 
@@ -115,8 +119,10 @@ class DoctrineServiceProvider implements ServiceProviderInterface
 
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
-            SimplifiedXmlDriver::class => DI\factory(function () {
-                $basePath = Config::getInstance()->appHome;
+            SimplifiedXmlDriver::class => DI\factory(function (ContainerInterface $container) {
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+                $basePath = $config->appHome;
                 $driver = new SimplifiedXmlDriver([
                     $basePath . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
                     => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",
