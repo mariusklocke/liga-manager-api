@@ -27,10 +27,10 @@ use Slim\Interfaces\RouteCollectorProxyInterface;
 
 class Application extends App
 {
+    public const VERSION = 'development';
+
     public function __construct()
     {
-        $responseFactory = new Psr17Factory();
-
         $serviceProviders = [
             new HealthServiceProvider(),
             new ApplicationServiceProvider(),
@@ -45,7 +45,8 @@ class Application extends App
             new LogosServiceProvider()
         ];
 
-        $container = ContainerBuilder::build($serviceProviders);
+        $container = ContainerBuilder::build($serviceProviders, self::VERSION);
+        $responseFactory = new Psr17Factory();
 
         parent::__construct($responseFactory, $container);
 

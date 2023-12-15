@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Infrastructure\API\Security\JsonWebToken;
 use HexagonalPlayground\Infrastructure\Filesystem\FileStream;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,7 +32,7 @@ class SetupEnvCommand extends Command
         $env['EMAIL_URL'] = $io->ask('Enter URL to use for sending email', 'smtp://maildev:25?verify_peer=0');
         $env['JWT_SECRET'] = bin2hex(random_bytes(32));
 
-        $envPath = join(DIRECTORY_SEPARATOR, [getenv('APP_HOME'), '.env']);
+        $envPath = join(DIRECTORY_SEPARATOR, [$this->container->get('app.home'), '.env']);
 
         if (is_writeable($envPath)) {
             $confirmed = $io->confirm(

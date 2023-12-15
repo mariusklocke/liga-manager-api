@@ -61,7 +61,7 @@ COPY config config/
 COPY bin bin/
 
 # Apply version branding
-RUN sed -i "s/APP_VERSION=development/APP_VERSION=$APP_VERSION/" src/init.php
+RUN sed -i "s/VERSION = 'development';/VERSION = '$APP_VERSION';/" src/Infrastructure/API/Application.php src/Infrastructure/CLI/Application.php
 
 # Configure ownership and permissions
 RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*

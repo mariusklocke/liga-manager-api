@@ -13,7 +13,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use HexagonalPlayground\Application\Import\TeamMapperInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\Config;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -28,11 +27,11 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             Configuration::class => DI\factory(function (ContainerInterface $container) {
-                /** @var Config $config */
-                $config = $container->get(Config::class);
-
                 $migrationsConfig = new Configuration();
-                $migrationsConfig->addMigrationsDirectory('Migrations', $config->appHome . '/migrations');
+                $migrationsConfig->addMigrationsDirectory('Migrations', join(
+                    DIRECTORY_SEPARATOR,
+                    [$container->get('app.home'), 'migrations']
+                ));
 
                 return $migrationsConfig;
             }),

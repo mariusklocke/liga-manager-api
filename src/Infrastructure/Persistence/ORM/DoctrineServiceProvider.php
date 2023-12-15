@@ -120,17 +120,18 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
             SimplifiedXmlDriver::class => DI\factory(function (ContainerInterface $container) {
-                /** @var Config $config */
-                $config = $container->get(Config::class);
-                $basePath = $config->appHome;
+                $basePath = join(
+                    DIRECTORY_SEPARATOR,
+                    [$container->get('app.home'), 'config', 'doctrine']
+                );
                 $driver = new SimplifiedXmlDriver([
-                    $basePath . "/config/doctrine/Infrastructure/API/Security/WebAuthn"
+                    join(DIRECTORY_SEPARATOR, [$basePath, 'Infrastructure', 'API', 'Security', 'WebAuthn'])
                     => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",
-                    $basePath . "/config/doctrine/Domain"
+                    join(DIRECTORY_SEPARATOR, [$basePath, 'Domain'])
                     => "HexagonalPlayground\\Domain",
-                    $basePath . "/config/doctrine/Domain/Event"
+                    join(DIRECTORY_SEPARATOR, [$basePath, 'Domain', 'Event'])
                     => "HexagonalPlayground\\Domain\\Event",
-                    $basePath . "/config/doctrine/Domain/Value"
+                    join(DIRECTORY_SEPARATOR, [$basePath, 'Domain', 'Value'])
                     => "HexagonalPlayground\\Domain\\Value"
                 ]);
                 $driver->setGlobalBasename('global');

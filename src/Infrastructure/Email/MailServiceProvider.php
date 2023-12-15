@@ -37,10 +37,10 @@ class MailServiceProvider implements ServiceProviderInterface
             }),
             TemplateRendererInterface::class => DI\get(TemplateRenderer::class),
             TemplateRenderer::class => DI\factory(function (ContainerInterface $container) {
-                /** @var Config $config */
-                $config = $container->get(Config::class);
-
-                return new TemplateRenderer($config->appHome . '/templates');
+                return new TemplateRenderer(join(
+                    DIRECTORY_SEPARATOR,
+                    [$container->get('app.home'), 'templates']
+                ));
             })
         ];
     }

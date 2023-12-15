@@ -40,11 +40,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends \Symfony\Component\Console\Application
 {
+    public const NAME = 'Liga-Manager';
+    public const VERSION = 'development';
+
     private ContainerInterface $container;
 
     public function __construct()
     {
-        $this->container = ContainerBuilder::build([
+        $serviceProviders = [
             new HealthServiceProvider(),
             new ApplicationServiceProvider(),
             new DoctrineServiceProvider(),
@@ -54,12 +57,11 @@ class Application extends \Symfony\Component\Console\Application
             new EventServiceProvider(),
             new GraphQLProvider(),
             new CliServiceProvider(),
-        ]);
+        ];
 
-        parent::__construct(
-            'Liga-Manager',
-            getenv('APP_VERSION') ?: 'development'
-        );
+        $this->container = ContainerBuilder::build($serviceProviders, self::VERSION);
+
+        parent::__construct(self::NAME, self::VERSION);
 
         foreach ($this->getOwnCommands() as $command) {
             $this->add($command);
