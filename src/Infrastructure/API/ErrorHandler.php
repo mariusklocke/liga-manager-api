@@ -70,8 +70,11 @@ class ErrorHandler implements ErrorHandlerInterface
                 break;
         }
 
+        $type = get_class($exception);
+        $message = $exception->getMessage();
+
         if ($response->getStatusCode() !== 500) {
-            $this->logger->notice('Handling uncaught Exception', [
+            $this->logger->notice("Handling $type: $message", [
                 'exception' => $this->getExceptionContext($exception),
                 'request' => $this->getRequestContext($request)
             ]);
@@ -79,7 +82,7 @@ class ErrorHandler implements ErrorHandlerInterface
             return $response;
         }
 
-        $this->logger->error('Failed handling Exception. Internal Server Error', [
+        $this->logger->error("Unhandled $type: $message", [
             'exception' => $this->getExceptionContext($exception, true),
             'request' => $this->getRequestContext($request)
         ]);
@@ -122,7 +125,7 @@ class ErrorHandler implements ErrorHandlerInterface
             'line'    => $throwable->getLine()
         ];
         if ($includeTrace) {
-            $context['trace'] = $throwable->getTraceAsString();
+            $context['trace'] = $throwable->getTrace();
         }
 
         return $context;
