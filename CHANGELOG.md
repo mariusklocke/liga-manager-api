@@ -2,6 +2,12 @@
 
 ## NEXT
 
+## 1.14.0 - 2023-12-18
+* Feature: Add team logo upload
+* Improvement: Refactor config handling
+* Improvement: Add health check for docker container
+* Improvement: Update dependencies
+
 ## 1.13.1 - 2023-11-14
 * Improvement: Refactor logging
 * Improvement: Refactor installer
