@@ -15,7 +15,8 @@ class ServiceProvider implements ServiceProviderInterface
             HealthCheckInterface::class => [],
             QueryAction::class => DI\create()->constructor(
                 DI\get(HealthCheckInterface::class),
-                DI\get(JsonResponseWriter::class)
+                DI\get(JsonResponseWriter::class),
+                DI\get('app.version')
             )
         ];
     }

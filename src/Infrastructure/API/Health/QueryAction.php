@@ -13,33 +13,34 @@ class QueryAction implements ActionInterface
 {
     /** @var HealthCheckInterface[] */
     private array $checks;
-
-    /** @var JsonResponseWriter */
     private JsonResponseWriter $responseWriter;
+    private string $appVersion;
 
     /**
      * @param HealthCheckInterface[] $checks
      * @param JsonResponseWriter $responseWriter
+     * @param string $appVersion
      */
-    public function __construct(array $checks, JsonResponseWriter $responseWriter)
+    public function __construct(array $checks, JsonResponseWriter $responseWriter, string $appVersion)
     {
         $this->checks = $checks;
         $this->responseWriter = $responseWriter;
+        $this->appVersion = $appVersion;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $result = [];
+        $result = [
+            'version' => $this->appVersion,
+            'checks' => []
+        ];
 
         foreach ($this->checks as $check) {
             try {
                 $check();
-                $result[$check->getName()] = 'OK';
+                $result['checks'][$check->getName()] = 'OK';
             } catch (Exception $e) {
-                $result[$check->getName()] = 'Failed';
+                $result['checks'][$check->getName()] = 'Failed';
                 $response = $response->withStatus(500);
             }
         }
