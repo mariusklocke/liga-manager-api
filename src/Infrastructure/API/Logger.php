@@ -54,6 +54,9 @@ class Logger extends AbstractLogger
         if (self::$severityMap[$level] < self::$severityMap[$this->minLevel]) {
             return;
         }
+        if (!$this->stream->isWritable()) {
+            return; // Workaround for Doctrine DBAL logging issues on application shutdown
+        }
 
         $timestamp = date('Y-m-d H:i:s P');
         $level = strtoupper($level);
