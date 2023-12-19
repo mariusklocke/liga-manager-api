@@ -5,8 +5,6 @@ namespace HexagonalPlayground\Infrastructure;
 
 class Config
 {
-    private static ?Config $instance = null;
-
     public string $adminEmail;
     public string $adminPassword;
     public string $appLogosPath;
@@ -42,14 +40,5 @@ class Config
         $this->mysqlPassword = getenv('MYSQL_PASSWORD') ?: '';
         $this->mysqlUser = getenv('MYSQL_USER') ?: '';
         $this->redisHost = getenv('REDIS_HOST') ?: '';
-    }
-
-    public static function getInstance(): Config
-    {
-        if (self::$instance === null) {
-            self::$instance = new static();
-        }
-
-        return static::$instance;
     }
 }

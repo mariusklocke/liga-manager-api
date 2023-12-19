@@ -10,10 +10,12 @@ use Psr\Http\Message\UploadedFileInterface;
 class TeamLogoRepository
 {
     private FilesystemService $filesystemService;
+    private Config $config;
 
-    public function __construct(FilesystemService $filesystemService)
+    public function __construct(FilesystemService $filesystemService, Config $config)
     {
         $this->filesystemService = $filesystemService;
+        $this->config = $config;
     }
 
     public function delete(string $logoId): void
@@ -23,12 +25,12 @@ class TeamLogoRepository
 
     public function generatePublicPath(string $logoId): string
     {
-        return join('/', [Config::getInstance()->appLogosPublicPath, "$logoId.webp"]);
+        return join('/', [$this->config->appLogosPublicPath, "$logoId.webp"]);
     }
 
     private function generateStoragePath(string $logoId): string
     {
-        return $this->filesystemService->joinPaths([Config::getInstance()->appLogosPath, "$logoId.webp"]);
+        return $this->filesystemService->joinPaths([$this->config->appLogosPath, "$logoId.webp"]);
     }
 
     public function save(UploadedFileInterface $uploadedFile): string
