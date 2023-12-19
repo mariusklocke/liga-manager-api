@@ -31,4 +31,39 @@ class FileSystemTest extends TestCase
         $service->deleteDirectory($basePath);
         self::assertFalse($service->isDirectory($basePath));
     }
+
+    public function testFileCanBeWritten(): string
+    {
+        $tempFilePath = tempnam(sys_get_temp_dir(), uniqid('phpunit'));
+        $service = new FilesystemService();
+        $stream = $service->openFile($tempFilePath, 'w');
+        self::assertFalse($stream->isReadable());
+        self::assertTrue($stream->isWritable());
+        self::assertSame(0, $stream->getSize());
+        self::assertSame(\strlen(__CLASS__), $stream->write(__CLASS__));
+        self::assertSame(\strlen(__CLASS__), $stream->tell());
+        self::assertSame(\strlen(__CLASS__), $stream->getSize());
+        $stream->close();
+
+        return $tempFilePath;
+    }
+
+    /**
+     * @param string $tempFilePath
+     * @depends testFileCanBeWritten
+     */
+    public function testFileCanBeRead(string $tempFilePath): void
+    {
+        $service = new FilesystemService();
+        $stream = $service->openFile($tempFilePath, 'r');
+        self::assertFalse($stream->isWritable());
+        self::assertTrue($stream->isReadable());
+        self::assertTrue($stream->isSeekable());
+        self::assertFalse($stream->eof());
+        self::assertSame(\strlen(__CLASS__), $stream->getSize());
+        self::assertSame(__CLASS__, (string) $stream);
+        self::assertTrue($stream->eof());
+        self::assertSame(\strlen(__CLASS__), $stream->tell());
+        $stream->close();
+    }
 }

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Tests\CLI;
 
+use GlobIterator;
 use HexagonalPlayground\Infrastructure\CLI\Application;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -119,7 +120,11 @@ class CliTest extends TestCase
     public function testSeasonsCanBeImportedFromLegacyFiles(): void
     {
         $tester = $this->getCommandTester('app:import:season');
-        $exitCode = $tester->execute(['path' => __DIR__ . '/data/*.l98'], ['interactive' => false]);
+        $files = [];
+        foreach (new GlobIterator(__DIR__ . '/data/*.l98') as $fileInfo) {
+            $files[] = $fileInfo->getRealPath();
+        }
+        $exitCode = $tester->execute(['files' => $files], ['interactive' => false]);
         $output = $tester->getDisplay();
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('success', $output);

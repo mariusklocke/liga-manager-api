@@ -3,16 +3,11 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use GlobIterator;
 use HexagonalPlayground\Application\Import\Executor;
-use HexagonalPlayground\Infrastructure\Filesystem\FileStream;
-use Iterator;
-use RuntimeException;
-use SplFileInfo;
+use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\StyleInterface;
 
 class L98ImportCommand extends Command
 {
@@ -20,57 +15,33 @@ class L98ImportCommand extends Command
     {
         $this->setName('app:import:season');
         $this->setDescription('Import season data from L98 files');
-        $this
-            ->setDefinition([
-                new InputArgument('path', InputArgument::REQUIRED, 'Path to L98 season files (wildcards allowed)')
-            ]);
+        $this->addArgument('files', InputArgument::IS_ARRAY, 'Path to one or multiple L98 season files');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $styledIo = $this->getStyledIO($input, $output);
 
+        /** @var FilesystemService $filesystem */
+        $filesystem = $this->container->get(FilesystemService::class);
+        /** @var Executor $executor */
+        $executor = $this->container->get(Executor::class);
+        /** @var TeamMapper $teamMapper */
+        $teamMapper = $this->container->get(TeamMapper::class);
+
         if ($input->isInteractive()) {
-            $this->container->get(TeamMapper::class)->setStyledIo($styledIo);
+            $teamMapper->setStyledIo($styledIo);
         }
 
-        /** @var SplFileInfo $fileInfo */
-        foreach ($this->getFileIterator($input->getArgument('path')) as $fileInfo) {
-            $this->importFile($fileInfo->getPathname(), $styledIo);
+        foreach ($input->getArgument('files') as $path) {
+            $styledIo->text('Started processing ' . $path);
+            $stream = $filesystem->openFile($path, 'r');
+            $executor($stream, $this->getAuthContext(), $teamMapper);
+            $stream->close();
+            $styledIo->text('Finished processing ' . $path);
         }
 
         $styledIo->success('Import completed successfully!');
         return 0;
-    }
-
-    /**
-     * @param string $pattern
-     * @return Iterator
-     */
-    private function getFileIterator(string $pattern): Iterator
-    {
-        $fileIterator = new GlobIterator($pattern);
-        if (0 === $fileIterator->count()) {
-            throw new RuntimeException('Cannot find files matching pattern ' . $pattern);
-        }
-
-        return $fileIterator;
-    }
-
-    /**
-     * @param string $path
-     * @param StyleInterface $styledIo
-     */
-    private function importFile(string $path, StyleInterface $styledIo): void
-    {
-        $styledIo->text('Started processing ' . $path);
-
-        $this->container->get(Executor::class)->__invoke(
-            new FileStream($path),
-            $this->getAuthContext(),
-            $this->container->get(TeamMapper::class)
-        );
-
-        $styledIo->text('Finished processing ' . $path);
     }
 }

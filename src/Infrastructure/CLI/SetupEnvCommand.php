@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use HexagonalPlayground\Infrastructure\Filesystem\FileStream;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
