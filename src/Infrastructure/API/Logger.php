@@ -3,13 +3,13 @@
 namespace HexagonalPlayground\Infrastructure\API;
 
 use InvalidArgumentException;
+use Psr\Http\Message\StreamInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
 class Logger extends AbstractLogger
 {
-    /** @var resource */
-    private $stream;
+    private StreamInterface $stream;
 
     /** @var string */
     private string $minLevel;
@@ -26,13 +26,13 @@ class Logger extends AbstractLogger
     ];
 
     /**
-     * @param resource $stream
+     * @param StreamInterface $stream
      * @param string $minLevel
      */
-    public function __construct($stream, string $minLevel)
+    public function __construct(StreamInterface $stream, string $minLevel)
     {
-        if (!is_resource($stream)) {
-            throw new InvalidArgumentException('Invalid argument: stream is not a resource');
+        if (!$stream->isWritable()) {
+            throw new InvalidArgumentException('Invalid argument: stream is not writable');
         }
 
         if (!array_key_exists($minLevel, self::$severityMap)) {
@@ -49,7 +49,7 @@ class Logger extends AbstractLogger
      * @param array $context
      * @return void
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = array()): void
     {
         if (self::$severityMap[$level] < self::$severityMap[$this->minLevel]) {
             return;
@@ -63,6 +63,6 @@ class Logger extends AbstractLogger
         }
         $line .= PHP_EOL;
 
-        fwrite($this->stream, $line);
+        $this->stream->write($line);
     }
 }

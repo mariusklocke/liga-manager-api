@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Infrastructure\Filesystem\FileStream;
+use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -17,6 +18,8 @@ class SetupEnvCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        /** @var FilesystemService $filesystem */
+        $filesystem = $this->container->get(FilesystemService::class);
         $io = $this->getStyledIO($input, $output);
 
         $env = [];
@@ -32,16 +35,15 @@ class SetupEnvCommand extends Command
         $env['EMAIL_URL'] = $io->ask('Enter URL to use for sending email', 'smtp://maildev:25?verify_peer=0');
         $env['JWT_SECRET'] = bin2hex(random_bytes(32));
 
-        $envPath = join(DIRECTORY_SEPARATOR, [$this->container->get('app.home'), '.env']);
-
-        if (is_writeable($envPath)) {
+        $envPath = $filesystem->joinPaths([$this->container->get('app.home'), '.env']);
+        if ($filesystem->isWritable($envPath)) {
             $confirmed = $io->confirm(
                 'Your .env file seems to be writeable. Do want to write your configuration directly?',
                 false
             );
 
             if ($confirmed) {
-                $stream = new FileStream($envPath, 'w');
+                $stream = $filesystem->openFile($envPath, 'w');
 
                 foreach ($env as $name => $value) {
                     $stream->write("$name=$value\n");

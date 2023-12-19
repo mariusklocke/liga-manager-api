@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Infrastructure;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use Psr\Container\ContainerInterface;
 
 class ContainerBuilder
@@ -17,14 +18,16 @@ class ContainerBuilder
     {
         $builder = new DI\ContainerBuilder();
         $builder->useAutowiring(true);
-        $builder->addDefinitions([
-            'app.home' => realpath(join(DIRECTORY_SEPARATOR, [__DIR__ , '..', '..'])),
-            'app.version' => $version
-        ]);
 
         foreach ($serviceProviders as $provider) {
             $builder->addDefinitions($provider->getDefinitions());
         }
+
+        $filesystem = new FilesystemService();
+        $builder->addDefinitions([
+            'app.home' => $filesystem->getRealPath($filesystem->joinPaths([__DIR__ , '..', '..'])),
+            'app.version' => $version
+        ]);
 
         return $builder->build();
     }

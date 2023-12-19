@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\API;
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\Config;
+use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -17,10 +18,13 @@ class LoggerProvider implements ServiceProviderInterface
             LoggerInterface::class => DI\factory(function (ContainerInterface $container) {
                 /** @var Config $config */
                 $config = $container->get(Config::class);
-                $stream = fopen($config->logPath, 'w');
-                $logLevel = $config->logLevel;
+                /** @var FilesystemService $filesystem */
+                $filesystem = $container->get(FilesystemService::class);
 
-                return new Logger($stream, $logLevel);
+                return new Logger(
+                    $filesystem->openFile($config->logPath, 'w'),
+                    $config->logLevel
+                );
             })
         ];
     }

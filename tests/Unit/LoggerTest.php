@@ -4,23 +4,17 @@ namespace HexagonalPlayground\Tests\Unit;
 
 use HexagonalPlayground\Infrastructure\API\Logger;
 use InvalidArgumentException;
+use Nyholm\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
 
 class LoggerTest extends TestCase
 {
-    /** @var resource */
-    private $stream;
-
-    protected function setUp(): void
-    {
-        $this->stream = fopen('php://temp', 'w+');
-    }
-
     public function testLoggerRespectsMinLevel(): void
     {
+        $stream = new Stream(fopen('php://temp', 'w+'));
         $message = 'This is a log message';
-        $logger = new Logger($this->stream, 'info');
+        $logger = new Logger($stream, 'info');
 
         $logger->emergency($message);
         $logger->alert($message);
@@ -31,8 +25,8 @@ class LoggerTest extends TestCase
         $logger->info($message);
         $logger->debug($message);
 
-        rewind($this->stream);
-        $output = stream_get_contents($this->stream);
+        $stream->rewind();
+        $output = $stream->getContents();
         $expectedLevels = [
             LogLevel::EMERGENCY,
             LogLevel::ALERT,
@@ -49,15 +43,17 @@ class LoggerTest extends TestCase
         self::assertStringNotContainsString('DEBUG', $output);
     }
 
-    public function testInitiatingWithInvalidStreamFails(): void
+    public function testInitiatingWithNonWritableStreamFails(): void
     {
+        $stream = new Stream(fopen('php://temp', 'r'));
         self::expectException(InvalidArgumentException::class);
-        new Logger('/just/a/path', 'debug');
+        new Logger($stream, 'debug');
     }
 
     public function testInitiatingWithInvalidMinLevelFails(): void
     {
+        $stream = new Stream(fopen('php://temp', 'w+'));
         self::expectException(InvalidArgumentException::class);
-        new Logger($this->stream, 'invalid');
+        new Logger($stream, 'invalid');
     }
 }
