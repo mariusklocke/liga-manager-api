@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
@@ -15,12 +18,16 @@ class Team extends Entity
     private DateTimeImmutable $createdAt;
     private ?ContactPerson $contact = null;
     private ?string $logoId = null;
+    private Collection $homeMatches;
+    private Collection $guestMatches;
 
     public function __construct(string $id, string $name)
     {
         parent::__construct($id);
         $this->setName($name);
         $this->createdAt = new DateTimeImmutable();
+        $this->homeMatches = new ArrayCollection();
+        $this->guestMatches = new ArrayCollection();
     }
 
     /**
@@ -80,5 +87,27 @@ class Team extends Entity
     public function setLogoId(?string $logoId): void
     {
         $this->logoId = $logoId;
+    }
+
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Verifies if team can be safely deleted. Throws an exception otherwise.
+     *
+     * @return void
+     */
+    public function assertDeletable(): void
+    {
+        Assert::true(
+            $this->homeMatches->isEmpty() && $this->guestMatches->isEmpty(),
+            'Cannot delete a team referenced in matches',
+            ConflictException::class,
+        );
     }
 }

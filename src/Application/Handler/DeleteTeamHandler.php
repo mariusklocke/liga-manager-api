@@ -35,6 +35,8 @@ class DeleteTeamHandler implements AuthAwareHandler
 
         /** @var Team $team */
         $team = $this->teamRepository->find($command->getTeamId());
+        $team->assertDeletable();
+
         $this->teamRepository->delete($team);
 
         return [];
