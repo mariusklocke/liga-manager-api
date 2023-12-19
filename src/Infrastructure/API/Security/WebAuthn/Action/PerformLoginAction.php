@@ -11,7 +11,7 @@ use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
+use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use HexagonalPlayground\Infrastructure\API\RequestParser;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -28,7 +28,7 @@ class PerformLoginAction implements ActionInterface
     private AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator;
     private UserRepositoryInterface $userRepository;
     private TokenServiceInterface $tokenService;
-    private JsonResponseWriter $responseWriter;
+    private ResponseSerializer $responseSerializer;
     private RequestParser $requestParser;
 
     /**
@@ -37,17 +37,17 @@ class PerformLoginAction implements ActionInterface
      * @param AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator
      * @param UserRepositoryInterface $userRepository
      * @param TokenServiceInterface $tokenService
-     * @param JsonResponseWriter $responseWriter
+     * @param ResponseSerializer $responseSerializer
      * @param RequestParser $requestParser
      */
-    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenServiceInterface $tokenService, JsonResponseWriter $responseWriter, RequestParser $requestParser)
+    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenServiceInterface $tokenService, ResponseSerializer $responseSerializer, RequestParser $requestParser)
     {
         $this->optionsStore = $optionsStore;
         $this->credentialLoader = $credentialLoader;
         $this->authenticatorAssertionResponseValidator = $authenticatorAssertionResponseValidator;
         $this->userRepository = $userRepository;
         $this->tokenService = $tokenService;
-        $this->responseWriter = $responseWriter;
+        $this->responseSerializer = $responseSerializer;
         $this->requestParser = $requestParser;
     }
 
@@ -101,6 +101,6 @@ class PerformLoginAction implements ActionInterface
         $response = $response->withStatus(200)
             ->withHeader('X-Token', $this->tokenService->encode($token));
 
-        return $this->responseWriter->write($response, $user->getPublicProperties());
+        return $this->responseSerializer->serializeJson($response, $user->getPublicProperties());
     }
 }

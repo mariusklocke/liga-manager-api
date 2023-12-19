@@ -4,26 +4,23 @@ namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\HtmlResponseWriter;
+use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 class GetTestClientAction implements ActionInterface
 {
-    /** @var TemplateRendererInterface */
     private TemplateRendererInterface $templateRenderer;
-
-    /** @var HtmlResponseWriter */
-    private HtmlResponseWriter $responseWriter;
+    private ResponseSerializer $responseSerializer;
 
     /**
      * @param TemplateRendererInterface $templateRenderer
-     * @param HtmlResponseWriter $responseWriter
+     * @param ResponseSerializer $responseSerializer
      */
-    public function __construct(TemplateRendererInterface $templateRenderer, HtmlResponseWriter $responseWriter)
+    public function __construct(TemplateRendererInterface $templateRenderer, ResponseSerializer $responseSerializer)
     {
         $this->templateRenderer = $templateRenderer;
-        $this->responseWriter = $responseWriter;
+        $this->responseSerializer = $responseSerializer;
     }
 
     /**
@@ -31,7 +28,7 @@ class GetTestClientAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        return $this->responseWriter->write(
+        return $this->responseSerializer->serializeHtml(
             $response,
             $this->templateRenderer->render('WebAuthnClient.html.php', [])
         );

@@ -3,7 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
+use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\UserConverter;
@@ -12,25 +12,20 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ListCredentialsAction implements ActionInterface
 {
-    /** @var PublicKeyCredentialSourceRepository */
     private PublicKeyCredentialSourceRepository $credentialRepository;
-
-    /** @var AuthReader */
     private AuthReader $authReader;
-
-    /** @var JsonResponseWriter */
-    private JsonResponseWriter $responseWriter;
+    private ResponseSerializer $responseSerializer;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
      * @param AuthReader $authReader
-     * @param JsonResponseWriter $responseWriter
+     * @param ResponseSerializer $responseSerializer
      */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, AuthReader $authReader, JsonResponseWriter $responseWriter)
+    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, AuthReader $authReader, ResponseSerializer $responseSerializer)
     {
         $this->credentialRepository = $credentialRepository;
         $this->authReader = $authReader;
-        $this->responseWriter = $responseWriter;
+        $this->responseSerializer = $responseSerializer;
     }
 
     /**
@@ -42,6 +37,6 @@ class ListCredentialsAction implements ActionInterface
 
         $credentials = $this->credentialRepository->findAllForUserEntity($user);
 
-        return $this->responseWriter->write($response->withStatus(200), $credentials);
+        return $this->responseSerializer->serializeJson($response->withStatus(200), $credentials);
     }
 }

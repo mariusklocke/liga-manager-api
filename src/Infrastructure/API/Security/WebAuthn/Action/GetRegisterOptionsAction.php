@@ -3,7 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
 
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
+use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\CreationOptionsFactory;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
@@ -14,30 +14,23 @@ use Webauthn\PublicKeyCredentialRpEntity;
 
 class GetRegisterOptionsAction implements ActionInterface
 {
-    /** @var OptionsStoreInterface */
     private OptionsStoreInterface $optionsStore;
-
-    /** @var CreationOptionsFactory */
     private CreationOptionsFactory $optionsFactory;
-
-    /** @var AuthReader */
     private AuthReader $authReader;
-
-    /** @var JsonResponseWriter */
-    private JsonResponseWriter $responseWriter;
+    private ResponseSerializer $responseSerializer;
 
     /**
      * @param OptionsStoreInterface $optionsStore
      * @param CreationOptionsFactory $optionsFactory
      * @param AuthReader $authReader
-     * @param JsonResponseWriter $responseWriter
+     * @param ResponseSerializer $responseSerializer
      */
-    public function __construct(OptionsStoreInterface $optionsStore, CreationOptionsFactory $optionsFactory, AuthReader $authReader, JsonResponseWriter $responseWriter)
+    public function __construct(OptionsStoreInterface $optionsStore, CreationOptionsFactory $optionsFactory, AuthReader $authReader, ResponseSerializer $responseSerializer)
     {
         $this->optionsStore = $optionsStore;
         $this->optionsFactory = $optionsFactory;
         $this->authReader = $authReader;
-        $this->responseWriter = $responseWriter;
+        $this->responseSerializer = $responseSerializer;
     }
 
     /**
@@ -58,6 +51,6 @@ class GetRegisterOptionsAction implements ActionInterface
 
         $this->optionsStore->save($user->getId(), $options);
 
-        return $this->responseWriter->write($response->withStatus(200), $options);
+        return $this->responseSerializer->serializeJson($response->withStatus(200), $options);
     }
 }

@@ -6,8 +6,8 @@ use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
 use HexagonalPlayground\Infrastructure\API\RequestParser;
+use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,18 +16,18 @@ use Psr\Log\LoggerInterface;
 class QueryAction implements ActionInterface
 {
     private ContainerInterface $container;
-    private JsonResponseWriter $responseWriter;
+    private ResponseSerializer $responseSerializer;
     private RequestParser $requestParser;
 
     /**
      * @param ContainerInterface $container
-     * @param JsonResponseWriter $responseWriter
+     * @param ResponseSerializer $responseSerializer
      * @param RequestParser $requestParser
      */
-    public function __construct(ContainerInterface $container, JsonResponseWriter $responseWriter, RequestParser $requestParser)
+    public function __construct(ContainerInterface $container, ResponseSerializer $responseSerializer, RequestParser $requestParser)
     {
         $this->container = $container;
-        $this->responseWriter = $responseWriter;
+        $this->responseSerializer = $responseSerializer;
         $this->requestParser = $requestParser;
     }
 
@@ -53,6 +53,6 @@ class QueryAction implements ActionInterface
 
         $response = $response->withStatus(count($result->errors) ? 400 : 200);
 
-        return $this->responseWriter->write($response, $result->toArray());
+        return $this->responseSerializer->serializeJson($response, $result->toArray());
     }
 }

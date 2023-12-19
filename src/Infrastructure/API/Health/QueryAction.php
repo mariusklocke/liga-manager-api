@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Infrastructure\API\Health;
 
 use Exception;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
+use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -13,18 +13,18 @@ class QueryAction implements ActionInterface
 {
     /** @var HealthCheckInterface[] */
     private array $checks;
-    private JsonResponseWriter $responseWriter;
+    private ResponseSerializer $responseSerializer;
     private string $appVersion;
 
     /**
      * @param HealthCheckInterface[] $checks
-     * @param JsonResponseWriter $responseWriter
+     * @param ResponseSerializer $responseSerializer
      * @param string $appVersion
      */
-    public function __construct(array $checks, JsonResponseWriter $responseWriter, string $appVersion)
+    public function __construct(array $checks, ResponseSerializer $responseSerializer, string $appVersion)
     {
         $this->checks = $checks;
-        $this->responseWriter = $responseWriter;
+        $this->responseSerializer = $responseSerializer;
         $this->appVersion = $appVersion;
     }
 
@@ -45,6 +45,6 @@ class QueryAction implements ActionInterface
             }
         }
 
-        return $this->responseWriter->write($response, $result);
+        return $this->responseSerializer->serializeJson($response, $result);
     }
 }

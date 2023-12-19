@@ -16,25 +16,20 @@ use Throwable;
 
 class ErrorHandler implements ErrorHandlerInterface
 {
-    /** @var LoggerInterface */
     private LoggerInterface $logger;
-
-    /** @var ResponseFactoryInterface */
     private ResponseFactoryInterface $responseFactory;
-
-    /** @var JsonResponseWriter */
-    private JsonResponseWriter $responseWriter;
+    private ResponseSerializer $responseSerializer;
 
     /**
      * @param LoggerInterface $logger
      * @param ResponseFactoryInterface $responseFactory
-     * @param JsonResponseWriter $responseWriter
+     * @param ResponseSerializer $responseSerializer
      */
-    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory, JsonResponseWriter $responseWriter)
+    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory, ResponseSerializer $responseSerializer)
     {
         $this->logger = $logger;
         $this->responseFactory = $responseFactory;
-        $this->responseWriter = $responseWriter;
+        $this->responseSerializer = $responseSerializer;
     }
 
     /**
@@ -100,7 +95,7 @@ class ErrorHandler implements ErrorHandlerInterface
     {
         $response = $this->responseFactory->createResponse($statusCode);
 
-        return $this->responseWriter->write($response, [
+        return $this->responseSerializer->serializeJson($response, [
             'errors' => [
                 [
                     'code' => $errorCode,

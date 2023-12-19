@@ -59,7 +59,7 @@ class Application extends App
         $errorMiddleware->setDefaultErrorHandler(new ErrorHandler(
             $container->get(LoggerInterface::class),
             $responseFactory,
-            $container->get(JsonResponseWriter::class)
+            $container->get(ResponseSerializer::class)
         ));
 
         $this->group('/api', function (RouteCollectorProxyInterface $group) {
