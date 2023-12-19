@@ -52,7 +52,6 @@ class Application extends App
 
         $this->add(new LoggingMiddleware($container));
         $this->add(new TrailingSlash());
-        $this->add(new JsonParserMiddleware());
         $this->add(new AuthenticationMiddleware($container));
         $this->add(new MaintenanceModeMiddleware());
 

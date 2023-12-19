@@ -12,6 +12,7 @@ use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
+use HexagonalPlayground\Infrastructure\API\RequestParser;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,6 +29,7 @@ class PerformLoginAction implements ActionInterface
     private UserRepositoryInterface $userRepository;
     private TokenServiceInterface $tokenService;
     private JsonResponseWriter $responseWriter;
+    private RequestParser $requestParser;
 
     /**
      * @param OptionsStoreInterface $optionsStore
@@ -36,8 +38,9 @@ class PerformLoginAction implements ActionInterface
      * @param UserRepositoryInterface $userRepository
      * @param TokenServiceInterface $tokenService
      * @param JsonResponseWriter $responseWriter
+     * @param RequestParser $requestParser
      */
-    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenServiceInterface $tokenService, JsonResponseWriter $responseWriter)
+    public function __construct(OptionsStoreInterface $optionsStore, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator, UserRepositoryInterface $userRepository, TokenServiceInterface $tokenService, JsonResponseWriter $responseWriter, RequestParser $requestParser)
     {
         $this->optionsStore = $optionsStore;
         $this->credentialLoader = $credentialLoader;
@@ -45,6 +48,7 @@ class PerformLoginAction implements ActionInterface
         $this->userRepository = $userRepository;
         $this->tokenService = $tokenService;
         $this->responseWriter = $responseWriter;
+        $this->requestParser = $requestParser;
     }
 
     /**
@@ -52,7 +56,7 @@ class PerformLoginAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $parsedBody = $request->getParsedBody();
+        $parsedBody = $this->requestParser->parseJson($request);
         $email = $parsedBody['email'] ?? null;
 
         /** @var string $email */

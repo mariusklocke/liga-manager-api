@@ -7,6 +7,7 @@ use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
+use HexagonalPlayground\Infrastructure\API\RequestParser;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,20 +15,20 @@ use Psr\Log\LoggerInterface;
 
 class QueryAction implements ActionInterface
 {
-    /** @var ContainerInterface */
     private ContainerInterface $container;
-
-    /** @var JsonResponseWriter */
     private JsonResponseWriter $responseWriter;
+    private RequestParser $requestParser;
 
     /**
      * @param ContainerInterface $container
      * @param JsonResponseWriter $responseWriter
+     * @param RequestParser $requestParser
      */
-    public function __construct(ContainerInterface $container, JsonResponseWriter $responseWriter)
+    public function __construct(ContainerInterface $container, JsonResponseWriter $responseWriter, RequestParser $requestParser)
     {
         $this->container = $container;
         $this->responseWriter = $responseWriter;
+        $this->requestParser = $requestParser;
     }
 
     /**
@@ -35,13 +36,14 @@ class QueryAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $parsedBody = $request->getParsedBody();
+        $parsedBody = $this->requestParser->parseJson($request);
         $query = $parsedBody['query'] ?? null;
         $variables = $parsedBody['variables'] ?? [];
 
         TypeAssert::assertString($query, 'query');
         TypeAssert::assertArray($variables, 'variables');
 
+        $request = $request->withParsedBody($parsedBody);
         $context = new AppContext($request, $this->container);
         $errorHandler = new ErrorHandler($this->container->get(LoggerInterface::class), $request);
         $schema = $this->container->get(Schema::class);

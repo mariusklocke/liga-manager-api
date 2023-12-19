@@ -7,6 +7,7 @@ use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
 use HexagonalPlayground\Infrastructure\API\JsonResponseWriter;
+use HexagonalPlayground\Infrastructure\API\RequestParser;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\FakeCredentialDescriptorFactory;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RequestOptionsFactory;
@@ -18,23 +19,13 @@ use Webauthn\PublicKeyCredentialSourceRepository;
 
 class GetLoginOptionsAction implements ActionInterface
 {
-    /** @var PublicKeyCredentialSourceRepository */
     private PublicKeyCredentialSourceRepository $credentialRepository;
-
-    /** @var RequestOptionsFactory */
     private RequestOptionsFactory $requestOptionsFactory;
-
-    /** @var OptionsStoreInterface */
     private OptionsStoreInterface $optionsStore;
-
-    /** @var FakeCredentialDescriptorFactory */
     private FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory;
-
-    /** @var UserRepositoryInterface */
     private UserRepositoryInterface $userRepository;
-
-    /** @var JsonResponseWriter */
     private JsonResponseWriter $responseWriter;
+    private RequestParser $requestParser;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
@@ -43,8 +34,9 @@ class GetLoginOptionsAction implements ActionInterface
      * @param FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory
      * @param UserRepositoryInterface $userRepository
      * @param JsonResponseWriter $responseWriter
+     * @param RequestParser $requestParser
      */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, RequestOptionsFactory $requestOptionsFactory, OptionsStoreInterface $optionsStore, FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory, UserRepositoryInterface $userRepository, JsonResponseWriter $responseWriter)
+    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, RequestOptionsFactory $requestOptionsFactory, OptionsStoreInterface $optionsStore, FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory, UserRepositoryInterface $userRepository, JsonResponseWriter $responseWriter, RequestParser $requestParser)
     {
         $this->credentialRepository = $credentialRepository;
         $this->requestOptionsFactory = $requestOptionsFactory;
@@ -52,6 +44,7 @@ class GetLoginOptionsAction implements ActionInterface
         $this->fakeCredentialDescriptorFactory = $fakeCredentialDescriptorFactory;
         $this->userRepository = $userRepository;
         $this->responseWriter = $responseWriter;
+        $this->requestParser = $requestParser;
     }
 
     /**
@@ -59,7 +52,7 @@ class GetLoginOptionsAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $parsedBody = $request->getParsedBody();
+        $parsedBody = $this->requestParser->parseJson($request);
         $email = $parsedBody['email'] ?? null;
 
         /** @var string $email */

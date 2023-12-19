@@ -6,6 +6,7 @@ use Exception;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
+use HexagonalPlayground\Infrastructure\API\RequestParser;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential;
@@ -19,20 +20,12 @@ use Webauthn\PublicKeyCredentialLoader;
 
 class RegisterCredentialAction implements ActionInterface
 {
-    /** @var PublicKeyCredentialSourceRepository */
     private PublicKeyCredentialSourceRepository $credentialRepository;
-
-    /** @var PublicKeyCredentialLoader */
     private PublicKeyCredentialLoader $credentialLoader;
-
-    /** @var AuthenticatorAttestationResponseValidator */
     private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator;
-
-    /** @var OptionsStoreInterface */
     private OptionsStoreInterface $creationOptionsStore;
-
-    /** @var AuthReader */
     private AuthReader $authReader;
+    private RequestParser $requestParser;
 
     /**
      * @param PublicKeyCredentialSourceRepository $credentialRepository
@@ -40,14 +33,16 @@ class RegisterCredentialAction implements ActionInterface
      * @param AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator
      * @param OptionsStoreInterface $creationOptionsStore
      * @param AuthReader $authReader
+     * @param RequestParser $requestParser
      */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, OptionsStoreInterface $creationOptionsStore, AuthReader $authReader)
+    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, PublicKeyCredentialLoader $credentialLoader, AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, OptionsStoreInterface $creationOptionsStore, AuthReader $authReader, RequestParser $requestParser)
     {
         $this->credentialRepository = $credentialRepository;
         $this->credentialLoader = $credentialLoader;
         $this->authenticatorAttestationResponseValidator = $authenticatorAttestationResponseValidator;
         $this->creationOptionsStore = $creationOptionsStore;
         $this->authReader = $authReader;
+        $this->requestParser = $requestParser;
     }
 
     /**
@@ -55,7 +50,7 @@ class RegisterCredentialAction implements ActionInterface
      */
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {
-        $parsedBody = $request->getParsedBody();
+        $parsedBody = $this->requestParser->parseJson($request);
         $name = $parsedBody['name'] ?? null;
 
         /** @var string $name */
