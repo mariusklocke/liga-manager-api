@@ -8,6 +8,7 @@ use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Infrastructure\Config;
+use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -37,10 +38,12 @@ class MailServiceProvider implements ServiceProviderInterface
             }),
             TemplateRendererInterface::class => DI\get(TemplateRenderer::class),
             TemplateRenderer::class => DI\factory(function (ContainerInterface $container) {
-                return new TemplateRenderer(join(
-                    DIRECTORY_SEPARATOR,
-                    [$container->get('app.home'), 'templates']
-                ));
+                /** @var FilesystemService $filesystem */
+                $filesystem = $container->get(FilesystemService::class);
+
+                return new TemplateRenderer(
+                    $filesystem->joinPaths([$container->get('app.home'), 'templates'])
+                );
             })
         ];
     }

@@ -29,6 +29,7 @@ use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
 use HexagonalPlayground\Infrastructure\Config;
+use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
@@ -120,18 +121,17 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
             SimplifiedXmlDriver::class => DI\factory(function (ContainerInterface $container) {
-                $basePath = join(
-                    DIRECTORY_SEPARATOR,
-                    [$container->get('app.home'), 'config', 'doctrine']
-                );
-                $driver = new SimplifiedXmlDriver([
-                    join(DIRECTORY_SEPARATOR, [$basePath, 'Infrastructure', 'API', 'Security', 'WebAuthn'])
+                /** @var FilesystemService $filesystem */
+                $filesystem = $container->get(FilesystemService::class);
+                $basePath   = $filesystem->joinPaths([$container->get('app.home'), 'config', 'doctrine']);
+                $driver     = new SimplifiedXmlDriver([
+                    $filesystem->joinPaths([$basePath, 'Infrastructure', 'API', 'Security', 'WebAuthn'])
                     => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",
-                    join(DIRECTORY_SEPARATOR, [$basePath, 'Domain'])
+                    $filesystem->joinPaths([$basePath, 'Domain'])
                     => "HexagonalPlayground\\Domain",
-                    join(DIRECTORY_SEPARATOR, [$basePath, 'Domain', 'Event'])
+                    $filesystem->joinPaths([$basePath, 'Domain', 'Event'])
                     => "HexagonalPlayground\\Domain\\Event",
-                    join(DIRECTORY_SEPARATOR, [$basePath, 'Domain', 'Value'])
+                    $filesystem->joinPaths([$basePath, 'Domain', 'Value'])
                     => "HexagonalPlayground\\Domain\\Value"
                 ]);
                 $driver->setGlobalBasename('global');

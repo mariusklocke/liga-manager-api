@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use HexagonalPlayground\Application\Import\TeamMapperInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -27,11 +28,14 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             Configuration::class => DI\factory(function (ContainerInterface $container) {
+                /** @var FilesystemService $filesystem */
+                $filesystem = $container->get(FilesystemService::class);
+
                 $migrationsConfig = new Configuration();
-                $migrationsConfig->addMigrationsDirectory('Migrations', join(
-                    DIRECTORY_SEPARATOR,
-                    [$container->get('app.home'), 'migrations']
-                ));
+                $migrationsConfig->addMigrationsDirectory(
+                    'Migrations',
+                    $filesystem->joinPaths([$container->get('app.home'), 'migrations'])
+                );
 
                 return $migrationsConfig;
             }),
