@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ -z "${PHP_VERSION}" ]]; then
-    PHP_VERSION="8.2"
+    PHP_VERSION="8.3"
 fi
 if [[ -z "${MARIADB_VERSION}" ]]; then
     MARIADB_VERSION="10.11"
