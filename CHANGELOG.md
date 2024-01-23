@@ -2,6 +2,11 @@
 
 ## NEXT
 
+## 1.15.0 - 2024-01-23
+* Improvement: Update docker image to PHP 8.3
+* Improvement: Update docker image to composer 2.6.6
+* Improvement: Update dependencies
+
 ## 1.14.0 - 2023-12-18
 * Feature: Add team logo upload
 * Improvement: Refactor config handling
