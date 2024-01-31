@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
+use Stringable;
 
 class Logger extends AbstractLogger
 {
@@ -45,11 +46,11 @@ class Logger extends AbstractLogger
 
     /**
      * @param string $level
-     * @param string $message
+     * @param string|Stringable $message
      * @param array $context
      * @return void
      */
-    public function log($level, $message, array $context = array()): void
+    public function log($level, string|Stringable $message, array $context = array()): void
     {
         if (self::$severityMap[$level] < self::$severityMap[$this->minLevel]) {
             return;
