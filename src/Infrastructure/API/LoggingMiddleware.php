@@ -19,13 +19,6 @@ class LoggingMiddleware implements MiddlewareInterface
     /** @var Timer */
     private Timer $timer;
 
-    private static array $loggableHeaders = [
-        'Content-Length',
-        'Content-Type',
-        'Referer',
-        'User-Agent'
-    ];
-
     public function __construct(ContainerInterface $container)
     {
         $this->logger = $container->get(LoggerInterface::class);
@@ -37,18 +30,69 @@ class LoggingMiddleware implements MiddlewareInterface
         $requestId = bin2hex(random_bytes(4));
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
+        $clientIp = $this->extractClientIp($request);
 
-        $headers = [];
-        foreach (self::$loggableHeaders as $headerName) {
-            $headers[$headerName] = $request->getHeader($headerName);
-        }
+        $this->logger->debug("Received request:", [
+            'method' => $method,
+            'path' => $path,
+            'clientIp' => $clientIp,
+            'requestId' => $requestId,
+            'protocol' => sprintf("HTTP/%s", $request->getProtocolVersion()),
+            'headers' => $this->extractHeaders($request)
+        ]);
 
-        $this->logger->debug("Received request $requestId $method $path", ['headers' => $headers]);
         $this->timer->start();
         $response = $handler->handle($request);
         $processingTime = $this->timer->stop();
-        $this->logger->debug("Sending response for request $requestId after $processingTime ms");
+
+        $this->logger->debug("Sending response:", [
+            'method' => $method,
+            'path' => $path,
+            'clientIp' => $clientIp,
+            'requestId' => $requestId,
+            'status' => $response->getReasonPhrase(),
+            'size' => $response->getBody()->getSize(),
+            'time' => "$processingTime ms"
+        ]);
 
         return $response;
+    }
+
+    private function extractHeaders(ServerRequestInterface $request): array
+    {
+        $result = [];
+
+        foreach ($request->getHeaders() as $name => $values) {
+            if (count($values) === 0 || $values[0] === '') {
+                continue;
+            }
+            $value = $values[0];
+
+            switch ($name) {
+                case 'Authorization':
+                    if (str_starts_with(strtolower($value), 'bearer')) {
+                        $result[$name] = 'bearer';
+                    }
+                    if (str_starts_with(strtolower($value), 'basic')) {
+                        $result[$name] = 'basic';
+                    }
+                    break;
+                case 'Content-Length':
+                case 'Content-Type':
+                case 'Referer':
+                case 'User-Agent':
+                    $result[$name] = $value;
+                    break;
+            }
+        }
+
+        return $result;
+    }
+
+    private function extractClientIp(ServerRequestInterface $request): string
+    {
+        $serverParams = $request->getServerParams();
+
+        return $serverParams['REMOTE_ADDR'];
     }
 }
