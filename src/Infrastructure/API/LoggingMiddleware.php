@@ -93,6 +93,6 @@ class LoggingMiddleware implements MiddlewareInterface
     {
         $serverParams = $request->getServerParams();
 
-        return $serverParams['REMOTE_ADDR'];
+        return $serverParams['REMOTE_ADDR'] ?? '';
     }
 }
