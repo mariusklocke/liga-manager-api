@@ -2,6 +2,11 @@
 
 ## NEXT
 
+## 1.16.0 - 2024-02-04
+* Feature: Add configurable rate limiting
+* Improvement: Improve debug logging
+* Improvement: Update dependencies
+
 ## 1.15.0 - 2024-01-23
 * Improvement: Update docker image to PHP 8.3
 * Improvement: Update docker image to composer 2.6.6
