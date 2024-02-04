@@ -77,8 +77,9 @@ input does not cause errors in the API.
 | ERR-INVALID-INPUT      | 400 - Bad Request           | Request contains invalid input values                   |
 | ERR-MAINTENANCE-MODE   | 503 - Service Unavailable   | Service is temporarily not available due to maintenance |
 | ERR-METHOD-NOT-ALLOWED | 405 - Method Not Allowed    | HTTP method is not allowed for this URL                 |
-| ERR-NOT-FOUND          | 404 - Not Found             | Requested object could not be found in database         |
+| ERR-NOT-FOUND          | 404 - Not Found             | Requested resource could not be found                   |
 | ERR-PERMISSION         | 403 - Forbidden             | Request is not permitted to the current user            |
+| ERR-RATE-LIMIT         | 429 - Too Many Requests     | Client has exceeded the rate limit                      |
 | ERR-UNIQUENESS         | 400 - Bad Request           | A Value violates a uniqueness constraint                |
 
 ## Environment variables
@@ -104,6 +105,7 @@ by the application. Static values must be supplied from the outside (e.g. by usi
 | MYSQL_HOST            | Static   | Hostname or IP address running MySQL     |
 | MYSQL_PASSWORD        | Static   | Password for authenticating with MySQL   |
 | MYSQL_USER            | Static   | Username for authenticating with MySQL   |
+| RATE_LIMIT            | Static   | Defines an API rate limit                |
 | REDIS_HOST            | Static   | Hostname or IP address running Redis     |
 
 ## Naming Conventions
