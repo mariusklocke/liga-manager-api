@@ -121,7 +121,7 @@ class ErrorMiddleware implements MiddlewareInterface
             ];
 
             if ($clientError) {
-                $this->logger->warning($message, $context);
+                $this->logger->notice($message, $context);
             } else {
                 $this->logger->error($message, $context);
             }
