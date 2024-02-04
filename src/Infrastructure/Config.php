@@ -20,6 +20,7 @@ class Config
     public string $mysqlHost;
     public string $mysqlPassword;
     public string $mysqlUser;
+    public string $rateLimit;
     public string $redisHost;
 
     public function __construct()
@@ -39,6 +40,7 @@ class Config
         $this->mysqlHost = getenv('MYSQL_HOST') ?: '';
         $this->mysqlPassword = getenv('MYSQL_PASSWORD') ?: '';
         $this->mysqlUser = getenv('MYSQL_USER') ?: '';
+        $this->rateLimit = getenv('RATE_LIMIT') ?: '';
         $this->redisHost = getenv('REDIS_HOST') ?: '';
     }
 }

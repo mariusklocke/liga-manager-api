@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Infrastructure\Timer;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -19,9 +18,9 @@ class LoggingMiddleware implements MiddlewareInterface
     /** @var Timer */
     private Timer $timer;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(LoggerInterface $logger)
     {
-        $this->logger = $container->get(LoggerInterface::class);
+        $this->logger = $logger;
         $this->timer = new Timer();
     }
 
@@ -50,9 +49,9 @@ class LoggingMiddleware implements MiddlewareInterface
             'path' => $path,
             'clientIp' => $clientIp,
             'requestId' => $requestId,
-            'status' => $response->getReasonPhrase(),
+            'status' => $response->getStatusCode(),
             'size' => $response->getBody()->getSize(),
-            'time' => "$processingTime ms"
+            'timeMs' => $processingTime
         ]);
 
         return $response;

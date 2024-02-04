@@ -11,9 +11,11 @@ use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServi
 use HexagonalPlayground\Infrastructure\API\Logos\RouteProvider as LogosRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\ServiceProvider as LogosServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
+use HexagonalPlayground\Infrastructure\API\Security\RateLimitMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RouteProvider as WebAuthnRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
@@ -46,21 +48,23 @@ class Application extends App
         ];
 
         $container = ContainerBuilder::build($serviceProviders, self::VERSION);
-        $responseFactory = new Psr17Factory();
 
-        parent::__construct($responseFactory, $container);
+        parent::__construct(new Psr17Factory(), $container);
 
-        $this->add(new LoggingMiddleware($container));
+        /** @var Config $config */
+        $config = $this->container->get(Config::class);
+        /** @var LoggerInterface $logger */
+        $logger = $this->container->get(LoggerInterface::class);
+        /** @var ResponseSerializer $responseSerializer */
+        $responseSerializer = $this->container->get(ResponseSerializer::class);
+
+        // Middleware stack: First one added will be executed last
         $this->add(new TrailingSlash());
         $this->add(new AuthenticationMiddleware($container));
-        $this->add(new MaintenanceModeMiddleware($container));
-
-        $errorMiddleware = $this->addErrorMiddleware(false, false, false);
-        $errorMiddleware->setDefaultErrorHandler(new ErrorHandler(
-            $container->get(LoggerInterface::class),
-            $responseFactory,
-            $container->get(ResponseSerializer::class)
-        ));
+        $this->add(new RateLimitMiddleware($config));
+        $this->add(new MaintenanceModeMiddleware($config));
+        $this->add(new LoggingMiddleware($logger));
+        $this->add(new ErrorMiddleware($logger, $this->responseFactory, $responseSerializer));
 
         $this->group('/api', function (RouteCollectorProxyInterface $group) {
             $routeProviders = [

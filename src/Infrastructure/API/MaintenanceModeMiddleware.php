@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Infrastructure\Config;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -12,14 +11,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MaintenanceModeMiddleware implements MiddlewareInterface
 {
-    private ContainerInterface $container;
+    private Config $config;
 
     /**
-     * @param ContainerInterface $container
+     * @param Config $config
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(Config $config)
     {
-        $this->container = $container;
+        $this->config = $config;
     }
 
     /**
@@ -27,10 +26,7 @@ class MaintenanceModeMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        /** @var Config $config */
-        $config = $this->container->get(Config::class);
-
-        if ($config->maintenanceMode === 'on') {
+        if ($this->config->maintenanceMode === 'on') {
             throw new MaintenanceModeException('API unavailable due to maintenance work.');
         }
 
