@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Migrations;
 
-use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -41,9 +40,9 @@ final class Version20240205204400 extends AbstractMigration
                     'id' => $credential['id']
                 ],
                 [
-                    'trust_path' => ParameterType::STRING,
-                    'aaguid' => ParameterType::STRING,
-                    'id' => ParameterType::STRING
+                    'trust_path' => 'string',
+                    'aaguid' => 'string',
+                    'id' => 'string'
                 ]
             );
         }

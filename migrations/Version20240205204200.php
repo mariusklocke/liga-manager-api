@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Migrations;
 
-use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -41,8 +40,8 @@ final class Version20240205204200 extends AbstractMigration
                     'id' => $id
                 ],
                 [
-                    'payload' => ParameterType::STRING,
-                    'id' => ParameterType::STRING
+                    'payload' => 'string',
+                    'id' => 'string'
                 ]
             );
         }
