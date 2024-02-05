@@ -7,7 +7,6 @@ use DI;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
@@ -31,6 +30,7 @@ use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredential
 use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Logging\Middleware as LoggingMiddleware;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchRepository;
@@ -102,18 +102,12 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Configuration::class => DI\factory(function (ContainerInterface $container) {
-                /** @var Config $appConfig */
-                $appConfig = $container->get(Config::class);
-
                 $config = new Configuration();
                 $config->setProxyDir(sys_get_temp_dir());
                 $config->setProxyNamespace('DoctrineProxies');
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
                 $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
-
-                if ($appConfig->logLevel === 'debug') {
-                    $config->setMiddlewares([new LoggingMiddleware($container->get(LoggerInterface::class))]);
-                }
+                $config->setMiddlewares([$container->get(LoggingMiddleware::class)]);
 
                 return $config;
             }),
