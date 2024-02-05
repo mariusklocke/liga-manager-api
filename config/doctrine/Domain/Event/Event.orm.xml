@@ -10,6 +10,6 @@
         <id name="id" type="string" />
         <field name="type" type="string" />
         <field name="occurredAt" column="occurred_at" type="custom_datetime" />
-        <field name="payload" type="array" />
+        <field name="payload" type="json" />
     </entity>
 </doctrine-mapping>
