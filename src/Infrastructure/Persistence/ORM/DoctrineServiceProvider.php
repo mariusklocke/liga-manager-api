@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use DI;
 use Doctrine\Common\EventManager;
-use Doctrine\Common\Proxy\AbstractProxyFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Logging\Middleware as LoggingMiddleware;
@@ -16,6 +15,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
+use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\ObjectManager;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Repository\EventRepositoryInterface;
@@ -109,7 +109,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 $config->setProxyDir(sys_get_temp_dir());
                 $config->setProxyNamespace('DoctrineProxies');
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
-                $config->setAutoGenerateProxyClasses(AbstractProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+                $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
 
                 if ($appConfig->logLevel === 'debug') {
                     $config->setMiddlewares([new LoggingMiddleware($container->get(LoggerInterface::class))]);
