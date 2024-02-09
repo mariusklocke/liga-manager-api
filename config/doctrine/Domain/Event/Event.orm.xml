@@ -7,8 +7,8 @@
         <indexes>
             <index columns="occurred_at"/>
         </indexes>
-        <id name="id" type="string" />
-        <field name="type" type="string" />
+        <id name="id" type="string" length="255" />
+        <field name="type" type="string" length="255" />
         <field name="occurredAt" column="occurred_at" type="custom_datetime" />
         <field name="payload" type="json" />
     </entity>

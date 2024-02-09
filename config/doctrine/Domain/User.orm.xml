@@ -4,14 +4,14 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\User" table="users">
-        <id name="id" type="string" />
-        <field name="email" type="string" />
-        <field name="password" type="string" nullable="true" />
+        <id name="id" type="string" length="255" />
+        <field name="email" type="string" length="255" />
+        <field name="password" type="string" length="255" nullable="true" />
         <field name="lastPasswordChange" column="last_password_change" type="custom_datetime" nullable="true"/>
         <field name="lastTokenInvalidation" column="last_token_invalidation" type="custom_datetime" nullable="true"/>
-        <field name="role" type="string" />
-        <field name="firstName" column="first_name" type="string" />
-        <field name="lastName" column="last_name" type="string" />
+        <field name="role" type="string" length="255" />
+        <field name="firstName" column="first_name" type="string" length="255" />
+        <field name="lastName" column="last_name" type="string" length="255" />
         <many-to-many target-entity="HexagonalPlayground\Domain\Team" field="teams" index-by="id">
             <join-table name="users_teams_link">
                 <join-columns>
