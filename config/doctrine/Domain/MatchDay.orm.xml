@@ -20,7 +20,7 @@
             <join-column name="tournament_id" referenced-column-name="id" />
         </many-to-one>
         <unique-constraints>
-            <unique-constraint columns="number,season_id,tournament_id" />
+            <unique-constraint columns="number,season_id,tournament_id" name="unique_number"/>
         </unique-constraints>
     </entity>
 </doctrine-mapping>

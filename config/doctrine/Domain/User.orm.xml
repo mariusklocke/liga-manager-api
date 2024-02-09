@@ -23,7 +23,7 @@
             </join-table>
         </many-to-many>
         <unique-constraints>
-            <unique-constraint columns="email" />
+            <unique-constraint columns="email" name="unique_email" />
         </unique-constraints>
     </entity>
 </doctrine-mapping>
