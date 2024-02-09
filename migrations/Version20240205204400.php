@@ -33,7 +33,7 @@ final class Version20240205204400 extends AbstractMigration
 
         foreach ($this->connection->iterateAssociative($query) as $credential) {
             $this->addSql(
-                'UPDATE `public_key_credentials` SET trust_path = :trustPath, aaguid = :aaguid WHERE id = :id',
+                'UPDATE `public_key_credentials` SET trust_path = :trust_path, aaguid = :aaguid WHERE id = :id',
                 [
                     'trust_path' => $transformer($credential['trust_path']),
                     'aaguid' => $transformer($credential['aaguid']),
