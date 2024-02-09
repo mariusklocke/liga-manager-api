@@ -46,6 +46,7 @@ RUN mkdir ${APP_HOME}
 WORKDIR ${APP_HOME}
 
 # Install dependencies first
+ENV COMPOSER_ALLOW_SUPERUSER="1"
 COPY composer.lock composer.json ./
 RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
 
@@ -58,12 +59,13 @@ COPY config config/
 COPY bin bin/
 
 # Apply version branding
-RUN sed -i "s/VERSION = 'development';/VERSION = '$APP_VERSION';/" src/Infrastructure/API/Application.php src/Infrastructure/CLI/Application.php
+RUN sed -i "s/VERSION = 'development';/VERSION = '$APP_VERSION';/" \
+    src/Infrastructure/API/Application.php \
+    src/Infrastructure/CLI/Application.php
 
 # Configure ownership and permissions
-RUN chown -R www-data:www-data ${APP_HOME} && chmod +x bin/*
-RUN chown www-data:www-data ${APP_LOGOS_PATH}
-ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
+RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
+ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-fpm-healthcheck || exit 1
 CMD lima migrations:migrate -n && php-fpm
