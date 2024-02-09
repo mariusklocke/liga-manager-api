@@ -2,17 +2,14 @@ ARG PHP_IMAGE
 FROM ${PHP_IMAGE}
 
 ARG APP_VERSION
-ENV RUN_DEPS="fcgi gmp gnupg ncurses" \
-    BUILD_DEPS="${PHPIZE_DEPS} gmp-dev linux-headers" \
-    PHP_EXTS="bcmath gmp pcntl pdo_mysql opcache"
 
 # Install packages & PHP extensions
 RUN set -xe \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache $RUN_DEPS \
-    && apk add --no-cache --virtual .build-deps $BUILD_DEPS \
-    && docker-php-ext-install $PHP_EXTS > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
+    && apk add --no-cache fcgi gmp gnupg ncurses \
+    && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} gmp-dev linux-headers \
+    && docker-php-ext-install bcmath gmp pcntl pdo_mysql opcache > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
     && pecl channel-update pecl.php.net \
     && pecl install apcu > /dev/null \
     && pecl install redis > /dev/null \
