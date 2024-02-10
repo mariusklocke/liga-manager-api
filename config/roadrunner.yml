@@ -1,0 +1,21 @@
+version: '3'
+server:
+  command: "php ../bin/rr-server.php"
+http:
+  address: "0.0.0.0:8080"
+  pool:
+    num_workers: 1
+logs:
+  channels:
+    http:
+      mode: raw
+      level: panic
+      encoding: console
+      output: stdout
+      err_output: stderr
+    server:
+      mode: raw
+      level: info
+      encoding: console
+      output: stdout
+      err_output: stderr

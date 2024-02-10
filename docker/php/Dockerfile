@@ -1,7 +1,9 @@
 ARG PHP_IMAGE
+ARG APP_VERSION
+FROM ghcr.io/roadrunner-server/roadrunner:2023.3.10 AS roadrunner
 FROM ${PHP_IMAGE}
 
-ARG APP_VERSION
+COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 
 # Install packages & PHP extensions
 RUN set -xe \
@@ -9,7 +11,7 @@ RUN set -xe \
     && apk upgrade \
     && apk add --no-cache fcgi gmp gnupg ncurses \
     && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} gmp-dev linux-headers \
-    && docker-php-ext-install bcmath gmp pcntl pdo_mysql opcache > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
+    && docker-php-ext-install bcmath gmp pcntl pdo_mysql opcache sockets > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
     && pecl channel-update pecl.php.net \
     && pecl install apcu > /dev/null \
     && pecl install redis > /dev/null \
@@ -27,10 +29,7 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
     && rm /usr/local/bin/install-phar.sh
 
 # Configure PHP
-COPY docker/php/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
-COPY docker/php/healthcheck.sh /usr/local/bin/docker-php-fpm-healthcheck
-RUN chmod +x /usr/local/bin/docker-php-fpm-healthcheck
 
 # Add entrypoint
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-php-entrypoint
@@ -67,5 +66,6 @@ RUN sed -i "s/VERSION = 'development';/VERSION = '$APP_VERSION';/" \
 RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
-HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-fpm-healthcheck || exit 1
-CMD lima migrations:migrate -n && php-fpm
+EXPOSE 8080
+HEALTHCHECK --interval=15s --timeout=1s CMD curl 127.0.0.1:8080/api/health || exit 1
+CMD lima migrations:migrate -n && rr serve -c config/roadrunner.yml
