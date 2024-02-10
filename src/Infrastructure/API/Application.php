@@ -22,7 +22,6 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use Middlewares\TrailingSlash;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface;
@@ -31,7 +30,7 @@ class Application extends App
 {
     public const VERSION = 'development';
 
-    public function __construct(ResponseFactoryInterface $responseFactory = new Psr17Factory())
+    public function __construct()
     {
         $serviceProviders = [
             new HealthServiceProvider(),
@@ -49,7 +48,7 @@ class Application extends App
 
         $container = ContainerBuilder::build($serviceProviders, self::VERSION);
 
-        parent::__construct($responseFactory, $container);
+        parent::__construct($container->get(ResponseFactoryInterface::class), $container);
 
         // Middleware stack: First one added will be executed last
         $middlewares = [
