@@ -1,7 +1,7 @@
-ARG PHP_IMAGE
+ARG PHP_VERSION
 ARG APP_VERSION
 FROM ghcr.io/roadrunner-server/roadrunner:2023.3.10 AS roadrunner
-FROM ${PHP_IMAGE}
+FROM php:${PHP_VERSION}-cli-alpine
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 
@@ -32,7 +32,7 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
 
 # Add entrypoint
-COPY docker/php/entrypoint.sh /usr/local/bin/docker-php-entrypoint
+COPY docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
 
 # Configure RoadRunner
