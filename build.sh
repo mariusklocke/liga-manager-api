@@ -9,6 +9,9 @@ fi
 if [[ -z "${REDIS_VERSION}" ]]; then
     REDIS_VERSION="6"
 fi
+if [[ -z "${TARGET_TYPE}" ]]; then
+    TARGET_TYPE="fpm"
+fi
 
 MARIADB_IMAGE="mariadb:${MARIADB_VERSION}"
 REDIS_IMAGE="redis:${REDIS_VERSION}-alpine"
@@ -20,6 +23,9 @@ else
 fi
 
 TARGET_IMAGE="mklocke/liga-manager-api:${TAG}"
+if [[ "${TARGET_TYPE}" != "fpm" ]]; then
+    TARGET_IMAGE="${TARGET_IMAGE}-${TARGET_TYPE}"
+fi
 
 cleanup() {
     echo "Removing containers ..."
@@ -51,20 +57,11 @@ docker run -d --name=redis --network=build --pull=always ${REDIS_IMAGE}
 
 echo "Building image ${TARGET_IMAGE} ..."
 DOCKER_BUILDKIT=1 docker build \
-    -f docker/php/fpm/Dockerfile \
+    -f docker/php/${TARGET_TYPE}/Dockerfile \
     -t ${TARGET_IMAGE} \
     --build-arg PHP_VERSION=$PHP_VERSION \
     --build-arg APP_VERSION=$TAG \
     --cache-from ${TARGET_IMAGE} . \
-    --pull
-
-echo "Building image ${TARGET_IMAGE}-rr ..."
-DOCKER_BUILDKIT=1 docker build \
-    -f docker/php/roadrunner/Dockerfile \
-    -t "${TARGET_IMAGE}-rr" \
-    --build-arg PHP_VERSION=$PHP_VERSION \
-    --build-arg APP_VERSION=$TAG \
-    --cache-from "${TARGET_IMAGE}-rr" . \
     --pull
 
 echo "Starting container from image ${TARGET_IMAGE} ..."
@@ -86,7 +83,7 @@ attempt=0
 while [ $attempt -le 10 ]; do
     attempt=$(( $attempt + 1 ))
     echo "Waiting for PHP container to be become healthy ... Attempt $attempt"
-    if docker exec -t php docker-php-fpm-healthcheck > /dev/null ; then
+    if docker exec -t php docker-php-healthcheck > /dev/null ; then
         echo "PHP container is healthy"
         break
     fi
@@ -126,9 +123,8 @@ if [[ -n "${PUBLISH_IMAGE}" ]]; then
     echo "Logging in to docker hub ..."
     echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
 
-    echo "Pushing images to docker hub ..."
+    echo "Pushing image ${TARGET_IMAGE} to docker hub ..."
     docker push --quiet ${TARGET_IMAGE}
-    docker push --quiet "${TARGET_IMAGE}-rr"
 fi
 
 echo "Build completed"

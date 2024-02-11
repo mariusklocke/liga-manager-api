@@ -1,4 +1,4 @@
-name: Build for PHP-FPM
+name: Build for Roadrunner
 on: [push]
 jobs:
   build:
@@ -9,10 +9,7 @@ jobs:
       - name: Build, Test & Publish
         run: bash build.sh
         env:
-          COVERALLS_RUN_LOCALLY: 1
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           DOCKER_USER: ${{ secrets.DOCKER_USER }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           PUBLISH_IMAGE: 1
-          TARGET_TYPE: "fpm"
-          UPLOAD_COVERAGE: 1
+          TARGET_TYPE: "roadrunner"

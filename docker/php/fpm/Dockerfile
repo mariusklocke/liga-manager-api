@@ -28,8 +28,10 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
 # Configure PHP
 COPY docker/php/fpm/docker.conf /usr/local/etc/php-fpm.d/docker.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
-COPY docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-fpm-healthcheck
-RUN chmod +x /usr/local/bin/docker-php-fpm-healthcheck
+
+# Add healthcheck
+COPY docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
+RUN chmod +x /usr/local/bin/docker-php-healthcheck
 
 # Add entrypoint
 COPY docker/php/fpm/entrypoint.sh /usr/local/bin/docker-php-entrypoint
@@ -66,5 +68,5 @@ RUN sed -i "s/VERSION = 'development';/VERSION = '$APP_VERSION';/" \
 RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
-HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-fpm-healthcheck || exit 1
+HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck || exit 1
 CMD lima migrations:migrate -n && php-fpm

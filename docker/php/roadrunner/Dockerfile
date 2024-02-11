@@ -31,6 +31,10 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
 # Configure PHP
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
 
+# Add healthcheck
+COPY docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck
+RUN chmod +x /usr/local/bin/docker-php-healthcheck
+
 # Add entrypoint
 COPY docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
@@ -69,5 +73,5 @@ RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 8080
-HEALTHCHECK --interval=15s --timeout=1s CMD curl 127.0.0.1:8080/api/health || exit 1
+HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck || exit 1
 CMD lima migrations:migrate -n && rr serve -c /usr/local/etc/rr.yaml
