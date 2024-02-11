@@ -1,6 +1,8 @@
 version: '3'
 server:
-  command: "php ../bin/rr-server.php"
+  command: "php /var/www/api/bin/rr-server.php"
+  user: "www-data"
+  group: "www-data"
 http:
   address: "0.0.0.0:8080"
   pool:

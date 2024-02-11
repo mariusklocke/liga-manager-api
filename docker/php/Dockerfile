@@ -9,7 +9,7 @@ COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 RUN set -xe \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache fcgi gmp gnupg ncurses \
+    && apk add --no-cache gmp gnupg ncurses \
     && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} gmp-dev linux-headers \
     && docker-php-ext-install bcmath gmp pcntl pdo_mysql opcache sockets > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
     && pecl channel-update pecl.php.net \
@@ -34,6 +34,9 @@ COPY docker/php/php.ini /usr/local/etc/php/php.ini
 # Add entrypoint
 COPY docker/php/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
+
+# Configure RoadRunner
+COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
 
 # Prepare logos directory
 ENV APP_LOGOS_PATH="/var/www/logos"
@@ -68,4 +71,4 @@ RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=1s CMD curl 127.0.0.1:8080/api/health || exit 1
-CMD lima migrations:migrate -n && rr serve -c config/roadrunner.yml
+CMD lima migrations:migrate -n && rr serve -c /usr/local/etc/rr.yaml
