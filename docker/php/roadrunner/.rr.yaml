@@ -1,6 +1,6 @@
 version: '3'
 server:
-  command: "php /var/www/api/bin/rr-server.php"
+  command: "lima-worker"
   user: "www-data"
   group: "www-data"
 http:
