@@ -7,19 +7,19 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 
-class BufferedTeamLoader
+class BufferedTeamLoader implements BufferedLoaderInterface
 {
     /** @var TeamRepository */
     private TeamRepository $teamRepository;
 
     /** @var array */
-    private array $bySeasonId = [];
+    private array $bySeasonId;
 
     /** @var array */
-    private array $byTeamId = [];
+    private array $byTeamId;
 
     /** @var array */
-    private array $byUserId = [];
+    private array $byUserId;
 
     /**
      * @param TeamRepository $teamRepository
@@ -27,6 +27,13 @@ class BufferedTeamLoader
     public function __construct(TeamRepository $teamRepository)
     {
         $this->teamRepository = $teamRepository;
+    }
+
+    public function init(): void
+    {
+        $this->bySeasonId = [];
+        $this->byTeamId = [];
+        $this->byUserId = [];
     }
 
     /**

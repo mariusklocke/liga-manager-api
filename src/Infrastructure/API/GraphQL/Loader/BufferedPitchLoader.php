@@ -6,13 +6,13 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\PitchRepository;
 
-class BufferedPitchLoader
+class BufferedPitchLoader implements BufferedLoaderInterface
 {
     /** @var PitchRepository */
     private PitchRepository $pitchRepository;
 
     /** @var array */
-    private array $byPitchId = [];
+    private array $byPitchId;
 
     /**
      * @param PitchRepository $pitchRepository
@@ -20,6 +20,11 @@ class BufferedPitchLoader
     public function __construct(PitchRepository $pitchRepository)
     {
         $this->pitchRepository = $pitchRepository;
+    }
+
+    public function init(): void
+    {
+        $this->byPitchId = [];
     }
 
     public function addPitch(string $pitchId): void
