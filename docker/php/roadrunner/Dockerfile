@@ -19,7 +19,7 @@ RUN set -xe \
     && docker-php-ext-enable apcu redis \
     && pecl clear-cache \
     && apk del .build-deps \
-    && rm -rf /tmp/* /var/cache/*
+    && rm -rf /tmp/* /var/cache/* /usr/src/*
 
 # Install PHAR tools
 COPY docker/php/install-phar.sh /usr/local/bin/install-phar.sh
