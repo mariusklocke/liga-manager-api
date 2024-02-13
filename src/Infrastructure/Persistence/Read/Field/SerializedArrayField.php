@@ -7,6 +7,6 @@ class SerializedArrayField extends Field
 {
     public function hydrate(array $row): array
     {
-        return unserialize($row[$this->getName()]);
+        return json_decode($row[$this->getName()], true);
     }
 }

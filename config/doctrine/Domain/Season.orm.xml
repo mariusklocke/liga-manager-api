@@ -4,9 +4,9 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\Season" table="seasons">
-        <id name="id" type="string" />
-        <field name="name" type="string" />
-        <field name="state" type="string" />
+        <id name="id" type="string" length="255" />
+        <field name="name" type="string" length="255" />
+        <field name="state" type="string" length="255" />
         <field name="matchDayCount" type="integer" column="match_day_count" />
         <field name="teamCount" type="integer" column="team_count" />
         <one-to-one field="ranking" target-entity="HexagonalPlayground\Domain\Ranking" mapped-by="season" orphan-removal="true">

@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\BinaryType;
-use Doctrine\DBAL\Types\ConversionException;
+use Doctrine\DBAL\Types\Exception\ValueNotConvertible;
 
 class CustomBinaryType extends BinaryType
 {
@@ -13,7 +13,7 @@ class CustomBinaryType extends BinaryType
     /**
      * {@inheritdoc}
      */
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?string
     {
         if ($value === null) {
             return null;
@@ -23,14 +23,6 @@ class CustomBinaryType extends BinaryType
             return $value;
         }
 
-        throw ConversionException::conversionFailed($value, self::NAME);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName(): string
-    {
-        return self::NAME;
+        throw ValueNotConvertible::new($value, 'custom_binary');
     }
 }

@@ -16,12 +16,7 @@ class CustomDateTimeType extends DateTimeImmutableType
      */
     private static ?DateTimeZone $utc = null;
 
-    public function getName(): string
-    {
-        return self::NAME;
-    }
-
-    public function convertToDatabaseValue($value, AbstractPlatform $platform)
+    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
         if ($value instanceof DateTimeImmutable) {
             $value = $value->setTimezone(self::getUtc());
@@ -29,7 +24,7 @@ class CustomDateTimeType extends DateTimeImmutableType
         return parent::convertToDatabaseValue($value, $platform);
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
+    public function convertToPHPValue($value, AbstractPlatform $platform): ?DateTimeImmutable
     {
         $result = parent::convertToPHPValue($value, $platform);
         if ($result instanceof DateTimeImmutable) {

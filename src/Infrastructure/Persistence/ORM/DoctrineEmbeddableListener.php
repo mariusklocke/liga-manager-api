@@ -31,7 +31,7 @@ class DoctrineEmbeddableListener
         $this->logger = $logger;
     }
 
-    public function postLoad(PostLoadEventArgs $eventArgs)
+    public function postLoad(PostLoadEventArgs $eventArgs): void
     {
         $entity = $eventArgs->getObject();
         $entityClass = get_class($entity);

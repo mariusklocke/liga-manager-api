@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Persistence\Read;
 
 use DateTimeInterface;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -230,10 +231,10 @@ class DbalGateway implements ReadDbGatewayInterface
     {
         switch (get_class($field)) {
             case StringField::class:
-                $type = is_array($value) ? Connection::PARAM_STR_ARRAY : ParameterType::STRING;
+                $type = is_array($value) ? ArrayParameterType::STRING : ParameterType::STRING;
                 break;
             case IntegerField::class:
-                $type = is_array($value) ? Connection::PARAM_INT_ARRAY : ParameterType::INTEGER;
+                $type = is_array($value) ? ArrayParameterType::INTEGER : ParameterType::INTEGER;
                 break;
             case DateTimeField::class:
                 if (!$value instanceof DateTimeInterface) {

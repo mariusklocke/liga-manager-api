@@ -4,7 +4,7 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\MatchDay" table="match_days">
-        <id name="id" type="string" />
+        <id name="id" type="string" length="255" />
         <field name="number" type="integer" />
         <field name="startDate" column="start_date" type="date_immutable" />
         <field name="endDate" column="end_date" type="date_immutable" />
@@ -20,7 +20,7 @@
             <join-column name="tournament_id" referenced-column-name="id" />
         </many-to-one>
         <unique-constraints>
-            <unique-constraint columns="number,season_id,tournament_id" />
+            <unique-constraint columns="number,season_id,tournament_id" name="unique_number"/>
         </unique-constraints>
     </entity>
 </doctrine-mapping>

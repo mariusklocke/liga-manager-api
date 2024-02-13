@@ -4,11 +4,11 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\Team" table="teams">
-        <id name="id" type="string" />
-        <field name="name" type="string" />
+        <id name="id" type="string" length="255" />
+        <field name="name" type="string" length="255" />
         <field name="createdAt" column="created_at" type="custom_datetime"/>
         <embedded name="contact" class="HexagonalPlayground\Domain\Value\ContactPerson" />
-        <field name="logoId" column="logo_id" type="string" />
+        <field name="logoId" column="logo_id" type="string" length="255" />
         <one-to-many field="homeMatches" target-entity="HexagonalPlayground\Domain\MatchEntity" mapped-by="homeTeam" index-by="id"/>
         <one-to-many field="guestMatches" target-entity="HexagonalPlayground\Domain\MatchEntity" mapped-by="guestTeam" index-by="id"/>
     </entity>

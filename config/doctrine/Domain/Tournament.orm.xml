@@ -4,8 +4,8 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\Tournament" table="tournaments">
-        <id name="id" type="string" />
-        <field name="name" type="string" />
+        <id name="id" type="string" length="255" />
+        <field name="name" type="string" length="255" />
         <field name="rounds" type="integer" />
         <one-to-many field="matchDays" target-entity="HexagonalPlayground\Domain\MatchDay" mapped-by="tournament" index-by="number" orphan-removal="true">
             <cascade>
