@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
@@ -11,9 +10,9 @@ class ResponseSerializer
 {
     private StreamFactoryInterface $streamFactory;
 
-    public function __construct()
+    public function __construct(StreamFactoryInterface $streamFactory)
     {
-        $this->streamFactory = new Psr17Factory();
+        $this->streamFactory = $streamFactory;
     }
 
     /**

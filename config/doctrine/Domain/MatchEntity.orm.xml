@@ -7,18 +7,18 @@
         <indexes>
             <index columns="kickoff"/>
         </indexes>
-        <id name="id" type="string" />
+        <id name="id" type="string" length="255" />
         <field name="kickoff" type="custom_datetime" nullable="true" />
         <field name="cancelledAt" column="cancelled_at" type="custom_datetime" nullable="true"/>
-        <field name="cancellationReason" column="cancellation_reason" type="string" nullable="true" />
+        <field name="cancellationReason" column="cancellation_reason" type="string" length="255" nullable="true" />
         <embedded name="matchResult" class="HexagonalPlayground\Domain\Value\MatchResult" use-column-prefix="false" />
         <many-to-one field="matchDay" target-entity="HexagonalPlayground\Domain\MatchDay" inversed-by="matches">
             <join-column name="match_day_id" referenced-column-name="id" nullable="false" />
         </many-to-one>
-        <many-to-one field="homeTeam" target-entity="HexagonalPlayground\Domain\Team">
+        <many-to-one field="homeTeam" target-entity="HexagonalPlayground\Domain\Team" inversed-by="homeMatches">
             <join-column name="home_team_id" referenced-column-name="id" nullable="false" />
         </many-to-one>
-        <many-to-one field="guestTeam" target-entity="HexagonalPlayground\Domain\Team">
+        <many-to-one field="guestTeam" target-entity="HexagonalPlayground\Domain\Team" inversed-by="guestMatches">
             <join-column name="guest_team_id" referenced-column-name="id" nullable="false" />
         </many-to-one>
         <many-to-one field="pitch" target-entity="HexagonalPlayground\Domain\Pitch" inversed-by="matches">

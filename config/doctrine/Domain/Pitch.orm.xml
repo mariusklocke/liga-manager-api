@@ -4,8 +4,8 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\Pitch" table="pitches">
-        <id name="id" type="string" />
-        <field name="label" type="string" />
+        <id name="id" type="string" length="255" />
+        <field name="label" type="string" length="255" />
         <embedded name="location" class="HexagonalPlayground\Domain\Value\GeographicLocation" />
         <embedded name="contact" class="HexagonalPlayground\Domain\Value\ContactPerson" />
         <one-to-many field="matches" target-entity="HexagonalPlayground\Domain\MatchEntity" mapped-by="pitch" index-by="id"/>

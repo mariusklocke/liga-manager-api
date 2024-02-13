@@ -4,8 +4,8 @@
                     http://raw.github.com/doctrine/doctrine2/master/doctrine-mapping.xsd">
 
     <entity name="HexagonalPlayground\Domain\RankingPenalty" table="ranking_penalties">
-        <id name="id" type="string" />
-        <field name="reason" type="string" />
+        <id name="id" type="string" length="255" />
+        <field name="reason" type="string" length="255" />
         <field name="points" type="integer" />
         <field name="createdAt" column="created_at" type="custom_datetime" />
         <many-to-one field="ranking" target-entity="HexagonalPlayground\Domain\Ranking" inversed-by="penalties">

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
+use HexagonalPlayground\Infrastructure\API\ServiceProvider as ApiServiceProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRouteProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
@@ -15,15 +16,13 @@ use HexagonalPlayground\Infrastructure\API\Security\RateLimitMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RouteProvider as WebAuthnRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
-use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use Middlewares\TrailingSlash;
-use Nyholm\Psr7\Factory\Psr17Factory;
-use Psr\Log\LoggerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface;
 
@@ -36,7 +35,6 @@ class Application extends App
         $serviceProviders = [
             new HealthServiceProvider(),
             new ApplicationServiceProvider(),
-            new LoggerProvider(),
             new DoctrineServiceProvider(),
             new ReadRepositoryProvider(),
             new SecurityServiceProvider(),
@@ -44,27 +42,26 @@ class Application extends App
             new EventServiceProvider(),
             new GraphQLServiceProvider(),
             new WebAuthnServiceProvider(),
-            new LogosServiceProvider()
+            new LogosServiceProvider(),
+            new ApiServiceProvider()
         ];
 
         $container = ContainerBuilder::build($serviceProviders, self::VERSION);
 
-        parent::__construct(new Psr17Factory(), $container);
-
-        /** @var Config $config */
-        $config = $this->container->get(Config::class);
-        /** @var LoggerInterface $logger */
-        $logger = $this->container->get(LoggerInterface::class);
-        /** @var ResponseSerializer $responseSerializer */
-        $responseSerializer = $this->container->get(ResponseSerializer::class);
+        parent::__construct($container->get(ResponseFactoryInterface::class), $container);
 
         // Middleware stack: First one added will be executed last
-        $this->add(new TrailingSlash());
-        $this->add(new AuthenticationMiddleware($container));
-        $this->add(new RateLimitMiddleware($config));
-        $this->add(new MaintenanceModeMiddleware($config));
-        $this->add(new LoggingMiddleware($logger));
-        $this->add(new ErrorMiddleware($logger, $this->responseFactory, $responseSerializer));
+        $middlewares = [
+            $container->get(TrailingSlash::class),
+            $container->get(AuthenticationMiddleware::class),
+            $container->get(RateLimitMiddleware::class),
+            $container->get(MaintenanceModeMiddleware::class),
+            $container->get(LoggingMiddleware::class),
+            $container->get(ErrorMiddleware::class)
+        ];
+        foreach ($middlewares as $middleware) {
+            $this->add($middleware);
+        }
 
         $this->group('/api', function (RouteCollectorProxyInterface $group) {
             $routeProviders = [

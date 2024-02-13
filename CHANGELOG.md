@@ -2,6 +2,12 @@
 
 ## NEXT
 
+## 1.17.0 - 2024-02-13
+* Improvement: Update `doctrine/orm` to 3.0
+* Improvement: Update `doctrine/dbal` to 4.0
+* Improvement: Improve security in docker image
+* Improvement: Minor refactorings
+
 ## 1.16.0 - 2024-02-04
 * Feature: Add configurable rate limiting
 * Improvement: Improve debug logging
