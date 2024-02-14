@@ -82,25 +82,46 @@ class UploadAction implements ActionInterface
 
     private function checkUploadedFile(UploadedFileInterface $uploadedFile): void
     {
-        $errorCode = $uploadedFile->getError();
-        switch ($errorCode) {
-            case UPLOAD_ERR_OK:
-                break;
-            case UPLOAD_ERR_INI_SIZE:
-                $maxSize = ini_get('upload_max_filesize');
-                throw new InvalidInputException("Invalid file upload: File exceeds max size of $maxSize");
-            default:
-                throw new InternalException("Invalid file upload: Code $errorCode");
+        $maxFileSize = $this->parseByteSize(ini_get('upload_max_filesize'));
+        $fileSize = (int)$uploadedFile->getSize();
+
+        if ($fileSize > $maxFileSize || $uploadedFile->getError() === UPLOAD_ERR_INI_SIZE) {
+            throw new InvalidInputException("Invalid file upload: Exceeds max size of $maxFileSize bytes");
         }
 
-        $fileSize = (int)$uploadedFile->getSize();
         if ($fileSize === 0) {
-            throw new InvalidInputException("Uploaded file is empty");
+            throw new InvalidInputException("Invalid file upload: File is empty");
+        }
+
+        if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
+            throw new InternalException("Invalid file upload: Code " . $uploadedFile->getError());
         }
 
         $mediaType = $uploadedFile->getClientMediaType();
         if ($mediaType !== 'image/webp') {
             throw new InvalidInputException("Invalid media type. Expected: image/webp. Got: $mediaType");
         }
+    }
+
+    /**
+     * Converts a byte size string with SI-prefixes to number of bytes
+     *
+     * @param string $byteSize
+     * @return int
+     */
+    private function parseByteSize(string $byteSize): int
+    {
+        $factorMap = [
+            'K' => pow(2, 10),
+            'M' => pow(2, 20),
+            'G' => pow(2, 30)
+        ];
+
+        $prefix = $byteSize[strlen($byteSize) - 1];
+        if (!array_key_exists($prefix, $factorMap)) {
+            return (int)$byteSize;
+        }
+
+        return substr($byteSize, 0, -1) * $factorMap[$prefix];
     }
 }
