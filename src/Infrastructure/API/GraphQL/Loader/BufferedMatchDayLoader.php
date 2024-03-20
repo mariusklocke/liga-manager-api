@@ -8,16 +8,16 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchDayRepository;
 
-class BufferedMatchDayLoader
+class BufferedMatchDayLoader implements BufferedLoaderInterface
 {
     /** @var MatchDayRepository */
     private MatchDayRepository $matchDayRepository;
 
     /** @var array */
-    private array $bySeasonId = [];
+    private array $bySeasonId;
 
     /** @var array */
-    private array $byTournamentId = [];
+    private array $byTournamentId;
 
     /**
      * @param MatchDayRepository $matchDayRepository
@@ -25,6 +25,12 @@ class BufferedMatchDayLoader
     public function __construct(MatchDayRepository $matchDayRepository)
     {
         $this->matchDayRepository = $matchDayRepository;
+    }
+
+    public function init(): void
+    {
+        $this->bySeasonId = [];
+        $this->byTournamentId = [];
     }
 
     /**

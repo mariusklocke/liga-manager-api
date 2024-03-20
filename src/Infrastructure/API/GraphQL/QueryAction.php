@@ -6,6 +6,7 @@ use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\ActionInterface;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedLoaderInterface;
 use HexagonalPlayground\Infrastructure\API\RequestParser;
 use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use Psr\Container\ContainerInterface;
@@ -47,6 +48,12 @@ class QueryAction implements ActionInterface
         $context = new AppContext($request, $this->container);
         $errorHandler = new ErrorHandler($this->container->get(LoggerInterface::class), $request);
         $schema = $this->container->get(Schema::class);
+
+        /** @var BufferedLoaderInterface[] $loaders */
+        $loaders = $this->container->get(BufferedLoaderInterface::class);
+        foreach ($loaders as $loader) {
+            $loader->init();
+        }
 
         $result = GraphQL::executeQuery($schema, $query, null, $context, $variables)
             ->setErrorsHandler($errorHandler);

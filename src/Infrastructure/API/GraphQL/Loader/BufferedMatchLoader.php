@@ -7,13 +7,13 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\EqualityFilter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Filter;
 use HexagonalPlayground\Infrastructure\Persistence\Read\MatchRepository;
 
-class BufferedMatchLoader
+class BufferedMatchLoader implements BufferedLoaderInterface
 {
     /** @var MatchRepository */
     private MatchRepository $matchRepository;
 
     /** @var array */
-    private array $byMatchDayId = [];
+    private array $byMatchDayId;
 
     /**
      * @param MatchRepository $matchRepository
@@ -21,6 +21,11 @@ class BufferedMatchLoader
     public function __construct(MatchRepository $matchRepository)
     {
         $this->matchRepository = $matchRepository;
+    }
+
+    public function init(): void
+    {
+        $this->byMatchDayId = [];
     }
 
     /**

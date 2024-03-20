@@ -6,6 +6,11 @@ use DI;
 use GraphQL\Type\Schema;
 use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedLoaderInterface;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchDayLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedMatchLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedPitchLoader;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedTeamLoader;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -35,7 +40,12 @@ class ServiceProvider implements ServiceProviderInterface
                 ];
             }),
 
-            __NAMESPACE__ . '\Loader\*Loader' => DI\autowire(),
+            BufferedLoaderInterface::class => [
+                DI\get(BufferedMatchDayLoader::class),
+                DI\get(BufferedMatchLoader::class),
+                DI\get(BufferedPitchLoader::class),
+                DI\get(BufferedTeamLoader::class)
+            ]
         ];
     }
 }

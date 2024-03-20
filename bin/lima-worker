@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use HexagonalPlayground\Infrastructure\API\Application;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Log\LoggerInterface;
+use Spiral\RoadRunner\Worker;
+use Spiral\RoadRunner\Http\PSR7Worker;
+
+$app = new Application();
+$logger = $app->getContainer()->get(LoggerInterface::class);
+$worker = Worker::create(true, $logger);
+$psrFactory = new Psr17Factory();
+$psrWorker = new PSR7Worker($worker, $psrFactory, $psrFactory, $psrFactory);
+
+while (true) {
+    try {
+        $request = $psrWorker->waitRequest();
+        if ($request === null) {
+            break;
+        }
+    } catch (\Throwable $e) {
+        $psrWorker->respond($psrFactory->createResponse(400));
+        continue;
+    }
+
+    try {
+        $psrWorker->respond($app->handle($request));
+    } catch (\Throwable $e) {
+        $psrWorker->respond($psrFactory->createResponse(500));
+        $logger->error((string)$e);
+    }
+}

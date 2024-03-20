@@ -34,7 +34,7 @@ class Config
         $this->emailUrl = getenv('EMAIL_URL') ?: 'null://localhost';
         $this->jwtSecret = getenv('JWT_SECRET') ?: '';
         $this->logLevel = getenv('LOG_LEVEL') ?: 'debug';
-        $this->logPath = getenv('LOG_PATH') ?: 'php://stdout';
+        $this->logPath = getenv('LOG_PATH') ?: 'php://stderr';
         $this->maintenanceMode = getenv('MAINTENANCE_MODE') ?: 'off';
         $this->mysqlDatabase = getenv('MYSQL_DATABASE') ?: '';
         $this->mysqlHost = getenv('MYSQL_HOST') ?: '';

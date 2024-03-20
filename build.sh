@@ -9,8 +9,10 @@ fi
 if [[ -z "${REDIS_VERSION}" ]]; then
     REDIS_VERSION="6"
 fi
+if [[ -z "${TARGET_TYPE}" ]]; then
+    TARGET_TYPE="fpm"
+fi
 
-PHP_IMAGE="php:${PHP_VERSION}-fpm-alpine"
 MARIADB_IMAGE="mariadb:${MARIADB_VERSION}"
 REDIS_IMAGE="redis:${REDIS_VERSION}-alpine"
 
@@ -21,6 +23,9 @@ else
 fi
 
 TARGET_IMAGE="mklocke/liga-manager-api:${TAG}"
+if [[ "${TARGET_TYPE}" != "fpm" ]]; then
+    TARGET_IMAGE="${TARGET_IMAGE}-${TARGET_TYPE}"
+fi
 
 cleanup() {
     echo "Removing containers ..."
@@ -39,30 +44,25 @@ set -e
 echo "Creating network ..."
 docker network create build
 
-echo "Pulling image ${MARIADB_IMAGE} ..."
-docker pull --quiet ${MARIADB_IMAGE}
-echo "Starting MariaDB container ..."
-docker run -d --name=mariadb --network=build \
+echo "Starting MariaDB container from ${MARIADB_IMAGE} ..."
+docker run -d --name=mariadb --network=build --pull=always \
     -e MYSQL_ALLOW_EMPTY_PASSWORD=yes \
     -e MYSQL_DATABASE=test \
     -e MYSQL_USER=test \
     -e MYSQL_PASSWORD=test \
     ${MARIADB_IMAGE}
 
-echo "Pulling image ${REDIS_IMAGE} ..."
-docker pull --quiet ${REDIS_IMAGE}
-echo "Starting Redis container ..."
-docker run -d --name=redis --network=build ${REDIS_IMAGE}
+echo "Starting Redis container from ${REDIS_IMAGE} ..."
+docker run -d --name=redis --network=build --pull=always ${REDIS_IMAGE}
 
-echo "Pulling image ${PHP_IMAGE} ..."
-docker pull --quiet ${PHP_IMAGE}
 echo "Building image ${TARGET_IMAGE} ..."
 DOCKER_BUILDKIT=1 docker build \
-    -f docker/php/Dockerfile \
+    -f docker/php/${TARGET_TYPE}/Dockerfile \
     -t ${TARGET_IMAGE} \
-    --build-arg PHP_IMAGE=$PHP_IMAGE \
+    --build-arg PHP_VERSION=$PHP_VERSION \
     --build-arg APP_VERSION=$TAG \
-    --cache-from ${TARGET_IMAGE} .
+    --cache-from ${TARGET_IMAGE} . \
+    --pull
 
 echo "Starting container from image ${TARGET_IMAGE} ..."
 docker run -d --name=php --network=build \
@@ -83,7 +83,7 @@ attempt=0
 while [ $attempt -le 10 ]; do
     attempt=$(( $attempt + 1 ))
     echo "Waiting for PHP container to be become healthy ... Attempt $attempt"
-    if docker exec -t php docker-php-fpm-healthcheck > /dev/null ; then
+    if docker exec -t php docker-php-healthcheck > /dev/null ; then
         echo "PHP container is healthy"
         break
     fi
@@ -123,7 +123,7 @@ if [[ -n "${PUBLISH_IMAGE}" ]]; then
     echo "Logging in to docker hub ..."
     echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
 
-    echo "Pushing image to docker hub ..."
+    echo "Pushing image ${TARGET_IMAGE} to docker hub ..."
     docker push --quiet ${TARGET_IMAGE}
 fi
 
