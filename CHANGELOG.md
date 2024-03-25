@@ -2,6 +2,9 @@
 
 ## NEXT
 
+## 1.18.0 - 2024-03-25
+* Feature: Ship Roadrunner as alternative runtime to PHP-FPM for docker images
+
 ## 1.17.0 - 2024-02-13
 * Improvement: Update `doctrine/orm` to 3.0
 * Improvement: Update `doctrine/dbal` to 4.0
