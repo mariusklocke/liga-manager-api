@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
+use PHPUnit\Framework\Attributes\Depends;
 use stdClass;
 
 class SeasonTest extends CompetitionTestCase
@@ -48,10 +49,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testSeasonCanBeCreated
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testSeasonCanBeCreated")]
     public function testSeasonCanBeStarted(string $seasonId): string
     {
         $teamIdSlice = array_slice(self::$teamIds, 0, 2);
@@ -110,10 +111,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testSeasonCanBeStarted
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testSeasonCanBeStarted")]
     public function testMatchesCanBeScheduledPerMatchDay(string $seasonId): string
     {
         $appointments = $this->createMatchAppointments();
@@ -135,10 +136,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testMatchesCanBeScheduledPerMatchDay
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testMatchesCanBeScheduledPerMatchDay")]
     public function testAllMatchesCanBeScheduledAtOnce(string $seasonId): string
     {
         $appointments = $this->createMatchAppointments();
@@ -160,10 +161,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testAllMatchesCanBeScheduledAtOnce
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testAllMatchesCanBeScheduledAtOnce")]
     public function testMatchesCanBeQueriedByKickoff(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -208,10 +209,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testMatchesCanBeQueriedByKickoff
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testMatchesCanBeQueriedByKickoff")]
     public function testMatchCanBeLocated(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -233,10 +234,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testMatchCanBeLocated
      * @param string $matchId
      * @return string
      */
+    #[Depends("testMatchCanBeLocated")]
     public function testMatchCanBeScheduled(string $matchId): string
     {
         $match = $this->client->getMatchById($matchId);
@@ -257,9 +258,9 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testMatchCanBeScheduled
      * @param string $matchId
      */
+    #[Depends("testMatchCanBeScheduled")]
     public function testDeletingUsedPitchFails(string $matchId): void
     {
         $match = $this->client->getMatchById($matchId);
@@ -271,9 +272,9 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testSeasonCanBeStarted
      * @param string $seasonId
      */
+    #[Depends("testSeasonCanBeStarted")]
     public function testSubmittingMatchResultByNonParticipatingTeamFails(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -287,10 +288,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testSeasonCanBeStarted
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testSeasonCanBeStarted")]
     public function testSubmittingMatchResultAffectsRanking(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -331,9 +332,9 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testSubmittingMatchResultAffectsRanking
      * @param string $seasonId
      */
+    #[Depends("testSubmittingMatchResultAffectsRanking")]
     public function testCancellingMatchByNonParticipatingTeamFails(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -347,10 +348,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testSubmittingMatchResultAffectsRanking
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testSubmittingMatchResultAffectsRanking")]
     public function testCancellingMatchAffectsRanking(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -380,11 +381,11 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testCancellingMatchAffectsRanking
-     * @depends testCancellingMatchByNonParticipatingTeamFails
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testCancellingMatchAffectsRanking")]
+    #[Depends("testCancellingMatchByNonParticipatingTeamFails")]
     public function testPenaltiesAffectRanking(string $seasonId): string
     {
         $penaltyId = IdGenerator::generate();
@@ -414,10 +415,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testPenaltiesAffectRanking
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testPenaltiesAffectRanking")]
     public function testMatchDayCanBeRescheduled(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -445,10 +446,10 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testMatchDayCanBeRescheduled
      * @param string $seasonId
      * @return string
      */
+    #[Depends("testMatchDayCanBeRescheduled")]
     public function testTeamCanBeReplacedWhileSeasonInProgress(string $seasonId): string
     {
         $seasonBefore = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -466,9 +467,9 @@ class SeasonTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testTeamCanBeReplacedWhileSeasonInProgress
      * @param string $seasonId
      */
+    #[Depends("testTeamCanBeReplacedWhileSeasonInProgress")]
     public function testEndedSeasonsRankingIsFinal(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);

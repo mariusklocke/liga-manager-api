@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Tests\CLI;
 
 use GlobIterator;
 use HexagonalPlayground\Infrastructure\CLI\Application;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -67,9 +68,9 @@ class CliTest extends TestCase
     }
 
     /**
-     * @depends testCreatingUser
      * @return array
      */
+    #[Depends("testCreatingUser")]
     public function testListingUsers(): array
     {
         $tester = $this->getCommandTester('app:user:list');
@@ -94,10 +95,10 @@ class CliTest extends TestCase
     }
 
     /**
-     * @depends testListingUsers
      * @param array $users
      * @return void
      */
+    #[Depends("testListingUsers")]
     public function testDeletingUser(array $users): void
     {
         $deletable = array_filter($users, function (array $user) {

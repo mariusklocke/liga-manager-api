@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
+use PHPUnit\Framework\Attributes\Depends;
 use Symfony\Component\Mailer\Event\MessageEvent;
 
 class UserTest extends TestCase
@@ -79,9 +80,7 @@ class UserTest extends TestCase
         self::assertCount(0, $messageEvents);
     }
 
-    /**
-     * @depends testUserCanBeCreated
-     */
+    #[Depends("testUserCanBeCreated")]
     public function testUserCanBeUpdated(): array
     {
         $user = $this->getUserData();
@@ -108,10 +107,10 @@ class UserTest extends TestCase
     }
 
     /**
-     * @depends testUserCanBeUpdated
      * @param array $user
      * @return array
      */
+    #[Depends("testUserCanBeUpdated")]
     public function testUserCanChangePassword(array $user): array
     {
         $this->client->useCredentials($user['email'], $user['password']);
@@ -128,10 +127,10 @@ class UserTest extends TestCase
     }
 
     /**
-     * @depends testUserCanChangePassword
      * @param array $user
      * @return array
      */
+    #[Depends("testUserCanChangePassword")]
     public function testSendingInviteEmail(array $user): array
     {
         $messageEvents = self::catchEvents(MessageEvent::class, function () use ($user) {
@@ -144,10 +143,10 @@ class UserTest extends TestCase
     }
 
     /**
-     * @depends testSendingInviteEmail
      * @param array $user
      * @return array
      */
+    #[Depends("testSendingInviteEmail")]
     public function testAccessTokensCanBeInvalidated(array $user): array
     {
         $this->client->useCredentials($user['email'], $user['password']);
@@ -162,9 +161,9 @@ class UserTest extends TestCase
     }
 
     /**
-     * @depends testAccessTokensCanBeInvalidated
      * @param array $user
      */
+    #[Depends("testAccessTokensCanBeInvalidated")]
     public function testUserCanBeDeleted(array $user)
     {
         $this->client->useCredentials($user['email'], $user['password']);

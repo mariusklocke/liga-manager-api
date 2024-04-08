@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
+use PHPUnit\Framework\Attributes\Depends;
 
 class TournamentTest extends CompetitionTestCase
 {
@@ -30,10 +31,10 @@ class TournamentTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testTournamentCanBeCreated
      * @param string $tournamentId
      * @return string
      */
+    #[Depends("testTournamentCanBeCreated")]
     public function testTournamentRoundsCanBeCreated(string $tournamentId): string
     {
         $datePeriod = [
@@ -51,9 +52,9 @@ class TournamentTest extends CompetitionTestCase
     }
 
     /**
-     * @depends testTournamentRoundsCanBeCreated
      * @param string $tournamentId
      */
+    #[Depends("testTournamentRoundsCanBeCreated")]
     public function testTournamentCanBeDeleted(string $tournamentId): void
     {
         $countBefore = count($this->client->getAllTournaments());

@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Tests\Framework\IdGenerator;
+use PHPUnit\Framework\Attributes\Depends;
 
 class TeamTest extends TestCase
 {
@@ -35,10 +36,10 @@ class TeamTest extends TestCase
     }
 
     /**
-     * @depends testTeamCanBeCreated
      * @param string $teamId
      * @return string
      */
+    #[Depends("testTeamCanBeCreated")]
     public function testTeamCanBeRenamed(string $teamId): string
     {
         $team    = $this->client->getTeamById($teamId);
@@ -54,10 +55,10 @@ class TeamTest extends TestCase
     }
 
     /**
-     * @depends testTeamCanBeRenamed
      * @param string $teamId
      * @return string
      */
+    #[Depends("testTeamCanBeRenamed")]
     public function testTeamContactCanBeUpdated(string $teamId): string
     {
         $team = $this->client->getTeamById($teamId);
@@ -80,10 +81,10 @@ class TeamTest extends TestCase
     }
 
     /**
-     * @depends testTeamContactCanBeUpdated
      * @param string $teamId
      * @return string
      */
+    #[Depends("testTeamContactCanBeUpdated")]
     public function testTeamLogoCanBeUploaded(string $teamId): string
     {
         $tempFile = $this->generateRandomFile();
@@ -111,10 +112,10 @@ class TeamTest extends TestCase
     }
 
     /**
-     * @depends testTeamLogoCanBeUploaded
      * @param string $teamId
      * @return string
      */
+    #[Depends("testTeamLogoCanBeUploaded")]
     public function testTeamLogoCanDeDeleted(string $teamId): string
     {
         $token = $this->createAdminToken();
@@ -130,9 +131,9 @@ class TeamTest extends TestCase
     }
 
     /**
-     * @depends testTeamLogoCanDeDeleted
      * @param string $teamId
      */
+    #[Depends("testTeamLogoCanDeDeleted")]
     public function testTeamCanBeDeleted(string $teamId): void
     {
         $team = $this->client->getTeamById($teamId);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\Unit;
 
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 
 class FileSystemTest extends TestCase
@@ -50,8 +51,8 @@ class FileSystemTest extends TestCase
 
     /**
      * @param string $tempFilePath
-     * @depends testFileCanBeWritten
      */
+    #[Depends("testFileCanBeWritten")]
     public function testFileCanBeRead(string $tempFilePath): void
     {
         $service = new FilesystemService();

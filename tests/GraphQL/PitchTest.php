@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Tests\Framework\IdGenerator;
+use PHPUnit\Framework\Attributes\Depends;
 
 class PitchTest extends TestCase
 {
@@ -37,10 +38,10 @@ class PitchTest extends TestCase
     }
 
     /**
-     * @depends testPitchCanBeCreated
      * @param array $pitchIds
      * @return array
      */
+    #[Depends("testPitchCanBeCreated")]
     public function testPitchContactCanBeUpdated(array $pitchIds): array
     {
         $pitchId = $pitchIds[0];
@@ -61,9 +62,9 @@ class PitchTest extends TestCase
     }
 
     /**
-     * @depends testPitchContactCanBeUpdated
      * @param array $pitchIds
      */
+    #[Depends("testPitchContactCanBeUpdated")]
     public function testPitchCanBeDeleted(array $pitchIds)
     {
         foreach ($pitchIds as $pitchId) {
