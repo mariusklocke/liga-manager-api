@@ -27,7 +27,6 @@ use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
-use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Logging\Middleware as LoggingMiddleware;
@@ -67,14 +66,11 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Connection::class => DI\factory(function (ContainerInterface $container) {
-                /** @var Config $config */
-                $config = $container->get(Config::class);
-
                 $params = [
-                    'dbname' => $config->mysqlDatabase,
-                    'user' => $config->mysqlUser,
-                    'password' => $config->mysqlPassword,
-                    'host' => $config->mysqlHost,
+                    'dbname' => $container->get('config.mysql.database'),
+                    'user' => $container->get('config.mysql.username'),
+                    'password' => $container->get('config.mysql.password'),
+                    'host' => $container->get('config.mysql.hostname'),
                     'driver' => 'pdo_mysql',
                     'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
                 ];
@@ -145,7 +141,12 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             UserRepositoryInterface::class => DI\get(UserRepository::class),
             PublicKeyCredentialSourceRepository::class => DI\get(PublicKeyCredentialRepository::class),
 
-            HealthCheckInterface::class => DI\add(DI\get(DoctrineHealthCheck::class))
+            HealthCheckInterface::class => DI\add(DI\get(DoctrineHealthCheck::class)),
+
+            'config.mysql.hostname' => DI\env('MYSQL_HOST', ''),
+            'config.mysql.database' => DI\env('MYSQL_DATABASE', ''),
+            'config.mysql.username' => DI\env('MYSQL_USER', ''),
+            'config.mysql.password' => DI\env('MYSQL_PASSWORD', '')
         ];
     }
 }

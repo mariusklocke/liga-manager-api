@@ -30,6 +30,7 @@ use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityS
 use HexagonalPlayground\Infrastructure\CLI\ServiceProvider as CliServiceProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
+use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
@@ -57,6 +58,7 @@ class Application extends \Symfony\Component\Console\Application
             new EventServiceProvider(),
             new GraphQLProvider(),
             new CliServiceProvider(),
+            new FilesystemServiceProvider()
         ];
 
         $this->container = ContainerBuilder::build($serviceProviders, self::VERSION);

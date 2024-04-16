@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Command;
 
-use Psr\Http\Message\UriInterface;
-
 class SendPasswordResetMailCommand implements CommandInterface
 {
     /** @var string */
@@ -12,9 +10,6 @@ class SendPasswordResetMailCommand implements CommandInterface
 
     /** @var string */
     private string $targetPath;
-
-    /** @var UriInterface */
-    private UriInterface $baseUri;
 
     /**
      * @param string $email
@@ -40,25 +35,5 @@ class SendPasswordResetMailCommand implements CommandInterface
     public function getTargetPath(): string
     {
         return $this->targetPath;
-    }
-
-    /**
-     * @return UriInterface
-     */
-    public function getBaseUri(): UriInterface
-    {
-        return $this->baseUri;
-    }
-
-    /**
-     * @param UriInterface $baseUri
-     * @return SendPasswordResetMailCommand
-     */
-    public function withBaseUri(UriInterface $baseUri): self
-    {
-        $clone = clone $this;
-        $clone->baseUri = $baseUri;
-
-        return $clone;
     }
 }

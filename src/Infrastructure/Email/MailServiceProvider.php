@@ -7,7 +7,6 @@ use DI;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
-use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
 use Psr\Container\ContainerInterface;
@@ -22,18 +21,15 @@ class MailServiceProvider implements ServiceProviderInterface
         return [
             MailerInterface::class => DI\get(SymfonyMailer::class),
             SymfonyMailer::class => DI\factory(function (ContainerInterface $container) {
-                /** @var Config $config */
-                $config = $container->get(Config::class);
-
                 $transport = Transport::fromDsn(
-                    $config->emailUrl,
+                    $container->get('config.email.emailUrl'),
                     $container->get(EventDispatcherInterface::class)
                 );
 
                 return new SymfonyMailer(
                     new Mailer($transport),
-                    $config->emailSenderAddress,
-                    $config->emailSenderName
+                    $container->get('config.email.emailSenderAddress'),
+                    $container->get('config.email.emailSenderName')
                 );
             }),
             TemplateRendererInterface::class => DI\get(TemplateRenderer::class),
@@ -44,7 +40,10 @@ class MailServiceProvider implements ServiceProviderInterface
                 return new TemplateRenderer(
                     $filesystem->joinPaths([$container->get('app.home'), 'templates'])
                 );
-            })
+            }),
+            'config.email.emailUrl' => DI\env('EMAIL_URL', 'null://localhost'),
+            'config.email.emailSenderAddress' => DI\env('EMAIL_SENDER_ADDRESS', 'noreply@example.com'),
+            'config.email.emailSenderName' => DI\env('EMAIL_SENDER_NAME', 'No Reply')
         ];
     }
 }

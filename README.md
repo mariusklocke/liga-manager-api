@@ -91,6 +91,7 @@ by the application. Static values must be supplied from the outside (e.g. by usi
 |-----------------------|----------|------------------------------------------|
 | ADMIN_EMAIL           | Static   | Email address for default admin user     |
 | ADMIN_PASSWORD        | Static   | Password for default admin user          |
+| APP_BASE_URL          | Static   | Public base URL for the application      |
 | APP_HOME              | Dynamic  | Path to application home directory       |
 | APP_LOGOS_PATH        | Dynamic  | Path to directory for logos              |
 | APP_LOGOS_PUBLIC_PATH | Static   | Public URL path to logos                 |

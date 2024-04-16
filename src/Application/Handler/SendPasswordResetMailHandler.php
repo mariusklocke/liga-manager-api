@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Application\Handler;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
-use HexagonalPlayground\Application\Security\TokenServiceInterface;
+use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
@@ -14,23 +14,23 @@ use HexagonalPlayground\Domain\Event\Event;
 
 class SendPasswordResetMailHandler
 {
-    private TokenServiceInterface $tokenService;
     private UserRepositoryInterface $userRepository;
     private TemplateRendererInterface $templateRenderer;
     private MailerInterface $mailer;
+    private AccessLinkGeneratorInterface $accessLinkGenerator;
 
     /**
-     * @param TokenServiceInterface     $tokenService
-     * @param UserRepositoryInterface   $userRepository
+     * @param UserRepositoryInterface $userRepository
      * @param TemplateRendererInterface $templateRenderer
-     * @param MailerInterface           $mailer
+     * @param MailerInterface $mailer
+     * @param AccessLinkGeneratorInterface $accessLinkGenerator
      */
-    public function __construct(TokenServiceInterface $tokenService, UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
+    public function __construct(UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer, AccessLinkGeneratorInterface $accessLinkGenerator)
     {
-        $this->tokenService     = $tokenService;
-        $this->userRepository   = $userRepository;
-        $this->templateRenderer = $templateRenderer;
-        $this->mailer           = $mailer;
+        $this->userRepository      = $userRepository;
+        $this->templateRenderer    = $templateRenderer;
+        $this->mailer              = $mailer;
+        $this->accessLinkGenerator = $accessLinkGenerator;
     }
 
     /**
@@ -45,22 +45,18 @@ class SendPasswordResetMailHandler
             return []; // Simply do nothing, when user cannot be found to prevent user discovery attacks
         }
 
-        $token = $this->tokenService->create($user, new DateTimeImmutable('now + 1 day'));
+        $expiresAt  = new DateTimeImmutable('now + 1 day');
+        $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
 
-        $targetUri = $command
-            ->getBaseUri()
-            ->withPath($command->getTargetPath())
-            ->withQuery(http_build_query(['token' => $this->tokenService->encode($token)]));
+        $recipient = [$user->getEmail() => $user->getFullName()];
+        $subject   = 'Reset your password';
+        $mailBody  = $this->templateRenderer->render('PasswordReset.html.php', [
+            'title'      => $subject,
+            'userName'   => $user->getFirstName(),
+            'targetLink' => $targetLink
+        ]);
 
-        $message = $this->mailer->createMessage(
-            [$user->getEmail() => $user->getFullName()],
-            'Reset your password',
-            $this->templateRenderer->render('PasswordReset.html.php', [
-                'title'      => 'Reset your password',
-                'userName'   => $user->getFirstName(),
-                'targetLink' => $targetUri->__toString()
-            ])
-        );
+        $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
 
         $this->mailer->send($message);
 

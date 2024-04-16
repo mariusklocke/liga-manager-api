@@ -2,8 +2,6 @@
 
 namespace HexagonalPlayground\Application\Command;
 
-use Psr\Http\Message\UriInterface;
-
 class SendInviteMailCommand implements CommandInterface
 {
     /** @var string */
@@ -11,9 +9,6 @@ class SendInviteMailCommand implements CommandInterface
 
     /** @var string */
     private string $targetPath;
-
-    /** @var UriInterface */
-    private UriInterface $baseUri;
 
     /**
      * @param string $userId
@@ -39,25 +34,5 @@ class SendInviteMailCommand implements CommandInterface
     public function getTargetPath(): string
     {
         return $this->targetPath;
-    }
-
-    /**
-     * @return UriInterface
-     */
-    public function getBaseUri(): UriInterface
-    {
-        return $this->baseUri;
-    }
-
-    /**
-     * @param UriInterface $baseUri
-     * @return SendInviteMailCommand
-     */
-    public function withBaseUri(UriInterface $baseUri): self
-    {
-        $clone = clone $this;
-        $clone->baseUri = $baseUri;
-
-        return $clone;
     }
 }

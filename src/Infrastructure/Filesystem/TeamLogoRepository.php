@@ -4,18 +4,19 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Filesystem;
 
 use HexagonalPlayground\Domain\Util\Uuid;
-use HexagonalPlayground\Infrastructure\Config;
 use Psr\Http\Message\UploadedFileInterface;
 
 class TeamLogoRepository
 {
     private FilesystemService $filesystemService;
-    private Config $config;
+    private string $appLogosPath;
+    private string $appLogosPublicPath;
 
-    public function __construct(FilesystemService $filesystemService, Config $config)
+    public function __construct(FilesystemService $filesystemService, string $appLogosPath, string $appLogosPublicPath)
     {
         $this->filesystemService = $filesystemService;
-        $this->config = $config;
+        $this->appLogosPath = $appLogosPath;
+        $this->appLogosPublicPath = $appLogosPublicPath;
     }
 
     public function delete(string $logoId): void
@@ -25,12 +26,12 @@ class TeamLogoRepository
 
     public function generatePublicPath(string $logoId): string
     {
-        return join('/', [$this->config->appLogosPublicPath, "$logoId.webp"]);
+        return join('/', [$this->appLogosPublicPath, "$logoId.webp"]);
     }
 
     private function generateStoragePath(string $logoId): string
     {
-        return $this->filesystemService->joinPaths([$this->config->appLogosPath, "$logoId.webp"]);
+        return $this->filesystemService->joinPaths([$this->appLogosPath, "$logoId.webp"]);
     }
 
     public function save(UploadedFileInterface $uploadedFile): string

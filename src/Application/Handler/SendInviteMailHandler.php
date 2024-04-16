@@ -5,8 +5,8 @@ namespace HexagonalPlayground\Application\Handler;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
-use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Domain\Event\Event;
@@ -14,23 +14,23 @@ use HexagonalPlayground\Domain\User;
 
 class SendInviteMailHandler implements AuthAwareHandler
 {
-    private TokenServiceInterface $tokenService;
     private UserRepositoryInterface $userRepository;
     private TemplateRendererInterface $templateRenderer;
     private MailerInterface $mailer;
+    private AccessLinkGeneratorInterface $accessLinkGenerator;
 
     /**
-     * @param TokenServiceInterface $tokenService
      * @param UserRepositoryInterface $userRepository
      * @param TemplateRendererInterface $templateRenderer
      * @param MailerInterface $mailer
+     * @param AccessLinkGeneratorInterface $accessLinkGenerator
      */
-    public function __construct(TokenServiceInterface $tokenService, UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer)
+    public function __construct(UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer, AccessLinkGeneratorInterface $accessLinkGenerator)
     {
-        $this->tokenService = $tokenService;
         $this->userRepository = $userRepository;
         $this->templateRenderer = $templateRenderer;
         $this->mailer = $mailer;
+        $this->accessLinkGenerator = $accessLinkGenerator;
     }
 
     /**
@@ -44,22 +44,20 @@ class SendInviteMailHandler implements AuthAwareHandler
 
         /** @var User $user */
         $user  = $this->userRepository->find($command->getUserId());
-        $token = $this->tokenService->create($user, new DateTimeImmutable('now + 1 week'));
 
-        $targetUri = $command->getBaseUri()
-            ->withPath($command->getTargetPath())
-            ->withQuery(http_build_query(['token' => $this->tokenService->encode($token)]));
+        $expiresAt  = new DateTimeImmutable('now + 1 day');
+        $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
 
-        $message = $this->mailer->createMessage(
-            [$user->getEmail() => $user->getFullName()],
-            'You have been invited',
-            $this->templateRenderer->render('InviteUser.html.php', [
-                'title'      => 'You have been invited',
-                'userName'   => $user->getFirstName(),
-                'targetLink' => $targetUri->__toString(),
-                'validUntil' => $token->getExpiresAt()
-            ])
-        );
+        $recipient = [$user->getEmail() => $user->getFullName()];
+        $subject   = 'You have been invited';
+        $mailBody  = $this->templateRenderer->render('InviteUser.html.php', [
+            'title'      => $subject,
+            'userName'   => $user->getFirstName(),
+            'targetLink' => $targetLink,
+            'validUntil' => $expiresAt
+        ]);
+
+        $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
 
         $this->mailer->send($message);
 

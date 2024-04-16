@@ -89,7 +89,9 @@ class ServiceProvider implements ServiceProviderInterface
                 return new ConsoleLogger($container->get(OutputInterface::class));
             }),
             OutputInterface::class => DI\get(ConsoleOutput::class),
-            TeamMapperInterface::class => DI\get(TeamMapper::class)
+            TeamMapperInterface::class => DI\get(TeamMapper::class),
+            'config.global.adminEmail' => DI\env('ADMIN_EMAIL', ''),
+            'config.global.adminPassword' => DI\env('ADMIN_PASSWORD', '')
         ];
     }
 }

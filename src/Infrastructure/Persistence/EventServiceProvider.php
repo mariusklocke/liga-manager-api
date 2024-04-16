@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Retry;
 use Psr\Container\ContainerInterface;
@@ -37,17 +36,18 @@ class EventServiceProvider implements ServiceProviderInterface
             HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
 
             Redis::class => DI\factory(function (ContainerInterface $container) {
-                /** @var Config $config */
-                $config = $container->get(Config::class);
-                $retry  = new Retry($container->get(LoggerInterface::class), 60, 5);
+                $host  = $container->get('config.redis.host');
+                $retry = new Retry($container->get(LoggerInterface::class), 60, 5);
 
-                return $retry(function () use ($config) {
+                return $retry(function () use ($host) {
                     $redis = new Redis();
-                    @$redis->connect($config->redisHost);
+                    @$redis->connect($host);
 
                     return $redis;
                 });
-            })
+            }),
+
+            'config.redis.host' => DI\env('REDIS_HOST', '')
         ];
     }
 }

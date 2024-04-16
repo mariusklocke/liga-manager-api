@@ -18,6 +18,7 @@ use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RouteProvider as We
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
+use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
@@ -43,7 +44,8 @@ class Application extends App
             new GraphQLServiceProvider(),
             new WebAuthnServiceProvider(),
             new LogosServiceProvider(),
-            new ApiServiceProvider()
+            new ApiServiceProvider(),
+            new FilesystemServiceProvider()
         ];
 
         $container = ContainerBuilder::build($serviceProviders, self::VERSION);

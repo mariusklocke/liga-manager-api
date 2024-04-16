@@ -13,7 +13,6 @@ use Cose\Algorithm\Signature\RSA\RS384;
 use Cose\Algorithm\Signature\RSA\RS512;
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\Config;
 use Psr\Container\ContainerInterface;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -34,12 +33,9 @@ class ServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            FakeCredentialDescriptorFactory::class => DI\factory(function (ContainerInterface $container) {
-                /** @var Config $config */
-                $config = $container->get(Config::class);
-
-                return new FakeCredentialDescriptorFactory($config->jwtSecret);
-            }),
+            FakeCredentialDescriptorFactory::class => DI\create()->constructor(
+                DI\get('config.api.jwtSecret')
+            ),
 
             AuthenticatorAssertionResponseValidator::class => DI\autowire(),
 

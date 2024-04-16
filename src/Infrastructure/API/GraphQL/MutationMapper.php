@@ -50,10 +50,6 @@ class MutationMapper
                         throw new InvalidInputException($typeError->getMessage());
                     }
 
-                    if (method_exists($command, 'withBaseUri')) {
-                        $command = $command->withBaseUri($context->getRequest()->getUri());
-                    }
-
                     $authContext = null;
                     if ($this->authReader->hasAuthContext($context->getRequest())) {
                         $authContext = $this->authReader->requireAuthContext($context->getRequest());
