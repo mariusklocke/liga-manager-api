@@ -2,6 +2,10 @@
 
 ## NEXT
 
+## 1.18.1 - 2024-04-16
+* Bugfix: Fix links in mails
+* Improvement: Update dependencies
+
 ## 1.18.0 - 2024-03-25
 * Feature: Ship Roadrunner as alternative runtime to PHP-FPM for docker images
 
