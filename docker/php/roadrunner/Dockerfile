@@ -24,8 +24,8 @@ RUN set -xe \
 # Install PHAR tools
 COPY docker/php/install-phar.sh /usr/local/bin/install-phar.sh
 RUN chmod +x /usr/local/bin/install-phar.sh \
-    && install-phar.sh /usr/local/bin/composer https://github.com/composer/composer/releases/download/2.6.6/composer.phar 72600201c73c7c4b218f1c0511b36d8537963e36aafa244757f52309f885b314 \
-    && install-phar.sh /usr/local/bin/gdpr-dump https://github.com/Smile-SA/gdpr-dump/releases/download/4.0.2/gdpr-dump.phar 50266d719d3967d5e029102c351aa3796ebfbe5ff78b050468522a44c86cbfc6 \
+    && install-phar.sh /usr/local/bin/composer https://github.com/composer/composer/releases/download/2.7.2/composer.phar 049b8e0ed9f264d770a0510858cffbc35401510759edc9a784b3a5c6e020bcac \
+    && install-phar.sh /usr/local/bin/gdpr-dump https://github.com/Smile-SA/gdpr-dump/releases/download/4.2.2/gdpr-dump.phar ee74e89cb48dc7565bd062d4a84b5ebe4be93ed1c395a090f332a17c3440f8d4 \
     && rm /usr/local/bin/install-phar.sh
 
 # Configure PHP
