@@ -38,12 +38,7 @@ class ServiceProvider implements ServiceProviderInterface
             }),
             MaintenanceModeMiddleware::class => DI\factory(function (ContainerInterface $container) {
                 return new MaintenanceModeMiddleware($container->get('config.api.maintenanceMode') === 'on');
-            }),
-            'config.api.jwtSecret' => DI\env('JWT_SECRET', ''),
-            'config.api.logLevel' => DI\env('LOG_LEVEL', 'debug'),
-            'config.api.logPath' => DI\env('LOG_PATH', 'php://stderr'),
-            'config.api.maintenanceMode' => DI\env('MAINTENANCE_MODE', 'off'),
-            'config.api.rateLimit' => DI\env('RATE_LIMIT', ''),
+            })
         ];
     }
 }

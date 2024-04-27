@@ -40,10 +40,7 @@ class MailServiceProvider implements ServiceProviderInterface
                 return new TemplateRenderer(
                     $filesystem->joinPaths([$container->get('app.home'), 'templates'])
                 );
-            }),
-            'config.email.emailUrl' => DI\env('EMAIL_URL', 'null://localhost'),
-            'config.email.emailSenderAddress' => DI\env('EMAIL_SENDER_ADDRESS', 'noreply@example.com'),
-            'config.email.emailSenderName' => DI\env('EMAIL_SENDER_NAME', 'No Reply')
+            })
         ];
     }
 }

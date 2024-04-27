@@ -15,6 +15,12 @@ class ContainerBuilder
      */
     public static function build(array $serviceProviders, string $version): ContainerInterface
     {
+        $app = [
+            'app.home' => realpath(join(DIRECTORY_SEPARATOR, [__DIR__ , '..', '..'])),
+            'app.version' => $version
+        ];
+        $config = ConfigLoader::load($app['app.home']);
+
         $builder = new DI\ContainerBuilder();
         $builder->useAutowiring(true);
 
@@ -22,10 +28,8 @@ class ContainerBuilder
             $builder->addDefinitions($provider->getDefinitions());
         }
 
-        $builder->addDefinitions([
-            'app.home' => realpath(join(DIRECTORY_SEPARATOR, [__DIR__ , '..', '..'])),
-            'app.version' => $version
-        ]);
+        $builder->addDefinitions($app);
+        $builder->addDefinitions($config);
 
         return $builder->build();
     }

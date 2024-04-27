@@ -8,3 +8,4 @@ docker/_volumes
 import
 *.sql.gz
 docker/nginx/certs
+env.json

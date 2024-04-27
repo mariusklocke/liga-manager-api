@@ -45,9 +45,7 @@ class EventServiceProvider implements ServiceProviderInterface
 
                     return $redis;
                 });
-            }),
-
-            'config.redis.host' => DI\env('REDIS_HOST', '')
+            })
         ];
     }
 }

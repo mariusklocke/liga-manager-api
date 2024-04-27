@@ -26,8 +26,7 @@ class ServiceProvider implements ServiceProviderInterface
                 DI\get(TokenServiceInterface::class),
                 DI\get('config.api.appBaseUrl')
             ),
-            AccessLinkGeneratorInterface::class => DI\get(AccessLinkGenerator::class),
-            'config.api.appBaseUrl' => DI\env('APP_BASE_URL', '')
+            AccessLinkGeneratorInterface::class => DI\get(AccessLinkGenerator::class)
         ];
     }
 }

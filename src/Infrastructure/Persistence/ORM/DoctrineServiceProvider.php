@@ -141,12 +141,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             UserRepositoryInterface::class => DI\get(UserRepository::class),
             PublicKeyCredentialSourceRepository::class => DI\get(PublicKeyCredentialRepository::class),
 
-            HealthCheckInterface::class => DI\add(DI\get(DoctrineHealthCheck::class)),
-
-            'config.mysql.hostname' => DI\env('MYSQL_HOST', ''),
-            'config.mysql.database' => DI\env('MYSQL_DATABASE', ''),
-            'config.mysql.username' => DI\env('MYSQL_USER', ''),
-            'config.mysql.password' => DI\env('MYSQL_PASSWORD', '')
+            HealthCheckInterface::class => DI\add(DI\get(DoctrineHealthCheck::class))
         ];
     }
 }
