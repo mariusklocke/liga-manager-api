@@ -16,8 +16,8 @@ fi
 MARIADB_IMAGE="mariadb:${MARIADB_VERSION}"
 REDIS_IMAGE="redis:${REDIS_VERSION}-alpine"
 
-if [[ $GITHUB_REF == *"refs/tags"* ]]; then
-    TAG=${GITHUB_REF##refs/tags/}
+if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+    TAG="${GITHUB_REF_NAME}"
 else
     TAG="latest"
 fi
@@ -59,8 +59,8 @@ echo "Building image ${TARGET_IMAGE} ..."
 DOCKER_BUILDKIT=1 docker build \
     -f docker/php/${TARGET_TYPE}/Dockerfile \
     -t ${TARGET_IMAGE} \
-    --build-arg PHP_VERSION=$PHP_VERSION \
-    --build-arg APP_VERSION=$TAG \
+    --build-arg "PHP_VERSION=$PHP_VERSION" \
+    --build-arg "APP_VERSION=$TAG" \
     --cache-from ${TARGET_IMAGE} . \
     --pull
 
