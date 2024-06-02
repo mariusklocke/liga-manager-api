@@ -6,16 +6,16 @@ parameters:
   layers:
     - name: Application
       collectors:
-        - type: className
-          regex: .*HexagonalPlayground\\Application\\.*
+        - type: class
+          value: .*HexagonalPlayground\\Application\\.*
     - name: Domain
       collectors:
-        - type: className
-          regex: .*HexagonalPlayground\\Domain\\.*
+        - type: class
+          value: .*HexagonalPlayground\\Domain\\.*
     - name: Infrastructure
       collectors:
-        - type: className
-          regex: .*HexagonalPlayground\\Infrastructure\\.*
+        - type: class
+          value: .*HexagonalPlayground\\Infrastructure\\.*
   ruleset:
     Application:
       - Domain

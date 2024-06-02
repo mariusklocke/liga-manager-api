@@ -94,7 +94,7 @@ echo "Install dev dependencies ..."
 docker exec -t php composer install --no-cache --no-progress
 
 echo "Running deptrac ..."
-docker exec -t php deptrac --no-progress --config-file=config/deptrac.yaml
+docker exec -t php deptrac analyse --config-file config/deptrac.yaml --no-progress
 
 echo "Testing gdpr-dump config ..."
 docker exec -t php gdpr-dump config/gdpr-dump.yml > /dev/null

@@ -50,6 +50,6 @@
     "require-dev": {
         "php-coveralls/php-coveralls": "^2.7",
         "phpunit/phpunit": "^11.1.1",
-        "qossmic/deptrac-shim": "^1.0.2"
+        "qossmic/deptrac": "^2.0.0"
     }
 }
