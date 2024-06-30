@@ -50,5 +50,5 @@ test:
 	fi
 
 publish:
-	echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USER}" --password-stdin
+	echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 	docker push --quiet "${TARGET_IMAGE}"
