@@ -35,7 +35,7 @@ test:
 		docker compose down
 	}
 	trap tearDown EXIT
-	docker compose up --detach
+	docker compose up --detach --quiet-pull
 	sleep 10
 	docker compose exec php composer install --no-cache --no-progress
 	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
