@@ -9,6 +9,7 @@ export MARIADB_IMAGE = mariadb:${MARIADB_VERSION}
 export REDIS_IMAGE = redis:${REDIS_VERSION}-alpine
 export COMPOSE_FILE = build/compose.yml
 export COMPOSE_PROJECT_NAME = liga-manager-api-build
+export DOCKER_USERNAME = mklocke
 
 ifeq (${GITHUB_REF_TYPE}, tag)
 	export TAG = ${GITHUB_REF_NAME}
@@ -49,6 +50,5 @@ test:
 	fi
 
 publish:
-	export DOCKER_USER = mklocke
 	echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USER}" --password-stdin
 	docker push --quiet "${TARGET_IMAGE}"
