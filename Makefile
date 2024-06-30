@@ -1,37 +1,54 @@
-container=php
+export SHELL:=/bin/bash
+export SHELLOPTS:=$(if $(SHELLOPTS),$(SHELLOPTS):)pipefail:errexit
 
-up:
-	docker compose up -d
+export PHP_VERSION ?= 8.3
+export MARIADB_VERSION ?= 10.11
+export REDIS_VERSION ?= 6
+export TARGET_TYPE ?= fpm
+export MARIADB_IMAGE = mariadb:${MARIADB_VERSION}
+export REDIS_IMAGE = redis:${REDIS_VERSION}-alpine
+export COMPOSE_FILE = build/compose.yml
+export COMPOSE_PROJECT_NAME = liga-manager-api-build
 
-down:
-	docker compose down
+ifeq (${GITHUB_REF_TYPE}, tag)
+	export TAG = ${GITHUB_REF_NAME}
+else
+ 	export TAG = latest
+endif
 
-ps:
-	docker compose ps
+ifneq (${TARGET_TYPE}, fpm)
+	export TARGET_IMAGE = mklocke/liga-manager-api:${TAG}-${TARGET_TYPE}
+else
+	export TARGET_IMAGE = mklocke/liga-manager-api:${TAG}
+endif
 
-install:
-	docker compose exec ${container} composer install
+.ONESHELL:
+.PHONY: build test publish
 
-update:
-	docker compose exec ${container} composer update
+build:
+	docker compose build php
 
-require:
-	docker compose exec ${container} composer require
+test:
+	set -x
+	function tearDown {
+		docker compose down
+	}
+	trap tearDown EXIT
+	docker compose up --detach
+	sleep 10
+	docker compose exec php composer install --no-cache --no-progress
+	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
+	docker compose exec php phpunit -c config/phpunit.xml --display-deprecations
+	docker compose exec php gdpr-dump config/gdpr-dump.yml > /dev/null
+	if [[ -n "${COVERALLS_RUN_LOCALLY}" ]]; then
+		docker compose exec -u root php docker-php-ext-enable xdebug
+		docker compose exec php phpunit -c config/phpunit.xml --coverage-clover clover.xml --display-deprecations
+		docker compose exec -u root php apk add git
+		docker compose exec php git config --global --add safe.directory /var/www/api
+		docker compose exec -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls -v -x clover.xml -o coveralls.json
+	fi
 
-require-dev:
-	docker compose exec ${container} composer require --dev
-
-user-shell:
-	docker compose exec -u 1000:1000 ${container} sh
-
-root-shell:
-	docker compose exec -u root ${container} sh
-
-logs:
-	docker compose logs -f ${container}
-
-logs-queries:
-	docker compose logs ${container} | grep 'Executing statement'
-
-logs-requests:
-	docker compose logs ${container} | grep 'Received request'
+publish:
+	export DOCKER_USER = mklocke
+	echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USER}" --password-stdin
+	docker push --quiet "${TARGET_IMAGE}"

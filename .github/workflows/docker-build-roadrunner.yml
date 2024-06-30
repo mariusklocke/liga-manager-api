@@ -6,10 +6,18 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: Build, Test & Publish
-        run: bash build.sh
+      - name: Build
+        run: make build
         env:
-          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          TARGET_TYPE: "roadrunner"
+      - name: Test
+        run: make test
+        env:
+          COVERALLS_RUN_LOCALLY: 1
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          TARGET_TYPE: "roadrunner"
+      - name: Publish
+        run: make publish
+        env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-          PUBLISH_IMAGE: 1
           TARGET_TYPE: "roadrunner"

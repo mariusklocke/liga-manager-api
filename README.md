@@ -2,24 +2,26 @@
 [![Coverage Status](https://coveralls.io/repos/github/mariusklocke/liga-manager-api/badge.svg?branch=master)](https://coveralls.io/github/mariusklocke/liga-manager-api?branch=master)
 
 ## Requirements
-A working installation of `docker` and `docker-compose`
+A working installation of `docker` and `docker compose`.
 
 ## Getting started
-This application comes with an example configuration for running with `docker-compose`. To get started rename `.env.dist` to `.env` and `docker-compose.yml.dist` to `docker-compose.yml` and adjust both configuration files to your local needs.
+This application comes with an example configuration for running with `docker compose`. To get started rename `.env.dist` to `.env` and `docker-compose.yml.dist` to `docker-compose.yml` and adjust both configuration files to your local needs.
 
-The file `docker-compose.yml.dist` contains a default configuration suitable for local development. To build the images and run tests:
+The file `docker-compose.yml.dist` contains a default configuration suitable for local development.
+
+Build the image using:
 ```bash
-$ ./build.sh
+$ make build
 ```
 
 Now you are ready to start the containers
 ```bash
-$ docker-compose up -d
+$ docker compose up -d
 ```
 
-To setup your `.env` file follow the instructions given from
+To set up your `.env` file follow the instructions given from
 ```bash
-$ docker-compose exec php lima app:env:setup
+$ docker compose exec php lima app:env:setup
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
@@ -28,19 +30,19 @@ For more information on how to manage containers, please refer to the [docker-co
 
 ```bash
 # Wipe database
-$ docker-compose exec php lima app:db:wipe
+$ docker compose exec php lima app:db:wipe
 
 # Run migrations
-$ docker-compose exec php lima migrations:migrate
+$ docker compose exec php lima migrations:migrate
 
 # Create a new user (any role)
-$ docker-compose exec php lima app:user:create
+$ docker compose exec php lima app:user:create
 
 # Create the default admin user
-$ docker-compose exec php lima app:user:create --default
+$ docker compose exec php lima app:user:create --default
 
 # Load demo data
-$ docker-compose exec php lima app:db:demo-data
+$ docker compose exec php lima app:db:demo-data
 ```
 
 ## Enable HTTPS

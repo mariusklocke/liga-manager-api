@@ -1,0 +1,37 @@
+services:
+    php:
+        image: $TARGET_IMAGE
+        pull_policy: missing
+        build:
+            context: $PWD
+            dockerfile: $PWD/docker/php/$TARGET_TYPE/Dockerfile
+            args:
+                PHP_VERSION: $PHP_VERSION
+                APP_VERSION: $TAG
+            cache_from:
+                - $TARGET_IMAGE
+            pull: true
+        environment:
+            - ADMIN_EMAIL=admin@example.com
+            - ADMIN_PASSWORD=123456
+            - JWT_SECRET=a194be3811fc
+            - LOG_LEVEL=warning
+            - MYSQL_DATABASE=test
+            - MYSQL_HOST=mariadb
+            - MYSQL_PASSWORD=test
+            - MYSQL_USER=test
+            - REDIS_HOST=redis
+        volumes:
+            - $PWD/.git:/var/www/api/.git
+            - $PWD/tests:/var/www/api/tests
+    mariadb:
+        image: $MARIADB_IMAGE
+        pull_policy: always
+        environment:
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+            - MYSQL_DATABASE=test
+            - MYSQL_PASSWORD=test
+            - MYSQL_USER=test
+    redis:
+        image: $REDIS_IMAGE
+        pull_policy: always
