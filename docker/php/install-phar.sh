@@ -13,14 +13,14 @@ install () {
 }
 
 COMPOSER_PATH="/usr/local/bin/composer"
-COMPOSER_VERSION="2.7.6"
+COMPOSER_VERSION="2.7.7"
 COMPOSER_URL="https://github.com/composer/composer/releases/download/$COMPOSER_VERSION/composer.phar"
-COMPOSER_CHECKSUM="29dc9a19ef33535db061b31180b2a833a7cf8d2cf4145b33a2f83504877bba08"
+COMPOSER_CHECKSUM="aab940cd53d285a54c50465820a2080fcb7182a4ba1e5f795abfb10414a4b4be"
 
 GDPR_DUMP_PATH="/usr/local/bin/gdpr-dump"
-GDPR_DUMP_VERSION="4.2.2"
+GDPR_DUMP_VERSION="5.0.1"
 GDPR_DUMP_URL="https://github.com/Smile-SA/gdpr-dump/releases/download/$GDPR_DUMP_VERSION/gdpr-dump.phar"
-GDPR_DUMP_CHECKSUM="ee74e89cb48dc7565bd062d4a84b5ebe4be93ed1c395a090f332a17c3440f8d4"
+GDPR_DUMP_CHECKSUM="ae7517a172ff88d17b68cd5b978fd338ba8c4334bcdfa23b0baa3f74a51808d2"
 
 set -e
 install "$COMPOSER_PATH" "$COMPOSER_URL" "$COMPOSER_CHECKSUM"
