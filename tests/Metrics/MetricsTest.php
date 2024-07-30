@@ -8,25 +8,33 @@ class MetricsTest extends HttpTest
 {
     public function testMetricsCanBeQueried(): void
     {
+        $expectedMetrics = [
+            ['name' => 'requests_total', 'type' => 'counter'],
+            ['name' => 'requests_failed', 'type' => 'counter'],
+            ['name' => 'requests_auth_none', 'type' => 'counter'],
+            ['name' => 'requests_auth_jwt', 'type' => 'counter'],
+            ['name' => 'requests_auth_basic', 'type' => 'counter'],
+            ['name' => 'memory_usage', 'type' => 'gauge'],
+            ['name' => 'memory_peak_usage', 'type' => 'gauge'],
+            ['name' => 'database_queries', 'type' => 'counter']
+        ];
+
         $request = $this->createRequest('GET', '/api/metrics');
         $response = $this->client->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
         $contentType = $response->getHeader('Content-Type')[0];
         self::assertSame('text/plain', $contentType);
-        $metrics = (string)$response->getBody();
+        $actualMetrics = (string)$response->getBody();
 
-        // Request metrics
-        self::assertMatchesRegularExpression('/^requests_total \d+$/m', $metrics);
-        self::assertMatchesRegularExpression('/^requests_failed \d+$/m', $metrics);
-        self::assertMatchesRegularExpression('/^requests_auth_none \d+$/m', $metrics);
-        self::assertMatchesRegularExpression('/^requests_auth_jwt \d+$/m', $metrics);
-        self::assertMatchesRegularExpression('/^requests_auth_basic \d+$/m', $metrics);
-
-        // Memory metrics
-        self::assertMatchesRegularExpression('/^memory_usage \d+$/m', $metrics);
-        self::assertMatchesRegularExpression('/^memory_peak_usage \d+$/m', $metrics);
-
-        // Database metrics
-        self::assertMatchesRegularExpression('/^database_queries \d+$/m', $metrics);
+        foreach ($expectedMetrics as $metric) {
+            self::assertMatchesRegularExpression(
+                sprintf('/^%s \d+$/m', $metric['name']),
+                $actualMetrics
+            );
+            self::assertMatchesRegularExpression(
+                sprintf('/^# TYPE %s %s$/m', $metric['name'], $metric['type']),
+                $actualMetrics
+            );
+        }
     }
 }
