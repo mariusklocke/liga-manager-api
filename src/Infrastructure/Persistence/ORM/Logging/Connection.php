@@ -7,16 +7,22 @@ use Doctrine\DBAL\Driver\Connection as ConnectionInterface;
 use Doctrine\DBAL\Driver\Middleware\AbstractConnectionMiddleware;
 use Doctrine\DBAL\Driver\Result;
 use Doctrine\DBAL\Driver\Statement as DriverStatement;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Event\QueryEvent;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Event\TransactionCommitEvent;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Event\TransactionRollbackEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 class Connection extends AbstractConnectionMiddleware
 {
     private LoggerInterface $logger;
+    private EventDispatcherInterface $eventDispatcher;
 
-    public function __construct(ConnectionInterface $connection, LoggerInterface $logger)
+    public function __construct(ConnectionInterface $connection, LoggerInterface $logger, EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($connection);
         $this->logger = $logger;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function __destruct()
@@ -30,45 +36,45 @@ class Connection extends AbstractConnectionMiddleware
             parent::prepare($sql),
             $this->logger,
             $sql,
+            $this->eventDispatcher
         );
     }
 
     public function query(string $sql): Result
     {
-        // dispatch event for "database_queries"
         $this->logger->debug('Executing database query', ['sql' => $sql]);
+        $result = parent::query($sql);
+        $this->eventDispatcher->dispatch(new QueryEvent($sql));
 
-        return parent::query($sql);
+        return $result;
     }
 
     public function exec(string $sql): int|string
     {
-        // dispatch event for "database_queries"
         $this->logger->debug('Executing database statement', ['sql' => $sql]);
+        $result = parent::exec($sql);
+        $this->eventDispatcher->dispatch(new QueryEvent($sql));
 
-        return parent::exec($sql);
+        return $result;
     }
 
     public function beginTransaction(): void
     {
         $this->logger->debug('Beginning database transaction');
-
         parent::beginTransaction();
     }
 
     public function commit(): void
     {
-        // dispatch event for "database_transaction_commits"
         $this->logger->debug('Committing database transaction');
-
         parent::commit();
+        $this->eventDispatcher->dispatch(new TransactionCommitEvent());
     }
 
     public function rollBack(): void
     {
-        // dispatch event for "database_transaction_rollbacks"
         $this->logger->debug('Rolling back database transaction');
-
         parent::rollBack();
+        $this->eventDispatcher->dispatch(new TransactionRollbackEvent());
     }
 }

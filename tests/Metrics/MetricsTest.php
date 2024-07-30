@@ -25,5 +25,8 @@ class MetricsTest extends HttpTest
         // Memory metrics
         self::assertMatchesRegularExpression('/^memory_usage \d+$/m', $metrics);
         self::assertMatchesRegularExpression('/^memory_peak_usage \d+$/m', $metrics);
+
+        // Database metrics
+        self::assertMatchesRegularExpression('/^database_queries \d+$/m', $metrics);
     }
 }

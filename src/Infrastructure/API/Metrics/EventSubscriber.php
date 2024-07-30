@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\API\Metrics;
 
 use HexagonalPlayground\Infrastructure\API\Event\ResponseEvent;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Event\QueryEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EventSubscriber implements EventSubscriberInterface
@@ -17,7 +18,8 @@ class EventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ResponseEvent::class => 'handleResponseEvent'
+            ResponseEvent::class => 'handleResponseEvent',
+            QueryEvent::class => 'handleQueryEvent'
         ];
     }
 
@@ -41,5 +43,14 @@ class EventSubscriber implements EventSubscriberInterface
         } else if (preg_match('/^basic/i', $authHeader)) {
             $this->metricsStore->incrementCounter('requests_auth_basic');
         }
+    }
+
+    public function handleQueryEvent(QueryEvent $event): void
+    {
+        if ($event->getQuery() === 'SELECT 1') {
+            return;
+        }
+
+        $this->metricsStore->incrementCounter('database_queries');
     }
 }

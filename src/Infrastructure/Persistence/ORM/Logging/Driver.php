@@ -5,16 +5,19 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM\Logging;
 
 use Doctrine\DBAL\Driver as DriverInterface;
 use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 class Driver extends AbstractDriverMiddleware
 {
     private LoggerInterface $logger;
+    private EventDispatcherInterface $eventDispatcher;
 
-    public function __construct(DriverInterface $driver, LoggerInterface $logger)
+    public function __construct(DriverInterface $driver, LoggerInterface $logger, EventDispatcherInterface $eventDispatcher)
     {
         parent::__construct($driver);
         $this->logger = $logger;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -27,6 +30,7 @@ class Driver extends AbstractDriverMiddleware
         return new Connection(
             parent::connect($params),
             $this->logger,
+            $this->eventDispatcher
         );
     }
 
