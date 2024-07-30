@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Event\RequestEvent;
+use HexagonalPlayground\Infrastructure\API\Event\ResponseEvent;
 use HexagonalPlayground\Infrastructure\API\ServiceProvider as ApiServiceProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRouteProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLServiceProvider;
@@ -11,6 +13,8 @@ use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRoutePr
 use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\RouteProvider as LogosRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\ServiceProvider as LogosServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Metrics\RouteProvider as MetricsRouteProvider;
+use HexagonalPlayground\Infrastructure\API\Metrics\ServiceProvider as MetricsServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\RateLimitMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
@@ -23,7 +27,10 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use Middlewares\TrailingSlash;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface;
 
@@ -45,7 +52,8 @@ class Application extends App
             new WebAuthnServiceProvider(),
             new LogosServiceProvider(),
             new ApiServiceProvider(),
-            new FilesystemServiceProvider()
+            new FilesystemServiceProvider(),
+            new MetricsServiceProvider()
         ];
 
         $container = ContainerBuilder::build($serviceProviders, self::VERSION);
@@ -70,12 +78,23 @@ class Application extends App
                 new GraphQLRouteProvider(),
                 new WebAuthnRouteProvider(),
                 new HealthRouteProvider(),
-                new LogosRouteProvider()
+                new LogosRouteProvider(),
+                new MetricsRouteProvider()
             ];
 
             foreach ($routeProviders as $provider) {
                 $provider->register($group);
             }
         });
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        /** @var EventDispatcherInterface $eventDispatcher */
+        $eventDispatcher = $this->container->get(EventDispatcherInterface::class);
+        $eventDispatcher->dispatch(new RequestEvent($request));
+        $response = parent::handle($request);
+        $eventDispatcher->dispatch(new ResponseEvent($request, $response));
+        return $response;
     }
 }

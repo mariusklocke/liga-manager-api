@@ -40,6 +40,10 @@ use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
 use HexagonalPlayground\Application\Command\UpdateUserCommand;
+use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -82,7 +86,17 @@ class ServiceProvider implements ServiceProviderInterface
                 UpdateTeamContactCommand::class,
                 UpdateUserCommand::class
             ],
-            HandlerResolver::class => DI\get(ContainerHandlerResolver::class)
+            HandlerResolver::class => DI\get(ContainerHandlerResolver::class),
+            EventDispatcherInterface::class => DI\factory(function (ContainerInterface $container) {
+                $eventDispatcher = new EventDispatcher();
+
+                foreach ($container->get(EventSubscriberInterface::class) as $subscriber) {
+                    $eventDispatcher->addSubscriber($subscriber);
+                }
+
+                return $eventDispatcher;
+            }),
+            EventSubscriberInterface::class => []
         ];
     }
 }

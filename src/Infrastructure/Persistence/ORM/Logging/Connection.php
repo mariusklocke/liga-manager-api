@@ -35,6 +35,7 @@ class Connection extends AbstractConnectionMiddleware
 
     public function query(string $sql): Result
     {
+        // dispatch event for "database_queries"
         $this->logger->debug('Executing database query', ['sql' => $sql]);
 
         return parent::query($sql);
@@ -42,6 +43,7 @@ class Connection extends AbstractConnectionMiddleware
 
     public function exec(string $sql): int|string
     {
+        // dispatch event for "database_queries"
         $this->logger->debug('Executing database statement', ['sql' => $sql]);
 
         return parent::exec($sql);
@@ -56,6 +58,7 @@ class Connection extends AbstractConnectionMiddleware
 
     public function commit(): void
     {
+        // dispatch event for "database_transaction_commits"
         $this->logger->debug('Committing database transaction');
 
         parent::commit();
@@ -63,6 +66,7 @@ class Connection extends AbstractConnectionMiddleware
 
     public function rollBack(): void
     {
+        // dispatch event for "database_transaction_rollbacks"
         $this->logger->debug('Rolling back database transaction');
 
         parent::rollBack();

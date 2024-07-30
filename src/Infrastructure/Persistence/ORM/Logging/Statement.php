@@ -34,6 +34,8 @@ class Statement extends AbstractStatementMiddleware
 
     public function execute(): ResultInterface
     {
+        // dispatch event for "database_queries"
+
         $this->logger->debug('Executing database statement', [
             'sql'    => $this->sql,
             'params' => $this->params

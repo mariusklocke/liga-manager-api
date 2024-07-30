@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd" bootstrap="../vendor/autoload.php"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.1/phpunit.xsd" bootstrap="../vendor/autoload.php"
          beStrictAboutOutputDuringTests="true" cacheResult="false" cacheDirectory=".phpunit.cache">
     <source>
         <include>
@@ -16,6 +16,9 @@
         </testsuite>
         <testsuite name="Health">
             <directory>../tests/Health</directory>
+        </testsuite>
+        <testsuite name="Metrics">
+            <directory>../tests/Metrics</directory>
         </testsuite>
         <testsuite name="WebAuthn">
             <directory>../tests/WebAuthn</directory>
