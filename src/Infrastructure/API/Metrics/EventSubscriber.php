@@ -24,7 +24,7 @@ class EventSubscriber implements EventSubscriberInterface
     public function handleResponseEvent(ResponseEvent $event): void
     {
         $path = $event->getRequest()->getUri()->getPath();
-        if ($path === '/health' || $path === '/metrics') {
+        if ($path === '/api/health' || $path === '/api/metrics') {
             return;
         }
 
