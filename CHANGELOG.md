@@ -2,6 +2,12 @@
 
 ## NEXT
 
+## 1.19.0 - 2024-07-30
+* Feature: Add metrics endpoint
+* Feature: Allow JSON config
+* Improvement: Update dependencies
+* Improvement: Using `docker compose` during builds
+
 ## 1.18.1 - 2024-04-16
 * Bugfix: Fix links in mails
 * Improvement: Update dependencies
