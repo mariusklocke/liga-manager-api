@@ -15,4 +15,9 @@ class RequestEvent
     {
         $this->request = $request;
     }
+
+    public function getRequest(): ServerRequestInterface
+    {
+        return $this->request;
+    }
 }
