@@ -38,4 +38,16 @@ class ResponseSerializer
             ->withHeader('Content-Type', 'application/json')
             ->withBody($this->streamFactory->createStream(json_encode($data, JSON_THROW_ON_ERROR)));
     }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string $data
+     * @return ResponseInterface
+     */
+    public function serializeText(ResponseInterface $response, string $data): ResponseInterface
+    {
+        return $response
+            ->withHeader('Content-Type', 'text/plain')
+            ->withBody($this->streamFactory->createStream($data));
+    }
 }

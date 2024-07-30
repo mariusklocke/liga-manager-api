@@ -7,6 +7,8 @@ use Doctrine\DBAL\Driver\Middleware\AbstractStatementMiddleware;
 use Doctrine\DBAL\Driver\Result as ResultInterface;
 use Doctrine\DBAL\Driver\Statement as StatementInterface;
 use Doctrine\DBAL\ParameterType;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Event\QueryEvent;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 
 class Statement extends AbstractStatementMiddleware
@@ -14,15 +16,18 @@ class Statement extends AbstractStatementMiddleware
     private LoggerInterface $logger;
     private string $sql;
     private array $params = [];
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         StatementInterface $statement,
         LoggerInterface $logger,
         string $sql,
+        EventDispatcherInterface $eventDispatcher
     ) {
         parent::__construct($statement);
         $this->logger = $logger;
         $this->sql = $sql;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public function bindValue(int|string $param, mixed $value, ParameterType $type): void
@@ -38,7 +43,9 @@ class Statement extends AbstractStatementMiddleware
             'sql'    => $this->sql,
             'params' => $this->params
         ]);
+        $result = parent::execute();
+        $this->eventDispatcher->dispatch(new QueryEvent($this->sql, $this->params));
 
-        return parent::execute();
+        return $result;
     }
 }
