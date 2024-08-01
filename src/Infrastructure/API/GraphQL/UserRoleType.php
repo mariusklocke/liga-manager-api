@@ -12,15 +12,13 @@ class UserRoleType extends EnumType
     public function __construct()
     {
         $config = [
-            'values' => [
-                User::ROLE_ADMIN => [
-                    'value' => User::ROLE_ADMIN
-                ],
-                User::ROLE_TEAM_MANAGER => [
-                    'value' => User::ROLE_TEAM_MANAGER
-                ]
-            ]
+            'values' => []
         ];
+
+        foreach (User::getRoles() as $role) {
+            $config['values'][$role] = ['value' => $role];
+        }
+
         parent::__construct($config);
     }
 }

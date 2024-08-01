@@ -156,7 +156,7 @@ class User extends Entity
     {
         Assert::oneOf(
             $role,
-            [self::ROLE_ADMIN, self::ROLE_TEAM_MANAGER],
+            self::getRoles(),
             'Invalid role value. Valid: [%s], Got: %s',
             InvalidInputException::class
         );
@@ -317,5 +317,18 @@ class User extends Entity
         }
 
         throw new PermissionException('User is not permitted to manage this team');
+    }
+
+    /**
+     * Returns an array of valid roles
+     *
+     * @return string[]
+     */
+    public static function getRoles(): array
+    {
+        return [
+            self::ROLE_ADMIN,
+            self::ROLE_TEAM_MANAGER
+        ];
     }
 }

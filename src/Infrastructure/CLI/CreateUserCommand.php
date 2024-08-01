@@ -108,7 +108,7 @@ class CreateUserCommand extends Command
         }
 
         if ($input->isInteractive()) {
-            return $this->getStyledIO($input, $output)->choice('Choose a role', [User::ROLE_ADMIN, User::ROLE_TEAM_MANAGER]);
+            return $this->getStyledIO($input, $output)->choice('Choose a role', User::getRoles());
         }
 
         return null;
