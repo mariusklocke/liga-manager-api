@@ -272,7 +272,7 @@ class User extends Entity
     /**
      * @throws PermissionException if user is not admin
      */
-    public function assertIsAdmin()
+    public function assertIsAdmin(): void
     {
         if ($this->hasRole(User::ROLE_ADMIN)) {
             return;

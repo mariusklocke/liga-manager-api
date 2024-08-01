@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class HealthCommand extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:health');
         $this->setDescription('Check application health');

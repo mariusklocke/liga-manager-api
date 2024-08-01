@@ -44,7 +44,7 @@ class Ranking
      * @param string $guestTeamId
      * @param MatchResult $matchResult
      */
-    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult)
+    public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
     {
         Assert::true(
             $this->season->isInProgress(),
@@ -62,7 +62,7 @@ class Ranking
      * @param string $guestTeamId
      * @param MatchResult $matchResult
      */
-    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult)
+    public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
     {
         Assert::true(
             $this->season->isInProgress(),
@@ -127,7 +127,7 @@ class Ranking
     /**
      * Reorders the ranking positions
      */
-    private function reorder()
+    private function reorder(): void
     {
         /** @var RankingPosition[] $sortedArray */
         $sortedArray = $this->positions->toArray();

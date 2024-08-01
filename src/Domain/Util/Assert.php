@@ -18,7 +18,7 @@ class Assert
      * @param string $message
      * @param string $exceptionClass
      */
-    public static function oneOf($value, array $whitelist, string $message, string $exceptionClass)
+    public static function oneOf($value, array $whitelist, string $message, string $exceptionClass): void
     {
         if (!in_array($value, $whitelist, true)) {
             throw new $exceptionClass(sprintf($message, implode(',', $whitelist), $value));

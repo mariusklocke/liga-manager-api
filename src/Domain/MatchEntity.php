@@ -59,7 +59,7 @@ class MatchEntity extends Entity
     /**
      * @param MatchResult $matchResult
      */
-    public function submitResult(MatchResult $matchResult)
+    public function submitResult(MatchResult $matchResult): void
     {
         if ($this->hasResult()) {
             if ($this->matchResult->equals($matchResult)) {

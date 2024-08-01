@@ -31,7 +31,7 @@ class BufferedMatchLoader implements BufferedLoaderInterface
     /**
      * @param string $matchDayId
      */
-    public function addMatchDay(string $matchDayId)
+    public function addMatchDay(string $matchDayId): void
     {
         $this->byMatchDayId[$matchDayId] = null;
     }

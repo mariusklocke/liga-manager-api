@@ -61,7 +61,7 @@ class RankingPosition
      * @param int $scoredGoals
      * @param int $concededGoals
      */
-    public function addResult(int $scoredGoals, int $concededGoals)
+    public function addResult(int $scoredGoals, int $concededGoals): void
     {
         $this->scoredGoals += $scoredGoals;
         $this->concededGoals += $concededGoals;
@@ -85,7 +85,7 @@ class RankingPosition
      * @param int $scoredGoals
      * @param int $concededGoals
      */
-    public function revertResult(int $scoredGoals, int $concededGoals)
+    public function revertResult(int $scoredGoals, int $concededGoals): void
     {
         $this->scoredGoals -= $scoredGoals;
         $this->concededGoals -= $concededGoals;

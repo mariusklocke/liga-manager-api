@@ -41,7 +41,7 @@ class MatchResult extends ValueObject
     /**
      * @param int $value
      */
-    private function assertValidScoreValue(int $value)
+    private function assertValidScoreValue(int $value): void
     {
         Assert::true(
             $value >= 0,

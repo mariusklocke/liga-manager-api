@@ -25,7 +25,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LoadDemoDataCommand extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('app:db:demo-data');
         $this->setDescription('Load demo data into current database');
