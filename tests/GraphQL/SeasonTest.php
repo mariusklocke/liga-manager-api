@@ -213,10 +213,59 @@ class SeasonTest extends CompetitionTestCase
      * @return string
      */
     #[Depends("testMatchesCanBeQueriedByKickoff")]
-    public function testMatchCanBeLocated(string $seasonId): string
+    public function testMatchCanBeScheduledToAnotherMatchDay(string $seasonId): string
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $firstMatchDay = $season->match_days[0];
+        $secondMatchDay = $season->match_days[1];
+
+        self::assertNotNull($firstMatchDay);
+        self::assertNotNull($secondMatchDay);
+
+        $this->client->scheduleMatch($firstMatchDay->matches[0]->id, null, $secondMatchDay->id);
+        $this->client->scheduleMatch($secondMatchDay->matches[0]->id, null, $firstMatchDay->id);
+
+        $seasonChanged = $this->client->getSeasonByIdWithMatchDays($seasonId);
+
+        self::assertEquals($season->match_days[0]->matches[0], $seasonChanged->match_days[1]->matches[0]);
+        self::assertEquals($season->match_days[1]->matches[0], $seasonChanged->match_days[0]->matches[0]);
+
+        return $seasonId;
+    }
+
+    /**
+     * @param string $seasonId
+     * @return string
+     */
+    #[Depends("testMatchCanBeScheduledToAnotherMatchDay")]
+    public function testMatchCanBeScheduledWithKickoff(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         $matchId = $season->match_days[0]->matches[0]->id;
+        $match = $this->client->getMatchById($matchId);
+
+        self::assertNotNull($match);
+
+        $newKickoff = '2019-04-05T11:23:44+02:00';
+        self::assertNotEquals($newKickoff, $match->kickoff);
+
+        $this->client->scheduleMatch($matchId, $newKickoff, null);
+
+        $match = $this->client->getMatchById($matchId);
+        self::assertNotNull($match);
+        self::assertNotNull($match->kickoff);
+        self::assertSame('2019-04-05T09:23:44Z', $match->kickoff);
+
+        return $matchId;
+    }
+
+    /**
+     * @param string $matchId
+     * @return string
+     */
+    #[Depends("testMatchCanBeScheduledWithKickoff")]
+    public function testMatchCanBeLocated(string $matchId): string
+    {
         $match = $this->client->getMatchById($matchId);
 
         self::assertNotNull($match);
@@ -235,32 +284,8 @@ class SeasonTest extends CompetitionTestCase
 
     /**
      * @param string $matchId
-     * @return string
      */
     #[Depends("testMatchCanBeLocated")]
-    public function testMatchCanBeScheduled(string $matchId): string
-    {
-        $match = $this->client->getMatchById($matchId);
-
-        self::assertNotNull($match);
-
-        $newKickoff = '2019-04-05T11:23:44+02:00';
-        self::assertNotEquals($newKickoff, $match->kickoff);
-
-        $this->client->scheduleMatch($matchId, $newKickoff);
-
-        $match = $this->client->getMatchById($matchId);
-        self::assertNotNull($match);
-        self::assertNotNull($match->kickoff);
-        self::assertSame('2019-04-05T09:23:44Z', $match->kickoff);
-
-        return $matchId;
-    }
-
-    /**
-     * @param string $matchId
-     */
-    #[Depends("testMatchCanBeScheduled")]
     public function testDeletingUsedPitchFails(string $matchId): void
     {
         $match = $this->client->getMatchById($matchId);
