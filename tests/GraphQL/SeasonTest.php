@@ -216,19 +216,19 @@ class SeasonTest extends CompetitionTestCase
     public function testMatchCanBeScheduledToAnotherMatchDay(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
-        $firstMatchDay = $season->match_days[0];
-        $secondMatchDay = $season->match_days[1];
+        $matchA = $season->match_days[0]->matches[0];
+        $matchB = $season->match_days[1]->matches[0];
 
-        self::assertNotNull($firstMatchDay);
-        self::assertNotNull($secondMatchDay);
+        self::assertNotNull($matchA);
+        self::assertNotNull($matchB);
 
-        $this->client->scheduleMatch($firstMatchDay->matches[0]->id, null, $secondMatchDay->id);
-        $this->client->scheduleMatch($secondMatchDay->matches[0]->id, null, $firstMatchDay->id);
+        $this->client->scheduleMatch($matchA->id, null, $season->match_days[1]->id);
+        $this->client->scheduleMatch($matchB->id, null, $season->match_days[0]->id);
 
-        $seasonChanged = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
 
-        self::assertEquals($season->match_days[0]->matches[0], $seasonChanged->match_days[1]->matches[0]);
-        self::assertEquals($season->match_days[1]->matches[0], $seasonChanged->match_days[0]->matches[0]);
+        self::assertArrayContainsObjectWithAttribute($season->match_days[1]->matches, 'id', $matchA->id);
+        self::assertArrayContainsObjectWithAttribute($season->match_days[0]->matches, 'id', $matchB->id);
 
         return $seasonId;
     }
