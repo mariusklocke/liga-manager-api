@@ -21,6 +21,9 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
     && install-phar.sh \
     && rm /usr/local/bin/install-phar.sh
 
+# Add PHP-FPM compatibility symlink
+RUN ln -s /usr/sbin/php-fpm83 /usr/sbin/php-fpm
+
 # Configure PHP
 COPY docker/php/fpm/docker.conf /etc/php83/php-fpm.d/docker.conf
 COPY docker/php/php.ini /etc/php83/php.ini
