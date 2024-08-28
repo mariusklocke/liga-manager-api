@@ -66,13 +66,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         self::expectException(Exception::class);
     }
 
-    protected static function assertSimilarFloats(float $expected, float $actual)
+    protected static function assertSimilarFloats(float $expected, float $actual): void
     {
         $tolerance = 0.00001;
         self::assertLessThan($tolerance, abs($expected - $actual));
     }
 
-    protected static function assertArrayContainsObjectWithAttribute(array $array, string $attribute, $value)
+    protected static function assertArrayContainsObjectWithAttribute(array $array, string $attribute, $value): void
     {
         $filtered = array_filter($array, function ($object) use ($attribute, $value) {
             return is_object($object) && isset($object->$attribute) && $object->$attribute === $value;

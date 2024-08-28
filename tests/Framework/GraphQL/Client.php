@@ -805,17 +805,18 @@ GRAPHQL;
         ]);
     }
 
-    public function scheduleMatch($matchId, $kickoff): void
+    public function scheduleMatch($matchId, $kickoff, $matchDayId): void
     {
         $query = <<<'GRAPHQL'
-mutation scheduleMatch($match_id: String!, $kickoff: DateTime!) {
-  scheduleMatch(match_id: $match_id, kickoff: $kickoff)
+mutation scheduleMatch($match_id: String!, $kickoff: DateTime, $match_day_id: String) {
+  scheduleMatch(match_id: $match_id, kickoff: $kickoff, match_day_id: $match_day_id)
 }
 GRAPHQL;
 
         $this->requestAndParse($query, [
             'match_id' => $matchId,
-            'kickoff' => $kickoff
+            'kickoff' => $kickoff,
+            'match_day_id' => $matchDayId
         ]);
     }
 

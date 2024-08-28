@@ -78,9 +78,17 @@ class MatchEntity extends Entity
     /**
      * @param DateTimeImmutable $kickoff
      */
-    public function schedule(DateTimeImmutable $kickoff): void
+    public function setKickoff(DateTimeImmutable $kickoff): void
     {
         $this->kickoff = $kickoff;
+    }
+
+    /**
+     * @param MatchDay $matchDay
+     */
+    public function setMatchDay(MatchDay $matchDay): void
+    {
+        $this->matchDay = $matchDay;
     }
 
     /**
@@ -182,5 +190,13 @@ class MatchEntity extends Entity
     public function getKickoff(): ?DateTimeImmutable
     {
         return $this->kickoff;
+    }
+
+    /**
+     * @return MatchDay
+     */
+    public function getMatchDay(): MatchDay
+    {
+        return $this->matchDay;
     }
 }

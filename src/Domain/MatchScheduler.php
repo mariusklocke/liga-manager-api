@@ -54,7 +54,7 @@ class MatchScheduler
 
             $kickoff = $this->calcKickoff($matchDay, $selectedAppointment);
 
-            $match->schedule($kickoff);
+            $match->setKickoff($kickoff);
 
             $pitch = $pitches[$selectedAppointment->getPitchId()] ?? null;
 
