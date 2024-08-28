@@ -11,5 +11,5 @@ done
 set -ex
 apk update
 apk upgrade
-apk add --no-cache "${PACKAGES}"
+apk add --no-cache ${PACKAGES}
 rm -rf /var/cache/*
