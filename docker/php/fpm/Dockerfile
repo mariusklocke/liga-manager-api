@@ -22,8 +22,8 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
     && rm /usr/local/bin/install-phar.sh
 
 # Configure PHP
-COPY docker/php/fpm/docker.conf /usr/local/etc/php-fpm.d/docker.conf
-COPY docker/php/php.ini /usr/local/etc/php/php.ini
+COPY docker/php/fpm/docker.conf /etc/php83/php-fpm.d/docker.conf
+COPY docker/php/php.ini /etc/php83/php.ini
 RUN xdebug off
 
 # Add healthcheck
