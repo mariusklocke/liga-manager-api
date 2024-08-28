@@ -32,6 +32,7 @@ build:
 test:
 	set -x
 	function tearDown {
+		docker compose logs php
 		docker compose down
 	}
 	trap tearDown EXIT
