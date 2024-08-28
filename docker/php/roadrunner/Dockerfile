@@ -5,6 +5,9 @@ FROM alpine:3.20
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 
+# Add www-data user
+RUN adduser -u 82 -D -S -G www-data www-data
+
 # Install packages for PHP and extensions
 COPY docker/php/roadrunner/packages.sh /usr/local/bin/install-packages.sh
 RUN chmod +x /usr/local/bin/install-packages.sh \
