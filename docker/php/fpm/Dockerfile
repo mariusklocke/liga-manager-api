@@ -66,4 +66,4 @@ RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck || exit 1
-CMD lima migrations:migrate -n && php-fpm
+CMD lima migrations:migrate -n && php-fpm -F
