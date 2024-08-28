@@ -43,7 +43,7 @@ test:
 	docker compose exec php phpunit -c config/phpunit.xml --display-deprecations
 	docker compose exec php gdpr-dump config/gdpr-dump.yml > /dev/null
 	if [[ -n "${COVERALLS_RUN_LOCALLY}" ]]; then
-		docker compose exec -u root xdebug on
+		docker compose exec -u root php xdebug on
 		docker compose exec php phpunit -c config/phpunit.xml --coverage-clover clover.xml --display-deprecations
 		docker compose exec -u root php apk add git
 		docker compose exec php git config --global --add safe.directory /var/www/api
