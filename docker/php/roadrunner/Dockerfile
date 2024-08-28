@@ -9,7 +9,7 @@ COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 COPY docker/php/roadrunner/packages.sh /usr/local/bin/install-packages.sh
 RUN chmod +x /usr/local/bin/install-packages.sh \
     && install-packages.sh \
-    && rm /usr/local/bin/install-packages.sh \
+    && rm /usr/local/bin/install-packages.sh
 
 # Install xdebug helper
 COPY docker/php/roadrunner/xdebug.sh /usr/local/bin/xdebug
