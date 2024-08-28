@@ -2,6 +2,10 @@
 
 ## NEXT
 
+## 1.20.0 - 2024-08-28
+* Feature: Allow matches to be moved to another match day
+* Improvement: Update dependencies
+
 ## 1.19.0 - 2024-07-30
 * Feature: Add metrics endpoint
 * Feature: Allow JSON config
