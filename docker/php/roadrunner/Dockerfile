@@ -36,13 +36,10 @@ RUN chmod +x /usr/local/bin/docker-php-entrypoint
 # Configure RoadRunner
 COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
 
-# Prepare logos directory
-ENV APP_LOGOS_PATH="/var/www/logos"
-RUN mkdir ${APP_LOGOS_PATH}
-
-# Prepare application directory
+# Create application directories
 ENV APP_HOME="/var/www/api"
-RUN mkdir ${APP_HOME}
+ENV APP_LOGOS_PATH="/var/www/logos"
+RUN mkdir -p ${APP_HOME} ${APP_LOGOS_PATH}
 WORKDIR ${APP_HOME}
 
 # Install dependencies first
