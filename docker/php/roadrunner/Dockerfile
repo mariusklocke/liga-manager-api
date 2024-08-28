@@ -1,6 +1,6 @@
 ARG PHP_VERSION
 ARG APP_VERSION
-FROM ghcr.io/roadrunner-server/roadrunner:2024.1 AS roadrunner
+FROM ghcr.io/roadrunner-server/roadrunner:2024.2 AS roadrunner
 FROM php:${PHP_VERSION}-cli-alpine
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
