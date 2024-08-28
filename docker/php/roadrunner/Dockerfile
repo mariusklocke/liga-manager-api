@@ -1,25 +1,19 @@
 ARG PHP_VERSION
 ARG APP_VERSION
 FROM ghcr.io/roadrunner-server/roadrunner:2024.2 AS roadrunner
-FROM php:${PHP_VERSION}-cli-alpine
+FROM alpine:3.20
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 
-# Install packages & PHP extensions
-RUN set -xe \
-    && apk update \
-    && apk upgrade \
-    && apk add --no-cache gmp gnupg ncurses \
-    && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} gmp-dev linux-headers \
-    && docker-php-ext-install bcmath gmp pcntl pdo_mysql opcache sockets > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
-    && pecl channel-update pecl.php.net \
-    && pecl install apcu > /dev/null \
-    && pecl install redis > /dev/null \
-    && pecl install xdebug > /dev/null \
-    && docker-php-ext-enable apcu redis \
-    && pecl clear-cache \
-    && apk del .build-deps \
-    && rm -rf /tmp/* /var/cache/* /usr/src/*
+# Install packages for PHP and extensions
+COPY docker/php/roadrunner/packages.sh /usr/local/bin/install-packages.sh
+RUN chmod +x /usr/local/bin/install-packages.sh \
+    && install-packages.sh \
+    && rm /usr/local/bin/install-packages.sh \
+
+# Install xdebug helper
+COPY docker/php/roadrunner/xdebug.sh /usr/local/bin/xdebug
+RUN chmod +x /usr/local/bin/xdebug
 
 # Install PHAR tools
 COPY docker/php/install-phar.sh /usr/local/bin/install-phar.sh
@@ -28,7 +22,8 @@ RUN chmod +x /usr/local/bin/install-phar.sh \
     && rm /usr/local/bin/install-phar.sh
 
 # Configure PHP
-COPY docker/php/php.ini /usr/local/etc/php/php.ini
+COPY docker/php/php.ini /etc/php83/php.ini
+RUN xdebug off
 
 # Add healthcheck
 COPY docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck
