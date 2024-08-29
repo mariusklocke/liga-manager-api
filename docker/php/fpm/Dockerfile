@@ -15,11 +15,6 @@ RUN PHP_EXTENSIONS="apcu bcmath dom fpm gmp mbstring opcache pcntl pdo_mysql pha
     && apk add --no-cache fcgi ${PHP_PACKAGES} \
     && rm -rf /var/cache/*
 
-COPY docker/php/fpm/packages.sh /usr/local/bin/install-packages.sh
-RUN chmod +x /usr/local/bin/install-packages.sh \
-    && install-packages.sh \
-    && rm /usr/local/bin/install-packages.sh
-
 # Install xdebug helper
 COPY docker/php/fpm/xdebug.sh /usr/local/bin/xdebug
 RUN chmod +x /usr/local/bin/xdebug
