@@ -9,10 +9,14 @@ COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 RUN adduser -u 82 -D -S -G www-data www-data
 
 # Install packages for PHP and extensions
-COPY docker/php/roadrunner/packages.sh /usr/local/bin/install-packages.sh
-RUN chmod +x /usr/local/bin/install-packages.sh \
-    && install-packages.sh \
-    && rm /usr/local/bin/install-packages.sh
+RUN PHP_EXTENSIONS="apcu bcmath dom gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlwriter" \
+    && PHP_PACKAGES="php83" \
+    && for PHP_EXTENSION in ${PHP_EXTENSIONS}; do PHP_PACKAGES="${PHP_PACKAGES} php83-${PHP_EXTENSION}"; done \
+    && set -ex \
+    && apk update \
+    && apk upgrade \
+    && apk add --no-cache ${PHP_PACKAGES} \
+    && rm -rf /var/cache/*
 
 # Install xdebug helper
 COPY docker/php/roadrunner/xdebug.sh /usr/local/bin/xdebug

@@ -6,6 +6,15 @@ FROM alpine:3.20
 RUN adduser -u 82 -D -S -G www-data www-data
 
 # Install packages for PHP and extensions
+RUN PHP_EXTENSIONS="apcu bcmath dom fpm gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlwriter" \
+    && PHP_PACKAGES="php83" \
+    && for PHP_EXTENSION in ${PHP_EXTENSIONS}; do PHP_PACKAGES="${PHP_PACKAGES} php83-${PHP_EXTENSION}"; done \
+    && set -ex \
+    && apk update \
+    && apk upgrade \
+    && apk add --no-cache fcgi ${PHP_PACKAGES} \
+    && rm -rf /var/cache/*
+
 COPY docker/php/fpm/packages.sh /usr/local/bin/install-packages.sh
 RUN chmod +x /usr/local/bin/install-packages.sh \
     && install-packages.sh \
