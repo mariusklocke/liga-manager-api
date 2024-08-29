@@ -16,21 +16,22 @@ RUN PHP_EXTENSIONS="apcu bcmath dom gmp mbstring opcache pcntl pdo_mysql phar re
     && apk update \
     && apk upgrade \
     && apk add --no-cache curl ${PHP_PACKAGES} \
+    && ln -s /etc/php83 /etc/php \
     && rm -rf /var/cache/*
 
 # Install xdebug helper
 COPY docker/php/xdebug.sh /usr/local/bin/xdebug
 RUN chmod +x /usr/local/bin/xdebug
 
+# Configure PHP
+COPY docker/php/php.ini /etc/php/php.ini
+RUN xdebug off
+
 # Install PHAR tools
 COPY docker/php/install-phar.sh /usr/local/bin/install-phar.sh
 RUN chmod +x /usr/local/bin/install-phar.sh \
     && install-phar.sh \
     && rm /usr/local/bin/install-phar.sh
-
-# Configure PHP
-COPY docker/php/php.ini /etc/php83/php.ini
-RUN xdebug off
 
 # Add healthcheck
 COPY docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck

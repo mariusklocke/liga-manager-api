@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-CONFIG_PATH="/etc/php83/conf.d/50_xdebug.ini"
+CONFIG_PATH="/etc/php/conf.d/50_xdebug.ini"
 
 case "$1" in
   on)
