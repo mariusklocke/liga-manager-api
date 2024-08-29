@@ -16,7 +16,7 @@ RUN PHP_EXTENSIONS="apcu bcmath dom fpm gmp mbstring opcache pcntl pdo_mysql pha
     && rm -rf /var/cache/*
 
 # Install xdebug helper
-COPY docker/php/fpm/xdebug.sh /usr/local/bin/xdebug
+COPY docker/php/xdebug.sh /usr/local/bin/xdebug
 RUN chmod +x /usr/local/bin/xdebug
 
 # Install PHAR tools

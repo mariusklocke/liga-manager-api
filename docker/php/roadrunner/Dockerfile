@@ -19,7 +19,7 @@ RUN PHP_EXTENSIONS="apcu bcmath dom gmp mbstring opcache pcntl pdo_mysql phar re
     && rm -rf /var/cache/*
 
 # Install xdebug helper
-COPY docker/php/roadrunner/xdebug.sh /usr/local/bin/xdebug
+COPY docker/php/xdebug.sh /usr/local/bin/xdebug
 RUN chmod +x /usr/local/bin/xdebug
 
 # Install PHAR tools
