@@ -1,24 +1,15 @@
 #!/bin/sh
-set -xe
 
+PHP_EXTENSIONS="apcu bcmath dom gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlwriter"
+PHP_MAIN_PACKAGE="php83"
+PACKAGES="${PHP_MAIN_PACKAGE}"
+
+for PHP_EXTENSION in $PHP_EXTENSIONS; do
+    PACKAGES="${PACKAGES} ${PHP_MAIN_PACKAGE}-${PHP_EXTENSION}"
+done
+
+set -ex
 apk update
 apk upgrade
-apk add --no-cache \
-    php83 \
-    php83-bcmath \
-    php83-dom \
-    php83-gmp \
-    php83-mbstring \
-    php83-opcache \
-    php83-pcntl \
-    php83-pdo_mysql \
-    php83-phar \
-    php83-simplexml \
-    php83-sockets \
-    php83-tokenizer \
-    php83-xml \
-    php83-xmlwriter \
-    php83-pecl-apcu \
-    php83-pecl-redis \
-    php83-pecl-xdebug
+apk add --no-cache ${PACKAGES}
 rm -rf /var/cache/*
