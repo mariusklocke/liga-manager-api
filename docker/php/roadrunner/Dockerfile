@@ -15,7 +15,7 @@ RUN PHP_EXTENSIONS="apcu bcmath dom gmp mbstring opcache pcntl pdo_mysql phar re
     && set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache ${PHP_PACKAGES} \
+    && apk add --no-cache curl ${PHP_PACKAGES} \
     && rm -rf /var/cache/*
 
 # Install xdebug helper
