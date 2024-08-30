@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
@@ -117,7 +118,14 @@ class SeasonTest extends CompetitionTestCase
     #[Depends("testSeasonCanBeStarted")]
     public function testMatchesCanBeScheduledPerMatchDay(string $seasonId): string
     {
-        $appointments = $this->createMatchAppointments();
+        $timeZone = new DateTimeZone('Europe/Berlin'); // Must use daylight saving time
+        $appointments = $this->createMatchAppointments($timeZone);
+        $validKickoffTimes = [];
+        $kickoffComparisonFormat = 'D,H:i:s';
+        foreach ($appointments as $appointment) {
+            $kickoff = self::parseDateTime($appointment['kickoff'])->setTimezone($timeZone);
+            $validKickoffTimes[] = $kickoff->format($kickoffComparisonFormat);
+        }
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         foreach ($season->match_days as $matchDay) {
@@ -129,6 +137,10 @@ class SeasonTest extends CompetitionTestCase
                 self::assertNotNull($match);
                 self::assertNotNull($match->pitch);
                 self::assertNotNull($match->kickoff);
+
+                // Make sure that kickoff matches one of the appointments
+                $match->kickoff = self::parseDateTime($match->kickoff)->setTimezone($timeZone);
+                self::assertContains($match->kickoff->format($kickoffComparisonFormat), $validKickoffTimes);
             }
         }
 
@@ -142,11 +154,19 @@ class SeasonTest extends CompetitionTestCase
     #[Depends("testMatchesCanBeScheduledPerMatchDay")]
     public function testAllMatchesCanBeScheduledAtOnce(string $seasonId): string
     {
-        $appointments = $this->createMatchAppointments();
+        $timeZone = new DateTimeZone('Europe/Berlin'); // Must use daylight saving time
+        $appointments = $this->createMatchAppointments($timeZone);
+        $validKickoffTimes = [];
+        $kickoffComparisonFormat = 'D,H:i:s';
+        foreach ($appointments as $appointment) {
+            $kickoff = self::parseDateTime($appointment['kickoff'])->setTimezone($timeZone);
+            $validKickoffTimes[] = $kickoff->format($kickoffComparisonFormat);
+        }
 
         $this->client->scheduleAllMatchesForSeason($seasonId, $appointments);
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        self::assertTimeZoneUsesDaylightSavingTime($timeZone);
         foreach ($season->match_days as $matchDay) {
             foreach ($matchDay->matches as $match) {
                 $match = $this->client->getMatchById($match->id);
@@ -154,6 +174,10 @@ class SeasonTest extends CompetitionTestCase
                 self::assertNotNull($match);
                 self::assertNotNull($match->pitch);
                 self::assertNotNull($match->kickoff);
+
+                // Make sure that kickoff matches one of the appointments
+                $match->kickoff = self::parseDateTime($match->kickoff)->setTimezone($timeZone);
+                self::assertContains($match->kickoff->format($kickoffComparisonFormat), $validKickoffTimes);
             }
         }
 
