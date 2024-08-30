@@ -12,20 +12,15 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class HttpTest extends TestCase
 {
-    /** @var ClientInterface */
-    protected $client;
+    protected ClientInterface $client;
 
-    /** @var JsonResponseParser */
-    protected $parser;
+    protected JsonResponseParser $parser;
 
-    /** @var RequestAuthenticator */
-    protected $authenticator;
+    protected RequestAuthenticator $authenticator;
 
-    /** @var ServerRequestFactoryInterface */
-    protected $requestFactory;
+    protected ServerRequestFactoryInterface $requestFactory;
 
-    /** @var RequestHandlerInterface */
-    private static $app;
+    private static RequestHandlerInterface $app;
 
     protected function setUp(): void
     {

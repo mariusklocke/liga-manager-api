@@ -11,8 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class PsrSlimClient implements ClientInterface
 {
-    /** @var RequestHandlerInterface */
-    private $app;
+    private RequestHandlerInterface $app;
 
     /**
      * @param RequestHandlerInterface $app
