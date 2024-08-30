@@ -1,6 +1,6 @@
-ARG APP_VERSION
 FROM ghcr.io/roadrunner-server/roadrunner:2024.2 AS roadrunner
 FROM alpine:3.20
+ARG APP_VERSION
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 

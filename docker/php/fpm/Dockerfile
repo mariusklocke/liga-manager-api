@@ -1,5 +1,5 @@
-ARG APP_VERSION
 FROM alpine:3.20
+ARG APP_VERSION
 
 # Define PHP version
 ENV PHP_VERSION="8.3"
