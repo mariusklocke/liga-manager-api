@@ -118,7 +118,8 @@ class SeasonTest extends CompetitionTestCase
     #[Depends("testSeasonCanBeStarted")]
     public function testMatchesCanBeScheduledPerMatchDay(string $seasonId): string
     {
-        $timeZone = new DateTimeZone('Europe/Berlin'); // Must use daylight saving time
+        $timeZone = new DateTimeZone('Europe/Berlin');
+        self::assertTimeZoneUsesDaylightSavingTime($timeZone);
         $appointments = $this->createMatchAppointments($timeZone);
         $validKickoffTimes = [];
         $kickoffComparisonFormat = 'D,H:i:s';
@@ -154,7 +155,8 @@ class SeasonTest extends CompetitionTestCase
     #[Depends("testMatchesCanBeScheduledPerMatchDay")]
     public function testAllMatchesCanBeScheduledAtOnce(string $seasonId): string
     {
-        $timeZone = new DateTimeZone('Europe/Berlin'); // Must use daylight saving time
+        $timeZone = new DateTimeZone('Europe/Berlin');
+        self::assertTimeZoneUsesDaylightSavingTime($timeZone);
         $appointments = $this->createMatchAppointments($timeZone);
         $validKickoffTimes = [];
         $kickoffComparisonFormat = 'D,H:i:s';
@@ -166,7 +168,6 @@ class SeasonTest extends CompetitionTestCase
         $this->client->scheduleAllMatchesForSeason($seasonId, $appointments);
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
-        self::assertTimeZoneUsesDaylightSavingTime($timeZone);
         foreach ($season->match_days as $matchDay) {
             foreach ($matchDay->matches as $match) {
                 $match = $this->client->getMatchById($match->id);
