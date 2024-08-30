@@ -70,8 +70,8 @@ abstract class CompetitionTestCase extends TestCase
     protected static function createMatchDayDates(int $count): array
     {
         $result = [];
-        $start  = new \DateTime('2019-11-09');
-        $end    = new \DateTime('2019-11-10');
+        $start  = new \DateTime('2024-10-05');
+        $end    = new \DateTime('2024-10-06');
         for ($i = 0; $i < $count; $i++) {
             $result[] = [
                 'from' => $start->format('Y-m-d'),
@@ -87,8 +87,8 @@ abstract class CompetitionTestCase extends TestCase
     protected static function createMatchAppointments(): array
     {
         $appointments = [];
-        $saturday = new DateTimeImmutable('2019-11-09');
-        $sunday = new DateTimeImmutable('2019-11-10');
+        $saturday = new DateTimeImmutable('2024-10-05');
+        $sunday = new DateTimeImmutable('2024-10-06');
 
         $appointments[] = [
             'kickoff' => $saturday->setTime(15, 30)->format(DATE_ATOM),
@@ -117,7 +117,7 @@ abstract class CompetitionTestCase extends TestCase
         return $appointments;
     }
 
-    protected function useTeamManagerAuth(string $teamId)
+    protected function useTeamManagerAuth(string $teamId): void
     {
         $user = self::$teamManagers[$teamId];
         $this->client->useCredentials($user['email'], $user['password']);
