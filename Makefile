@@ -1,7 +1,6 @@
 export SHELL:=/bin/bash
 export SHELLOPTS:=$(if $(SHELLOPTS),$(SHELLOPTS):)pipefail:errexit
 
-export PHP_VERSION ?= 8.3
 export MARIADB_VERSION ?= 10.11
 export REDIS_VERSION ?= 6
 export TARGET_TYPE ?= fpm
@@ -32,6 +31,7 @@ build:
 test:
 	set -x
 	function tearDown {
+		docker compose logs php
 		docker compose down
 	}
 	trap tearDown EXIT
@@ -42,7 +42,7 @@ test:
 	docker compose exec php phpunit -c config/phpunit.xml --display-deprecations
 	docker compose exec php gdpr-dump config/gdpr-dump.yml > /dev/null
 	if [[ -n "${COVERALLS_RUN_LOCALLY}" ]]; then
-		docker compose exec -u root php docker-php-ext-enable xdebug
+		docker compose exec -u root php xdebug on
 		docker compose exec php phpunit -c config/phpunit.xml --coverage-clover clover.xml --display-deprecations
 		docker compose exec -u root php apk add git
 		docker compose exec php git config --global --add safe.directory /var/www/api

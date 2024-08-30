@@ -6,7 +6,6 @@ services:
             context: $PWD
             dockerfile: $PWD/docker/php/$TARGET_TYPE/Dockerfile
             args:
-                PHP_VERSION: $PHP_VERSION
                 APP_VERSION: $TAG
             cache_from:
                 - $TARGET_IMAGE

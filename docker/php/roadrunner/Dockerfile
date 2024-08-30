@@ -1,34 +1,48 @@
-ARG PHP_VERSION
-ARG APP_VERSION
 FROM ghcr.io/roadrunner-server/roadrunner:2024.2 AS roadrunner
-FROM php:${PHP_VERSION}-cli-alpine
+FROM alpine:3.20
+ARG APP_VERSION
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 
-# Install packages & PHP extensions
-RUN set -xe \
+# Define PHP version
+ENV PHP_VERSION="8.3"
+
+# Install packages for PHP and extensions
+RUN PHP_EXTENSIONS="apcu bcmath dom gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlwriter" \
+    && case "${PHP_VERSION}" in \
+         8.3) PHP_PACKAGE="php83" ;; \
+         8.2) PHP_PACKAGE="php82" ;; \
+         *) echo "Unsupported PHP version: ${PHP_VERSION}"; exit 1 ;; \
+       esac \
+    && PHP_SUBPACKAGES="" \
+    && for EXTENSION in ${PHP_EXTENSIONS}; do \
+         PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
+       done \
+    && set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache gmp gnupg ncurses \
-    && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} gmp-dev linux-headers \
-    && docker-php-ext-install bcmath gmp pcntl pdo_mysql opcache sockets > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
-    && pecl channel-update pecl.php.net \
-    && pecl install apcu > /dev/null \
-    && pecl install redis > /dev/null \
-    && pecl install xdebug > /dev/null \
-    && docker-php-ext-enable apcu redis \
-    && pecl clear-cache \
-    && apk del .build-deps \
-    && rm -rf /tmp/* /var/cache/* /usr/src/*
+    && apk add --no-cache curl ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
+    && ln -s /etc/${PHP_PACKAGE} /etc/php \
+    && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
+    && adduser -u 82 -D -S -G www-data www-data \
+    && rm -rf /var/cache/*
+
+# Install xdebug helper
+COPY docker/php/xdebug.sh /usr/local/bin/xdebug
+RUN chmod +x /usr/local/bin/xdebug
+
+# Configure PHP
+COPY docker/php/php.ini /etc/php/php.ini
+RUN xdebug off
+
+# Configure RoadRunner
+COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
 
 # Install PHAR tools
 COPY docker/php/install-phar.sh /usr/local/bin/install-phar.sh
 RUN chmod +x /usr/local/bin/install-phar.sh \
     && install-phar.sh \
     && rm /usr/local/bin/install-phar.sh
-
-# Configure PHP
-COPY docker/php/php.ini /usr/local/etc/php/php.ini
 
 # Add healthcheck
 COPY docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck
@@ -38,16 +52,10 @@ RUN chmod +x /usr/local/bin/docker-php-healthcheck
 COPY docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
 
-# Configure RoadRunner
-COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
-
-# Prepare logos directory
-ENV APP_LOGOS_PATH="/var/www/logos"
-RUN mkdir ${APP_LOGOS_PATH}
-
-# Prepare application directory
+# Create application directories
 ENV APP_HOME="/var/www/api"
-RUN mkdir ${APP_HOME}
+ENV APP_LOGOS_PATH="/var/www/logos"
+RUN mkdir -p ${APP_HOME} ${APP_LOGOS_PATH}
 WORKDIR ${APP_HOME}
 
 # Install dependencies first

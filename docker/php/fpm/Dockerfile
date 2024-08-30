@@ -1,32 +1,45 @@
-ARG PHP_VERSION
+FROM alpine:3.20
 ARG APP_VERSION
-FROM php:${PHP_VERSION}-fpm-alpine
 
-# Install packages & PHP extensions
-RUN set -xe \
+# Define PHP version
+ENV PHP_VERSION="8.3"
+
+# Install packages for PHP and extensions
+RUN PHP_EXTENSIONS="apcu bcmath dom fpm gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlwriter" \
+    && case "${PHP_VERSION}" in \
+         8.3) PHP_PACKAGE="php83" ;; \
+         8.2) PHP_PACKAGE="php82" ;; \
+         *) echo "Unsupported PHP version: ${PHP_VERSION}"; exit 1 ;; \
+       esac \
+    && PHP_SUBPACKAGES="" \
+    && for EXTENSION in ${PHP_EXTENSIONS}; do \
+         PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
+       done \
+    && set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache fcgi gmp gnupg ncurses \
-    && apk add --no-cache --virtual .build-deps ${PHPIZE_DEPS} gmp-dev linux-headers \
-    && docker-php-ext-install bcmath gmp pcntl pdo_mysql opcache sockets > /tmp/ext-install.log 2>&1 || (cat /tmp/ext-install.log; exit 1) \
-    && pecl channel-update pecl.php.net \
-    && pecl install apcu > /dev/null \
-    && pecl install redis > /dev/null \
-    && pecl install xdebug > /dev/null \
-    && docker-php-ext-enable apcu redis \
-    && pecl clear-cache \
-    && apk del .build-deps \
-    && rm -rf /tmp/* /var/cache/* /usr/src/*
+    && apk add --no-cache fcgi ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
+    && ln -s /etc/${PHP_PACKAGE} /etc/php \
+    && test -e /usr/sbin/php-fpm || ln -s /usr/sbin/php-fpm83 /usr/sbin/php-fpm \
+    && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
+    && ln -s /etc/${PHP_PACKAGE} /etc/php \
+    && adduser -u 82 -D -S -G www-data www-data \
+    && rm -rf /var/cache/*
+
+# Install xdebug helper
+COPY docker/php/xdebug.sh /usr/local/bin/xdebug
+RUN chmod +x /usr/local/bin/xdebug
+
+# Configure PHP
+COPY docker/php/fpm/docker.conf /etc/php/php-fpm.d/docker.conf
+COPY docker/php/php.ini /etc/php/php.ini
+RUN xdebug off
 
 # Install PHAR tools
 COPY docker/php/install-phar.sh /usr/local/bin/install-phar.sh
 RUN chmod +x /usr/local/bin/install-phar.sh \
     && install-phar.sh \
     && rm /usr/local/bin/install-phar.sh
-
-# Configure PHP
-COPY docker/php/fpm/docker.conf /usr/local/etc/php-fpm.d/docker.conf
-COPY docker/php/php.ini /usr/local/etc/php/php.ini
 
 # Add healthcheck
 COPY docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
@@ -36,13 +49,10 @@ RUN chmod +x /usr/local/bin/docker-php-healthcheck
 COPY docker/php/fpm/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
 
-# Prepare logos directory
-ENV APP_LOGOS_PATH="/var/www/logos"
-RUN mkdir ${APP_LOGOS_PATH}
-
-# Prepare application directory
+# Create application directories
 ENV APP_HOME="/var/www/api"
-RUN mkdir ${APP_HOME}
+ENV APP_LOGOS_PATH="/var/www/logos"
+RUN mkdir -p ${APP_HOME} ${APP_LOGOS_PATH}
 WORKDIR ${APP_HOME}
 
 # Install dependencies first
@@ -68,4 +78,4 @@ RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck || exit 1
-CMD lima migrations:migrate -n && php-fpm
+CMD lima migrations:migrate -n && php-fpm -F
