@@ -20,7 +20,7 @@ abstract class HttpTest extends TestCase
 
     protected ServerRequestFactoryInterface $requestFactory;
 
-    private static RequestHandlerInterface $app;
+    private static ?RequestHandlerInterface $app = null;
 
     protected function setUp(): void
     {
