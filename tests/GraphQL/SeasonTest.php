@@ -246,15 +246,15 @@ class SeasonTest extends CompetitionTestCase
 
         self::assertNotNull($match);
 
-        $newKickoff = '2024-10-05T11:23:44+02:00';
-        self::assertNotEquals($newKickoff, $match->kickoff);
+        $requestedKickoff = self::parseDateTime('2024-10-05T11:23:44+02:00');
+        self::assertNotEquals($requestedKickoff->getTimestamp(), self::parseDateTime($match->kickoff)->getTimestamp());
 
-        $this->client->scheduleMatch($matchId, $newKickoff, null);
+        $this->client->scheduleMatch($matchId, self::formatDateTime($requestedKickoff), null);
 
         $match = $this->client->getMatchById($matchId);
         self::assertNotNull($match);
         self::assertNotNull($match->kickoff);
-        self::assertSame('2024-10-05T09:23:44Z', $match->kickoff);
+        self::assertSame($requestedKickoff->getTimestamp(), self::parseDateTime($match->kickoff)->getTimestamp());
 
         return $matchId;
     }

@@ -3,6 +3,8 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use ArrayObject;
+use DateTime;
+use DateTimeInterface;
 use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
@@ -78,5 +80,18 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             return is_object($object) && isset($object->$attribute) && $object->$attribute === $value;
         });
         self::assertGreaterThan(0, count($filtered));
+    }
+
+    protected static function parseDateTime(mixed $value): DateTime
+    {
+        self::assertIsString($value);
+        $dateTime = DateTime::createFromFormat(DATE_ATOM, $value);
+        self::assertInstanceOf(DateTime::class, $dateTime, "Invalid date format: $value");
+        return $dateTime;
+    }
+
+    protected static function formatDateTime(DateTimeInterface $value): string
+    {
+        return $value->format(DATE_ATOM);
     }
 }
