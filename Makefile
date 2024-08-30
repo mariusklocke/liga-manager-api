@@ -1,7 +1,6 @@
 export SHELL:=/bin/bash
 export SHELLOPTS:=$(if $(SHELLOPTS),$(SHELLOPTS):)pipefail:errexit
 
-export PHP_VERSION ?= 8.3
 export MARIADB_VERSION ?= 10.11
 export REDIS_VERSION ?= 6
 export TARGET_TYPE ?= fpm

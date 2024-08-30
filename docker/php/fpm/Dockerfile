@@ -1,20 +1,29 @@
-ARG PHP_VERSION
 ARG APP_VERSION
 FROM alpine:3.20
 
-# Add www-data user
-RUN adduser -u 82 -D -S -G www-data www-data
+# Define PHP version
+ENV PHP_VERSION="8.3"
 
 # Install packages for PHP and extensions
 RUN PHP_EXTENSIONS="apcu bcmath dom fpm gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlwriter" \
-    && PHP_PACKAGES="php83" \
-    && for PHP_EXTENSION in ${PHP_EXTENSIONS}; do PHP_PACKAGES="${PHP_PACKAGES} php83-${PHP_EXTENSION}"; done \
+    && case "${PHP_VERSION}" in \
+         8.3) PHP_PACKAGE="php83" ;; \
+         8.2) PHP_PACKAGE="php82" ;; \
+         *) echo "Unsupported PHP version: ${PHP_VERSION}"; exit 1 ;; \
+       esac \
+    && PHP_SUBPACKAGES="" \
+    && for EXTENSION in ${PHP_EXTENSIONS}; do \
+         PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
+       done \
     && set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache fcgi ${PHP_PACKAGES} \
-    && ln -s /usr/sbin/php-fpm83 /usr/sbin/php-fpm \
-    && ln -s /etc/php83 /etc/php \
+    && apk add --no-cache fcgi ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
+    && ln -s /etc/${PHP_PACKAGE} /etc/php \
+    && test -e /usr/sbin/php-fpm || ln -s /usr/sbin/php-fpm83 /usr/sbin/php-fpm \
+    && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
+    && ln -s /etc/${PHP_PACKAGE} /etc/php \
+    && adduser -u 82 -D -S -G www-data www-data \
     && rm -rf /var/cache/*
 
 # Install xdebug helper
