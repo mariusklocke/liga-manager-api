@@ -480,8 +480,8 @@ class SeasonTest extends CompetitionTestCase
         $newEnd   = $newStart->modify('+1 day');
 
         $this->client->rescheduleMatchDay($matchDayId, [
-            'from' => $newStart->format(DATE_ATOM),
-            'to'   => $newEnd->format(DATE_ATOM)
+            'from' => $newStart->format('Y-m-d'),
+            'to'   => $newEnd->format('Y-m-d')
         ]);
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -489,8 +489,8 @@ class SeasonTest extends CompetitionTestCase
         $matchDay = $season->match_days[0];
 
         self::assertSame($matchDayId, $matchDay->id);
-        self::assertEquals($newStart->getTimestamp(), self::parseDateTime($matchDay->start_date)->getTimestamp());
-        self::assertEquals($newEnd->getTimestamp(), self::parseDateTime($matchDay->end_date)->getTimestamp());
+        self::assertEquals($newStart->format('Y-m-d'), $matchDay->start_date);
+        self::assertEquals($newEnd->format('Y-m-d'), $matchDay->end_date);
 
         return $seasonId;
     }
