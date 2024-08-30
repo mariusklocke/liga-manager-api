@@ -375,7 +375,7 @@ class SeasonTest extends CompetitionTestCase
         }
 
         $now = time();
-        $updatedAt = strtotime($season->ranking->updated_at);
+        $updatedAt = self::parseDateTime($season->ranking->updated_at)->getTimestamp();
         self::assertLessThan(5, $now - $updatedAt);
 
         return $seasonId;
@@ -424,7 +424,7 @@ class SeasonTest extends CompetitionTestCase
         }
 
         $now = time();
-        $updatedAt = strtotime($season->ranking->updated_at);
+        $updatedAt = self::parseDateTime($season->ranking->updated_at)->getTimestamp();
         self::assertLessThan(5, $now - $updatedAt);
 
         return $seasonId;
@@ -489,8 +489,8 @@ class SeasonTest extends CompetitionTestCase
         $matchDay = $season->match_days[0];
 
         self::assertSame($matchDayId, $matchDay->id);
-        self::assertEquals($newStart->format('U'), strtotime($matchDay->start_date));
-        self::assertEquals($newEnd->format('U'), strtotime($matchDay->end_date));
+        self::assertEquals($newStart->getTimestamp(), self::parseDateTime($matchDay->start_date)->getTimestamp());
+        self::assertEquals($newEnd->getTimestamp(), self::parseDateTime($matchDay->end_date)->getTimestamp());
 
         return $seasonId;
     }
