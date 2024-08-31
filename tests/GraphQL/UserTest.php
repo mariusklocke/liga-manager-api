@@ -10,10 +10,25 @@ use Symfony\Component\Mailer\Event\MessageEvent;
 
 class UserTest extends TestCase
 {
+    private static array $userData;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->useAdminAuth();
+    }
+
+    public static function setupBeforeClass(): void
+    {
+        self::$userData = [
+            'id' => DataGenerator::generateId(),
+            'email' => DataGenerator::generateEmail(),
+            'password' => DataGenerator::generatePassword(),
+            'first_name' => 'Foo',
+            'last_name' => 'Bar',
+            'role' => User::ROLE_TEAM_MANAGER,
+            'team_ids' => []
+        ];
     }
 
     public function testListingUserRequiresAdminPermissions(): void
@@ -50,7 +65,7 @@ class UserTest extends TestCase
 
     public function testUserCanBeCreated()
     {
-        $user = $this->getUserData();
+        $user = self::$userData;
         $this->client->createUser($user);
 
         $this->client->useCredentials($user['email'], $user['password']);
@@ -64,7 +79,7 @@ class UserTest extends TestCase
     {
         $this->client->clearAuth();
 
-        $user = $this->getUserData();
+        $user = self::$userData;
         $messageEvents = self::catchEvents(MessageEvent::class, function () use ($user) {
             $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
         });
@@ -84,7 +99,7 @@ class UserTest extends TestCase
     #[Depends("testUserCanBeCreated")]
     public function testUserCanBeUpdated(): array
     {
-        $user = $this->getUserData();
+        $user = self::$userData;
         $this->client->useCredentials($user['email'], $user['password']);
 
         $user['email'] = 'walter.white@example.com';
@@ -176,18 +191,5 @@ class UserTest extends TestCase
         $this->client->useCredentials($user['email'], $user['password']);
         $this->expectClientException();
         $this->client->getAuthenticatedUser();
-    }
-
-    private function getUserData(): array
-    {
-        return [
-            'id' => 'ed489246-cac2-4e67-8b22-ce2556d72a3e',
-            'email' => 'user.test@example.com',
-            'password' => DataGenerator::generatePassword(),
-            'first_name' => 'Foo',
-            'last_name' => 'Bar',
-            'role' => User::ROLE_TEAM_MANAGER,
-            'team_ids' => []
-        ];
     }
 }
