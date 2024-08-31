@@ -8,7 +8,7 @@ COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 ENV PHP_VERSION="8.3"
 
 # Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath dom gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlwriter" \
+RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
     && case "${PHP_VERSION}" in \
          8.3) PHP_PACKAGE="php83" ;; \
          8.2) PHP_PACKAGE="php82" ;; \
