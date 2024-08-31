@@ -7,11 +7,9 @@ use PHPUnit\Framework\TestCase;
 
 class ValueObjectTest extends TestCase
 {
-    /** @var GeographicLocation */
-    private $waltersHouse;
+    private GeographicLocation $waltersHouse;
 
-    /** @var GeographicLocation */
-    private $whiteHouse;
+    private GeographicLocation $whiteHouse;
 
     protected function setUp(): void
     {

@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\DateTimeImmutableType;
+use Doctrine\DBAL\Types\Exception\InvalidFormat;
 
 class CustomDateTimeType extends DateTimeImmutableType
 {
@@ -26,12 +27,22 @@ class CustomDateTimeType extends DateTimeImmutableType
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?DateTimeImmutable
     {
-        $result = parent::convertToPHPValue($value, $platform);
-        if ($result instanceof DateTimeImmutable) {
-            return $result->setTimezone(self::getUtc());
+        if ($value === null || $value instanceof DateTimeImmutable) {
+            return $value;
         }
 
-        return $result;
+        $dateTime = DateTimeImmutable::createFromFormat($platform->getDateTimeFormatString(), $value, self::getUtc());
+
+        if ($dateTime !== false) {
+            return $dateTime;
+        }
+
+        throw new InvalidFormat(sprintf(
+            'Could not convert database value "%s" to Doctrine Type %s. Expected format "%s".',
+            strlen($value) > 32 ? substr($value, 0, 20) . '...' : $value,
+            static::class,
+            $expectedFormat ?? '',
+        ));
     }
 
     private static function getUtc(): DateTimeZone

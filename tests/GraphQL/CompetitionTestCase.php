@@ -2,16 +2,18 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
+use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
 
 abstract class CompetitionTestCase extends TestCase
 {
-    protected static $teamIds = [];
-    protected static $pitchIds = [];
-    protected static $teamManagers = [];
-    protected static $spareTeamIds = [];
+    protected static array $teamIds = [];
+    protected static array $pitchIds = [];
+    protected static array $teamManagers = [];
+    protected static array $spareTeamIds = [];
 
     protected function setUp(): void
     {
@@ -70,8 +72,8 @@ abstract class CompetitionTestCase extends TestCase
     protected static function createMatchDayDates(int $count): array
     {
         $result = [];
-        $start  = new \DateTime('2019-11-09');
-        $end    = new \DateTime('2019-11-10');
+        $start  = new DateTime('2024-10-05');
+        $end    = new DateTime('2024-10-06');
         for ($i = 0; $i < $count; $i++) {
             $result[] = [
                 'from' => $start->format('Y-m-d'),
@@ -84,11 +86,11 @@ abstract class CompetitionTestCase extends TestCase
         return $result;
     }
 
-    protected static function createMatchAppointments(): array
+    protected static function createMatchAppointments(DateTimeZone $timeZone): array
     {
         $appointments = [];
-        $saturday = new DateTimeImmutable('2019-11-09');
-        $sunday = new DateTimeImmutable('2019-11-10');
+        $saturday = new DateTimeImmutable('2024-10-05', $timeZone);
+        $sunday = new DateTimeImmutable('2024-10-06', $timeZone);
 
         $appointments[] = [
             'kickoff' => $saturday->setTime(15, 30)->format(DATE_ATOM),
@@ -117,7 +119,7 @@ abstract class CompetitionTestCase extends TestCase
         return $appointments;
     }
 
-    protected function useTeamManagerAuth(string $teamId)
+    protected function useTeamManagerAuth(string $teamId): void
     {
         $user = self::$teamManagers[$teamId];
         $this->client->useCredentials($user['email'], $user['password']);

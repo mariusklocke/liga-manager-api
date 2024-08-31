@@ -4,8 +4,7 @@ namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
 class Exception extends \RuntimeException
 {
-    /** @var array */
-    private $errors;
+    private array $errors;
 
     public function __construct(array $errors)
     {

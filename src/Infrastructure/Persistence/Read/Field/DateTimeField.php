@@ -28,9 +28,7 @@ class DateTimeField extends Field
             return null;
         }
 
-        $string = (new DateTimeImmutable($value))
-            ->setTimezone(self::getTimeZone())
-            ->format(DATE_ATOM);
+        $string = (new DateTimeImmutable($value, self::getTimeZone()))->format(DATE_ATOM);
 
         // Adjust timezone identifier for not breaking tests
         return str_replace('+00:00', 'Z', $string);

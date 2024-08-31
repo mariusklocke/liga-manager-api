@@ -93,7 +93,7 @@ class SlimClient
      * @param StreamInterface $body
      * @return mixed
      */
-    public function parseBody(StreamInterface $body)
+    public function parseBody(StreamInterface $body): mixed
     {
         $body->rewind();
         $data = $body->getContents();

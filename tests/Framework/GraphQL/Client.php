@@ -9,14 +9,11 @@ use stdClass;
 
 class Client
 {
-    /** @var SlimClient */
-    private $slimClient;
+    private SlimClient $slimClient;
 
-    /** @var array */
-    private $headers;
+    private array $headers;
 
-    /** @var JsonResponseParser */
-    private $parser;
+    private JsonResponseParser $parser;
 
     /**
      * @param SlimClient $slimClient
@@ -501,7 +498,7 @@ GRAPHQL;
         ]);
     }
 
-    public function addRankingPenalty($id, $seasonId, $teamId, $reason, $points)
+    public function addRankingPenalty($id, $seasonId, $teamId, $reason, $points): void
     {
         $query = <<<'GRAPHQL'
 mutation addRankingPenalty($id: String, $seasonId: String!, $teamId: String!, $reason: String!, $points: Int!) {
@@ -518,7 +515,7 @@ GRAPHQL;
         ]);
     }
 
-    public function removeRankingPenalty($rankingPenaltyId, $seasonId)
+    public function removeRankingPenalty($rankingPenaltyId, $seasonId): void
     {
         $query = <<<'GRAPHQL'
 mutation removeRankingPenalty($rankingPenaltyId: String!, $seasonId: String!) {
@@ -532,7 +529,7 @@ GRAPHQL;
         ]);
     }
 
-    public function rescheduleMatchDay($matchDayId, $datePeriod)
+    public function rescheduleMatchDay($matchDayId, $datePeriod): void
     {
         $query = <<<'GRAPHQL'
 mutation rescheduleMatchDay($matchDayId: String!, $datePeriod: DatePeriod!) {
@@ -546,7 +543,7 @@ GRAPHQL;
         ]);
     }
 
-    public function deleteSeason($seasonId)
+    public function deleteSeason($seasonId): void
     {
         $query = <<<'GRAPHQL'
 mutation deleteSeason($seasonId: String!) {
@@ -559,7 +556,7 @@ GRAPHQL;
         ]);
     }
 
-    public function createTournament($id, $name)
+    public function createTournament($id, $name): void
     {
         $query = <<<'GRAPHQL'
 mutation createTournament($id: String, $name: String!) {
@@ -763,7 +760,7 @@ GRAPHQL;
         ]);
     }
 
-    public function sendPasswordResetMail($email, $targetPath)
+    public function sendPasswordResetMail($email, $targetPath): void
     {
         $query = <<<'GRAPHQL'
 mutation sendPasswordResetMail($email: String!, $target_path: String!){

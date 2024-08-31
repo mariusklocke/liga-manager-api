@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Tests\Framework\IdGenerator;
@@ -117,7 +118,15 @@ class SeasonTest extends CompetitionTestCase
     #[Depends("testSeasonCanBeStarted")]
     public function testMatchesCanBeScheduledPerMatchDay(string $seasonId): string
     {
-        $appointments = $this->createMatchAppointments();
+        $timeZone = new DateTimeZone('Europe/Berlin');
+        self::assertTimeZoneUsesDaylightSavingTime($timeZone);
+        $appointments = $this->createMatchAppointments($timeZone);
+        $validKickoffTimes = [];
+        $kickoffComparisonFormat = 'D,H:i:s';
+        foreach ($appointments as $appointment) {
+            $kickoff = self::parseDateTime($appointment['kickoff'])->setTimezone($timeZone);
+            $validKickoffTimes[] = $kickoff->format($kickoffComparisonFormat);
+        }
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         foreach ($season->match_days as $matchDay) {
@@ -129,6 +138,10 @@ class SeasonTest extends CompetitionTestCase
                 self::assertNotNull($match);
                 self::assertNotNull($match->pitch);
                 self::assertNotNull($match->kickoff);
+
+                // Make sure that kickoff matches one of the appointments
+                $match->kickoff = self::parseDateTime($match->kickoff)->setTimezone($timeZone);
+                self::assertContains($match->kickoff->format($kickoffComparisonFormat), $validKickoffTimes);
             }
         }
 
@@ -142,7 +155,15 @@ class SeasonTest extends CompetitionTestCase
     #[Depends("testMatchesCanBeScheduledPerMatchDay")]
     public function testAllMatchesCanBeScheduledAtOnce(string $seasonId): string
     {
-        $appointments = $this->createMatchAppointments();
+        $timeZone = new DateTimeZone('Europe/Berlin');
+        self::assertTimeZoneUsesDaylightSavingTime($timeZone);
+        $appointments = $this->createMatchAppointments($timeZone);
+        $validKickoffTimes = [];
+        $kickoffComparisonFormat = 'D,H:i:s';
+        foreach ($appointments as $appointment) {
+            $kickoff = self::parseDateTime($appointment['kickoff'])->setTimezone($timeZone);
+            $validKickoffTimes[] = $kickoff->format($kickoffComparisonFormat);
+        }
 
         $this->client->scheduleAllMatchesForSeason($seasonId, $appointments);
 
@@ -154,6 +175,10 @@ class SeasonTest extends CompetitionTestCase
                 self::assertNotNull($match);
                 self::assertNotNull($match->pitch);
                 self::assertNotNull($match->kickoff);
+
+                // Make sure that kickoff matches one of the appointments
+                $match->kickoff = self::parseDateTime($match->kickoff)->setTimezone($timeZone);
+                self::assertContains($match->kickoff->format($kickoffComparisonFormat), $validKickoffTimes);
             }
         }
 
@@ -246,15 +271,15 @@ class SeasonTest extends CompetitionTestCase
 
         self::assertNotNull($match);
 
-        $newKickoff = '2019-04-05T11:23:44+02:00';
-        self::assertNotEquals($newKickoff, $match->kickoff);
+        $requestedKickoff = self::parseDateTime('2024-10-05T11:23:44+02:00');
+        self::assertNotEquals($requestedKickoff->getTimestamp(), self::parseDateTime($match->kickoff)->getTimestamp());
 
-        $this->client->scheduleMatch($matchId, $newKickoff, null);
+        $this->client->scheduleMatch($matchId, self::formatDateTime($requestedKickoff), null);
 
         $match = $this->client->getMatchById($matchId);
         self::assertNotNull($match);
         self::assertNotNull($match->kickoff);
-        self::assertSame('2019-04-05T09:23:44Z', $match->kickoff);
+        self::assertSame($requestedKickoff->getTimestamp(), self::parseDateTime($match->kickoff)->getTimestamp());
 
         return $matchId;
     }
@@ -350,7 +375,7 @@ class SeasonTest extends CompetitionTestCase
         }
 
         $now = time();
-        $updatedAt = strtotime($season->ranking->updated_at);
+        $updatedAt = self::parseDateTime($season->ranking->updated_at)->getTimestamp();
         self::assertLessThan(5, $now - $updatedAt);
 
         return $seasonId;
@@ -399,7 +424,7 @@ class SeasonTest extends CompetitionTestCase
         }
 
         $now = time();
-        $updatedAt = strtotime($season->ranking->updated_at);
+        $updatedAt = self::parseDateTime($season->ranking->updated_at)->getTimestamp();
         self::assertLessThan(5, $now - $updatedAt);
 
         return $seasonId;
@@ -455,8 +480,8 @@ class SeasonTest extends CompetitionTestCase
         $newEnd   = $newStart->modify('+1 day');
 
         $this->client->rescheduleMatchDay($matchDayId, [
-            'from' => $newStart->format(DATE_ATOM),
-            'to'   => $newEnd->format(DATE_ATOM)
+            'from' => $newStart->format('Y-m-d'),
+            'to'   => $newEnd->format('Y-m-d')
         ]);
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -464,8 +489,8 @@ class SeasonTest extends CompetitionTestCase
         $matchDay = $season->match_days[0];
 
         self::assertSame($matchDayId, $matchDay->id);
-        self::assertEquals($newStart->format('U'), strtotime($matchDay->start_date));
-        self::assertEquals($newEnd->format('U'), strtotime($matchDay->end_date));
+        self::assertEquals($newStart->format('Y-m-d'), $matchDay->start_date);
+        self::assertEquals($newEnd->format('Y-m-d'), $matchDay->end_date);
 
         return $seasonId;
     }
