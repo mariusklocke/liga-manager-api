@@ -1,4 +1,4 @@
-parameters:
+deptrac:
   paths:
     - ../src
   exclude_files:
@@ -6,15 +6,15 @@ parameters:
   layers:
     - name: Application
       collectors:
-        - type: class
+        - type: classLike
           value: .*HexagonalPlayground\\Application\\.*
     - name: Domain
       collectors:
-        - type: class
+        - type: classLike
           value: .*HexagonalPlayground\\Domain\\.*
     - name: Infrastructure
       collectors:
-        - type: class
+        - type: classLike
           value: .*HexagonalPlayground\\Infrastructure\\.*
   ruleset:
     Application:
