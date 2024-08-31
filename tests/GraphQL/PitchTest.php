@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use HexagonalPlayground\Tests\Framework\IdGenerator;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 
 class PitchTest extends TestCase
@@ -15,26 +15,45 @@ class PitchTest extends TestCase
 
     public function testPitchCanBeCreated(): array
     {
-        $floatPitchId = IdGenerator::generate();
-        $intPitchId = IdGenerator::generate();
-        $this->client->createPitch($floatPitchId, 'TestFloat', 89.99, 6.78);
-        $this->client->createPitch($intPitchId, 'TestInt', 89, 6);
+        $inputData = [
+            [
+                'id' => DataGenerator::generateId(),
+                'label' => 'TestFloat',
+                'latitude' => DataGenerator::generateLatitude(),
+                'longitude' => DataGenerator::generateLongitude(),
+            ],
+            [
+                'id' => DataGenerator::generateId(),
+                'label' => 'TestInt',
+                'latitude' => (int)DataGenerator::generateLatitude(),
+                'longitude' => (int)DataGenerator::generateLongitude(),
+            ]
+        ];
 
-        $pitch = $this->client->getPitchById($floatPitchId);
+        foreach ($inputData as $pitch) {
+            $this->client->createPitch(
+                $pitch['id'],
+                $pitch['label'],
+                $pitch['latitude'],
+                $pitch['longitude']
+            );
+        }
+
+        $pitch = $this->client->getPitchById($inputData[0]['id']);
         self::assertNotNull($pitch);
-        self::assertSame($floatPitchId, $pitch->id);
-        self::assertSame('TestFloat', $pitch->label);
-        self::assertSimilarFloats(89.99, $pitch->location_latitude);
-        self::assertSimilarFloats(6.78, $pitch->location_longitude);
+        self::assertSame($inputData[0]['id'], $pitch->id);
+        self::assertSame($inputData[0]['label'], $pitch->label);
+        self::assertSimilarFloats($inputData[0]['latitude'], $pitch->location_latitude);
+        self::assertSimilarFloats($inputData[0]['longitude'], $pitch->location_longitude);
 
-        $pitch = $this->client->getPitchById($intPitchId);
+        $pitch = $this->client->getPitchById($inputData[1]['id']);
         self::assertNotNull($pitch);
-        self::assertSame($intPitchId, $pitch->id);
-        self::assertSame('TestInt', $pitch->label);
-        self::assertSame(89, $pitch->location_latitude);
-        self::assertSame(6, $pitch->location_longitude);
+        self::assertSame($inputData[1]['id'], $pitch->id);
+        self::assertSame($inputData[1]['label'], $pitch->label);
+        self::assertSame($inputData[1]['latitude'], $pitch->location_latitude);
+        self::assertSame($inputData[1]['longitude'], $pitch->location_longitude);
 
-        return [$floatPitchId, $intPitchId];
+        return [$inputData[0]['id'], $inputData[1]['id']];
     }
 
     /**

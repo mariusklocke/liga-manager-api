@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Tests\CLI;
 
 use GlobIterator;
 use HexagonalPlayground\Infrastructure\CLI\Application;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -60,7 +61,7 @@ class CliTest extends TestCase
     public function testCreatingUser(): void
     {
         $tester = $this->getCommandTester('app:user:create');
-        $tester->setInputs(['mary.poppins@example.com', '123456', 'Mary', 'Poppins', 'admin']);
+        $tester->setInputs(['mary.poppins@example.com', DataGenerator::generatePassword(), 'Mary', 'Poppins', 'admin']);
         self::assertExecutionSuccess($tester->execute([]));
 
         $tester = $this->getCommandTester('app:user:create');

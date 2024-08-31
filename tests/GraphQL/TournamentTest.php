@@ -3,14 +3,14 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\Event\Event;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 
 class TournamentTest extends CompetitionTestCase
 {
     public function testTournamentCanBeCreated(): string
     {
-        $tournamentId = IdGenerator::generate();
+        $tournamentId = DataGenerator::generateId();
 
         $events = self::catchEvents(Event::class, function () use ($tournamentId) {
             $this->client->createTournament($tournamentId, $tournamentId);

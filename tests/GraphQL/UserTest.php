@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use PHPUnit\Framework\Attributes\Depends;
 use Symfony\Component\Mailer\Event\MessageEvent;
@@ -182,7 +183,7 @@ class UserTest extends TestCase
         return [
             'id' => 'ed489246-cac2-4e67-8b22-ce2556d72a3e',
             'email' => 'user.test@example.com',
-            'password' => '123456',
+            'password' => DataGenerator::generatePassword(),
             'first_name' => 'Foo',
             'last_name' => 'Bar',
             'role' => User::ROLE_TEAM_MANAGER,

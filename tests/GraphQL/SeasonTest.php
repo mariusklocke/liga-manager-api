@@ -6,7 +6,7 @@ use DateTimeImmutable;
 use DateTimeZone;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 use stdClass;
 
@@ -15,7 +15,7 @@ class SeasonTest extends CompetitionTestCase
     public function testSeasonCanBeCreated(): string
     {
         $sent = [
-            'id' => IdGenerator::generate(),
+            'id' => DataGenerator::generateId(),
             'name' => 'Season 18/19'
         ];
         $this->client->createSeason($sent['id'], $sent['name']);
@@ -39,7 +39,7 @@ class SeasonTest extends CompetitionTestCase
 
     public function testSeasonCanBeDeleted(): void
     {
-        $seasonId = IdGenerator::generate();
+        $seasonId = DataGenerator::generateId();
         $this->client->createSeason($seasonId, $seasonId);
         $season = $this->client->getSeasonById($seasonId);
         self::assertNotNull($season);
@@ -295,14 +295,19 @@ class SeasonTest extends CompetitionTestCase
 
         self::assertNotNull($match);
 
-        $pitchId = IdGenerator::generate();
-        $this->client->createPitch($pitchId, 'Pitch ABC', 12.34, 23.45);
-        $this->client->locateMatch($matchId, $pitchId);
+        $pitch = [
+            'id' => DataGenerator::generateId(),
+            'label' => 'Pitch ABC',
+            'latitude' => DataGenerator::generateLatitude(),
+            'longitude' => DataGenerator::generateLongitude()
+        ];
+        $this->client->createPitch($pitch['id'], $pitch['label'], $pitch['latitude'], $pitch['longitude']);
+        $this->client->locateMatch($matchId, $pitch['id']);
 
         $match = $this->client->getMatchById($matchId);
         self::assertNotNull($match);
         self::assertNotNull($match->pitch);
-        self::assertSame($pitchId, $match->pitch->id);
+        self::assertSame($pitch['id'], $match->pitch->id);
 
         return $matchId;
     }
@@ -438,7 +443,7 @@ class SeasonTest extends CompetitionTestCase
     #[Depends("testCancellingMatchByNonParticipatingTeamFails")]
     public function testPenaltiesAffectRanking(string $seasonId): string
     {
-        $penaltyId = IdGenerator::generate();
+        $penaltyId = DataGenerator::generateId();
         $teamId = self::$teamIds[0];
 
         $this->client->addRankingPenalty($penaltyId, $seasonId, $teamId, 'for not partying hard', 5);

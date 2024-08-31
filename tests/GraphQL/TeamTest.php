@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use HexagonalPlayground\Tests\Framework\IdGenerator;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 
 class TeamTest extends TestCase
@@ -18,7 +18,7 @@ class TeamTest extends TestCase
      */
     public function testTeamCanBeCreated(): string
     {
-        $sent = ['id' => IdGenerator::generate(), 'name' => 'Team A'];
+        $sent = ['id' => DataGenerator::generateId(), 'name' => 'Team A'];
         $this->client->createTeam($sent['id'], $sent['name']);
 
         $received = $this->client->getTeamById($sent['id']);

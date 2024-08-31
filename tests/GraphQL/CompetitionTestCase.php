@@ -6,7 +6,7 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
 use HexagonalPlayground\Domain\User;
-use HexagonalPlayground\Tests\Framework\IdGenerator;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
 
 abstract class CompetitionTestCase extends TestCase
 {
@@ -36,7 +36,7 @@ abstract class CompetitionTestCase extends TestCase
     private function createTeams(): void
     {
         for ($i = 1; $i <= 8; $i++) {
-            $teamId = IdGenerator::generate();
+            $teamId = DataGenerator::generateId();
             $this->client->createTeam($teamId, $teamId);
             self::$teamIds[] = $teamId;
 
@@ -49,7 +49,7 @@ abstract class CompetitionTestCase extends TestCase
     private function createSpareTeams(): void
     {
         for ($i = 1; $i <= 2; $i++) {
-            $teamId = IdGenerator::generate();
+            $teamId = DataGenerator::generateId();
             $this->client->createTeam($teamId, $teamId);
             self::$spareTeamIds[] = $teamId;
 
@@ -62,9 +62,9 @@ abstract class CompetitionTestCase extends TestCase
     private function createPitches(): void
     {
         for ($i = 1; $i <= 2; $i++) {
-            $id = IdGenerator::generate();
+            $id = DataGenerator::generateId();
             $label = 'Pitch' . $i;
-            $this->client->createPitch($id, $label, -2.45 * $i, -1.87 * $i);
+            $this->client->createPitch($id, $label, DataGenerator::generateLatitude(), DataGenerator::generateLongitude());
             self::$pitchIds[] = $id;
         }
     }
@@ -127,12 +127,10 @@ abstract class CompetitionTestCase extends TestCase
 
     private function generateTeamManager(string $teamId, int $i): array
     {
-        $userId = IdGenerator::generate();
-
         return [
-            'id' => $userId,
-            'email' => $userId . '@example.com',
-            'password' => '123456',
+            'id' => DataGenerator::generateId(),
+            'email' => DataGenerator::generateEmail(),
+            'password' => DataGenerator::generatePassword(),
             'first_name' => 'Foo',
             'last_name' => 'Bar',
             'role' => User::ROLE_TEAM_MANAGER,
