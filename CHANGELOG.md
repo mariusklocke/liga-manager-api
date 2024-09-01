@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ## NEXT
+* Bugfix: Fix timezone issue when scheduling all matches in a season
+* Improvement: Speedup builds by installing pre-compiled PHP packages from Alpine repos
 
 ## 1.20.0 - 2024-08-28
 * Feature: Allow matches to be moved to another match day
