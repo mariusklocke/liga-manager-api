@@ -23,6 +23,9 @@ services:
         volumes:
             - $PWD/.git:/var/www/api/.git
             - $PWD/tests:/var/www/api/tests
+        depends_on:
+          mariadb:
+            condition: service_healthy
     mariadb:
         image: $MARIADB_IMAGE
         pull_policy: always
@@ -31,6 +34,12 @@ services:
             - MYSQL_DATABASE=test
             - MYSQL_PASSWORD=test
             - MYSQL_USER=test
+        healthcheck:
+          test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+          start_period: 1m
+          start_interval: 5s
+          interval: 1m
+          timeout: 5s
     redis:
         image: $REDIS_IMAGE
         pull_policy: always

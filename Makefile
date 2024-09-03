@@ -36,7 +36,6 @@ test:
 	}
 	trap tearDown EXIT
 	docker compose up --detach --quiet-pull
-	sleep 10
 	docker compose exec php composer install --no-cache --no-progress
 	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
 	docker compose exec php phpunit -c config/phpunit.xml --display-deprecations
