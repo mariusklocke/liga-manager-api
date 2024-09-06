@@ -37,7 +37,11 @@ class ServiceProvider implements ServiceProviderInterface
                 );
             }),
             MaintenanceModeMiddleware::class => DI\factory(function (ContainerInterface $container) {
-                return new MaintenanceModeMiddleware($container->get('config.api.maintenanceMode') === 'on');
+                /** @var FilesystemService $filesystem */
+                $filesystem = $container->get(FilesystemService::class);
+                $filePath = $filesystem->joinPaths([$container->get('app.home'), '.maintenance']);
+
+                return new MaintenanceModeMiddleware($filesystem, $filePath);
             })
         ];
     }

@@ -65,6 +65,10 @@ If you need to change paths, make your sure to reflect the changes in `docker-co
 
 Configure `user: 1000:1000` in `docker-compose.yml` if you want to mount the project files into the container.
 
+## Maintenance Mode
+
+To enable maintenance mode create an empty `.maintenance` file in application root. Remove the file to disable it.
+
 ## Error codes
 
 In case of error the client will be supplied with a human-readable message, a specific error code (uppercase string,
@@ -103,7 +107,6 @@ by the application. Static values must be supplied from the outside (e.g. by usi
 | JWT_SECRET            | Static   | Hex-encoded secret for JSON Web Tokens   |
 | LOG_LEVEL             | Static   | Minimum level for log messages           |
 | LOG_PATH              | Static   | Path to log file                         |
-| MAINTENANCE_MODE      | Static   | Switch to toggle maintenance mode        |
 | MYSQL_DATABASE        | Static   | MySQL database name                      |
 | MYSQL_HOST            | Static   | Hostname or IP address running MySQL     |
 | MYSQL_PASSWORD        | Static   | Password for authenticating with MySQL   |
