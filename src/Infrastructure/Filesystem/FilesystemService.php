@@ -157,6 +157,17 @@ class FilesystemService
     }
 
     /**
+     * Determine if there is a file at the specified path
+     *
+     * @param string $path
+     * @return bool
+     */
+    public function isFile(string $path): bool
+    {
+        return is_file($path);
+    }
+
+    /**
      * Determines if the file/directory at the specified path is writable
      *
      * @param string $path

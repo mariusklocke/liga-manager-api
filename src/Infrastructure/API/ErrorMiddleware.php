@@ -65,7 +65,7 @@ class ErrorMiddleware implements MiddlewareInterface
             $headers = ['Retry-After' => 60];
             return $this->createErrorResponse(429, $exception->getMessage(), $exception->getCode(), $headers);
         } catch (MaintenanceModeException $exception) {
-            $this->logException($exception, $request, false);
+            $this->logException($exception, $request, true);
             $headers = ['Retry-After' => 60];
             return $this->createErrorResponse(503, $exception->getMessage(), $exception->getCode(), $headers);
         } catch (Throwable|InternalException $exception) {
@@ -102,10 +102,10 @@ class ErrorMiddleware implements MiddlewareInterface
     /**
      * @param Throwable $exception
      * @param ServerRequestInterface $request
-     * @param bool $clientError
+     * @param bool $expected
      * @return void
      */
-    private function logException(Throwable $exception, ServerRequestInterface $request, bool $clientError): void
+    private function logException(Throwable $exception, ServerRequestInterface $request, bool $expected): void
     {
         try {
             $message = $exception->getMessage();
@@ -120,7 +120,7 @@ class ErrorMiddleware implements MiddlewareInterface
                 ]
             ];
 
-            if ($clientError) {
+            if ($expected) {
                 $this->logger->notice($message, $context);
             } else {
                 $this->logger->error($message, $context);

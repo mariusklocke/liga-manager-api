@@ -37,4 +37,19 @@ class MetricsTest extends HttpTest
             );
         }
     }
+
+    public function testMetricsRespectsMaintenanceMode(): void
+    {
+        $filePath = '.maintenance';
+        touch($filePath);
+        $response = $this->client->sendRequest(
+            $this->createRequest('GET', '/api/metrics')
+        );
+        self::assertSame(503, $response->getStatusCode());
+        unlink($filePath);
+        $response = $this->client->sendRequest(
+            $this->createRequest('GET', '/api/metrics')
+        );
+        self::assertSame(200, $response->getStatusCode());
+    }
 }

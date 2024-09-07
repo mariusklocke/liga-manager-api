@@ -21,7 +21,6 @@ class ConfigLoader
             'config.api.jwtSecret'            => $values['JWT_SECRET'] ?? '',
             'config.api.logLevel'             => $values['LOG_LEVEL'] ?? 'debug',
             'config.api.logPath'              => $values['LOG_PATH'] ?? 'php://stderr',
-            'config.api.maintenanceMode'      => $values['MAINTENANCE_MODE'] ?? 'off',
             'config.api.rateLimit'            => $values['RATE_LIMIT'] ?? '',
             'config.email.emailUrl'           => $values['EMAIL_URL'] ?? 'null://localhost',
             'config.email.emailSenderAddress' => $values['EMAIL_SENDER_ADDRESS'] ?? 'noreply@example.com',

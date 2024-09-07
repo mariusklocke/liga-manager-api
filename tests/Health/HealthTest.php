@@ -29,4 +29,19 @@ class HealthTest extends HttpTest
             self::assertEquals('OK', $status->checks->{$name});
         }
     }
+
+    public function testHealthCheckRespectsMaintenanceMode(): void
+    {
+        $filePath = '.maintenance';
+        touch($filePath);
+        $response = $this->client->sendRequest(
+            $this->createRequest('GET', '/api/health')
+        );
+        self::assertSame(503, $response->getStatusCode());
+        unlink($filePath);
+        $response = $this->client->sendRequest(
+            $this->createRequest('GET', '/api/health')
+        );
+        self::assertSame(200, $response->getStatusCode());
+    }
 }
