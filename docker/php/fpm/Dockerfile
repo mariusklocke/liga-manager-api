@@ -31,7 +31,7 @@ COPY docker/php/xdebug.sh /usr/local/bin/xdebug
 RUN chmod +x /usr/local/bin/xdebug
 
 # Configure PHP
-COPY docker/php/fpm/docker.conf /etc/php/php-fpm.d/docker.conf
+COPY docker/php/fpm/docker.conf /etc/php/php-fpm.d/zz-docker.conf
 COPY docker/php/php.ini /etc/php/php.ini
 RUN xdebug off
 
@@ -77,5 +77,6 @@ RUN sed -i "s/VERSION = 'development';/VERSION = '$APP_VERSION';/" \
 RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
+EXPOSE 9000
 HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck || exit 1
 CMD lima migrations:migrate -n && php-fpm -F
