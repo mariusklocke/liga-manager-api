@@ -67,7 +67,9 @@ Configure `user: 1000:1000` in `docker-compose.yml` if you want to mount the pro
 
 ## Maintenance Mode
 
-To enable maintenance mode create an empty `.maintenance` file in application root. Remove the file to disable it.
+To enable maintenance mode create a file named `.maintenance` in application root. Remove the file to disable it.
+In maintenance mode every API request will be responded with HTTP Status `503 - Service unavailable`.
+CLI commands will stay available though.
 
 ## Error codes
 
