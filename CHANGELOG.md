@@ -2,6 +2,11 @@
 
 ## NEXT
 
+## 1.20.2 - 2024-09-10
+* Bugfix: Fix config issue for PHP-FPM docker image builds
+* Improvement: Allow toggling maintenance mode without restart
+* Improvement: Update dependencies
+
 ## 1.20.1 - 2024-09-02
 * Bugfix: Fix timezone issue when scheduling all matches in a season
 * Improvement: Speedup builds by installing pre-compiled PHP packages from Alpine repos
