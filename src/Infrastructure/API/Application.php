@@ -26,7 +26,9 @@ use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemS
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
+use Iterator;
 use Middlewares\TrailingSlash;
+use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -60,17 +62,7 @@ class Application extends App
 
         parent::__construct($container->get(ResponseFactoryInterface::class), $container);
 
-        // Middleware stack: First one added will be executed last
-        $middlewares = [
-            $container->get(ContentLengthMiddleware::class),
-            $container->get(TrailingSlash::class),
-            $container->get(AuthenticationMiddleware::class),
-            $container->get(RateLimitMiddleware::class),
-            $container->get(MaintenanceModeMiddleware::class),
-            $container->get(LoggingMiddleware::class),
-            $container->get(ErrorMiddleware::class)
-        ];
-        foreach ($middlewares as $middleware) {
+        foreach ($this->getMiddlewares($container) as $middleware) {
             $this->add($middleware);
         }
 
@@ -97,5 +89,28 @@ class Application extends App
         $response = parent::handle($request);
         $eventDispatcher->dispatch(new ResponseEvent($request, $response));
         return $response;
+    }
+
+    /**
+     * Returns the middleware stack
+     *
+     * The first one added is innermost, last one is the outermost.
+     * Request travels from the outside to the inside.
+     * Response travels from the inside to the outside.
+     *
+     * @see https://www.slimframework.com/docs/v4/concepts/middleware.html
+     *
+     * @param ContainerInterface $container
+     * @return Iterator
+     */
+    private function getMiddlewares(ContainerInterface $container): Iterator
+    {
+        yield $container->get(ContentLengthMiddleware::class);
+        yield $container->get(TrailingSlash::class);
+        yield $container->get(AuthenticationMiddleware::class);
+        yield $container->get(RateLimitMiddleware::class);
+        yield $container->get(MaintenanceModeMiddleware::class);
+        yield $container->get(LoggingMiddleware::class);
+        yield $container->get(ErrorMiddleware::class);
     }
 }
