@@ -45,7 +45,7 @@ test:
 		docker compose exec php phpunit -c config/phpunit.xml --coverage-clover clover.xml --display-deprecations
 		docker compose exec -u root php apk add git
 		docker compose exec php git config --global --add safe.directory /var/www/api
-		docker compose exec -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls -v -x clover.xml -o coveralls.json
+		docker compose exec -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls -x clover.xml -o coveralls.json
 	fi
 
 publish:
