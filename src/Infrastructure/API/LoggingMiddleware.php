@@ -69,12 +69,8 @@ class LoggingMiddleware implements MiddlewareInterface
 
             switch ($name) {
                 case 'Authorization':
-                    if (str_starts_with(strtolower($value), 'bearer')) {
-                        $result[$name] = 'bearer';
-                    }
-                    if (str_starts_with(strtolower($value), 'basic')) {
-                        $result[$name] = 'basic';
-                    }
+                    $segments = explode(' ', $value, 2);
+                    $result[$name] = $segments[0];
                     break;
                 case 'Content-Length':
                 case 'Content-Type':
