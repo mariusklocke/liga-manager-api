@@ -110,7 +110,7 @@ class Application extends App
         yield $container->get(AuthenticationMiddleware::class);
         yield $container->get(RateLimitMiddleware::class);
         yield $container->get(MaintenanceModeMiddleware::class);
-        yield $container->get(LoggingMiddleware::class);
         yield $container->get(ErrorMiddleware::class);
+        yield $container->get(LoggingMiddleware::class);
     }
 }
