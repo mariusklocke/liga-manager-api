@@ -62,6 +62,7 @@ class Application extends App
 
         // Middleware stack: First one added will be executed last
         $middlewares = [
+            $container->get(ContentLengthMiddleware::class),
             $container->get(TrailingSlash::class),
             $container->get(AuthenticationMiddleware::class),
             $container->get(RateLimitMiddleware::class),
