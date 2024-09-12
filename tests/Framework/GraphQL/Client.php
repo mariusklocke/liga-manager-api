@@ -926,4 +926,14 @@ GRAPHQL;
 
         return $data->teamsByPattern;
     }
+
+    public function getSchema(): string
+    {
+        $response = $this->slimClient->get(
+            '/api/graphql/',
+            $this->headers
+        );
+
+        return $response->getBody()->getContents();
+    }
 }
