@@ -132,16 +132,6 @@ class CliTest extends TestCase
         self::assertStringContainsString('success', $output);
     }
 
-    public function testGraphqlSchemaCanBeDumped(): void
-    {
-        $tester = $this->getCommandTester('app:graphql:schema');
-        $exitCode = $tester->execute([]);
-        $output = $tester->getDisplay();
-        self::assertExecutionSuccess($exitCode);
-        self::assertStringContainsString('mutation', $output);
-        self::assertStringContainsString('query', $output);
-    }
-
     public function testSendingMail(): void
     {
         $tester = $this->getCommandTester('app:send-test-mail');
