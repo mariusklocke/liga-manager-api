@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use InvalidArgumentException;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,6 +17,7 @@ class ImportDbCommand extends Command
     {
         $this->setName('app:db:import');
         $this->setDescription('Import a database');
+        $this->addArgument('file', InputArgument::REQUIRED, 'Path to import file (XML)');
         $this->addOption('chunk-size', null, InputOption::VALUE_OPTIONAL, 'Chunk size', 100);
     }
 
@@ -23,13 +25,15 @@ class ImportDbCommand extends Command
     {
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
+        $inputFile  = $input->getArgument('file');
         $chunkSize  = (int)$input->getOption('chunk-size');
 
         $this->setForeignKeyChecks($connection, false);
-        $connection->transactional(function () use ($connection, $chunkSize) {
-            $this->importXml($connection, $chunkSize);
+        $count = $connection->transactional(function () use ($connection, $inputFile, $chunkSize) {
+            return $this->importXml($connection, $inputFile, $chunkSize);
         });
         $this->setForeignKeyChecks($connection, true);
+        $this->getStyledIO($input, $output)->success('Successfully imported ' . $count . ' records.');
 
         return 0;
     }
@@ -39,14 +43,15 @@ class ImportDbCommand extends Command
         $connection->executeQuery('SET FOREIGN_KEY_CHECKS=' . ($enabled ? '1' : '0'));
     }
 
-    private function importXml(Connection $connection, int $chunkSize): void
+    private function importXml(Connection $connection, string $inputFile, int $chunkSize): int
     {
         $table = null;
         $row = null;
         $data = null;
         $types = null;
+        $count = 0;
         $reader = new XMLReader();
-        $reader->open('php://stdin');
+        $reader->open('file://' . $inputFile);
         while ($reader->read()) {
             // Start element
             if ($reader->nodeType === XMLReader::ELEMENT) {
@@ -84,6 +89,7 @@ class ImportDbCommand extends Command
                         break;
                     case 'row':
                         $data[] = $row;
+                        $count++;
                         if (count($data) === $chunkSize) {
                             $this->insertIntoTable($connection, $table, $data, $types);
                             $data = [];
@@ -93,6 +99,8 @@ class ImportDbCommand extends Command
             }
         }
         $reader->close();
+
+        return $count;
     }
 
     private function insertIntoTable(Connection $connection, string $table, array $data, array $types): void

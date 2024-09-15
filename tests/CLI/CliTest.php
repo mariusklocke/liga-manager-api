@@ -132,6 +132,36 @@ class CliTest extends TestCase
         self::assertStringContainsString('success', $output);
     }
 
+    /**
+     * @return string
+     */
+    public function testDatabaseCanBeExported(): string
+    {
+        $xmlFile = tempnam(sys_get_temp_dir(), 'database');
+        $tester = $this->getCommandTester('app:db:export');
+        $exitCode = $tester->execute(['file' => $xmlFile]);
+        $output = $tester->getDisplay();
+        self::assertExecutionSuccess($exitCode);
+        self::assertStringContainsString('Successfully exported', $output);
+        self::assertGreaterThan(0, filesize($xmlFile));
+        return $xmlFile;
+    }
+
+    /**
+     * @param string $xmlFile
+     * @return void
+     */
+    #[Depends("testDatabaseCanBeExported")]
+    public function testDatabaseCanBeImported(string $xmlFile): void
+    {
+        $tester = $this->getCommandTester('app:db:import');
+        $exitCode = $tester->execute(['file' => $xmlFile]);
+        $output = $tester->getDisplay();
+        self::assertExecutionSuccess($exitCode);
+        self::assertStringContainsString('Successfully imported', $output);
+        unlink($xmlFile);
+    }
+
     public function testSendingMail(): void
     {
         $tester = $this->getCommandTester('app:send-test-mail');

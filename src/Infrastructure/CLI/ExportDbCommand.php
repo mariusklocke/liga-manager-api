@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Doctrine\DBAL\Connection;
 use InvalidArgumentException;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use XMLWriter;
@@ -15,27 +16,30 @@ class ExportDbCommand extends Command
     {
         $this->setName('app:db:export');
         $this->setDescription('Export the database');
+        $this->addArgument('file', InputArgument::REQUIRED, 'Path to export file (XML)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
-        $connection->transactional(function () use ($connection) {
-            $this->exportXml($connection);
+        $count = $connection->transactional(function () use ($connection, $input) {
+            return $this->exportXml($connection, $input);
         });
+        $this->getStyledIO($input, $output)->success('Successfully exported ' . $count . ' records.');
 
         return 0;
     }
 
-    private function exportXml(Connection $connection): void
+    private function exportXml(Connection $connection, InputInterface $input): int
     {
         $writer = new XMLWriter();
-        $writer->openUri('php://stdout');
+        $writer->openUri('file://' . $input->getArgument('file'));
         $writer->setIndent(true);
         $writer->startDocument();
         $writer->startElement('database');
 
+        $count = 0;
         foreach ($connection->fetchFirstColumn("SHOW TABLES") as $table) {
             $types = [];
             foreach ($connection->fetchAllAssociative("DESCRIBE $table") as $column) {
@@ -66,6 +70,7 @@ class ExportDbCommand extends Command
                 }
 
                 $writer->endElement();
+                $count++;
             }
             $writer->endElement();
         }
@@ -73,6 +78,8 @@ class ExportDbCommand extends Command
         $writer->endElement();
         $writer->endDocument();
         $writer->flush();
+
+        return $count;
     }
 
     private function encodeValue(string $type, mixed $value): string
