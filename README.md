@@ -43,6 +43,15 @@ $ docker compose exec php lima app:user:create --default
 
 # Load demo data
 $ docker compose exec php lima app:db:demo-data
+
+# Export database
+$ docker compose exec php lima app:db:export database.xml
+
+# Export database anonymized
+$ docker compose exec php lima app:db:export database.xml --anonymize
+
+# Import database
+$ docker compose exec php lima app:db:import database.xml
 ```
 
 ## Enable HTTPS
