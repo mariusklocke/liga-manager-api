@@ -7,16 +7,37 @@ use Doctrine\DBAL\Connection;
 use InvalidArgumentException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use XMLWriter;
 
 class ExportDbCommand extends Command
 {
+    private static array $anonymizationMap = [
+        'name' => [
+            'first_name',
+            'last_name',
+            'contact_first_name',
+            'contact_last_name'
+        ],
+        'email' => [
+            'email',
+            'contact_email'
+        ],
+        'password' => [
+            'password'
+        ],
+        'phone' => [
+            'contact_phone'
+        ]
+    ];
+
     protected function configure(): void
     {
         $this->setName('app:db:export');
         $this->setDescription('Export the database');
         $this->addArgument('file', InputArgument::REQUIRED, 'Path to export file (XML)');
+        $this->addOption('anonymize', 'a', InputOption::VALUE_NONE, 'Anonymize data');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -34,7 +55,7 @@ class ExportDbCommand extends Command
     private function exportXml(Connection $connection, InputInterface $input): int
     {
         $writer = new XMLWriter();
-        $writer->openUri('file://' . $input->getArgument('file'));
+        $writer->openUri('file://' . $this->makePathAbsolute($input->getArgument('file')));
         $writer->setIndent(true);
         $writer->startDocument();
         $writer->startElement('database');
@@ -48,6 +69,10 @@ class ExportDbCommand extends Command
             $writer->startElement('table');
             $writer->writeAttribute('name', $table);
             foreach ($connection->iterateAssociative("SELECT * FROM `$table`") as $row) {
+                if ($input->getOption('anonymize')) {
+                    $row = $this->anonymize($row);
+                }
+
                 $writer->startElement('row');
 
                 foreach ($row as $column => $value) {
@@ -120,5 +145,56 @@ class ExportDbCommand extends Command
             return 'binary';
         }
         throw new InvalidArgumentException('Unsupported type: ' . $type);
+    }
+
+    private function makePathAbsolute(string $filePath): string
+    {
+        if ($filePath[0] === DIRECTORY_SEPARATOR) {
+            return $filePath;
+        } else {
+            return getcwd() . DIRECTORY_SEPARATOR . $filePath;
+        }
+    }
+
+    private function anonymize(array $record): array
+    {
+        foreach (self::$anonymizationMap['name'] as $property) {
+            if (isset($record[$property])) {
+                $record[$property] = 'Anonymized';
+            }
+        }
+        foreach (self::$anonymizationMap['email'] as $property) {
+            if (isset($record[$property])) {
+                $record[$property] = uniqid() . '@example.com';
+            }
+        }
+        foreach (self::$anonymizationMap['phone'] as $property) {
+            if (isset($record[$property])) {
+                $record[$property] = '+49' . sprintf('%d', random_int(100000, 999999));;
+            }
+        }
+        foreach (self::$anonymizationMap['password'] as $property) {
+            if (isset($record[$property])) {
+                $record[$property] = password_hash($this->generatePassword(random_int(16,24)), PASSWORD_BCRYPT);
+            }
+        }
+
+        return $record;
+    }
+
+    private function generatePassword($length): string
+    {
+        $characters = array_merge(
+            range('0', '9'),
+            range('a', 'z'),
+            range('A', 'Z')
+        );
+
+        $password = '';
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $characters[random_int(0, count($characters) - 1)];
+        }
+
+        return $password;
     }
 }

@@ -138,12 +138,24 @@ class CliTest extends TestCase
     public function testDatabaseCanBeExported(): string
     {
         $xmlFile = tempnam(sys_get_temp_dir(), 'database');
+
+        // Test anonymized export
+        $tester = $this->getCommandTester('app:db:export');
+        $exitCode = $tester->execute(['file' => $xmlFile, '--anonymize' => null]);
+        $output = $tester->getDisplay();
+        self::assertExecutionSuccess($exitCode);
+        self::assertStringContainsString('Successfully exported', $output);
+        self::assertGreaterThan(0, filesize($xmlFile));
+
+        // Test regular export
+        unlink($xmlFile);
         $tester = $this->getCommandTester('app:db:export');
         $exitCode = $tester->execute(['file' => $xmlFile]);
         $output = $tester->getDisplay();
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('Successfully exported', $output);
         self::assertGreaterThan(0, filesize($xmlFile));
+
         return $xmlFile;
     }
 

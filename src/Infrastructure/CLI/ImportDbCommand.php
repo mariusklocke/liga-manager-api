@@ -51,7 +51,7 @@ class ImportDbCommand extends Command
         $types = null;
         $count = 0;
         $reader = new XMLReader();
-        $reader->open('file://' . $inputFile);
+        $reader->open('file://' . $this->makePathAbsolute($inputFile));
         while ($reader->read()) {
             // Start element
             if ($reader->nodeType === XMLReader::ELEMENT) {
@@ -166,5 +166,14 @@ class ImportDbCommand extends Command
                 return hex2bin($value);
         }
         throw new InvalidArgumentException(sprintf('Unknown type "%s"', $type));
+    }
+
+    private function makePathAbsolute(string $filePath): string
+    {
+        if ($filePath[0] === DIRECTORY_SEPARATOR) {
+            return $filePath;
+        } else {
+            return getcwd() . DIRECTORY_SEPARATOR . $filePath;
+        }
     }
 }
