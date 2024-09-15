@@ -101,6 +101,8 @@ class Application extends \Symfony\Component\Console\Application
         yield new LoadDemoDataCommand($this->container);
         yield new WipeDbCommand($this->container);
         yield new BrowseDbCommand($this->container);
+        yield new ExportDbCommand($this->container);
+        yield new ImportDbCommand($this->container);
     }
 
     /**
