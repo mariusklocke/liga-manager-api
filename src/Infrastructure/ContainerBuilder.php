@@ -23,6 +23,9 @@ class ContainerBuilder
 
         $builder = new DI\ContainerBuilder();
         $builder->useAutowiring(true);
+        $builder->addDefinitions([
+            HealthCheckInterface::class => []
+        ]);
 
         foreach ($serviceProviders as $provider) {
             $builder->addDefinitions($provider->getDefinitions());

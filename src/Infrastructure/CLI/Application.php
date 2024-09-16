@@ -24,9 +24,6 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
-use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLProvider;
-use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
-use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\CLI\ServiceProvider as CliServiceProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
@@ -49,14 +46,11 @@ class Application extends \Symfony\Component\Console\Application
     public function __construct()
     {
         $serviceProviders = [
-            new HealthServiceProvider(),
             new ApplicationServiceProvider(),
             new DoctrineServiceProvider(),
             new ReadRepositoryProvider(),
-            new SecurityServiceProvider(),
             new MailServiceProvider(),
             new EventServiceProvider(),
-            new GraphQLProvider(),
             new CliServiceProvider(),
             new FilesystemServiceProvider()
         ];
