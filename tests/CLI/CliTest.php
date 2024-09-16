@@ -9,6 +9,7 @@ use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use XMLReader;
 
 class CliTest extends TestCase
 {
@@ -146,6 +147,11 @@ class CliTest extends TestCase
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('Successfully exported', $output);
         self::assertGreaterThan(0, filesize($xmlFile));
+        $nodeCounts = self::countXmlNodes($xmlFile);
+        self::assertSame(1, $nodeCounts['database']);
+        self::assertGreaterThan(0, $nodeCounts['table']);
+        self::assertGreaterThan(0, $nodeCounts['row']);
+        self::assertGreaterThan(0, $nodeCounts['column']);
 
         // Test regular export
         unlink($xmlFile);
@@ -155,6 +161,11 @@ class CliTest extends TestCase
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('Successfully exported', $output);
         self::assertGreaterThan(0, filesize($xmlFile));
+        $nodeCounts = self::countXmlNodes($xmlFile);
+        self::assertSame(1, $nodeCounts['database']);
+        self::assertGreaterThan(0, $nodeCounts['table']);
+        self::assertGreaterThan(0, $nodeCounts['row']);
+        self::assertGreaterThan(0, $nodeCounts['column']);
 
         return $xmlFile;
     }
@@ -189,5 +200,22 @@ class CliTest extends TestCase
     private static function assertExecutionSuccess(int $exitCode): void
     {
         self::assertEquals(0, $exitCode);
+    }
+
+    private static function countXmlNodes(string $filePath): array
+    {
+        $counts = [];
+        $reader = new XMLReader();
+        $reader->open('file://' . $filePath);
+        while ($reader->read()) {
+            if ($reader->nodeType === XMLReader::ELEMENT) {
+                if (!isset($counts[$reader->name])) {
+                    $counts[$reader->name] = 0;
+                }
+                $counts[$reader->name]++;
+            }
+        }
+        $reader->close();
+        return $counts;
     }
 }
