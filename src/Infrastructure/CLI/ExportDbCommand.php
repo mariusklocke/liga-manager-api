@@ -170,7 +170,7 @@ class ExportDbCommand extends Command
         }
         foreach (self::$anonymizationMap['phone'] as $property) {
             if (isset($record[$property])) {
-                $record[$property] = '+49' . sprintf('%d', random_int(100000, 999999));;
+                $record[$property] = '+49' . sprintf('%d', random_int(100000, 999999));
             }
         }
         foreach (self::$anonymizationMap['password'] as $property) {
@@ -182,7 +182,7 @@ class ExportDbCommand extends Command
         return $record;
     }
 
-    private function generatePassword($length): string
+    private function generatePassword(int $length): string
     {
         $characters = array_merge(
             range('0', '9'),
