@@ -10,15 +10,13 @@ class ContainerBuilder
 {
     /**
      * @param array|ServiceProviderInterface[] $serviceProviders
-     * @param string $version
      * @return ContainerInterface
      */
-    public static function build(array $serviceProviders, string $version): ContainerInterface
+    public static function build(array $serviceProviders): ContainerInterface
     {
-        $app = [
-            'app.home' => realpath(join(DIRECTORY_SEPARATOR, [__DIR__ , '..', '..'])),
-            'app.version' => $version
-        ];
+        $app = [];
+        $app['app.home'] = realpath(join(DIRECTORY_SEPARATOR, [__DIR__ , '..', '..']));
+        $app['app.version'] = self::getVersion($app['app.home']);
         $config = ConfigLoader::load($app['app.home']);
 
         $builder = new DI\ContainerBuilder();
@@ -26,14 +24,25 @@ class ContainerBuilder
         $builder->addDefinitions([
             HealthCheckInterface::class => []
         ]);
+        $builder->addDefinitions($app);
+        $builder->addDefinitions($config);
 
         foreach ($serviceProviders as $provider) {
             $builder->addDefinitions($provider->getDefinitions());
         }
 
-        $builder->addDefinitions($app);
-        $builder->addDefinitions($config);
-
         return $builder->build();
+    }
+
+    /**
+     * @param string $home Path to app home
+     * @return string
+     */
+    private static function getVersion(string $home): string
+    {
+        $package = file_get_contents(join(DIRECTORY_SEPARATOR, [$home, 'composer.json']));
+        $package = json_decode($package, true);
+
+        return $package['version'] ?? 'development';
     }
 }

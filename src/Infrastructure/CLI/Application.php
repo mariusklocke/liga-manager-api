@@ -38,9 +38,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends \Symfony\Component\Console\Application
 {
-    public const NAME = 'Liga-Manager';
-    public const VERSION = 'development';
-
     private ContainerInterface $container;
 
     public function __construct()
@@ -55,9 +52,9 @@ class Application extends \Symfony\Component\Console\Application
             new FilesystemServiceProvider()
         ];
 
-        $this->container = ContainerBuilder::build($serviceProviders, self::VERSION);
+        $this->container = ContainerBuilder::build($serviceProviders);
 
-        parent::__construct(self::NAME, self::VERSION);
+        parent::__construct('Liga-Manager', $this->container->get('app.version'));
 
         foreach ($this->getOwnCommands() as $command) {
             $this->add($command);

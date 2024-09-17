@@ -58,7 +58,10 @@ WORKDIR ${APP_HOME}
 # Install dependencies first
 ENV COMPOSER_ALLOW_SUPERUSER="1"
 COPY composer.lock composer.json ./
-RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
+RUN set -e \
+    && composer install --optimize-autoloader --no-cache --no-dev --no-progress \
+    && composer config version ${APP_VERSION} \
+    && composer update --lock
 
 # Install own application sources
 COPY templates templates/
@@ -67,11 +70,6 @@ COPY public public/
 COPY migrations migrations/
 COPY config config/
 COPY bin bin/
-
-# Apply version branding
-RUN sed -i "s/VERSION = 'development';/VERSION = '$APP_VERSION';/" \
-    src/Infrastructure/API/Application.php \
-    src/Infrastructure/CLI/Application.php
 
 # Configure ownership and permissions
 RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*

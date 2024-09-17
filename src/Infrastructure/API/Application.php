@@ -38,8 +38,6 @@ use Slim\Interfaces\RouteCollectorProxyInterface;
 
 class Application extends App
 {
-    public const VERSION = 'development';
-
     public function __construct()
     {
         $serviceProviders = [
@@ -58,7 +56,7 @@ class Application extends App
             new MetricsServiceProvider()
         ];
 
-        $container = ContainerBuilder::build($serviceProviders, self::VERSION);
+        $container = ContainerBuilder::build($serviceProviders);
 
         parent::__construct($container->get(ResponseFactoryInterface::class), $container);
 
