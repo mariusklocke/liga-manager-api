@@ -12,8 +12,10 @@ export DOCKER_USERNAME = mklocke
 
 ifeq (${GITHUB_REF_TYPE}, tag)
 	export TAG = ${GITHUB_REF_NAME}
+	export APP_VERSION = ${GITHUB_REF_NAME}
 else
  	export TAG = latest
+ 	export APP_VERSION = dev-latest
 endif
 
 ifneq (${TARGET_TYPE}, fpm)
