@@ -64,7 +64,7 @@ COPY composer.lock composer.json ./
 RUN set -e \
     && composer install --optimize-autoloader --no-cache --no-dev --no-progress \
     && composer config version ${APP_VERSION} \
-    && composer update --lock \
+    && composer update --lock
 
 # Install own application sources
 COPY templates templates/
