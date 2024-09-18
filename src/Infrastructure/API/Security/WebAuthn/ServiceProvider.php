@@ -41,8 +41,7 @@ class ServiceProvider implements ServiceProviderInterface
 
             AuthenticatorAttestationResponseValidator::class => DI\autowire(),
 
-            PackedAttestationStatementSupport::class => DI\create()
-                ->constructor(null, DI\get(CoseManager::class)),
+            PackedAttestationStatementSupport::class => DI\autowire(),
 
             AttestationStatementSupportManager::class => DI\factory(function (ContainerInterface $container) {
                 $manager = new AttestationStatementSupportManager();
