@@ -9,10 +9,11 @@ use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\RequestParser;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
-use InvalidArgumentException;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 use Webauthn\AuthenticatorAttestationResponse;
 use Webauthn\AuthenticatorAttestationResponseValidator;
 use Webauthn\PublicKeyCredentialCreationOptions;
@@ -48,8 +49,8 @@ class CredentialController extends BaseController
     public function delete(ServerRequestInterface $request): ResponseInterface
     {
         try {
-            $id = Base64Url::decode($request->getAttribute('id'));
-        } catch (InvalidArgumentException $e) {
+            $id = Base64UrlSafe::decodeNoPadding($request->getAttribute('id'));
+        } catch (Throwable $e) {
             throw new InvalidInputException('Failed to decode credential id. Please use base64url encoding.');
         }
 
