@@ -1,56 +1,46 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn\Action;
+namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
-use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
+use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\RequestParser;
-use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\FakeCredentialDescriptorFactory;
-use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\OptionsStoreInterface;
-use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RequestOptionsFactory;
-use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\UserConverter;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialSourceRepository;
 
-class GetLoginOptionsAction implements ActionInterface
+class LoginOptionsController extends BaseController
 {
     private PublicKeyCredentialSourceRepository $credentialRepository;
     private RequestOptionsFactory $requestOptionsFactory;
     private OptionsStoreInterface $optionsStore;
     private FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory;
     private UserRepositoryInterface $userRepository;
-    private ResponseSerializer $responseSerializer;
     private RequestParser $requestParser;
 
-    /**
-     * @param PublicKeyCredentialSourceRepository $credentialRepository
-     * @param RequestOptionsFactory $requestOptionsFactory
-     * @param OptionsStoreInterface $optionsStore
-     * @param FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory
-     * @param UserRepositoryInterface $userRepository
-     * @param ResponseSerializer $responseSerializer
-     * @param RequestParser $requestParser
-     */
-    public function __construct(PublicKeyCredentialSourceRepository $credentialRepository, RequestOptionsFactory $requestOptionsFactory, OptionsStoreInterface $optionsStore, FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory, UserRepositoryInterface $userRepository, ResponseSerializer $responseSerializer, RequestParser $requestParser)
-    {
+    public function __construct(
+        ResponseFactoryInterface $responseFactory,
+        PublicKeyCredentialSourceRepository $credentialRepository,
+        RequestOptionsFactory $requestOptionsFactory,
+        OptionsStoreInterface $optionsStore,
+        FakeCredentialDescriptorFactory $fakeCredentialDescriptorFactory,
+        UserRepositoryInterface $userRepository,
+        RequestParser $requestParser
+    ) {
+        parent::__construct($responseFactory);
         $this->credentialRepository = $credentialRepository;
         $this->requestOptionsFactory = $requestOptionsFactory;
         $this->optionsStore = $optionsStore;
         $this->fakeCredentialDescriptorFactory = $fakeCredentialDescriptorFactory;
         $this->userRepository = $userRepository;
-        $this->responseSerializer = $responseSerializer;
         $this->requestParser = $requestParser;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function post(ServerRequestInterface $request): ResponseInterface
     {
         $parsedBody = $this->requestParser->parseJson($request);
         $email = $parsedBody['email'] ?? null;
@@ -65,7 +55,7 @@ class GetLoginOptionsAction implements ActionInterface
 
         $this->optionsStore->save($email, $options);
 
-        return $this->responseSerializer->serializeJson($response->withStatus(200), $options);
+        return $this->buildJsonResponse($options);
     }
 
     /**

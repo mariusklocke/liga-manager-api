@@ -8,7 +8,6 @@ class AuthTest extends HttpTest
 {
     public function testCredentialCreationOptionsCanBeRequested(): void
     {
-        $this->markTestSkipped();
         $request = $this->createRequest(
             'POST',
             '/api/webauthn/credential/options',
@@ -31,7 +30,6 @@ class AuthTest extends HttpTest
 
     public function testLoginOptionsCanBeRequested(): void
     {
-        $this->markTestSkipped();
         $request = $this->createRequest(
             'POST',
             '/api/webauthn/login/options',
@@ -49,7 +47,6 @@ class AuthTest extends HttpTest
 
     public function testCredentialsCanBeFound(): void
     {
-        $this->markTestSkipped();
         $request = $this->createRequest(
             'GET',
             '/api/webauthn/credential'
