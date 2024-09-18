@@ -2,23 +2,22 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Metrics;
 
-use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
+use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class QueryAction implements ActionInterface
+class Controller extends BaseController
 {
-    private ResponseSerializer $serializer;
     private StoreInterface $metricsStore;
 
-    public function __construct(ResponseSerializer $serializer, StoreInterface $metricsStore)
+    public function __construct(ResponseFactoryInterface $responseFactory, StoreInterface $metricsStore)
     {
-        $this->serializer = $serializer;
+        parent::__construct($responseFactory);
         $this->metricsStore = $metricsStore;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function get(ServerRequestInterface $request): ResponseInterface
     {
         $result = '';
 
@@ -28,6 +27,6 @@ class QueryAction implements ActionInterface
             $result .= sprintf('%s %d', $metric->getName(), $metric->getValue()) . PHP_EOL;
         }
 
-        return $this->serializer->serializeText($response, $result);
+        return $this->buildTextResponse($result);
     }
 }

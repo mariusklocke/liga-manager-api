@@ -4,19 +4,19 @@ namespace HexagonalPlayground\Infrastructure\API\Health;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 
 class ServiceProvider implements ServiceProviderInterface
 {
     public function getDefinitions(): array
     {
         return [
-            QueryAction::class => DI\create()->constructor(
+            Controller::class => DI\create()->constructor(
+                DI\get(ResponseFactoryInterface::class),
                 DI\get(HealthCheckInterface::class),
-                DI\get(ResponseSerializer::class),
                 DI\get('app.version')
-            )
+            ),
         ];
     }
 }

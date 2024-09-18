@@ -123,6 +123,7 @@ class ErrorMiddleware implements MiddlewareInterface
             if ($expected) {
                 $this->logger->notice($message, $context);
             } else {
+                $context['exception']['trace'] = $exception->getTrace();
                 $this->logger->error($message, $context);
             }
         } catch (Throwable) {

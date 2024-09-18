@@ -2,34 +2,34 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Health;
 
-use Exception;
-use HexagonalPlayground\Infrastructure\API\ActionInterface;
-use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
+use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
-class QueryAction implements ActionInterface
+class Controller extends BaseController
 {
     /** @var HealthCheckInterface[] */
     private array $checks;
-    private ResponseSerializer $responseSerializer;
     private string $appVersion;
 
     /**
+     * @param ResponseFactoryInterface $responseFactory
      * @param HealthCheckInterface[] $checks
-     * @param ResponseSerializer $responseSerializer
      * @param string $appVersion
      */
-    public function __construct(array $checks, ResponseSerializer $responseSerializer, string $appVersion)
+    public function __construct(ResponseFactoryInterface $responseFactory, array $checks, string $appVersion)
     {
+        parent::__construct($responseFactory);
         $this->checks = $checks;
-        $this->responseSerializer = $responseSerializer;
         $this->appVersion = $appVersion;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function get(ServerRequestInterface $request): ResponseInterface
     {
+        $status = 200;
         $result = [
             'version' => $this->appVersion,
             'checks' => []
@@ -39,12 +39,12 @@ class QueryAction implements ActionInterface
             try {
                 $check();
                 $result['checks'][$check->getName()] = 'OK';
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $result['checks'][$check->getName()] = 'Failed';
-                $response = $response->withStatus(500);
+                $status = 500;
             }
         }
 
-        return $this->responseSerializer->serializeJson($response, $result);
+        return $this->buildJsonResponse($result, $status);
     }
 }

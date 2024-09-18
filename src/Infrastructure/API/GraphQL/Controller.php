@@ -4,38 +4,37 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
+use GraphQL\Utils\SchemaPrinter;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Infrastructure\API\ActionInterface;
+use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedLoaderInterface;
 use HexagonalPlayground\Infrastructure\API\RequestParser;
-use HexagonalPlayground\Infrastructure\API\ResponseSerializer;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
-class QueryAction implements ActionInterface
+class Controller extends BaseController
 {
-    private ContainerInterface $container;
-    private ResponseSerializer $responseSerializer;
     private RequestParser $requestParser;
+    private Schema $schema;
+    private ContainerInterface $container;
 
-    /**
-     * @param ContainerInterface $container
-     * @param ResponseSerializer $responseSerializer
-     * @param RequestParser $requestParser
-     */
-    public function __construct(ContainerInterface $container, ResponseSerializer $responseSerializer, RequestParser $requestParser)
+    public function __construct(ResponseFactoryInterface $responseFactory, RequestParser $requestParser, Schema $schema, ContainerInterface $container)
     {
-        $this->container = $container;
-        $this->responseSerializer = $responseSerializer;
+        parent::__construct($responseFactory);
         $this->requestParser = $requestParser;
+        $this->schema = $schema;
+        $this->container = $container;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function get(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->buildTextResponse(SchemaPrinter::doPrint($this->schema));
+    }
+
+    public function post(ServerRequestInterface $request): ResponseInterface
     {
         $parsedBody = $this->requestParser->parseJson($request);
         $query = $parsedBody['query'] ?? null;
@@ -58,8 +57,6 @@ class QueryAction implements ActionInterface
         $result = GraphQL::executeQuery($schema, $query, null, $context, $variables)
             ->setErrorsHandler($errorHandler);
 
-        $response = $response->withStatus(count($result->errors) ? 400 : 200);
-
-        return $this->responseSerializer->serializeJson($response, $result->toArray());
+        return $this->buildJsonResponse($result->toArray(), count($result->errors) ? 400 : 200);
     }
 }

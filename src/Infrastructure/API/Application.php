@@ -34,6 +34,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
+use Slim\Handlers\Strategies\RequestHandler;
 use Slim\Interfaces\RouteCollectorProxyInterface;
 
 class Application extends App
@@ -63,6 +64,9 @@ class Application extends App
         foreach ($this->getMiddlewares($container) as $middleware) {
             $this->add($middleware);
         }
+
+        $routeCollector = $this->getRouteCollector();
+        $routeCollector->setDefaultInvocationStrategy(new RequestHandler(true));
 
         $this->group('/api', function (RouteCollectorProxyInterface $group) {
             $routeProviders = [
