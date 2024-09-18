@@ -37,7 +37,7 @@ class CredentialController extends BaseController
         OptionsStoreInterface $creationOptionsStore,
         RequestParser $requestParser
     ) {
-        $this->responseFactory = $responseFactory;
+        parent::__construct($responseFactory);
         $this->credentialRepository = $credentialRepository;
         $this->authReader = $authReader;
         $this->credentialLoader = $credentialLoader;
