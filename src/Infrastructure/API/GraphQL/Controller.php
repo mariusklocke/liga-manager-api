@@ -8,7 +8,6 @@ use GraphQL\Utils\SchemaPrinter;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedLoaderInterface;
-use HexagonalPlayground\Infrastructure\API\RequestParser;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -17,14 +16,12 @@ use Psr\Log\LoggerInterface;
 
 class Controller extends BaseController
 {
-    private RequestParser $requestParser;
     private Schema $schema;
     private ContainerInterface $container;
 
-    public function __construct(ResponseFactoryInterface $responseFactory, RequestParser $requestParser, Schema $schema, ContainerInterface $container)
+    public function __construct(ResponseFactoryInterface $responseFactory, Schema $schema, ContainerInterface $container)
     {
         parent::__construct($responseFactory);
-        $this->requestParser = $requestParser;
         $this->schema = $schema;
         $this->container = $container;
     }
@@ -36,7 +33,7 @@ class Controller extends BaseController
 
     public function post(ServerRequestInterface $request): ResponseInterface
     {
-        $parsedBody = $this->requestParser->parseJson($request);
+        $parsedBody = $this->parseJson($request);
         $query = $parsedBody['query'] ?? null;
         $variables = $parsedBody['variables'] ?? [];
 

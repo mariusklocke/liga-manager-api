@@ -7,7 +7,6 @@ use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
-use HexagonalPlayground\Infrastructure\API\RequestParser;
 use HexagonalPlayground\Infrastructure\API\Security\AuthReader;
 use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -26,7 +25,6 @@ class CredentialController extends BaseController
     private PublicKeyCredentialLoader $credentialLoader;
     private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator;
     private OptionsStoreInterface $creationOptionsStore;
-    private RequestParser $requestParser;
 
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -34,8 +32,7 @@ class CredentialController extends BaseController
         AuthReader $authReader,
         PublicKeyCredentialLoader $credentialLoader,
         AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator,
-        OptionsStoreInterface $creationOptionsStore,
-        RequestParser $requestParser
+        OptionsStoreInterface $creationOptionsStore
     ) {
         parent::__construct($responseFactory);
         $this->credentialRepository = $credentialRepository;
@@ -43,7 +40,6 @@ class CredentialController extends BaseController
         $this->credentialLoader = $credentialLoader;
         $this->authenticatorAttestationResponseValidator = $authenticatorAttestationResponseValidator;
         $this->creationOptionsStore = $creationOptionsStore;
-        $this->requestParser = $requestParser;
     }
 
     public function delete(ServerRequestInterface $request): ResponseInterface
@@ -77,7 +73,7 @@ class CredentialController extends BaseController
 
     public function post(ServerRequestInterface $request): ResponseInterface
     {
-        $parsedBody = $this->requestParser->parseJson($request);
+        $parsedBody = $this->parseJson($request);
         $name = $parsedBody['name'] ?? null;
 
         /** @var string $name */

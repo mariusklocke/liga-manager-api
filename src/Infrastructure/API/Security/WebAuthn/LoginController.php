@@ -11,7 +11,6 @@ use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
-use HexagonalPlayground\Infrastructure\API\RequestParser;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,7 +26,6 @@ class LoginController extends BaseController
     private AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator;
     private UserRepositoryInterface $userRepository;
     private TokenServiceInterface $tokenService;
-    private RequestParser $requestParser;
 
     public function __construct(
         ResponseFactoryInterface $responseFactory,
@@ -35,8 +33,7 @@ class LoginController extends BaseController
         PublicKeyCredentialLoader $credentialLoader,
         AuthenticatorAssertionResponseValidator $authenticatorAssertionResponseValidator,
         UserRepositoryInterface $userRepository,
-        TokenServiceInterface $tokenService,
-        RequestParser $requestParser
+        TokenServiceInterface $tokenService
     ) {
         parent::__construct($responseFactory);
         $this->optionsStore = $optionsStore;
@@ -44,12 +41,11 @@ class LoginController extends BaseController
         $this->authenticatorAssertionResponseValidator = $authenticatorAssertionResponseValidator;
         $this->userRepository = $userRepository;
         $this->tokenService = $tokenService;
-        $this->requestParser = $requestParser;
     }
 
     public function post(ServerRequestInterface $request): ResponseInterface
     {
-        $parsedBody = $this->requestParser->parseJson($request);
+        $parsedBody = $this->parseJson($request);
         $email = $parsedBody['email'] ?? null;
 
         /** @var string $email */
