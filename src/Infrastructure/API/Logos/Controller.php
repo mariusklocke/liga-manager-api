@@ -3,8 +3,10 @@
 namespace HexagonalPlayground\Infrastructure\API\Logos;
 
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\Security\AuthorizationTrait;
 use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
@@ -17,7 +19,7 @@ use Psr\Log\LoggerInterface;
 class Controller extends BaseController
 {
     use AuthorizationTrait;
-    use TeamFinderTrait;
+    private TeamRepositoryInterface $teamRepository;
     private TeamLogoRepository $teamLogoRepository;
     private LoggerInterface $logger;
 
@@ -102,6 +104,15 @@ class Controller extends BaseController
         return $this->buildResponse(201)->withHeader('Location', $publicPath);
     }
 
+    private function findTeam(array $queryParams): Team
+    {
+        TypeAssert::assertString($queryParams['teamId'], 'teamId');
+
+        /** @var Team $team */
+        $team = $this->teamRepository->find($queryParams['teamId']);
+
+        return $team;
+    }
 
     private function getUploadedFile(ServerRequestInterface $request): UploadedFileInterface
     {
