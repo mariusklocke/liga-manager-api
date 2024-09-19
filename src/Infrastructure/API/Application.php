@@ -108,6 +108,7 @@ class Application extends App
     private function getMiddlewares(ContainerInterface $container): Iterator
     {
         yield $container->get(ContentLengthMiddleware::class);
+        yield $container->get(ValidationMiddleware::class);
         yield $container->get(TrailingSlash::class);
         yield $container->get(AuthenticationMiddleware::class);
         yield $container->get(RateLimitMiddleware::class);

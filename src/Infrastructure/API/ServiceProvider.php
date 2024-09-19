@@ -6,6 +6,8 @@ namespace HexagonalPlayground\Infrastructure\API;
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
+use League\OpenAPIValidation\PSR7\ServerRequestValidator;
+use League\OpenAPIValidation\PSR7\ValidatorBuilder;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -42,6 +44,17 @@ class ServiceProvider implements ServiceProviderInterface
                 $filePath = $filesystem->joinPaths([$container->get('app.home'), '.maintenance']);
 
                 return new MaintenanceModeMiddleware($filesystem, $filePath);
+            }),
+            ServerRequestValidator::class => DI\factory(function (ContainerInterface $container) {
+                /** @var FilesystemService $filesystem */
+                $filesystem = $container->get(FilesystemService::class);
+                $schemaFile = $filesystem->joinPaths([
+                    $container->get('app.home'),
+                    'config',
+                    'openapi.yaml'
+                ]);
+
+                return (new ValidatorBuilder())->fromYamlFile($schemaFile)->getServerRequestValidator();
             })
         ];
     }

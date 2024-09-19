@@ -1,0 +1,300 @@
+openapi: 3.0.3
+info:
+  title: Liga-Manager API
+  version: '1'
+servers:
+  - url: https://manager.wildeligabremen.de
+tags:
+  - name: GraphQL
+    description: Endpoints for GraphQL
+  - name: Health
+    description: Endpoints for health checking
+  - name: Logos
+    description: Endpoints for team logos
+  - name: Metrics
+    description: Endpoints for application metrics
+  - name: WebAuthn
+    description: Endpoints for WebAuthn
+paths:
+  /api/graphql:
+    get:
+      tags:
+        - GraphQL
+      summary: Get schema
+      operationId: getGraphQLSchema
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain: {}
+    post:
+      tags:
+        - GraphQL
+      summary: Execute a query or mutation
+      operationId: executeGraphQLQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                variables:
+                  type: object
+              required:
+                - query
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+  /api/health:
+    get:
+      tags:
+        - Health
+      summary: Get API health
+      operationId: getHealth
+      responses:
+        '200':
+          description: All health checks passed
+          content:
+            application/json:
+              examples:
+                pass:
+                  value:
+                    checks:
+                      doctrine: OK
+                      redis: OK
+                    version: 1.20.2
+              schema:
+                type: object
+                properties:
+                  checks:
+                    type: object
+                    properties:
+                      doctrine:
+                        type: string
+                      redis:
+                        type: string
+                  version:
+                    type: string
+        '500':
+          description: One or more health checks failed
+          content:
+            application/json:
+              examples:
+                failed:
+                  value:
+                    checks:
+                      doctrine: Failed
+                      redis: OK
+                    version: 1.20.2
+              schema:
+                type: object
+                properties:
+                  checks:
+                    type: object
+                    properties:
+                      doctrine:
+                        type: string
+                      redis:
+                        type: string
+                  version:
+                    type: string
+  /api/logos:
+    parameters:
+      - name: teamId
+        in: query
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Logos
+      summary: Get team logo
+      operationId: getLogo
+      responses:
+        '302':
+          description: Redirect to image file
+          headers:
+            Location:
+              description: Path to image file
+              schema:
+                type: string
+        '404':
+          description: Not found
+    post:
+      tags:
+        - Logos
+      summary: Upload team logo
+      operationId: uploadLogo
+      description: Allows image upload with `image/webp` content type
+      requestBody:
+        content:
+          multipart/form-data: {}
+      responses:
+        '201':
+          description: Upload successful
+          headers:
+            Location:
+              description: Path to image file
+              schema:
+                type: string
+        '400':
+          description: Invalid input file
+    delete:
+      tags:
+        - Logos
+      summary: Delete team logo
+      operationId: deleteLogo
+      responses:
+        '204':
+          description: Deletion successful
+        '404':
+          description: Team not found
+  /api/metrics:
+    get:
+      tags:
+        - Metrics
+      summary: Get metrics
+      operationId: getMetrics
+      responses:
+        '200':
+          description: OpenMetrics-compatible data
+          content:
+            text/plain: {}
+  /api/webauthn/credential:
+    get:
+      tags:
+        - WebAuthn
+      summary: Get credential list
+      operationId: getCredentialList
+      responses:
+        '200':
+          description: List of credentials
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json: {}
+    post:
+      tags:
+        - WebAuthn
+      summary: Register credential
+      operationId: registerCredential
+      responses:
+        '204':
+          description: Registration successful
+        '400':
+          description: Invalid input
+          content:
+            application/json: {}
+  /api/webauthn/credential/{id}:
+    delete:
+      tags:
+        - WebAuthn
+      parameters:
+        - name: id
+          description: Credential ID in base64url encoding
+          in: path
+          required: true
+          schema:
+            type: string
+      summary: Delete credential
+      operationId: deleteCredential
+      responses:
+        '204':
+          description: Deletion successful
+        '400':
+          description: Invalid input
+          content:
+            application/json: {}
+        '404':
+          description: Not found
+          content:
+            application/json: {}
+  /api/webauthn/credential/options:
+    post:
+      tags:
+        - WebAuthn
+      summary: Create credential register options
+      operationId: createCredentialRegisterOptions
+      responses:
+        '200':
+          description: Options created
+          content:
+            application/json: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json: {}
+  /api/webauthn/login:
+    post:
+      tags:
+        - WebAuthn
+      summary: Perform login
+      operationId: performLogin
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json: {}
+        '400':
+          description: Invalid input
+          content:
+            application/json: {}
+        '401':
+          description: Authentication failed
+          content:
+            application/json: {}
+  /api/webauthn/login/options:
+    post:
+      tags:
+        - WebAuthn
+      summary: Create login options
+      operationId: createLoginOptions
+      responses:
+        '200':
+          description: Options created
+          content:
+            application/json: {}
+        '400':
+          description: Invalid input
+          content:
+            application/json: {}
+components:
+  responses:
+    Error:
+      description: An error occurred
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                      enum:
+                        - ERR-AUTHENTICATION
+                        - ERR-PERMISSION
+                    message:
+                      type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    basicAuth:
+      type: http
+      scheme: basic

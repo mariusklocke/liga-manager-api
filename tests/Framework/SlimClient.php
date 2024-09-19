@@ -135,6 +135,7 @@ class SlimClient
 
         $request = $this->requestFactory->createServerRequest($method, $uri);
         $request = $request->withUploadedFiles(['file' => $file]);
+        $request = $request->withHeader('Content-Type', 'multipart/form-data');
 
         foreach ($headers as $key => $value) {
             $request = $request->withHeader($key, $value);
