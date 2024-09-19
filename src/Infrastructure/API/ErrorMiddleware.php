@@ -23,15 +23,14 @@ use Throwable;
 
 class ErrorMiddleware implements MiddlewareInterface
 {
-    private LoggerInterface $logger;
-    private ResponseFactoryInterface $responseFactory;
-    private ResponseSerializer $responseSerializer;
+    use ResponseBuilderTrait;
 
-    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory, ResponseSerializer $responseSerializer)
+    private LoggerInterface $logger;
+
+    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory)
     {
         $this->logger = $logger;
         $this->responseFactory = $responseFactory;
-        $this->responseSerializer = $responseSerializer;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -83,20 +82,20 @@ class ErrorMiddleware implements MiddlewareInterface
      */
     private function createErrorResponse(int $statusCode, string $message, string $errorCode, array $headers = []): ResponseInterface
     {
-        $response = $this->responseFactory->createResponse($statusCode);
-
-        foreach ($headers as $name => $value) {
-            $response = $response->withHeader($name, (string)$value);
-        }
-
-        return $this->responseSerializer->serializeJson($response, [
+        $response = $this->buildJsonResponse([
             'errors' => [
                 [
                     'code' => $errorCode,
                     'message' => $message
                 ]
             ]
-        ]);
+        ], $statusCode);
+
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, (string)$value);
+        }
+
+        return $response;
     }
 
     /**
@@ -123,6 +122,7 @@ class ErrorMiddleware implements MiddlewareInterface
             if ($expected) {
                 $this->logger->notice($message, $context);
             } else {
+                $context['exception']['trace'] = $exception->getTrace();
                 $this->logger->error($message, $context);
             }
         } catch (Throwable) {

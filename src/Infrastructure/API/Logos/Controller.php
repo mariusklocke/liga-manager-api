@@ -1,34 +1,73 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Logos;
 
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
+use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Infrastructure\API\ActionInterface;
+use HexagonalPlayground\Domain\Team;
+use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\Security\AuthorizationTrait;
 use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use Psr\Log\LoggerInterface;
 
-class UploadAction implements ActionInterface
+class Controller extends BaseController
 {
-    use TeamFinderTrait;
     use AuthorizationTrait;
+    private TeamRepositoryInterface $teamRepository;
     private TeamLogoRepository $teamLogoRepository;
     private LoggerInterface $logger;
 
-    public function __construct(TeamRepositoryInterface $teamRepository, TeamLogoRepository $teamLogoRepository, LoggerInterface $logger)
-    {
-        $this->teamRepository = $teamRepository;
-        $this->teamLogoRepository = $teamLogoRepository;
-        $this->logger = $logger;
+    public function __construct(
+        ResponseFactoryInterface $responseFactory,
+        TeamRepositoryInterface $teamRepository,
+        TeamLogoRepository $teamLogoRepository,
+        LoggerInterface $logger
+    ) {
+      parent::__construct($responseFactory);
+      $this->teamRepository = $teamRepository;
+      $this->teamLogoRepository = $teamLogoRepository;
+      $this->logger = $logger;
     }
 
-    public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
+    public function get(ServerRequestInterface $request): ResponseInterface
+    {
+        $team = $this->findTeam($request->getQueryParams());
+
+        if ($team->getLogoId() === null) {
+            return $this->buildResponse(404);
+        }
+
+        $location = $this->teamLogoRepository->generatePublicPath($team->getLogoId());
+
+        return $this->buildRedirectResponse($location);
+    }
+
+    public function delete(ServerRequestInterface $request): ResponseInterface
+    {
+        $this->assertIsAdmin($request);
+
+        $team = $this->findTeam($request->getQueryParams());
+
+        if ($team->getLogoId() !== null) {
+            $this->teamLogoRepository->delete($team->getLogoId());
+            $team->setLogoId(null);
+            $this->teamRepository->save($team);
+            $this->teamRepository->flush();
+            $this->logger->info('Team logo has been deleted', [
+                'teamId' => $team->getId()
+            ]);
+        }
+
+        return $this->buildResponse();
+    }
+
+    public function post(ServerRequestInterface $request): ResponseInterface
     {
         $this->assertIsAdmin($request);
 
@@ -62,7 +101,17 @@ class UploadAction implements ActionInterface
             'fileId' => $team->getLogoId()
         ]);
 
-        return $response->withStatus(201)->withHeader('Location', $publicPath);
+        return $this->buildResponse(201)->withHeader('Location', $publicPath);
+    }
+
+    private function findTeam(array $queryParams): Team
+    {
+        TypeAssert::assertString($queryParams['teamId'], 'teamId');
+
+        /** @var Team $team */
+        $team = $this->teamRepository->find($queryParams['teamId']);
+
+        return $team;
     }
 
     private function getUploadedFile(ServerRequestInterface $request): UploadedFileInterface

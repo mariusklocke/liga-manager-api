@@ -934,6 +934,6 @@ GRAPHQL;
             $this->headers
         );
 
-        return $response->getBody()->getContents();
+        return (string)$response->getBody();
     }
 }
