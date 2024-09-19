@@ -9,7 +9,7 @@ use Slim\Exception\HttpMethodNotAllowedException;
 
 abstract class Controller implements RequestHandlerInterface
 {
-    protected ResponseFactoryInterface $responseFactory;
+    use ResponseBuilderTrait;
 
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
@@ -42,41 +42,5 @@ abstract class Controller implements RequestHandlerInterface
     public function delete(ServerRequestInterface $request): ResponseInterface
     {
         throw new HttpMethodNotAllowedException($request);
-    }
-
-    protected function buildJsonResponse(mixed $data, int $status = 200): ResponseInterface
-    {
-        $response = $this->responseFactory->createResponse($status);
-        $response->getBody()->write(json_encode($data, JSON_THROW_ON_ERROR));
-
-        return $response->withHeader('Content-Type', 'application/json');
-    }
-
-    protected function buildTextResponse(string $data, int $status = 200): ResponseInterface
-    {
-        $response = $this->responseFactory->createResponse($status);
-        $response->getBody()->write($data);
-
-        return $response->withHeader('Content-Type', 'text/plain');
-    }
-
-    protected function buildHtmlResponse(string $data, int $status = 200): ResponseInterface
-    {
-        $response = $this->responseFactory->createResponse($status);
-        $response->getBody()->write($data);
-
-        return $response->withHeader('Content-Type', 'text/html');
-    }
-
-    protected function buildRedirectResponse(string $location, int $status = 302): ResponseInterface
-    {
-        $response = $this->responseFactory->createResponse($status);
-
-        return $response->withHeader('Location', $location);
-    }
-
-    protected function buildResponse(int $status = 204): ResponseInterface
-    {
-        return $this->responseFactory->createResponse($status);
     }
 }
