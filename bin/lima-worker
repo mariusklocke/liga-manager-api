@@ -26,9 +26,16 @@ while (true) {
     }
 
     try {
-        $psrWorker->respond($app->handle($request));
+        $response = $app->handle($request);
     } catch (\Throwable $e) {
-        $psrWorker->respond($psrFactory->createResponse(500));
+        $response = $psrFactory->createResponse(500);
         $logger->error((string)$e);
+    } finally {
+        $psrWorker->respond($response);
+        if ($response->getStatusCode() === 500) {
+            // in case of unexpected error the application state can be corrupted: it's safer to terminate
+            $logger->error('Terminating worker process due to unexpected error.');
+            exit(1);
+        }
     }
 }
