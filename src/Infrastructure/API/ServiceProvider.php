@@ -28,11 +28,8 @@ class ServiceProvider implements ServiceProviderInterface
             UploadedFileFactoryInterface::class => DI\get(Psr17Factory::class),
             UriFactoryInterface::class => DI\get(Psr17Factory::class),
             LoggerInterface::class => DI\factory(function (ContainerInterface $container) {
-                /** @var FilesystemService $filesystem */
-                $filesystem = $container->get(FilesystemService::class);
-
                 return new Logger(
-                    $filesystem->openFile($container->get('config.api.logPath'), 'w'),
+                    $container->get('config.api.logPath'),
                     $container->get('config.api.logLevel')
                 );
             }),
