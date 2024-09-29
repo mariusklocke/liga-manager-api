@@ -17,6 +17,7 @@ use Psr\Http\Message\UriFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Spiral\RoadRunner\Http\PSR7Worker;
 use Spiral\RoadRunner\Worker;
+use Spiral\RoadRunner\WorkerInterface;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -45,7 +46,8 @@ class ServiceProvider implements ServiceProviderInterface
             Worker::class => DI\factory(function (ContainerInterface $container) {
                 return Worker::create(true, $container->get(LoggerInterface::class));
             }),
-            PSR7Worker::class => DI\autowire()
+            PSR7Worker::class => DI\autowire(),
+            WorkerInterface::class => DI\get(Worker::class)
         ];
     }
 }
