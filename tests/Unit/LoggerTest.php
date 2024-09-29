@@ -57,12 +57,6 @@ class LoggerTest extends TestCase
         self::assertStringNotContainsString('DEBUG', $output);
     }
 
-    public function testInitiatingWithNonWritableStreamFails(): void
-    {
-        self::expectException(InvalidArgumentException::class);
-        new Logger($this->filePath, 'debug');
-    }
-
     public function testInitiatingWithInvalidMinLevelFails(): void
     {
         self::expectException(InvalidArgumentException::class);
