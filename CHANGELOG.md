@@ -2,6 +2,14 @@
 
 ## NEXT
 
+## 1.21.0 - 2024-09-23
+* Feature: Add commands for DB import/export (XML format)
+* Bugfix: Terminate worker process after internal error
+* Improvement: Refactor API controllers
+* Improvement: Write version to composer.json
+* Improvement: Return GraphQL schema on "GET /api/graphql"
+* Improvement: Add "Content-Length" header to responses
+
 ## 1.20.2 - 2024-09-10
 * Bugfix: Fix config issue for PHP-FPM docker image builds
 * Improvement: Allow toggling maintenance mode without restart
