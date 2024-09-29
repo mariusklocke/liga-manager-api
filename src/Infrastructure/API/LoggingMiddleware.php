@@ -27,31 +27,27 @@ class LoggingMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $requestId = bin2hex(random_bytes(4));
+        $protocol = sprintf("HTTP/%s", $request->getProtocolVersion());
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
-        $clientIp = $this->extractClientIp($request);
+        $serverParams = $request->getServerParams();
 
-        $this->logger->debug("Received request:", [
-            'method' => $method,
-            'path' => $path,
-            'clientIp' => $clientIp,
+        $this->logger->debug("Received \"$method $path\"", [
+            'protocol' => $protocol,
+            'remoteAddress' => $serverParams['REMOTE_ADDR'],
             'requestId' => $requestId,
-            'protocol' => sprintf("HTTP/%s", $request->getProtocolVersion()),
             'headers' => $this->extractHeaders($request)
         ]);
 
         $this->timer->start();
         $response = $handler->handle($request);
         $processingTime = $this->timer->stop();
+        $status = $response->getStatusCode();
 
-        $this->logger->debug("Sending response:", [
-            'method' => $method,
-            'path' => $path,
-            'clientIp' => $clientIp,
+        $this->logger->debug("Handled \"$method $path\" with status $status", [
             'requestId' => $requestId,
-            'status' => $response->getStatusCode(),
-            'size' => $response->getBody()->getSize(),
-            'timeMs' => $processingTime
+            'bodySize' => sprintf('%d bytes', $response->getBody()->getSize()),
+            'processingTime' => sprintf('%d ms', $processingTime),
         ]);
 
         return $response;
@@ -67,27 +63,19 @@ class LoggingMiddleware implements MiddlewareInterface
             }
             $value = $values[0];
 
-            switch ($name) {
-                case 'Authorization':
-                    $segments = explode(' ', $value, 2);
-                    $result[$name] = $segments[0];
-                    break;
-                case 'Content-Length':
-                case 'Content-Type':
-                case 'Referer':
-                case 'User-Agent':
-                    $result[$name] = $value;
-                    break;
+            if ($name === 'Cookie') {
+                continue;
             }
+
+            if ($name === 'Authorization') {
+                $segments = explode(' ', $value, 2);
+                $result[$name] = $segments[0];
+                continue;
+            }
+
+            $result[$name] = $value;
         }
 
         return $result;
-    }
-
-    private function extractClientIp(ServerRequestInterface $request): string
-    {
-        $serverParams = $request->getServerParams();
-
-        return $serverParams['REMOTE_ADDR'] ?? '';
     }
 }
