@@ -34,7 +34,7 @@ class LoggingMiddleware implements MiddlewareInterface
 
         $this->logger->debug("Received \"$method $path\"", [
             'protocol' => $protocol,
-            'remoteAddress' => $serverParams['REMOTE_ADDR'],
+            'remoteAddress' => $serverParams['REMOTE_ADDR'] ?? null,
             'requestId' => $requestId,
             'headers' => $this->extractHeaders($request)
         ]);
