@@ -108,6 +108,8 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     }
                 } while ($connection === null || $platform === null);
 
+                $logger->debug('Connected to database', ['version' => $connection->getServerVersion()]);
+
                 foreach ($customTypes as $className => $definition) {
                     if (!Type::hasType($definition['doctrineType'])) {
                         Type::addType($definition['doctrineType'], $className);

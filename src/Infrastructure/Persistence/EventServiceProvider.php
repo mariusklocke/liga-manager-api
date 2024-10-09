@@ -28,7 +28,6 @@ class EventServiceProvider implements ServiceProviderInterface
                 $startedAt = time();
 
                 do {
-                    $logger->debug('Connecting to redis', ['host' => $host, 'attempt' => $attempt]);
                     try {
                         $redis = new Redis();
                         $redis->connect($host);
@@ -43,6 +42,9 @@ class EventServiceProvider implements ServiceProviderInterface
                         }
                     }
                 } while ($redis === null);
+
+                $version = $redis->info('server')['redis_version'] ?? null;
+                $logger->debug('Connected to redis', ['version' => $version]);
 
                 return $redis;
             })
