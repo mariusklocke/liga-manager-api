@@ -7,7 +7,6 @@ use DI;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
@@ -39,10 +38,10 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonReposito
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\UserRepository;
-use HexagonalPlayground\Infrastructure\Retry;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class DoctrineServiceProvider implements ServiceProviderInterface
 {
@@ -66,6 +65,10 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Connection::class => DI\factory(function (ContainerInterface $container) {
+                /** @var LoggerInterface $logger */
+                $logger = $container->get(LoggerInterface::class);
+                /** @var Configuration $config */
+                $config = $container->get(Configuration::class);
                 $params = [
                     'dbname' => $container->get('config.mysql.database'),
                     'user' => $container->get('config.mysql.username'),
@@ -74,25 +77,43 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     'driver' => 'pdo_mysql',
                     'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
                 ];
+                $customTypes = [
+                    CustomBinaryType::class => [
+                        'dbType' => 'CustomBinary',
+                        'doctrineType' => CustomBinaryType::NAME
+                    ],
+                    CustomDateTimeType::class => [
+                        'dbType' => 'CustomDateTime',
+                        'doctrineType' => CustomDateTimeType::NAME
+                    ],
+                ];
+                $attempt = 1;
+                $timeout = 60;
+                $startedAt = time();
 
-                $connection = DriverManager::getConnection($params, $container->get(Configuration::class));
+                do {
+                    try {
+                        $connection = DriverManager::getConnection($params, $config);
+                        $platform   = $connection->getDatabasePlatform();
+                    } catch (Throwable $exception) {
+                        $connection = null;
+                        $platform = null;
+                        $logger->warning($exception->getMessage(), ['host' => $params['host'], 'attempt' => $attempt]);
+                        sleep(5);
+                        if (time() - $startedAt < $timeout) {
+                            $attempt++;
+                        } else {
+                            throw $exception;
+                        }
+                    }
+                } while ($connection === null || $platform === null);
 
-                if (!Type::hasType(CustomBinaryType::NAME)) {
-                    Type::addType(CustomBinaryType::NAME, CustomBinaryType::class);
+                foreach ($customTypes as $className => $definition) {
+                    if (!Type::hasType($definition['doctrineType'])) {
+                        Type::addType($definition['doctrineType'], $className);
+                    }
+                    $platform->registerDoctrineTypeMapping($definition['dbType'], $definition['doctrineType']);
                 }
-                if (!Type::hasType(CustomDateTimeType::NAME)) {
-                    Type::addType(CustomDateTimeType::NAME, CustomDateTimeType::class);
-                }
-
-                $retry = new Retry($container->get(LoggerInterface::class), 60, 5);
-
-                /** @var AbstractPlatform $platform */
-                $platform = $retry(function () use ($connection) {
-                    return $connection->getDatabasePlatform();
-                });
-
-                $platform->registerDoctrineTypeMapping('CustomBinary', CustomBinaryType::NAME);
-                $platform->registerDoctrineTypeMapping('CustomDateTime', CustomDateTimeType::NAME);
 
                 return $connection;
             }),

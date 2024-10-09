@@ -6,11 +6,11 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
-use HexagonalPlayground\Infrastructure\Retry;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Redis;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Throwable;
 
 class EventServiceProvider implements ServiceProviderInterface
 {
@@ -20,15 +20,31 @@ class EventServiceProvider implements ServiceProviderInterface
             EventSubscriberInterface::class => DI\add(DI\get(RedisEventPublisher::class)),
             HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
             Redis::class => DI\factory(function (ContainerInterface $container) {
-                $host  = $container->get('config.redis.host');
-                $retry = new Retry($container->get(LoggerInterface::class), 60, 5);
+                /** @var LoggerInterface $logger */
+                $logger = $container->get(LoggerInterface::class);
+                $host = $container->get('config.redis.host');
+                $timeout = 60;
+                $attempt = 1;
+                $startedAt = time();
 
-                return $retry(function () use ($host) {
-                    $redis = new Redis();
-                    @$redis->connect($host);
+                do {
+                    $logger->debug('Connecting to redis', ['host' => $host, 'attempt' => $attempt]);
+                    try {
+                        $redis = new Redis();
+                        $redis->connect($host);
+                    } catch (Throwable $exception) {
+                        $redis = null;
+                        $logger->warning($exception->getMessage(), ['host' => $host, 'attempt' => $attempt]);
+                        sleep(5);
+                        if (time() - $startedAt < $timeout) {
+                            $attempt++;
+                        } else {
+                            throw $exception;
+                        }
+                    }
+                } while ($redis === null);
 
-                    return $redis;
-                });
+                return $redis;
             })
         ];
     }
