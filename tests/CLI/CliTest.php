@@ -4,6 +4,9 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\CLI;
 
 use GlobIterator;
+use HexagonalPlayground\Application\Bus\CommandBus;
+use HexagonalPlayground\Application\Command\CreateTeamCommand;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Infrastructure\CLI\Application;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
@@ -192,9 +195,67 @@ class CliTest extends TestCase
         self::assertExecutionSuccess($tester->execute(['recipient' => 'test@example.com']));
     }
 
+    public function testImportingLogo(): string
+    {
+        $teamId = DataGenerator::generateId();
+        $this->getCommandBus()->execute(new CreateTeamCommand($teamId, $teamId), $this->getAuthContext());
+        $sourcePath = tempnam(sys_get_temp_dir(), 'logo');
+        $sourceData = DataGenerator::generateBytes(16);
+        file_put_contents($sourcePath, $sourceData);
+        self::assertFileExists($sourcePath);
+
+        $tester = $this->getCommandTester('app:logo:import');
+        $exitCode = $tester->execute(['file' => $sourcePath, 'teamId' => $teamId]);
+        $output = $tester->getDisplay();
+
+        self::assertExecutionSuccess($exitCode);
+        self::assertFileDoesNotExist($sourcePath);
+        $matches = [];
+        preg_match('/imported to (\S+)/i', $output, $matches);
+        self::assertArrayHasKey(1, $matches, "Failed to find logo path in \"$output\"");
+        $targetPath = $matches[1];
+        self::assertFileExists($targetPath);
+        $targetData = file_get_contents($targetPath);
+        self::assertSame($sourceData, $targetData);
+
+        return $targetPath;
+    }
+
+    #[Depends("testImportingLogo")]
+    public function testCleanupLogo(string $referencedLogoPath): void
+    {
+        self::assertFileExists($referencedLogoPath);
+        $logoDirectory = dirname($referencedLogoPath);
+        self::assertDirectoryExists($logoDirectory);
+        $staleLogoId = DataGenerator::generateId();
+        $staleLogoPath = join(DIRECTORY_SEPARATOR, [$logoDirectory, "$staleLogoId.webp"]);
+        $staleLogoData = DataGenerator::generateBytes(16);
+        file_put_contents($staleLogoPath, $staleLogoData);
+        self::assertFileExists($staleLogoPath);
+
+        $tester = $this->getCommandTester('app:logo:cleanup');
+        $exitCode = $tester->execute([]);
+        $output = $tester->getDisplay();
+
+        self::assertExecutionSuccess($exitCode);
+        self::assertStringContainsString('Deleted 1 unused logo', $output);
+        self::assertFileDoesNotExist($staleLogoPath);
+        self::assertFileExists($referencedLogoPath);
+    }
+
     private function getCommandTester(string $commandName): CommandTester
     {
         return new CommandTester($this->app->get($commandName));
+    }
+
+    private function getCommandBus(): CommandBus
+    {
+        return $this->app->getContainer()->get(CommandBus::class);
+    }
+
+    private function getAuthContext(): AuthContext
+    {
+        return $this->app->getAuthContext();
     }
 
     private static function assertExecutionSuccess(int $exitCode): void

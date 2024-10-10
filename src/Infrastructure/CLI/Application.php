@@ -23,7 +23,9 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\DropCommand;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
+use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
+use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\CLI\ServiceProvider as CliServiceProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
@@ -39,6 +41,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Application extends \Symfony\Component\Console\Application
 {
     private ContainerInterface $container;
+    private AuthContext $authContext;
 
     public function __construct()
     {
@@ -54,16 +57,25 @@ class Application extends \Symfony\Component\Console\Application
 
         $this->container = ContainerBuilder::build($serviceProviders);
 
+        $user = new User(
+            'cli',
+            'cli@example.com',
+            '123456',
+            'CLI',
+            'CLI',
+            User::ROLE_ADMIN
+        );
+
+        $this->authContext = new AuthContext($user);
+
         parent::__construct('Liga-Manager', $this->container->get('app.version'));
 
         foreach ($this->getOwnCommands() as $command) {
             $this->add($command);
         }
-
         foreach ($this->getDoctrineMigrationsCommands() as $command) {
             $this->add($command);
         }
-
         foreach ($this->getDoctrineOrmCommands() as $command) {
             $this->add($command);
         }
@@ -77,23 +89,35 @@ class Application extends \Symfony\Component\Console\Application
         return parent::run($input, $output);
     }
 
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
+
+    public function getAuthContext(): AuthContext
+    {
+        return $this->authContext;
+    }
+
     /**
      * @return Iterator
      */
     private function getOwnCommands(): Iterator
     {
-        yield new SendTestMailCommand($this->container);
-        yield new SetupEnvCommand($this->container);
-        yield new HealthCommand($this->container);
-        yield new CreateUserCommand($this->container);
-        yield new DeleteUserCommand($this->container);
-        yield new ListUserCommand($this->container);
-        yield new L98ImportCommand($this->container);
-        yield new LoadDemoDataCommand($this->container);
-        yield new WipeDbCommand($this->container);
-        yield new BrowseDbCommand($this->container);
-        yield new ExportDbCommand($this->container);
-        yield new ImportDbCommand($this->container);
+        yield new SendTestMailCommand($this->container, $this->authContext);
+        yield new SetupEnvCommand($this->container, $this->authContext);
+        yield new HealthCommand($this->container, $this->authContext);
+        yield new CreateUserCommand($this->container, $this->authContext);
+        yield new DeleteUserCommand($this->container, $this->authContext);
+        yield new ListUserCommand($this->container, $this->authContext);
+        yield new L98ImportCommand($this->container, $this->authContext);
+        yield new LoadDemoDataCommand($this->container, $this->authContext);
+        yield new WipeDbCommand($this->container, $this->authContext);
+        yield new BrowseDbCommand($this->container, $this->authContext);
+        yield new ExportDbCommand($this->container, $this->authContext);
+        yield new ImportDbCommand($this->container, $this->authContext);
+        yield new CleanupLogoCommand($this->container, $this->authContext);
+        yield new ImportLogoCommand($this->container, $this->authContext);
     }
 
     /**

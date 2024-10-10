@@ -21,7 +21,7 @@ class TeamLogoRepository
 
     public function delete(string $logoId): void
     {
-        $this->filesystemService->deleteFile($this->generateStoragePath($logoId));
+        $this->filesystemService->deleteFile($this->generatePrivatePath($logoId));
     }
 
     public function generatePublicPath(string $logoId): string
@@ -29,7 +29,7 @@ class TeamLogoRepository
         return join('/', [$this->appLogosPublicPath, "$logoId.webp"]);
     }
 
-    private function generateStoragePath(string $logoId): string
+    public function generatePrivatePath(string $logoId): string
     {
         return $this->filesystemService->joinPaths([$this->appLogosPath, "$logoId.webp"]);
     }
@@ -38,8 +38,19 @@ class TeamLogoRepository
     {
         $logoId = Uuid::create();
 
-        $uploadedFile->moveTo($this->generateStoragePath($logoId));
+        $uploadedFile->moveTo($this->generatePrivatePath($logoId));
 
         return $logoId;
+    }
+
+    public function findAll(): array
+    {
+        $logoIds = [];
+        foreach ($this->filesystemService->getDirectoryIterator($this->appLogosPath) as $filename) {
+            if (str_ends_with($filename, '.webp')) {
+                $logoIds[] = str_replace('.webp', '', $filename);
+            }
+        }
+        return $logoIds;
     }
 }
