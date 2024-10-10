@@ -38,6 +38,7 @@ class ImportLogoCommand extends Command
         $logoId = $teamLogoRepository->save($uploadedFile);
         $team->setLogoId($logoId);
         $teamRepository->save($team);
+        $teamRepository->flush();
         $filesystemService->deleteFile($filePath);
         $filePath = $teamLogoRepository->generatePrivatePath($logoId);
 
