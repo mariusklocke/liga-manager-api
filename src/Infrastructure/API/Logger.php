@@ -61,7 +61,7 @@ class Logger extends AbstractLogger
         }
 
         if (is_resource($this->stream)) {
-            fwrite($line . PHP_EOL);
+            fwrite($this->stream, $line . PHP_EOL);
         } else {
             error_log($line);
         }
