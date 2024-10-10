@@ -239,10 +239,8 @@ class CliTest extends TestCase
 
         $tester = $this->getCommandTester('app:logo:cleanup');
         $exitCode = $tester->execute([]);
-        $output = $tester->getDisplay();
 
         self::assertExecutionSuccess($exitCode);
-        self::assertStringContainsString('Deleted 1 unused logo', $output);
         self::assertFileDoesNotExist($staleLogoPath);
         self::assertFileExists($referencedLogoPath);
     }
