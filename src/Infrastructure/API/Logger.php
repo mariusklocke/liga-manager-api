@@ -2,16 +2,14 @@
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use InvalidArgumentException;
-use Psr\Http\Message\StreamInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 use Stringable;
 
 class Logger extends AbstractLogger
 {
-    private StreamInterface|null $stream;
+    private mixed $stream;
     private string $minLevel;
     private static array $severityMap = [
         LogLevel::EMERGENCY => 7,
@@ -31,7 +29,7 @@ class Logger extends AbstractLogger
     public function __construct(string $filePath, string $minLevel)
     {
         if ($filePath !== '') {
-            $this->stream = (new FilesystemService())->openFile($filePath, 'a');
+            $this->stream = fopen($filePath, 'a');
         } else {
             $this->stream = null;
         }
@@ -62,8 +60,8 @@ class Logger extends AbstractLogger
             $line .= ' ' . json_encode($context);
         }
 
-        if ($this->stream !== null && $this->stream->isWritable()) {
-            $this->stream->write($line . PHP_EOL);
+        if (is_resource($this->stream) && is_writable($this->stream)) {
+            fwrite($line . PHP_EOL);
         } else {
             error_log($line);
         }

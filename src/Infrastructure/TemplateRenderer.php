@@ -9,20 +9,20 @@ use InvalidArgumentException;
 
 class TemplateRenderer implements TemplateRendererInterface
 {
+    private FilesystemService $filesystemService;
     private string $templatePath;
 
-    private FilesystemService $filesystemService;
-
     /**
-     * @param string $templatePath
+     * @param FilesystemService $filesystemService
+     * @param string $appHome
      */
-    public function __construct(string $templatePath)
+    public function __construct(FilesystemService $filesystemService, string $appHome)
     {
-        $this->filesystemService = new FilesystemService();
-        if (!$this->filesystemService->isDirectory($templatePath)) {
+        $this->filesystemService = $filesystemService;
+        $this->templatePath = $filesystemService->joinPaths([$appHome, 'templates']);
+        if (!$this->filesystemService->isDirectory($this->templatePath)) {
             throw new InvalidArgumentException('Template directory does not exist');
         }
-        $this->templatePath = $templatePath;
     }
 
     /**
