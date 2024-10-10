@@ -60,7 +60,7 @@ class Logger extends AbstractLogger
             $line .= ' ' . json_encode($context);
         }
 
-        if (is_resource($this->stream) && is_writable($this->stream)) {
+        if (is_resource($this->stream)) {
             fwrite($line . PHP_EOL);
         } else {
             error_log($line);

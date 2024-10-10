@@ -14,7 +14,9 @@ use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use HexagonalPlayground\Application\Import\TeamMapperInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -89,7 +91,8 @@ class ServiceProvider implements ServiceProviderInterface
                 return new ConsoleLogger($container->get(OutputInterface::class));
             }),
             OutputInterface::class => DI\get(ConsoleOutput::class),
-            TeamMapperInterface::class => DI\get(TeamMapper::class)
+            TeamMapperInterface::class => DI\get(TeamMapper::class),
+            UploadedFileFactoryInterface::class => DI\get(Psr17Factory::class)
         ];
     }
 }
