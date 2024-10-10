@@ -210,10 +210,14 @@ class CliTest extends TestCase
 
         self::assertExecutionSuccess($exitCode);
         self::assertFileDoesNotExist($sourcePath);
-        $matches = [];
-        preg_match('/imported to (\S+)/i', $output, $matches);
-        self::assertArrayHasKey(1, $matches, "Failed to find logo path in \"$output\"");
-        $targetPath = $matches[1];
+        $targetPath = null;
+        foreach (preg_split('/\s+/', $output) as $word) {
+            if (str_ends_with($word, '.webp')) {
+                $targetPath = $word;
+                break;
+            }
+        }
+        self::assertIsString($targetPath, "Failed to find logo path in \"$output\"");
         self::assertFileExists($targetPath);
         $targetData = file_get_contents($targetPath);
         self::assertSame($sourceData, $targetData);
