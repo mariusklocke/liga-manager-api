@@ -17,7 +17,7 @@ class DataGenerator
         return self::generateId() . '@example.com';
     }
 
-    public static function generatePassword($length = 16): string
+    public static function generatePassword(int $length = 16): string
     {
         $characters = array_merge(
             range('0', '9'),
@@ -58,5 +58,10 @@ class DataGenerator
         }
 
         return $value;
+    }
+
+    public static function generateBytes(int $length): string
+    {
+        return random_bytes($length);
     }
 }
