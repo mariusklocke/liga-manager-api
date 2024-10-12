@@ -25,9 +25,8 @@ abstract class HttpTest extends TestCase
 
     protected function setUp(): void
     {
-        $baseUrl = getenv('APP_BASE_URL');
-        if ($baseUrl) {
-            $this->client = new Client(['base_uri' => $baseUrl]);
+        if (!extension_loaded('xdebug')) {
+            $this->client = new Client(['base_uri' => getenv('APP_BASE_URL')]);
         } else {
             if (null === self::$app) {
                 self::$app = new Application();
