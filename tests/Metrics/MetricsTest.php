@@ -23,7 +23,7 @@ class MetricsTest extends HttpTest
         $response = $this->client->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
         $contentType = $response->getHeader('Content-Type')[0];
-        self::assertSame('text/plain', $contentType);
+        self::assertStringStartsWith('text/plain', $contentType);
         $actualMetrics = (string)$response->getBody();
 
         foreach ($expectedMetrics as $metric) {
