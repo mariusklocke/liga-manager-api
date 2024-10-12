@@ -145,21 +145,16 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function buildUploadRequest(string $method, string $uri, string $filePath, string $fileMediaType, array $headers = []): ServerRequestInterface
     {
-        $file = $this->uploadedFileFactory->createUploadedFile(
-            $this->streamFactory->createStreamFromFile($filePath),
-            filesize($filePath),
-            0,
-            basename($filePath),
-            $fileMediaType
-        );
-
         $request = $this->requestFactory->createServerRequest($method, $uri);
-        $request = $request->withUploadedFiles(['file' => $file]);
-
         foreach ($headers as $key => $value) {
             $request = $request->withHeader($key, $value);
         }
+        $stream   = $this->streamFactory->createStreamFromFile($filePath);
+        $fileSize = filesize($filePath);
+        $fileName = basename($filePath);
 
-        return $request;
+        return $request->withUploadedFiles([
+            'file' => $this->uploadedFileFactory->createUploadedFile($stream, $fileSize, 0, $fileName, $fileMediaType)
+        ]);
     }
 }
