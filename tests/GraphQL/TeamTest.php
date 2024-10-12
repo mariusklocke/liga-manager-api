@@ -87,7 +87,9 @@ class TeamTest extends TestCase
     #[Depends("testTeamContactCanBeUpdated")]
     public function testTeamLogoCanBeUploaded(string $teamId): string
     {
-        $this->markTestSkipped('Upload test skipped');
+        if (!extension_loaded('xdebug')) {
+            $this->markTestSkipped('Upload test skipped');
+        }
         $tempFile = $this->generateRandomFile();
         try {
             $token = $this->createAdminToken();
