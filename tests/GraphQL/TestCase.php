@@ -8,6 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Psr7\HttpFactory;
 use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
@@ -33,17 +34,21 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         if (!extension_loaded('xdebug')) {
+            $httpFactory = new HttpFactory();
+            $this->requestFactory = $httpFactory;
+            $this->uploadedFileFactory = $httpFactory;
+            $this->streamFactory = $httpFactory;
             $this->psrClient = new GuzzleClient(['base_uri' => getenv('APP_BASE_URL')]);
         } else {
+            $psr17Factory = new Psr17Factory();
+            $this->requestFactory = $psr17Factory;
+            $this->uploadedFileFactory = $psr17Factory;
+            $this->streamFactory = $psr17Factory;
             if (null === self::$app) {
                 self::$app = new Application();
             }
             $this->psrClient = new PsrSlimClient(self::$app);
         }
-        $psr17Factory = new Psr17Factory();
-        $this->requestFactory = $psr17Factory;
-        $this->uploadedFileFactory = $psr17Factory;
-        $this->streamFactory = $psr17Factory;
         $this->client = new Client($this->psrClient, $this->requestFactory);
     }
 
