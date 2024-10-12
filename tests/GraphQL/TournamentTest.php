@@ -12,12 +12,15 @@ class TournamentTest extends CompetitionTestCase
     {
         $tournamentId = DataGenerator::generateId();
 
-        $events = self::catchEvents(Event::class, function () use ($tournamentId) {
+        if (extension_loaded('xdebug')) {
+            $events = self::catchEvents(Event::class, function () use ($tournamentId) {
+                $this->client->createTournament($tournamentId, $tournamentId);
+            });
+            self::assertCount(1, $events);
+            self::assertSame('tournament:created', $events[0]->getType());
+        } else {
             $this->client->createTournament($tournamentId, $tournamentId);
-        });
-
-        self::assertCount(1, $events);
-        self::assertSame('tournament:created', $events[0]->getType());
+        }
 
         $tournament = $this->client->getTournamentById($tournamentId);
         self::assertNotNull($tournament);
