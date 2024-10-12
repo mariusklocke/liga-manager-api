@@ -2,24 +2,25 @@
 
 namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
-use GuzzleHttp\ClientInterface;
 use HexagonalPlayground\Tests\Framework\JsonResponseParser;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use stdClass;
 
 class Client
 {
     private ClientInterface $httpClient;
-
+    private ServerRequestFactoryInterface $requestFactory;
     private array $headers;
-
     private JsonResponseParser $parser;
 
-    public function __construct(ClientInterface $httpClient)
+    public function __construct(ClientInterface $httpClient, ServerRequestFactoryInterface $requestFactory)
     {
-        $this->httpClient = $httpClient;
-        $this->headers    = [];
-        $this->parser     = new JsonResponseParser();
+        $this->httpClient     = $httpClient;
+        $this->requestFactory = $requestFactory;
+        $this->headers        = [];
+        $this->parser         = new JsonResponseParser();
     }
 
     public function useCredentials(string $email, string $password): void
@@ -461,11 +462,13 @@ GRAPHQL;
 
     private function request(string $query, array $variables = []): ResponseInterface
     {
-        return $this->httpClient->post(
-            '/api/graphql/',
-            ['query' => $query, 'variables' => $variables],
-            $this->headers
-        );
+        $request = $this->requestFactory->createServerRequest('POST', '/api/graphql/');
+        foreach ($this->headers as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
+        $request->getBody()->write(json_encode(['query' => $query, 'variables' => $variables]));
+
+        return $this->httpClient->sendRequest($request);
     }
 
     public function cancelMatch($matchId, $reason): void
@@ -926,7 +929,11 @@ GRAPHQL;
 
     public function getSchema(): string
     {
-        $response = $this->httpClient->get('/api/graphql/', $this->headers);
+        $request = $this->requestFactory->createServerRequest('GET', '/api/graphql/');
+        foreach ($this->headers as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
+        $response = $this->httpClient->sendRequest($request);
 
         return (string)$response->getBody();
     }
