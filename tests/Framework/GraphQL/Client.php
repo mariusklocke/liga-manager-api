@@ -2,25 +2,22 @@
 
 namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
+use GuzzleHttp\ClientInterface;
 use HexagonalPlayground\Tests\Framework\JsonResponseParser;
-use HexagonalPlayground\Tests\Framework\SlimClient;
 use Psr\Http\Message\ResponseInterface;
 use stdClass;
 
 class Client
 {
-    private SlimClient $slimClient;
+    private ClientInterface $httpClient;
 
     private array $headers;
 
     private JsonResponseParser $parser;
 
-    /**
-     * @param SlimClient $slimClient
-     */
-    public function __construct(SlimClient $slimClient)
+    public function __construct(ClientInterface $httpClient)
     {
-        $this->slimClient = $slimClient;
+        $this->httpClient = $httpClient;
         $this->headers    = [];
         $this->parser     = new JsonResponseParser();
     }
@@ -464,7 +461,7 @@ GRAPHQL;
 
     private function request(string $query, array $variables = []): ResponseInterface
     {
-        return $this->slimClient->post(
+        return $this->httpClient->post(
             '/api/graphql/',
             ['query' => $query, 'variables' => $variables],
             $this->headers
@@ -929,10 +926,7 @@ GRAPHQL;
 
     public function getSchema(): string
     {
-        $response = $this->slimClient->get(
-            '/api/graphql/',
-            $this->headers
-        );
+        $response = $this->httpClient->get('/api/graphql/', $this->headers);
 
         return (string)$response->getBody();
     }

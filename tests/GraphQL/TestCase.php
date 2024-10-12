@@ -7,26 +7,44 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use GuzzleHttp\Client as GuzzleClient;
 use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
-use HexagonalPlayground\Tests\Framework\SlimClient;
+use HexagonalPlayground\Tests\Framework\PsrSlimClient;
+use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected Client $client;
-    protected SlimClient $slimClient;
+    protected ClientInterface $psrClient;
+    private ServerRequestFactoryInterface $requestFactory;
+    private UploadedFileFactoryInterface $uploadedFileFactory;
+    private StreamFactoryInterface $streamFactory;
     private static ?Application $app = null;
 
     protected function setUp(): void
     {
-        if (null === self::$app) {
-            self::$app = new Application();
+        if (!extension_loaded('xdebug')) {
+            $this->psrClient = new GuzzleClient(['base_uri' => getenv('APP_BASE_URL')]);
+        } else {
+            if (null === self::$app) {
+                self::$app = new Application();
+            }
+            $this->psrClient = new PsrSlimClient(self::$app);
         }
-        $this->slimClient = new SlimClient(self::$app);
-        $this->client = new Client($this->slimClient);
+        $this->client = new Client($this->psrClient);
+        $psr17Factory = new Psr17Factory();
+        $this->requestFactory = $psr17Factory;
+        $this->uploadedFileFactory = $psr17Factory;
+        $this->streamFactory = $psr17Factory;
     }
 
     /**
@@ -107,5 +125,36 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             }
         }
         self::fail('Failed to assert that ' . $timeZone->getName() . ' uses daylight saving time');
+    }
+
+    protected function buildRequest(string $method, string $uri, array $headers = []): ServerRequestInterface
+    {
+        $request = $this->requestFactory->createServerRequest($method, $uri);
+
+        foreach ($headers as $key => $value) {
+            $request = $request->withHeader($key, $value);
+        }
+
+        return $request;
+    }
+
+    protected function buildUploadRequest(string $method, string $uri, string $filePath, string $fileMediaType, array $headers = []): ServerRequestInterface
+    {
+        $file = $this->uploadedFileFactory->createUploadedFile(
+            $this->streamFactory->createStreamFromFile($filePath),
+            filesize($filePath),
+            0,
+            basename($filePath),
+            $fileMediaType
+        );
+
+        $request = $this->requestFactory->createServerRequest($method, $uri);
+        $request = $request->withUploadedFiles(['file' => $file]);
+
+        foreach ($headers as $key => $value) {
+            $request = $request->withHeader($key, $value);
+        }
+
+        return $request;
     }
 }
