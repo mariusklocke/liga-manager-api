@@ -466,6 +466,7 @@ GRAPHQL;
         foreach ($this->headers as $name => $value) {
             $request = $request->withHeader($name, $value);
         }
+        $request = $request->withHeader('Content-Type', 'application/json');
         $request->getBody()->write(json_encode(['query' => $query, 'variables' => $variables]));
 
         return $this->httpClient->sendRequest($request);
@@ -700,7 +701,7 @@ GRAPHQL;
         $token = $response->getHeader('X-Token')[0] ?? null;
 
         if (null === $token) {
-            throw new Exception(['Could not create token']);
+            throw new Exception(['Missing expected response header "X-Token"']);
         }
 
         return $token;
