@@ -40,11 +40,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             }
             $this->psrClient = new PsrSlimClient(self::$app);
         }
-        $this->client = new Client($this->psrClient);
         $psr17Factory = new Psr17Factory();
         $this->requestFactory = $psr17Factory;
         $this->uploadedFileFactory = $psr17Factory;
         $this->streamFactory = $psr17Factory;
+        $this->client = new Client($this->psrClient, $this->requestFactory);
     }
 
     /**
