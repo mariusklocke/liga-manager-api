@@ -39,7 +39,7 @@ RUN xdebug off
 COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
 
 # Add healthcheck
-COPY docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck
+COPY docker/php/healthcheck.php /usr/local/bin/docker-php-healthcheck
 RUN chmod +x /usr/local/bin/docker-php-healthcheck
 
 # Add entrypoint
@@ -71,5 +71,5 @@ RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 8080
-HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck || exit 1
+HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck http 127.0.0.1 8080
 CMD lima migrations:migrate -n && rr serve -c /usr/local/etc/rr.yaml

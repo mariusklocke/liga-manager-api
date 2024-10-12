@@ -36,7 +36,7 @@ COPY docker/php/php.ini /etc/php/php.ini
 RUN xdebug off
 
 # Add healthcheck
-COPY docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
+COPY docker/php/healthcheck.php /usr/local/bin/docker-php-healthcheck
 RUN chmod +x /usr/local/bin/docker-php-healthcheck
 
 # Add entrypoint
@@ -69,5 +69,5 @@ RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 9000
-HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck || exit 1
+HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck fcgi 127.0.0.1 9000
 CMD lima migrations:migrate -n && php-fpm -F
