@@ -1,6 +1,7 @@
 {
     "name": "mklocke/hexagonal-playground",
     "type": "project",
+    "version": "dev-latest",
     "authors": [
         {
             "name": "Marius Klocke",

@@ -2,6 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure;
 
+use Composer\InstalledVersions;
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use Psr\Container\ContainerInterface;
@@ -14,9 +15,11 @@ class ContainerBuilder
      */
     public static function build(array $serviceProviders): ContainerInterface
     {
-        $app = [];
-        $app['app.home'] = realpath(join(DIRECTORY_SEPARATOR, [__DIR__ , '..', '..']));
-        $app['app.version'] = self::getVersion($app['app.home']);
+        $package = InstalledVersions::getRootPackage();
+        $app = [
+            'app.home' => realpath($package['install_path']),
+            'app.version' => $package['version'] ?? 'dev-latest',
+        ];
         $config = ConfigLoader::load($app['app.home']);
 
         $builder = new DI\ContainerBuilder();
@@ -32,17 +35,5 @@ class ContainerBuilder
         }
 
         return $builder->build();
-    }
-
-    /**
-     * @param string $home Path to app home
-     * @return string
-     */
-    private static function getVersion(string $home): string
-    {
-        $package = file_get_contents(join(DIRECTORY_SEPARATOR, [$home, 'composer.json']));
-        $package = json_decode($package, true);
-
-        return $package['version'] ?? 'development';
     }
 }
