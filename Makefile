@@ -34,7 +34,7 @@ test:
 	set -x
 	function tearDown {
 		docker compose logs php
-		docker compose down
+		docker compose down -v
 	}
 	trap tearDown EXIT
 	docker compose up --detach --quiet-pull

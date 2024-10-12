@@ -5,6 +5,7 @@ services:
       - "80:80/tcp"
     volumes:
       - $PWD/docker/nginx/build-$TARGET_TYPE.conf:/etc/nginx/conf.d/default.conf
+      - logos:/var/www/logos:ro
     depends_on:
       php:
         condition: service_healthy
@@ -33,6 +34,7 @@ services:
     volumes:
       - $PWD/.git:/var/www/api/.git
       - $PWD/tests:/var/www/api/tests
+      - logos:/var/www/logos
     depends_on:
       mariadb:
         condition: service_healthy
@@ -61,3 +63,5 @@ services:
       start_interval: 5s
       interval: 1m
       timeout: 5s
+volumes:
+  logos:
