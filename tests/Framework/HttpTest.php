@@ -2,6 +2,7 @@
 
 namespace HexagonalPlayground\Tests\Framework;
 
+use GuzzleHttp\Client;
 use HexagonalPlayground\Infrastructure\API\Application;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
@@ -24,11 +25,15 @@ abstract class HttpTest extends TestCase
 
     protected function setUp(): void
     {
-        if (null === self::$app) {
-            self::$app = new Application();
+        $baseUrl = getenv('APP_BASE_URL');
+        if ($baseUrl) {
+            $this->client = new Client(['base_uri' => $baseUrl]);
+        } else {
+            if (null === self::$app) {
+                self::$app = new Application();
+            }
+            $this->client = new PsrSlimClient(self::$app);
         }
-
-        $this->client = new PsrSlimClient(self::$app);
         $this->parser = new JsonResponseParser();
         $this->authenticator = new RequestAuthenticator();
         $this->requestFactory = new Psr17Factory();
