@@ -9,6 +9,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\HttpFactory;
+use GuzzleHttp\Psr7\MultipartStream;
 use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
@@ -145,16 +146,34 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
     protected function buildUploadRequest(string $method, string $uri, string $filePath, string $fileMediaType, array $headers = []): ServerRequestInterface
     {
-        $request = $this->requestFactory->createServerRequest($method, $uri);
-        foreach ($headers as $key => $value) {
-            $request = $request->withHeader($key, $value);
-        }
+        $request  = $this->buildRequest($method, $uri, $headers);
         $stream   = $this->streamFactory->createStreamFromFile($filePath);
         $fileSize = filesize($filePath);
         $fileName = basename($filePath);
 
-        return $request->withUploadedFiles([
-            'file' => $this->uploadedFileFactory->createUploadedFile($stream, $fileSize, 0, $fileName, $fileMediaType)
-        ]);
+        if (extension_loaded('xdebug')) {
+            $uploadedFile = $this->uploadedFileFactory->createUploadedFile($stream, $fileSize, 0, $fileName, $fileMediaType);
+            $request = $request->withUploadedFiles(['file' => $uploadedFile]);
+        } else {
+            $boundary = 'boundary_' . uniqid();
+            $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
+
+            // Build the multipart form data using a stream
+            $multipart = new MultipartStream([
+                [
+                    'name'     => 'file',
+                    'filename' => $fileName,
+                    'contents' => $stream,
+                    'headers'  => [
+                        'Content-Type' => $fileMediaType,
+                        'Content-Length' => (string)$fileSize,
+                    ]
+                ]
+            ], $boundary);
+
+            $request = $request->withBody($multipart);
+        }
+
+        return $request;
     }
 }
