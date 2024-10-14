@@ -13,6 +13,7 @@ use GuzzleHttp\Psr7\MultipartStream;
 use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
+use HexagonalPlayground\Tests\Framework\MaildevClient;
 use HexagonalPlayground\Tests\Framework\PsrSlimClient;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -27,6 +28,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected Client $client;
     protected ClientInterface $psrClient;
+    protected MaildevClient $mailClient;
     private ServerRequestFactoryInterface $requestFactory;
     private UploadedFileFactoryInterface $uploadedFileFactory;
     private StreamFactoryInterface $streamFactory;
@@ -51,6 +53,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             $this->psrClient = new PsrSlimClient(self::$app);
         }
         $this->client = new Client($this->psrClient, $this->requestFactory);
+        $this->mailClient = new MaildevClient();
     }
 
     /**

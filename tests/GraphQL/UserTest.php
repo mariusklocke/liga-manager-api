@@ -6,7 +6,6 @@ use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use PHPUnit\Framework\Attributes\Depends;
-use Symfony\Component\Mailer\Event\MessageEvent;
 
 class UserTest extends TestCase
 {
@@ -77,28 +76,30 @@ class UserTest extends TestCase
 
     public function testPasswordResetSendsAnEmail()
     {
+        $this->mailClient->deleteMails();
         $this->client->clearAuth();
         $user = self::$userData;
-        if (extension_loaded('xdebug')) {
-            $messageEvents = self::catchEvents(MessageEvent::class, function () use ($user) {
-                $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
-            });
-            self::assertCount(1, $messageEvents);
-        } else {
-            $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
-        }
+        $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
+        sleep(5);
+        $mails = $this->mailClient->getMails();
+        self::assertCount(1, $mails);
+        $mail = $mails[0];
+        self::assertIsObject($mail);
+        $recipients = $mail->to;
+        self::assertCount(1, $recipients);
+        $recipient = current($recipients);
+        self::assertIsObject($recipient);
+        self::assertEquals($user['email'], $recipient->address);
     }
 
     public function testPasswordResetDoesNotErrorWithUnknownEmail(): void
     {
-        if (extension_loaded('xdebug')) {
-            $messageEvents = self::catchEvents(MessageEvent::class, function () {
-                $this->client->sendPasswordResetMail('mister.secret@example.com', '/nowhere');
-            });
-            self::assertCount(0, $messageEvents);
-        } else {
-            $this->client->sendPasswordResetMail('mister.secret@example.com', '/nowhere');
-        }
+        $this->mailClient->deleteMails();
+        $recipient = 'mister.secret@example.com';
+        $this->client->sendPasswordResetMail($recipient, '/nowhere');
+        sleep(5);
+        $mails = $this->mailClient->getMails();
+        self::assertCount(0, $mails);
     }
 
     #[Depends("testUserCanBeCreated")]
@@ -154,14 +155,17 @@ class UserTest extends TestCase
     #[Depends("testUserCanChangePassword")]
     public function testSendingInviteEmail(array $user): array
     {
-        if (extension_loaded('xdebug')) {
-            $messageEvents = self::catchEvents(MessageEvent::class, function () use ($user) {
-                $this->client->sendInviteMail($user['id'], '/straight/to/hell');
-            });
-            self::assertCount(1, $messageEvents);
-        } else {
-            $this->client->sendInviteMail($user['id'], '/straight/to/hell');
-        }
+        $this->mailClient->deleteMails();
+        $this->client->sendInviteMail($user['id'], '/straight/to/hell');
+        $mails = $this->mailClient->getMails();
+        self::assertCount(1, $mails);
+        $mail = $mails[0];
+        self::assertIsObject($mail);
+        $recipients = $mail->to;
+        self::assertCount(1, $recipients);
+        $recipient = current($recipients);
+        self::assertIsObject($recipient);
+        self::assertEquals($user['email'], $recipient->address);
 
         return $user;
     }
