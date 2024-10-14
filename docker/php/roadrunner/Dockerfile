@@ -45,7 +45,6 @@ RUN chmod +x /usr/local/bin/docker-php-healthcheck
 # Add entrypoint
 COPY docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
-ENTRYPOINT ["docker-php-entrypoint"]
 
 # Create application directories
 ENV APP_HOME="/var/www/api"
@@ -73,4 +72,5 @@ RUN chmod +x bin/*
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck http 127.0.0.1 8080
+ENTRYPOINT ["docker-php-entrypoint"]
 CMD lima migrations:migrate -n && rr serve -c /usr/local/etc/rr.yaml
