@@ -6,8 +6,6 @@ if [ "${1#-}" != "$1" ]; then
 	set -- php-fpm "$@"
 fi
 
-if [ -e /var/www/logos ]; then
-    chown www-data:www-data /var/www/logos
-fi
+chown www-data:www-data /var/www/logos
 
 exec "$@"

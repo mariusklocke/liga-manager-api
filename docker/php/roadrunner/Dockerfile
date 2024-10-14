@@ -45,6 +45,7 @@ RUN chmod +x /usr/local/bin/docker-php-healthcheck
 # Add entrypoint
 COPY docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
+ENTRYPOINT ["docker-php-entrypoint"]
 
 # Create application directories
 ENV APP_HOME="/var/www/api"
@@ -66,8 +67,8 @@ COPY migrations migrations/
 COPY config config/
 COPY bin bin/
 
-# Configure ownership and permissions
-RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
+# Configure permissions
+RUN chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 8080
