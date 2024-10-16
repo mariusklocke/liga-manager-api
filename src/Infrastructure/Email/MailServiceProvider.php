@@ -45,7 +45,9 @@ class MailServiceProvider implements ServiceProviderInterface
                     $container->get(EventDispatcherInterface::class)
                 );
             }),
-            HealthCheckInterface::class => DI\add(DI\get(HealthCheck::class))
+            HealthCheck::class => DI\factory(function (ContainerInterface $container) {
+                return new HealthCheck($container->get('config.email.emailUrl'));
+            })
         ];
     }
 }

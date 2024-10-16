@@ -118,6 +118,7 @@ class Application extends \Symfony\Component\Console\Application
         yield new ImportDbCommand($this->container, $this->authContext);
         yield new CleanupLogoCommand($this->container, $this->authContext);
         yield new ImportLogoCommand($this->container, $this->authContext);
+        yield new CheckMailHealthCommand($this->container, $this->authContext);
     }
 
     /**
