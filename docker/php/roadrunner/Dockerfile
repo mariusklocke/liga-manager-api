@@ -21,7 +21,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcn
     && set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache curl ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
+    && apk add --no-cache composer curl ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
     && adduser -u 82 -D -S -G www-data www-data \
@@ -38,14 +38,8 @@ RUN xdebug off
 # Configure RoadRunner
 COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
 
-# Install PHAR tools
-COPY docker/php/install-phar.sh /usr/local/bin/install-phar.sh
-RUN chmod +x /usr/local/bin/install-phar.sh \
-    && install-phar.sh \
-    && rm /usr/local/bin/install-phar.sh
-
 # Add healthcheck
-COPY docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck
+COPY docker/php/healthcheck.php /usr/local/bin/docker-php-healthcheck
 RUN chmod +x /usr/local/bin/docker-php-healthcheck
 
 # Add entrypoint
@@ -63,8 +57,7 @@ ENV COMPOSER_ALLOW_SUPERUSER="1"
 COPY composer.lock composer.json ./
 RUN set -e \
     && composer install --optimize-autoloader --no-cache --no-dev --no-progress \
-    && composer config version ${APP_VERSION} \
-    && composer update --lock
+    && composer config version ${APP_VERSION}
 
 # Install own application sources
 COPY templates templates/
@@ -78,5 +71,5 @@ RUN chown www-data:www-data ${APP_LOGOS_PATH} && chmod +x bin/*
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 8080
-HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck || exit 1
+HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck http 127.0.0.1 8080
 CMD lima migrations:migrate -n && rr serve -c /usr/local/etc/rr.yaml

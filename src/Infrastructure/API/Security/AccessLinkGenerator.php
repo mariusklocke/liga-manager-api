@@ -7,16 +7,18 @@ use DateTimeImmutable;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Domain\User;
-use Nyholm\Psr7\Uri;
+use Psr\Http\Message\UriFactoryInterface;
 
 class AccessLinkGenerator implements AccessLinkGeneratorInterface
 {
     private TokenServiceInterface $tokenService;
+    private UriFactoryInterface $uriFactory;
     private string $appBaseUrl;
 
-    public function __construct(TokenServiceInterface $tokenService, string $appBaseUrl)
+    public function __construct(TokenServiceInterface $tokenService, UriFactoryInterface $uriFactory, string $appBaseUrl)
     {
         $this->tokenService = $tokenService;
+        $this->uriFactory   = $uriFactory;
         $this->appBaseUrl   = $appBaseUrl;
     }
 
@@ -26,9 +28,9 @@ class AccessLinkGenerator implements AccessLinkGeneratorInterface
         $query = http_build_query([
             'token' => $this->tokenService->encode($token)
         ]);
-        $link = (new Uri($this->appBaseUrl))->withPath($path)->withQuery($query);
+        $link = $this->uriFactory->createUri($this->appBaseUrl)->withPath($path)->withQuery($query);
 
-        return $link->__toString();
+        return (string)$link;
     }
 
 }

@@ -3,18 +3,14 @@
 namespace HexagonalPlayground\Infrastructure\API;
 
 use InvalidArgumentException;
-use Psr\Http\Message\StreamInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 use Stringable;
 
 class Logger extends AbstractLogger
 {
-    private StreamInterface $stream;
-
-    /** @var string */
+    private mixed $stream;
     private string $minLevel;
-
     private static array $severityMap = [
         LogLevel::EMERGENCY => 7,
         LogLevel::ALERT => 6,
@@ -27,20 +23,21 @@ class Logger extends AbstractLogger
     ];
 
     /**
-     * @param StreamInterface $stream
+     * @param string $filePath
      * @param string $minLevel
      */
-    public function __construct(StreamInterface $stream, string $minLevel)
+    public function __construct(string $filePath, string $minLevel)
     {
-        if (!$stream->isWritable()) {
-            throw new InvalidArgumentException('Invalid argument: stream is not writable');
+        if ($filePath !== '') {
+            $this->stream = fopen($filePath, 'a');
+        } else {
+            $this->stream = null;
         }
 
         if (!array_key_exists($minLevel, self::$severityMap)) {
             throw new InvalidArgumentException('Invalid argument: minLevel is not a valid log level');
         }
 
-        $this->stream = $stream;
         $this->minLevel = $minLevel;
     }
 
@@ -55,9 +52,6 @@ class Logger extends AbstractLogger
         if (self::$severityMap[$level] < self::$severityMap[$this->minLevel]) {
             return;
         }
-        if (!$this->stream->isWritable()) {
-            return; // Workaround for Doctrine DBAL logging issues on application shutdown
-        }
 
         $timestamp = date('Y-m-d H:i:s P');
         $level = strtoupper($level);
@@ -65,8 +59,12 @@ class Logger extends AbstractLogger
         if (count($context)) {
             $line .= ' ' . json_encode($context);
         }
-        $line .= PHP_EOL;
 
-        $this->stream->write($line);
+        if (is_resource($this->stream)) {
+            fwrite($this->stream, $line . PHP_EOL);
+        } else {
+            error_log($line);
+        }
+
     }
 }

@@ -4,17 +4,32 @@ namespace HexagonalPlayground\Tests\Unit;
 
 use HexagonalPlayground\Infrastructure\API\Logger;
 use InvalidArgumentException;
-use Nyholm\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
 
 class LoggerTest extends TestCase
 {
+    private string $filePath;
+
+    protected function setUp(): void
+    {
+        $this->filePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('phpunit', true);
+        if (file_exists($this->filePath)) {
+            unlink($this->filePath);
+        }
+    }
+
+    protected function tearDown(): void
+    {
+        if (file_exists($this->filePath)) {
+            unlink($this->filePath);
+        }
+    }
+
     public function testLoggerRespectsMinLevel(): void
     {
-        $stream = new Stream(fopen('php://temp', 'w+'));
         $message = 'This is a log message';
-        $logger = new Logger($stream, 'info');
+        $logger = new Logger($this->filePath, 'info');
 
         $logger->emergency($message);
         $logger->alert($message);
@@ -25,8 +40,7 @@ class LoggerTest extends TestCase
         $logger->info($message);
         $logger->debug($message);
 
-        $stream->rewind();
-        $output = $stream->getContents();
+        $output = file_get_contents($this->filePath);
         $expectedLevels = [
             LogLevel::EMERGENCY,
             LogLevel::ALERT,
@@ -43,17 +57,9 @@ class LoggerTest extends TestCase
         self::assertStringNotContainsString('DEBUG', $output);
     }
 
-    public function testInitiatingWithNonWritableStreamFails(): void
-    {
-        $stream = new Stream(fopen('php://temp', 'r'));
-        self::expectException(InvalidArgumentException::class);
-        new Logger($stream, 'debug');
-    }
-
     public function testInitiatingWithInvalidMinLevelFails(): void
     {
-        $stream = new Stream(fopen('php://temp', 'w+'));
         self::expectException(InvalidArgumentException::class);
-        new Logger($stream, 'invalid');
+        new Logger($this->filePath, 'invalid');
     }
 }

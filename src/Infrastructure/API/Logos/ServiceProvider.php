@@ -11,9 +11,7 @@ class ServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            DeleteAction::class => DI\autowire(),
-            GetAction::class => DI\autowire(),
-            UploadAction::class => DI\autowire()
+            Controller::class => DI\autowire()
         ];
     }
 }

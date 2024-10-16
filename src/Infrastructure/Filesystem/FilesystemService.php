@@ -5,11 +5,18 @@ namespace HexagonalPlayground\Infrastructure\Filesystem;
 
 use HexagonalPlayground\Domain\Exception\InternalException;
 use Iterator;
-use Nyholm\Psr7\Stream;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
 class FilesystemService
 {
+    private StreamFactoryInterface $streamFactory;
+
+    public function __construct(StreamFactoryInterface $streamFactory)
+    {
+        $this->streamFactory = $streamFactory;
+    }
+
     /**
      * Create a directory (non-recursive)
      *
@@ -195,15 +202,9 @@ class FilesystemService
      * @param string $path
      * @param string $mode
      * @return StreamInterface
-     * @throws InternalException
      */
     public function openFile(string $path, string $mode): StreamInterface
     {
-        $resource = fopen($path, $mode);
-        if (!is_resource($resource)) {
-            throw new InternalException("Failed to open file $path in mode '$mode'");
-        }
-
-        return new Stream($resource);
+        return $this->streamFactory->createStreamFromFile($path, $mode);
     }
 }

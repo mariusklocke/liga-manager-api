@@ -26,6 +26,8 @@ services:
         depends_on:
           mariadb:
             condition: service_healthy
+          redis:
+            condition: service_healthy
     mariadb:
         image: $MARIADB_IMAGE
         pull_policy: always
@@ -43,3 +45,9 @@ services:
     redis:
         image: $REDIS_IMAGE
         pull_policy: always
+        healthcheck:
+          test: [ "CMD", "redis-cli", "PING" ]
+          start_period: 1m
+          start_interval: 5s
+          interval: 1m
+          timeout: 5s

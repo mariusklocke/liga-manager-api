@@ -7,6 +7,7 @@ use DI;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use Psr\Http\Message\UriFactoryInterface;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -24,6 +25,7 @@ class ServiceProvider implements ServiceProviderInterface
             TokenAuthenticator::class => DI\autowire(),
             AccessLinkGenerator::class => DI\create()->constructor(
                 DI\get(TokenServiceInterface::class),
+                DI\get(UriFactoryInterface::class),
                 DI\get('config.api.appBaseUrl')
             ),
             AccessLinkGeneratorInterface::class => DI\get(AccessLinkGenerator::class)

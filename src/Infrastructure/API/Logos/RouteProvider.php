@@ -10,8 +10,6 @@ class RouteProvider implements RouteProviderInterface
 {
     public function register(RouteCollectorProxyInterface $routeCollectorProxy): void
     {
-        $routeCollectorProxy->delete('/logos', DeleteAction::class);
-        $routeCollectorProxy->get('/logos', GetAction::class);
-        $routeCollectorProxy->post('/logos', UploadAction::class);
+        $routeCollectorProxy->map(['GET', 'POST', 'DELETE'], '/logos', Controller::class);
     }
 }

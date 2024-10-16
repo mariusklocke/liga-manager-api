@@ -40,10 +40,10 @@ test:
 	docker compose up --detach --quiet-pull
 	docker compose exec php composer install --no-cache --no-progress
 	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
-	docker compose exec php phpunit -c config/phpunit.xml --display-deprecations
+	docker compose exec php phpunit -c config/phpunit.xml --display-deprecations --display-warnings
 	if [[ -n "${COVERALLS_RUN_LOCALLY}" ]]; then
 		docker compose exec -u root php xdebug on
-		docker compose exec php phpunit -c config/phpunit.xml --coverage-clover coverage.xml --display-deprecations
+		docker compose exec php phpunit -c config/phpunit.xml --coverage-clover coverage.xml
 		docker compose exec -u root php apk add git
 		docker compose exec php git config --global --add safe.directory /var/www/api
 		docker compose exec -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls -x coverage.xml -o coveralls.json

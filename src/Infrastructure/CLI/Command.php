@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Security\AuthContext;
-use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\Timer;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -16,16 +15,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 abstract class Command extends SymfonyCommand
 {
-    /** @var AuthContext|null */
-    private ?AuthContext $authContext = null;
-
-    /** @var ContainerInterface */
     protected ContainerInterface $container;
+    protected AuthContext $authContext;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(ContainerInterface $container, AuthContext $authContext)
     {
         parent::__construct();
         $this->container = $container;
+        $this->authContext = $authContext;
     }
 
     /**
@@ -53,18 +50,6 @@ abstract class Command extends SymfonyCommand
 
     protected function getAuthContext(): AuthContext
     {
-        if (null === $this->authContext) {
-            $user = new User(
-                'cli',
-                'cli@example.com',
-                '123456',
-                'CLI',
-                $this->getName(),
-                User::ROLE_ADMIN
-            );
-            $this->authContext = new AuthContext($user);
-        }
-
         return $this->authContext;
     }
 

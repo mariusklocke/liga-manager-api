@@ -9,6 +9,6 @@ class RouteProvider implements RouteProviderInterface
 {
     public function register(RouteCollectorProxyInterface $routeCollectorProxy): void
     {
-        $routeCollectorProxy->get('/metrics', QueryAction::class);
+        $routeCollectorProxy->get('/metrics', Controller::class);
     }
 }

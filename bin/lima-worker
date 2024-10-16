@@ -3,32 +3,37 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use HexagonalPlayground\Infrastructure\API\Application;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Log\LoggerInterface;
-use Spiral\RoadRunner\Worker;
 use Spiral\RoadRunner\Http\PSR7Worker;
 
 $app = new Application();
+/** @var LoggerInterface $logger */
 $logger = $app->getContainer()->get(LoggerInterface::class);
-$worker = Worker::create(true, $logger);
-$psrFactory = new Psr17Factory();
-$psrWorker = new PSR7Worker($worker, $psrFactory, $psrFactory, $psrFactory);
+/** @var PSR7Worker $worker */
+$worker = $app->getContainer()->get(PSR7Worker::class);
 
 while (true) {
     try {
-        $request = $psrWorker->waitRequest();
+        $request = $worker->waitRequest();
         if ($request === null) {
             break;
         }
     } catch (\Throwable $e) {
-        $psrWorker->respond($psrFactory->createResponse(400));
+        $worker->respond($app->getResponseFactory()->createResponse(400));
         continue;
     }
 
     try {
-        $psrWorker->respond($app->handle($request));
+        $response = $app->handle($request);
     } catch (\Throwable $e) {
-        $psrWorker->respond($psrFactory->createResponse(500));
+        $response = $app->getResponseFactory()->createResponse(500);
         $logger->error((string)$e);
+    } finally {
+        $worker->respond($response);
+        if ($response->getStatusCode() === 500) {
+            // in case of unexpected error the application state can be corrupted: it's safer to terminate
+            $logger->error('Terminating worker process due to unexpected error.');
+            exit(1);
+        }
     }
 }

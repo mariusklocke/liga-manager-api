@@ -31,11 +31,9 @@ class MailServiceProvider implements ServiceProviderInterface
             }),
             TemplateRendererInterface::class => DI\get(TemplateRenderer::class),
             TemplateRenderer::class => DI\factory(function (ContainerInterface $container) {
-                /** @var FilesystemService $filesystem */
-                $filesystem = $container->get(FilesystemService::class);
-
                 return new TemplateRenderer(
-                    $filesystem->joinPaths([$container->get('app.home'), 'templates'])
+                    $container->get(FilesystemService::class),
+                    $container->get('app.home')
                 );
             }),
             Mailer::class => DI\factory(function (ContainerInterface $container) {

@@ -15,6 +15,9 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Log\LoggerInterface;
+use Spiral\RoadRunner\Http\PSR7Worker;
+use Spiral\RoadRunner\Worker;
+use Spiral\RoadRunner\WorkerInterface;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -28,11 +31,8 @@ class ServiceProvider implements ServiceProviderInterface
             UploadedFileFactoryInterface::class => DI\get(Psr17Factory::class),
             UriFactoryInterface::class => DI\get(Psr17Factory::class),
             LoggerInterface::class => DI\factory(function (ContainerInterface $container) {
-                /** @var FilesystemService $filesystem */
-                $filesystem = $container->get(FilesystemService::class);
-
                 return new Logger(
-                    $filesystem->openFile($container->get('config.api.logPath'), 'w'),
+                    $container->get('config.api.logPath'),
                     $container->get('config.api.logLevel')
                 );
             }),
@@ -42,7 +42,12 @@ class ServiceProvider implements ServiceProviderInterface
                 $filePath = $filesystem->joinPaths([$container->get('app.home'), '.maintenance']);
 
                 return new MaintenanceModeMiddleware($filesystem, $filePath);
-            })
+            }),
+            Worker::class => DI\factory(function (ContainerInterface $container) {
+                return Worker::create(true, $container->get(LoggerInterface::class));
+            }),
+            PSR7Worker::class => DI\autowire(),
+            WorkerInterface::class => DI\get(Worker::class)
         ];
     }
 }
