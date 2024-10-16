@@ -2,7 +2,6 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 
@@ -11,16 +10,12 @@ class TournamentTest extends CompetitionTestCase
     public function testTournamentCanBeCreated(): string
     {
         $tournamentId = DataGenerator::generateId();
-
-        if (extension_loaded('xdebug')) {
-            $events = self::catchEvents(Event::class, function () use ($tournamentId) {
-                $this->client->createTournament($tournamentId, $tournamentId);
-            });
-            self::assertCount(1, $events);
-            self::assertSame('tournament:created', $events[0]->getType());
-        } else {
-            $this->client->createTournament($tournamentId, $tournamentId);
-        }
+        $this->client->createTournament($tournamentId, $tournamentId);
+        $events = $this->client->getLatestEvents();
+        $events = array_filter($events, function ($event) {
+            return $event->type === 'tournament:created';
+        });
+        self::assertGreaterThanOrEqual(1, count($events));
 
         $tournament = $this->client->getTournamentById($tournamentId);
         self::assertNotNull($tournament);

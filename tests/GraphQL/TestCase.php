@@ -2,7 +2,6 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use ArrayObject;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -16,13 +15,11 @@ use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\MaildevClient;
 use HexagonalPlayground\Tests\Framework\PsrSlimClient;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
@@ -54,29 +51,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
         $this->client = new Client($this->psrClient, $this->requestFactory);
         $this->mailClient = new MaildevClient();
-    }
-
-    /**
-     * @param string $eventName
-     * @param callable $callable
-     * @return array
-     */
-    protected static function catchEvents(string $eventName, callable $callable): array
-    {
-        $events = new ArrayObject();
-
-        /** @var EventDispatcher $eventDispatcher */
-        $eventDispatcher = self::$app->getContainer()->get(EventDispatcherInterface::class);
-
-        $listener = function ($event) use ($events) {
-            $events[] = $event;
-        };
-
-        $eventDispatcher->addListener($eventName, $listener);
-        $callable();
-        $eventDispatcher->removeListener($eventName, $listener);
-
-        return $events->getArrayCopy();
     }
 
     protected function useAdminAuth(): void

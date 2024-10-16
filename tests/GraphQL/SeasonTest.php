@@ -4,7 +4,6 @@ namespace HexagonalPlayground\Tests\GraphQL;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
@@ -79,16 +78,12 @@ class SeasonTest extends CompetitionTestCase
 
         $dates = self::createMatchDayDates(2 * (count(self::$teamIds) - 1));
         $this->client->createMatchesForSeason($seasonId, $dates);
-
-        if (extension_loaded('xdebug')) {
-            $events = self::catchEvents(Event::class, function () use ($seasonId) {
-                $this->client->startSeason($seasonId);
-            });
-            self::assertCount(1, $events);
-            self::assertSame('season:started', $events[0]->getType());
-        } else {
-            $this->client->startSeason($seasonId);
-        }
+        $this->client->startSeason($seasonId);
+        $events = $this->client->getLatestEvents();
+        $events = array_filter($events, function ($event) {
+            return $event->type === 'season:started';
+        });
+        self::assertGreaterThanOrEqual(1, count($events));
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         self::assertSame($seasonId, $season->id);
