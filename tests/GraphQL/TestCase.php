@@ -2,54 +2,55 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
-use ArrayObject;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Psr7\HttpFactory;
+use GuzzleHttp\Psr7\MultipartStream;
 use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
-use HexagonalPlayground\Tests\Framework\SlimClient;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use HexagonalPlayground\Tests\Framework\MaildevClient;
+use HexagonalPlayground\Tests\Framework\PsrSlimClient;
+use Nyholm\Psr7\Factory\Psr17Factory;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
 
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected Client $client;
-    protected SlimClient $slimClient;
+    protected ClientInterface $psrClient;
+    protected MaildevClient $mailClient;
+    private ServerRequestFactoryInterface $requestFactory;
+    private UploadedFileFactoryInterface $uploadedFileFactory;
+    private StreamFactoryInterface $streamFactory;
     private static ?Application $app = null;
 
     protected function setUp(): void
     {
-        if (null === self::$app) {
-            self::$app = new Application();
+        if (!extension_loaded('xdebug')) {
+            $httpFactory = new HttpFactory();
+            $this->requestFactory = $httpFactory;
+            $this->uploadedFileFactory = $httpFactory;
+            $this->streamFactory = $httpFactory;
+            $this->psrClient = new GuzzleClient(['base_uri' => getenv('APP_BASE_URL')]);
+        } else {
+            $psr17Factory = new Psr17Factory();
+            $this->requestFactory = $psr17Factory;
+            $this->uploadedFileFactory = $psr17Factory;
+            $this->streamFactory = $psr17Factory;
+            if (null === self::$app) {
+                self::$app = new Application();
+            }
+            $this->psrClient = new PsrSlimClient(self::$app);
         }
-        $this->slimClient = new SlimClient(self::$app);
-        $this->client = new Client($this->slimClient);
-    }
-
-    /**
-     * @param string $eventName
-     * @param callable $callable
-     * @return array
-     */
-    protected static function catchEvents(string $eventName, callable $callable): array
-    {
-        $events = new ArrayObject();
-
-        /** @var EventDispatcher $eventDispatcher */
-        $eventDispatcher = self::$app->getContainer()->get(EventDispatcherInterface::class);
-
-        $listener = function ($event) use ($events) {
-            $events[] = $event;
-        };
-
-        $eventDispatcher->addListener($eventName, $listener);
-        $callable();
-        $eventDispatcher->removeListener($eventName, $listener);
-
-        return $events->getArrayCopy();
+        $this->client = new Client($this->psrClient, $this->requestFactory);
+        $this->mailClient = new MaildevClient();
     }
 
     protected function useAdminAuth(): void
@@ -107,5 +108,49 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
             }
         }
         self::fail('Failed to assert that ' . $timeZone->getName() . ' uses daylight saving time');
+    }
+
+    protected function buildRequest(string $method, string $uri, array $headers = []): ServerRequestInterface
+    {
+        $request = $this->requestFactory->createServerRequest($method, $uri);
+
+        foreach ($headers as $key => $value) {
+            $request = $request->withHeader($key, $value);
+        }
+
+        return $request;
+    }
+
+    protected function buildUploadRequest(string $method, string $uri, string $filePath, string $fileMediaType, array $headers = []): ServerRequestInterface
+    {
+        $request  = $this->buildRequest($method, $uri, $headers);
+        $stream   = $this->streamFactory->createStreamFromFile($filePath);
+        $fileSize = filesize($filePath);
+        $fileName = basename($filePath);
+
+        if (extension_loaded('xdebug')) {
+            $uploadedFile = $this->uploadedFileFactory->createUploadedFile($stream, $fileSize, 0, $fileName, $fileMediaType);
+            $request = $request->withUploadedFiles(['file' => $uploadedFile]);
+        } else {
+            $boundary = 'boundary_' . uniqid();
+            $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
+
+            // Build the multipart form data using a stream
+            $multipart = new MultipartStream([
+                [
+                    'name'     => 'file',
+                    'filename' => $fileName,
+                    'contents' => $stream,
+                    'headers'  => [
+                        'Content-Type' => $fileMediaType,
+                        'Content-Length' => (string)$fileSize,
+                    ]
+                ]
+            ], $boundary);
+
+            $request = $request->withBody($multipart);
+        }
+
+        return $request;
     }
 }

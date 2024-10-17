@@ -1,53 +1,70 @@
 services:
-    php:
-        image: $TARGET_IMAGE
-        pull_policy: missing
-        build:
-            context: $PWD
-            dockerfile: $PWD/docker/php/$TARGET_TYPE/Dockerfile
-            args:
-                APP_VERSION: $APP_VERSION
-            cache_from:
-                - $TARGET_IMAGE
-            pull: true
-        environment:
-            - ADMIN_EMAIL=admin@example.com
-            - ADMIN_PASSWORD=123456
-            - JWT_SECRET=a194be3811fc
-            - LOG_LEVEL=warning
-            - MYSQL_DATABASE=test
-            - MYSQL_HOST=mariadb
-            - MYSQL_PASSWORD=test
-            - MYSQL_USER=test
-            - REDIS_HOST=redis
-        volumes:
-            - $PWD/.git:/var/www/api/.git
-            - $PWD/tests:/var/www/api/tests
-        depends_on:
-          mariadb:
-            condition: service_healthy
-          redis:
-            condition: service_healthy
-    mariadb:
-        image: $MARIADB_IMAGE
-        pull_policy: always
-        environment:
-            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-            - MYSQL_DATABASE=test
-            - MYSQL_PASSWORD=test
-            - MYSQL_USER=test
-        healthcheck:
-          test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
-          start_period: 1m
-          start_interval: 5s
-          interval: 1m
-          timeout: 5s
-    redis:
-        image: $REDIS_IMAGE
-        pull_policy: always
-        healthcheck:
-          test: [ "CMD", "redis-cli", "PING" ]
-          start_period: 1m
-          start_interval: 5s
-          interval: 1m
-          timeout: 5s
+  nginx:
+    image: nginx:1-alpine
+    volumes:
+      - $PWD/docker/nginx/build-$TARGET_TYPE.conf:/etc/nginx/conf.d/default.conf
+      - logos:/var/www/logos:ro
+    depends_on:
+      php:
+        condition: service_healthy
+  php:
+    image: $TARGET_IMAGE
+    pull_policy: missing
+    build:
+      context: $PWD
+      dockerfile: $PWD/docker/php/$TARGET_TYPE/Dockerfile
+      args:
+        APP_VERSION: $APP_VERSION
+      cache_from:
+        - $TARGET_IMAGE
+      pull: true
+    environment:
+      - APP_BASE_URL=http://nginx
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=123456
+      - EMAIL_SENDER_ADDRESS=noreply@example.com
+      - EMAIL_SENDER_NAME=phpunit
+      - EMAIL_URL=smtp://maildev:1025?verify_peer=0
+      - JWT_SECRET=a194be3811fc
+      - LOG_LEVEL=warning
+      - MYSQL_DATABASE=test
+      - MYSQL_HOST=mariadb
+      - MYSQL_PASSWORD=test
+      - MYSQL_USER=test
+      - REDIS_HOST=redis
+    volumes:
+      - $PWD/.git:/var/www/api/.git
+      - $PWD/tests:/var/www/api/tests
+      - logos:/var/www/logos
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  mariadb:
+    image: $MARIADB_IMAGE
+    pull_policy: always
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=test
+      - MYSQL_USER=test
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
+  redis:
+    image: $REDIS_IMAGE
+    pull_policy: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "PING" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
+  maildev:
+    image: maildev/maildev:latest
+volumes:
+  logos:

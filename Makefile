@@ -34,9 +34,12 @@ test:
 	set -x
 	function tearDown {
 		docker compose logs php
-		docker compose down
+		docker compose down -v
 	}
 	trap tearDown EXIT
+	if [[ -n "${DOCKER_TOKEN}" ]]; then
+		echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+	fi
 	docker compose up --detach --quiet-pull
 	docker compose exec php composer install --no-cache --no-progress
 	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress

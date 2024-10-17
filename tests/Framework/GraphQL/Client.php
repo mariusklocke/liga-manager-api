@@ -3,26 +3,24 @@
 namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
 use HexagonalPlayground\Tests\Framework\JsonResponseParser;
-use HexagonalPlayground\Tests\Framework\SlimClient;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use stdClass;
 
 class Client
 {
-    private SlimClient $slimClient;
-
+    private ClientInterface $httpClient;
+    private ServerRequestFactoryInterface $requestFactory;
     private array $headers;
-
     private JsonResponseParser $parser;
 
-    /**
-     * @param SlimClient $slimClient
-     */
-    public function __construct(SlimClient $slimClient)
+    public function __construct(ClientInterface $httpClient, ServerRequestFactoryInterface $requestFactory)
     {
-        $this->slimClient = $slimClient;
-        $this->headers    = [];
-        $this->parser     = new JsonResponseParser();
+        $this->httpClient     = $httpClient;
+        $this->requestFactory = $requestFactory;
+        $this->headers        = [];
+        $this->parser         = new JsonResponseParser();
     }
 
     public function useCredentials(string $email, string $password): void
@@ -464,11 +462,14 @@ GRAPHQL;
 
     private function request(string $query, array $variables = []): ResponseInterface
     {
-        return $this->slimClient->post(
-            '/api/graphql/',
-            ['query' => $query, 'variables' => $variables],
-            $this->headers
-        );
+        $request = $this->requestFactory->createServerRequest('POST', '/api/graphql/');
+        foreach ($this->headers as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
+        $request = $request->withHeader('Content-Type', 'application/json');
+        $request->getBody()->write(json_encode(['query' => $query, 'variables' => $variables]));
+
+        return $this->httpClient->sendRequest($request);
     }
 
     public function cancelMatch($matchId, $reason): void
@@ -700,7 +701,7 @@ GRAPHQL;
         $token = $response->getHeader('X-Token')[0] ?? null;
 
         if (null === $token) {
-            throw new Exception(['Could not create token']);
+            throw new Exception(['Missing expected response header "X-Token"']);
         }
 
         return $token;
@@ -929,10 +930,11 @@ GRAPHQL;
 
     public function getSchema(): string
     {
-        $response = $this->slimClient->get(
-            '/api/graphql/',
-            $this->headers
-        );
+        $request = $this->requestFactory->createServerRequest('GET', '/api/graphql/');
+        foreach ($this->headers as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
+        $response = $this->httpClient->sendRequest($request);
 
         return (string)$response->getBody();
     }
