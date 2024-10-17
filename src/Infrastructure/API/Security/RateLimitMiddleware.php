@@ -69,8 +69,6 @@ class RateLimitMiddleware implements MiddlewareInterface
      */
     private function getClientIp(ServerRequestInterface $request): string
     {
-        $serverParams = $request->getServerParams();
-
-        return $serverParams['REMOTE_ADDR'] ?? '';
+        return $request->getHeader('X-Forwarded-For')[0] ?? $request->getServerParams()['REMOTE_ADDR'] ?? '';
     }
 }
