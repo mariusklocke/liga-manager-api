@@ -157,6 +157,7 @@ class UserTest extends TestCase
     {
         $this->mailClient->deleteMails();
         $this->client->sendInviteMail($user['id'], '/straight/to/hell');
+        sleep(5);
         $mails = $this->mailClient->getMails();
         self::assertCount(1, $mails);
         $mail = $mails[0];
