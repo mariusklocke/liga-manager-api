@@ -2,6 +2,14 @@
 
 ## NEXT
 
+## 1.22.0 - 2024-10-17
+* Feature: Add command for email health checks
+* Feature: Add commands for uploading and cleaning up team logos
+* Bugfix: Fix missing user/group config for PHP-FPM
+* Bugfix: Fix entrypoint scripts in docker images
+* Improvement: Run tests more similar to production
+* Improvement: Update dependencies
+
 ## 1.21.0 - 2024-09-23
 * Feature: Add commands for DB import/export (XML format)
 * Bugfix: Terminate worker process after internal error
