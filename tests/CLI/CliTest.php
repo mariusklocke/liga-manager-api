@@ -245,6 +245,16 @@ class CliTest extends TestCase
         self::assertFileExists($referencedLogoPath);
     }
 
+    public function testCheckMailHealth(): void
+    {
+        $tester = $this->getCommandTester('app:mail:health');
+        $exitCode = $tester->execute([]);
+        $output = $tester->getDisplay();
+
+        self::assertExecutionSuccess($exitCode);
+        self::assertStringContainsString('Mail server connection is healthy', $output);
+    }
+
     private function getCommandTester(string $commandName): CommandTester
     {
         return new CommandTester($this->app->get($commandName));
