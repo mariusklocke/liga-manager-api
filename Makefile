@@ -52,7 +52,7 @@ test:
 		docker compose exec -e COVERALLS_RUN_LOCALLY -e COVERALLS_REPO_TOKEN php php-coveralls -x coverage.xml -o coveralls.json
 	fi
 	if [[ -n "${CODECOV_TOKEN}" ]]; then
-		docker compose cp php:coverage.xml coverage.xml
+		docker compose cp php:/var/www/api/coverage.xml coverage.xml
 	fi
 
 publish:
