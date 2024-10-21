@@ -14,8 +14,6 @@ jobs:
         run: make test
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-          COVERALLS_RUN_LOCALLY: 1
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           TARGET_TYPE: "roadrunner"
       - name: Publish

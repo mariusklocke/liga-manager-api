@@ -13,8 +13,6 @@ jobs:
       - name: Test
         run: make test
         env:
-          COVERALLS_RUN_LOCALLY: 1
-          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           TARGET_TYPE: "fpm"
       - name: Publish
