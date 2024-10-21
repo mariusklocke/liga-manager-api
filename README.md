@@ -1,6 +1,5 @@
 ![Build Status](https://github.com/mariusklocke/liga-manager-api/actions/workflows/docker-build.yml/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/mariusklocke/liga-manager-api/badge.svg?branch=master)](https://coveralls.io/github/mariusklocke/liga-manager-api?branch=master)
-
+[![Coverage Status](https://codecov.io/gh/mariusklocke/liga-manager-api/graph/badge.svg?token=08EF0R5UTL)](https://codecov.io/gh/mariusklocke/liga-manager-api)
 ## Requirements
 A working installation of `docker` and `docker compose`.
 
