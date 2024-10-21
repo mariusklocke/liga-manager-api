@@ -51,7 +51,7 @@
         "webonyx/graphql-php": "^14.11.10"
     },
     "require-dev": {
-        "php-coveralls/php-coveralls": "^2.7",
+        "guzzlehttp/guzzle": "^7.9",
         "phpunit/phpunit": "^11.1.1",
         "qossmic/deptrac": "^2.0.0"
     }
