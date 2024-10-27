@@ -22,6 +22,8 @@ class ConfigLoader
             'config.api.logLevel'             => $values['LOG_LEVEL'] ?? 'debug',
             'config.api.logPath'              => $values['LOG_PATH'] ?? '',
             'config.api.rateLimit'            => $values['RATE_LIMIT'] ?? '',
+            'config.centrifugo.apiKey'        => $values['CENTRIFUGO_API_KEY'] ?? '',
+            'config.centrifugo.apiUrl'        => $values['CENTRIFUGO_API_URL'] ?? '',
             'config.email.emailUrl'           => $values['EMAIL_URL'] ?? 'null://localhost',
             'config.email.emailSenderAddress' => $values['EMAIL_SENDER_ADDRESS'] ?? 'noreply@example.com',
             'config.email.emailSenderName'    => $values['EMAIL_SENDER_NAME'] ?? 'No Reply',

@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
+use phpcent\Client as CentrifugoClient;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Redis;
@@ -17,8 +18,16 @@ class EventServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            EventSubscriberInterface::class => DI\add(DI\get(RedisEventPublisher::class)),
-            HealthCheckInterface::class => DI\add(DI\get(RedisHealthCheck::class)),
+            RedisEventPublisher::class => DI\autowire(),
+            CentrifugoEventPublisher::class => DI\autowire(),
+            EventSubscriberInterface::class => DI\add([
+                DI\get(RedisEventPublisher::class),
+                DI\get(CentrifugoEventPublisher::class)
+            ]),
+            HealthCheckInterface::class => DI\add([
+                DI\get(RedisHealthCheck::class),
+                DI\get(CentrifugoHealthCheck::class)
+            ]),
             Redis::class => DI\factory(function (ContainerInterface $container) {
                 /** @var LoggerInterface $logger */
                 $logger = $container->get(LoggerInterface::class);
@@ -47,6 +56,15 @@ class EventServiceProvider implements ServiceProviderInterface
                 $logger->debug('Connected to redis', ['version' => $version]);
 
                 return $redis;
+            }),
+            CentrifugoClient::class => DI\factory(function (ContainerInterface $container) {
+                /** @var LoggerInterface $logger */
+                $logger = $container->get(LoggerInterface::class);
+                $url = $container->get('config.centrifugo.apiUrl');
+                $key = $container->get('config.centrifugo.apiKey');
+                $logger->debug('Connecting to centrifugo', ['url' => $url]);
+
+                return new CentrifugoClient($url, $key);
             })
         ];
     }
