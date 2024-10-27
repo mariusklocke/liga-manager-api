@@ -7,7 +7,6 @@ use DI;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use Psr\Http\Message\UriFactoryInterface;
 
 class ServiceProvider implements ServiceProviderInterface
 {
@@ -15,19 +14,11 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             TokenServiceInterface::class => DI\get(JsonWebTokenService::class),
-            JsonWebTokenService::class => DI\create()->constructor(
-                DI\get('config.api.jwtSecret')
-            ),
-            RateLimitMiddleware::class => DI\create()->constructor(
-                DI\get('config.api.rateLimit')
-            ),
+            JsonWebTokenService::class => DI\autowire(),
+            RateLimitMiddleware::class => DI\autowire(),
             PasswordAuthenticator::class => DI\autowire(),
             TokenAuthenticator::class => DI\autowire(),
-            AccessLinkGenerator::class => DI\create()->constructor(
-                DI\get(TokenServiceInterface::class),
-                DI\get(UriFactoryInterface::class),
-                DI\get('config.api.appBaseUrl')
-            ),
+            AccessLinkGenerator::class => DI\autowire(),
             AccessLinkGeneratorInterface::class => DI\get(AccessLinkGenerator::class)
         ];
     }

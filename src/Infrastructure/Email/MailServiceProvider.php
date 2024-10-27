@@ -7,6 +7,7 @@ use DI;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Application\TemplateRendererInterface;
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\TemplateRenderer;
@@ -22,13 +23,7 @@ class MailServiceProvider implements ServiceProviderInterface
     {
         return [
             MailerInterface::class => DI\get(SymfonyMailer::class),
-            SymfonyMailer::class => DI\factory(function (ContainerInterface $container) {
-                return new SymfonyMailer(
-                    $container->get(Mailer::class),
-                    $container->get('config.email.emailSenderAddress'),
-                    $container->get('config.email.emailSenderName')
-                );
-            }),
+            SymfonyMailer::class => DI\autowire(),
             TemplateRendererInterface::class => DI\get(TemplateRenderer::class),
             TemplateRenderer::class => DI\factory(function (ContainerInterface $container) {
                 return new TemplateRenderer(
@@ -40,14 +35,15 @@ class MailServiceProvider implements ServiceProviderInterface
                 return new Mailer($container->get(TransportInterface::class));
             }),
             TransportInterface::class => DI\factory(function (ContainerInterface $container) {
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+
                 return Transport::fromDsn(
-                    $container->get('config.email.emailUrl'),
+                    $config->getValue('email.url'),
                     $container->get(EventDispatcherInterface::class)
                 );
             }),
-            HealthCheck::class => DI\factory(function (ContainerInterface $container) {
-                return new HealthCheck($container->get('config.email.emailUrl'));
-            })
+            HealthCheck::class => DI\autowire()
         ];
     }
 }

@@ -33,9 +33,7 @@ class ServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            FakeCredentialDescriptorFactory::class => DI\create()->constructor(
-                DI\get('config.api.jwtSecret')
-            ),
+            FakeCredentialDescriptorFactory::class => DI\autowire(),
 
             AuthenticatorAssertionResponseValidator::class => DI\autowire(),
 

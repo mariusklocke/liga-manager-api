@@ -26,6 +26,7 @@ use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Logging\Middleware as LoggingMiddleware;
@@ -67,13 +68,15 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             Connection::class => DI\factory(function (ContainerInterface $container) {
                 /** @var LoggerInterface $logger */
                 $logger = $container->get(LoggerInterface::class);
-                /** @var Configuration $config */
-                $config = $container->get(Configuration::class);
+                /** @var Configuration $doctrineConfig */
+                $doctrineConfig = $container->get(Configuration::class);
+                /** @var Config $config */
+                $config = $container->get(Config::class);
                 $params = [
-                    'dbname' => $container->get('config.mysql.database'),
-                    'user' => $container->get('config.mysql.username'),
-                    'password' => $container->get('config.mysql.password'),
-                    'host' => $container->get('config.mysql.hostname'),
+                    'dbname' => $config->getValue('mysql.database'),
+                    'user' => $config->getValue('mysql.user'),
+                    'password' => $config->getValue('mysql.password'),
+                    'host' => $config->getValue('mysql.host'),
                     'driver' => 'pdo_mysql',
                     'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
                 ];
@@ -93,7 +96,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
 
                 do {
                     try {
-                        $connection = DriverManager::getConnection($params, $config);
+                        $connection = DriverManager::getConnection($params, $doctrineConfig);
                         $platform   = $connection->getDatabasePlatform();
                     } catch (Throwable $exception) {
                         $connection = null;

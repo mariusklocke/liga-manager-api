@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\Persistence;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -22,7 +23,10 @@ class EventServiceProvider implements ServiceProviderInterface
             Redis::class => DI\factory(function (ContainerInterface $container) {
                 /** @var LoggerInterface $logger */
                 $logger = $container->get(LoggerInterface::class);
-                $host = $container->get('config.redis.host');
+                /** @var Config $config */
+                $config = $container->get(Config::class);
+
+                $host = $config->getValue('redis.host', '');
                 $timeout = 60;
                 $attempt = 1;
                 $startedAt = time();

@@ -10,6 +10,7 @@ use HexagonalPlayground\Application\Security\AuthenticationException;
 use HexagonalPlayground\Application\Security\TokenInterface;
 use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\Config;
 
 class JsonWebTokenService implements TokenServiceInterface
 {
@@ -18,9 +19,12 @@ class JsonWebTokenService implements TokenServiceInterface
 
     private Key $privateKey;
 
-    public function __construct(string $jwtSecret)
+    public function __construct(Config $config)
     {
-        $this->privateKey = new Key(hex2bin($jwtSecret), self::ALGORITHM);
+        $this->privateKey = new Key(
+            hex2bin($config->getValue('jwt.secret')),
+            self::ALGORITHM
+        );
     }
 
     /**

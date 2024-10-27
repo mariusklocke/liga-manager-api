@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Security;
 
+use HexagonalPlayground\Infrastructure\Config;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -16,12 +17,12 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     private int $intervalSeconds;
 
-    public function __construct(string $config)
+    public function __construct(Config $config)
     {
         $this->maxRequests = -1;
         $this->intervalSeconds = -1;
         $matches = [];
-        if (preg_match('/^(\d+)r\/(\d+)s$/', $config, $matches)) {
+        if (preg_match('/^(\d+)r\/(\d+)s$/', $config->getValue('rate.limit', ''), $matches)) {
             $this->maxRequests = (int)$matches[1];
             $this->intervalSeconds = (int)$matches[2];
         }

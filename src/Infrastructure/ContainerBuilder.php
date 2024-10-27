@@ -16,19 +16,21 @@ class ContainerBuilder
     public static function build(array $serviceProviders): ContainerInterface
     {
         $package = InstalledVersions::getRootPackage();
-        $app = [
+        $params = [
             'app.home' => realpath($package['install_path']),
             'app.version' => $package['version'] ?? 'dev-latest',
         ];
-        $config = ConfigLoader::load($app['app.home']);
+        $config = new Config([
+            'json' => join(DIRECTORY_SEPARATOR, [$params['app.home'], 'env.json'])
+        ]);
 
         $builder = new DI\ContainerBuilder();
         $builder->useAutowiring(true);
+        $builder->addDefinitions($params);
         $builder->addDefinitions([
-            HealthCheckInterface::class => []
+            HealthCheckInterface::class => [],
+            Config::class => $config
         ]);
-        $builder->addDefinitions($app);
-        $builder->addDefinitions($config);
 
         foreach ($serviceProviders as $provider) {
             $builder->addDefinitions($provider->getDefinitions());
