@@ -62,9 +62,11 @@ class EventServiceProvider implements ServiceProviderInterface
                 $logger = $container->get(LoggerInterface::class);
                 $url = $container->get('config.centrifugo.apiUrl');
                 $key = $container->get('config.centrifugo.apiKey');
-                $logger->debug('Connecting to centrifugo', ['url' => $url]);
 
-                return new CentrifugoClient($url, $key);
+                $client = new CentrifugoClient($url, $key);
+                $logger->debug('Connected to centrifugo', ['url' => $url, 'serverInfo' => $client->info()]);
+
+                return $client;
             })
         ];
     }
