@@ -22,6 +22,8 @@ services:
       - APP_BASE_URL=http://nginx
       - ADMIN_EMAIL=admin@example.com
       - ADMIN_PASSWORD=123456
+      - CENTRIFUGO_API_KEY=a3c478a1-9147-46fd-a7bd-f963987d0390
+      - CENTRIFUGO_API_URL=http://centrifugo:8000/api
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=phpunit
       - EMAIL_URL=smtp://maildev:1025?verify_peer=0
@@ -66,5 +68,10 @@ services:
       timeout: 5s
   maildev:
     image: maildev/maildev:latest
+  centrifugo:
+    image: centrifugo/centrifugo
+    environment:
+      - CENTRIFUGO_ALLOWED_ORIGINS=*
+      - CENTRIFUGO_API_KEY=a3c478a1-9147-46fd-a7bd-f963987d0390
 volumes:
   logos:
