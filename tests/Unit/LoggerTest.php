@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\Unit;
 
 use HexagonalPlayground\Infrastructure\API\Logger;
+use HexagonalPlayground\Infrastructure\Config;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
@@ -28,8 +29,12 @@ class LoggerTest extends TestCase
 
     public function testLoggerRespectsMinLevel(): void
     {
+        $config = new Config([
+            'log.path' => $this->filePath,
+            'log.level' => 'info'
+        ]);
+        $logger = new Logger($config);
         $message = 'This is a log message';
-        $logger = new Logger($this->filePath, 'info');
 
         $logger->emergency($message);
         $logger->alert($message);
@@ -59,7 +64,11 @@ class LoggerTest extends TestCase
 
     public function testInitiatingWithInvalidMinLevelFails(): void
     {
+        $config = new Config([
+            'log.path' => $this->filePath,
+            'log.level' => 'invalid'
+        ]);
         self::expectException(InvalidArgumentException::class);
-        new Logger($this->filePath, 'invalid');
+        new Logger($config);
     }
 }

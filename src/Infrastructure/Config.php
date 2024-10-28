@@ -4,13 +4,11 @@ namespace HexagonalPlayground\Infrastructure;
 
 class Config
 {
-    private array $filePaths;
     private array $values;
 
-    public function __construct(array $filePaths)
+    public function __construct(array $values)
     {
-        $this->filePaths = $filePaths;
-        $this->load();
+        $this->values = $values;
     }
 
     public function getValue(string $key, $default = null): mixed
@@ -18,20 +16,22 @@ class Config
         return $this->values[$key] ?? $default;
     }
 
-    private function load(): void
+    public static function load(array $filePaths): self
     {
-        if (file_exists($this->filePaths['json'])) {
-            $values = json_decode(file_get_contents($this->filePaths['json']), true);
+        if (file_exists($filePaths['json'])) {
+            $values = json_decode(file_get_contents($filePaths['json']), true);
         } else {
             $values = getenv();
         }
-        $this->values = [];
+        $normalized = [];
         foreach ($values as $key => $value) {
-            $this->values[$this->normalizeKey($key)] = $value;
+            $normalized[self::normalizeKey($key)] = $value;
         }
+
+        return new self($normalized);
     }
 
-    private function normalizeKey(string $key): string
+    private static function normalizeKey(string $key): string
     {
         $words = explode('_', $key);
         $words = array_map('strtolower', $words);

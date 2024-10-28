@@ -20,7 +20,7 @@ class ContainerBuilder
             'app.home' => realpath($package['install_path']),
             'app.version' => $package['version'] ?? 'dev-latest',
         ];
-        $config = new Config([
+        $config = Config::load([
             'json' => join(DIRECTORY_SEPARATOR, [$params['app.home'], 'env.json'])
         ]);
 
