@@ -2,21 +2,23 @@
 
 namespace HexagonalPlayground\Infrastructure\Email;
 
+use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use RuntimeException;
 
 class HealthCheck implements HealthCheckInterface
 {
-    private string $mailerUrl;
+    private Config $config;
 
-    public function __construct(string $mailerUrl)
+    public function __construct(Config $config)
     {
-        $this->mailerUrl = $mailerUrl;
+        $this->config = $config;
     }
 
     public function __invoke(): void
     {
-        $parsedUrl = parse_url($this->mailerUrl);
+        $parsedUrl = parse_url($this->config->getValue('email.url', 'null://localhost'));
+
         $scheme   = $parsedUrl['scheme'] ?? null;
         $hostname = $parsedUrl['host'] ?? null;
         $port     = $parsedUrl['port'] ?? 465;

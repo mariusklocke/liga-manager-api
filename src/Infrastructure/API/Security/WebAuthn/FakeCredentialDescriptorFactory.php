@@ -2,19 +2,16 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Security\WebAuthn;
 
+use HexagonalPlayground\Infrastructure\Config;
 use Webauthn\PublicKeyCredentialDescriptor;
 
 class FakeCredentialDescriptorFactory
 {
-    /** @var string */
-    private string $salt;
+    private Config $config;
 
-    /**
-     * @param string $salt
-     */
-    public function __construct(string $salt)
+    public function __construct(Config $config)
     {
-        $this->salt = $salt;
+        $this->config = $config;
     }
 
     /**
@@ -23,7 +20,8 @@ class FakeCredentialDescriptorFactory
      */
     public function create(string $username): PublicKeyCredentialDescriptor
     {
-        $hash = hash('sha512', $this->salt . $username);
+        $salt = $this->config->getValue('jwt.secret');
+        $hash = hash('sha512', $salt . $username);
         $credentialId = hex2bin($hash);
 
         return new PublicKeyCredentialDescriptor(

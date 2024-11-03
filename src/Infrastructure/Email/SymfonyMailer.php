@@ -4,33 +4,30 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Email;
 
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Infrastructure\Config;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
 class SymfonyMailer implements MailerInterface
 {
-    /** @var Mailer */
     private Mailer $mailer;
+    private Config $config;
 
-    /** @var string */
-    private string $senderAddress;
-
-    /** @var string */
-    private string $senderName;
-
-    public function __construct(Mailer $mailer, string $senderAddress, string $senderName)
+    public function __construct(Mailer $mailer, Config $config)
     {
         $this->mailer = $mailer;
-        $this->senderAddress = $senderAddress;
-        $this->senderName = $senderName;
+        $this->config = $config;
     }
 
     public function createMessage(array $to, string $subject, string $html): object
     {
         $message = new Email();
 
-        $message->from(new Address($this->senderAddress, $this->senderName));
+        $message->from(new Address(
+            $this->config->getValue('email.sender.address', 'noreply@example.com'),
+            $this->config->getValue('email.sender.name', 'No Reply')
+        ));
 
         foreach ($to as $address => $name) {
             $message->to(new Address($address, $name));

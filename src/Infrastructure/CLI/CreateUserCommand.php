@@ -6,6 +6,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 use HexagonalPlayground\Application\Bus\CommandBus;
 use HexagonalPlayground\Application\Command\CreateUserCommand as CreateUserApplicationCommand;
 use HexagonalPlayground\Domain\User;
+use HexagonalPlayground\Infrastructure\Config;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -48,7 +49,10 @@ class CreateUserCommand extends Command
     private function getEmail(InputInterface $input, OutputInterface $output): ?string
     {
         if ($input->getOption('default')) {
-            return $this->container->get('config.global.adminEmail');
+            /** @var Config $config */
+            $config = $this->container->get(Config::class);
+
+            return $config->getValue('admin.email');
         }
 
         if ($input->getOption('email')) {
@@ -61,7 +65,10 @@ class CreateUserCommand extends Command
     private function getPassword(InputInterface $input, OutputInterface $output): ?string
     {
         if ($input->getOption('default')) {
-            return $this->container->get('config.global.adminPassword');
+            /** @var Config $config */
+            $config = $this->container->get(Config::class);
+
+            return $config->getValue('admin.password');
         }
 
         if ($input->getOption('password')) {

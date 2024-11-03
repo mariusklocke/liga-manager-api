@@ -2,6 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure\API;
 
+use HexagonalPlayground\Infrastructure\Config;
 use InvalidArgumentException;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
@@ -22,18 +23,16 @@ class Logger extends AbstractLogger
         LogLevel::DEBUG => 0
     ];
 
-    /**
-     * @param string $filePath
-     * @param string $minLevel
-     */
-    public function __construct(string $filePath, string $minLevel)
+    public function __construct(Config $config)
     {
+        $filePath = $config->getValue('log.path', '');
         if ($filePath !== '') {
             $this->stream = fopen($filePath, 'a');
         } else {
             $this->stream = null;
         }
 
+        $minLevel = $config->getValue('log.level', LogLevel::DEBUG);
         if (!array_key_exists($minLevel, self::$severityMap)) {
             throw new InvalidArgumentException('Invalid argument: minLevel is not a valid log level');
         }
