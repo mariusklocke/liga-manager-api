@@ -71,4 +71,4 @@ ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 9000
 HEALTHCHECK --interval=15s --timeout=1s CMD docker-php-healthcheck fcgi 127.0.0.1 9000
 ENTRYPOINT ["docker-php-entrypoint"]
-CMD lima migrations:migrate -n && php-fpm -F
+CMD lima orm:generate-proxies && lima migrations:migrate -n && php-fpm -F
