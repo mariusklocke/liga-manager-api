@@ -6,7 +6,7 @@ services:
       - logos:/var/www/logos:ro
     depends_on:
       php:
-        condition: service_healthy
+        condition: service_started
   php:
     image: $TARGET_IMAGE
     pull_policy: missing
