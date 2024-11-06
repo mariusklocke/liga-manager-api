@@ -6,7 +6,7 @@ services:
       - logos:/var/www/logos:ro
     depends_on:
       php:
-        condition: service_started
+        condition: service_healthy
   php:
     image: $TARGET_IMAGE
     pull_policy: missing
@@ -41,6 +41,12 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "docker-php-healthcheck" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
   mariadb:
     image: $MARIADB_IMAGE
     pull_policy: always

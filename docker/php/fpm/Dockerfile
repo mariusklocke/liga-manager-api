@@ -36,7 +36,7 @@ COPY docker/php/php.ini /etc/php/php.ini
 RUN xdebug off
 
 # Add healthcheck
-COPY docker/php/healthcheck.php /usr/local/bin/docker-php-healthcheck
+COPY docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
 RUN chmod +x /usr/local/bin/docker-php-healthcheck
 
 # Add entrypoint
