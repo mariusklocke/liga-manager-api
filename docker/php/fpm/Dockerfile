@@ -70,4 +70,4 @@ RUN chmod +x bin/*
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 9000
 ENTRYPOINT ["docker-php-entrypoint"]
-CMD lima orm:generate-proxies && lima migrations:migrate -n && php-fpm -F
+CMD ["php-fpm","-F"]
