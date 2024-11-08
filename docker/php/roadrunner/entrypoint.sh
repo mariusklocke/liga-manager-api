@@ -1,11 +1,10 @@
 #!/bin/sh
 set -e
 
-# first arg is `-f` or `--some-option`
-if [ "${1#-}" != "$1" ]; then
-	set -- php "$@"
+if [ "$1" = "rr" ]; then
+    chown www-data:www-data /var/www/logos
+    lima orm:generate-proxies
+    lima migrations:migrate -n
 fi
-
-chown www-data:www-data /var/www/logos
 
 exec "$@"

@@ -72,4 +72,4 @@ RUN chmod +x bin/*
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 8080
 ENTRYPOINT ["docker-php-entrypoint"]
-CMD lima orm:generate-proxies && lima migrations:migrate -n && rr serve -c /usr/local/etc/rr.yaml
+CMD ["rr","serve","-c","/usr/local/etc/rr.yaml"]
