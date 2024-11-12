@@ -106,7 +106,6 @@ class Application extends \Symfony\Component\Console\Application
     {
         yield new SendTestMailCommand($this->container, $this->authContext);
         yield new SetupEnvCommand($this->container, $this->authContext);
-        yield new HealthCommand($this->container, $this->authContext);
         yield new CreateUserCommand($this->container, $this->authContext);
         yield new DeleteUserCommand($this->container, $this->authContext);
         yield new ListUserCommand($this->container, $this->authContext);
@@ -118,7 +117,7 @@ class Application extends \Symfony\Component\Console\Application
         yield new ImportDbCommand($this->container, $this->authContext);
         yield new CleanupLogoCommand($this->container, $this->authContext);
         yield new ImportLogoCommand($this->container, $this->authContext);
-        yield new CheckMailHealthCommand($this->container, $this->authContext);
+        yield new CheckHealthCommand($this->container, $this->authContext);
     }
 
     /**

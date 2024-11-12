@@ -43,7 +43,8 @@ class MailServiceProvider implements ServiceProviderInterface
                     $container->get(EventDispatcherInterface::class)
                 );
             }),
-            HealthCheck::class => DI\autowire()
+            HealthCheck::class => DI\autowire(),
+            HealthCheckInterface::class => DI\add(DI\get(HealthCheck::class))
         ];
     }
 }

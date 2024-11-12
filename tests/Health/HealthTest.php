@@ -22,7 +22,7 @@ class HealthTest extends HttpTest
         self::assertObjectHasProperty('version', $status);
         self::assertObjectHasProperty('checks', $status);
 
-        $checks = ['redis', 'doctrine'];
+        $checks = ['redis', 'doctrine', 'email'];
 
         foreach ($checks as $name) {
             self::assertTrue(property_exists($status->checks, $name));
