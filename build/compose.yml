@@ -24,7 +24,7 @@ services:
       - ADMIN_PASSWORD=123456
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=phpunit
-      - EMAIL_URL=smtp://maildev:1025?verify_peer=0
+      - EMAIL_URL=smtp://test:9ecd4875@maildev:1025?verify_peer=0
       - JWT_SECRET_FILE=/run/secrets/jwt-secret
       - LOG_LEVEL=warning
       - MYSQL_DATABASE=test
@@ -82,6 +82,9 @@ services:
       timeout: 5s
   maildev:
     image: maildev/maildev:latest
+    environment:
+      - MAILDEV_INCOMING_USER=test
+      - MAILDEV_INCOMING_PASS=9ecd4875
     healthcheck:
       test: [ "CMD", "wget", "-O", '-', 'http://127.0.0.1:1080/healthz' ]
       start_period: 1m
