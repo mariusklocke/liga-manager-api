@@ -60,6 +60,8 @@ services:
       - MARIADB_DATABASE=test
       - MARIADB_PASSWORD_FILE=/run/secrets/db-password
       - MARIADB_USER=test
+    volumes:
+      - db-data:/var/lib/mysql
     secrets:
       - source: db-password
         target: db-password
@@ -92,6 +94,7 @@ services:
       interval: 1m
       timeout: 5s
 volumes:
+  db-data:
   logos:
 secrets:
   db-password:
