@@ -36,6 +36,11 @@ services:
       - $PWD/.git:/var/www/api/.git
       - $PWD/tests:/var/www/api/tests
       - logos:/var/www/logos
+    secrets:
+      - source: db-password
+        target: db-password
+      - source: jwt-secret
+        target: jwt-secret
     depends_on:
       mariadb:
         condition: service_healthy
@@ -55,6 +60,11 @@ services:
       - MARIADB_DATABASE=test
       - MARIADB_PASSWORD_FILE=/run/secrets/db-password
       - MARIADB_USER=test
+    secrets:
+      - source: db-password
+        target: db-password
+      - source: db-root-password
+        target: db-root-password
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       start_period: 1m
