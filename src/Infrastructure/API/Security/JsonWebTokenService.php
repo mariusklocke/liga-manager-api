@@ -11,6 +11,7 @@ use HexagonalPlayground\Application\Security\TokenInterface;
 use HexagonalPlayground\Application\Security\TokenServiceInterface;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\Config;
+use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 
 class JsonWebTokenService implements TokenServiceInterface
 {
@@ -19,12 +20,14 @@ class JsonWebTokenService implements TokenServiceInterface
 
     private Key $privateKey;
 
-    public function __construct(Config $config)
+    public function __construct(Config $config, FilesystemService $filesystem)
     {
-        $this->privateKey = new Key(
-            hex2bin($config->getValue('jwt.secret')),
-            self::ALGORITHM
-        );
+        if ($config->getValue('jwt.secret.file')) {
+            $key = $filesystem->getFileContents($config->getValue('jwt.secret.file'));
+        } else {
+            $key = $config->getValue('jwt.secret');
+        }
+        $this->privateKey = new Key(hex2bin($key), self::ALGORITHM);
     }
 
     /**

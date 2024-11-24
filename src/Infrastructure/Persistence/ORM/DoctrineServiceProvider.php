@@ -80,6 +80,11 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     'driver' => 'pdo_mysql',
                     'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
                 ];
+                if ($config->getValue('mysql.password.file')) {
+                    /** @var FilesystemService $filesystem */
+                    $filesystem = $container->get(FilesystemService::class);
+                    $params['password'] = $filesystem->getFileContents($config->getValue('mysql.password.file'));
+                }
                 $customTypes = [
                     CustomBinaryType::class => [
                         'dbType' => 'CustomBinary',
