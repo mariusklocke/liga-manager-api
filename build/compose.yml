@@ -25,11 +25,11 @@ services:
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=phpunit
       - EMAIL_URL=smtp://maildev:1025?verify_peer=0
-      - JWT_SECRET=a194be3811fc
+      - JWT_SECRET_FILE=/run/secrets/jwt-secret
       - LOG_LEVEL=warning
       - MYSQL_DATABASE=test
       - MYSQL_HOST=mariadb
-      - MYSQL_PASSWORD=test
+      - MYSQL_PASSWORD_FILE=/run/secrets/db-password
       - MYSQL_USER=test
       - REDIS_HOST=redis
     volumes:
@@ -51,10 +51,10 @@ services:
     image: $MARIADB_IMAGE
     pull_policy: always
     environment:
-      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
-      - MYSQL_DATABASE=test
-      - MYSQL_PASSWORD=test
-      - MYSQL_USER=test
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db-root-password
+      - MARIADB_DATABASE=test
+      - MARIADB_PASSWORD_FILE=/run/secrets/db-password
+      - MARIADB_USER=test
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       start_period: 1m
@@ -74,3 +74,10 @@ services:
     image: maildev/maildev:latest
 volumes:
   logos:
+secrets:
+  db-password:
+    file: $PWD/build/.secrets/db-password
+  db-root-password:
+    file: $PWD/build/.secrets/db-root-password
+  jwt-secret:
+    file: $PWD/build/.secrets/jwt-secret

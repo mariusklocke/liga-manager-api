@@ -35,11 +35,16 @@ test:
 	function tearDown {
 		docker compose logs php
 		docker compose down -v
+		rm -rf "build/.secrets"
 	}
 	trap tearDown EXIT
 	if [[ -n "${DOCKER_TOKEN}" ]]; then
 		echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 	fi
+	mkdir -p "build/.secrets"
+	openssl rand -hex 16 | tr -d '\n' > build/.secrets/db-password
+	openssl rand -hex 16 | tr -d '\n' > build/.secrets/db-root-password
+	openssl rand -hex 16 | tr -d '\n' > build/.secrets/jwt-secret
 	docker compose up --detach --quiet-pull
 	docker compose exec php composer install --no-cache --no-progress
 	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
