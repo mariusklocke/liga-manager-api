@@ -82,6 +82,12 @@ services:
       timeout: 5s
   maildev:
     image: maildev/maildev:latest
+    healthcheck:
+      test: [ "CMD", "wget", "-O", '-', 'http://127.0.0.1:1080/healthz' ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
 volumes:
   logos:
 secrets:
