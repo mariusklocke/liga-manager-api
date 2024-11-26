@@ -81,7 +81,7 @@ class Application extends \Symfony\Component\Console\Application
         }
     }
 
-    public function run(InputInterface $input = null, OutputInterface $output = null): int
+    public function run(?InputInterface $input = null, ?OutputInterface $output = null): int
     {
         $input = $this->container->get(InputInterface::class);
         $output = $this->container->get(OutputInterface::class);
