@@ -7,11 +7,12 @@ ENV PHP_VERSION="8.4"
 # Install packages for PHP and extensions
 RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
     && case "${PHP_VERSION}" in \
-         8.4) PHP_PACKAGE="php84" ;; \
-         8.3) PHP_PACKAGE="php83" ;; \
-         8.2) PHP_PACKAGE="php82" ;; \
+         8.4) echo "Building with PHP ${PHP_VERSION} ..." ;; \
+         8.3) echo "Building with PHP ${PHP_VERSION} ..." ;; \
+         8.2) echo "Building with PHP ${PHP_VERSION} ..." ;; \
          *) echo "Unsupported PHP version: ${PHP_VERSION}"; exit 1 ;; \
        esac \
+    && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
          PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
@@ -21,7 +22,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gmp mbstring opcache
     && apk upgrade \
     && apk add --no-cache curl fcgi ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
-    && test -e /usr/sbin/php-fpm || ln -s /usr/sbin/php-fpm84 /usr/sbin/php-fpm \
+    && test -e /usr/sbin/php-fpm || ln -s /usr/sbin/php-fpm${PHP_VERSION/./} /usr/sbin/php-fpm \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
     && adduser -u 82 -D -S -G www-data www-data \
