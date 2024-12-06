@@ -1,15 +1,16 @@
 FROM ghcr.io/roadrunner-server/roadrunner:2024.2 AS roadrunner
-FROM alpine:3.20
+FROM alpine:3.21
 ARG APP_VERSION
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 
 # Define PHP version
-ENV PHP_VERSION="8.3"
+ENV PHP_VERSION="8.4"
 
 # Install packages for PHP and extensions
 RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
     && case "${PHP_VERSION}" in \
+         8.4) PHP_PACKAGE="php84" ;; \
          8.3) PHP_PACKAGE="php83" ;; \
          8.2) PHP_PACKAGE="php82" ;; \
          *) echo "Unsupported PHP version: ${PHP_VERSION}"; exit 1 ;; \
@@ -21,10 +22,12 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcn
     && set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache composer curl ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
+    && apk add --no-cache curl ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
     && adduser -u 82 -D -S -G www-data www-data \
+    && curl -L -o /usr/local/bin/composer https://getcomposer.org/download/latest-stable/composer.phar \
+    && chmod +x /usr/local/bin/composer \
     && rm -rf /var/cache/*
 
 # Install xdebug helper
