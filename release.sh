@@ -10,9 +10,9 @@ else
   echo "Changelog is invalid: Failed to find version and current date"
   exit 1
 fi
-log_items=$(git diff -U0 CHANGELOG.md | grep "^+\*" | cut -c 2-)
+changelog=$(git diff -U0 CHANGELOG.md | grep "^+\*" | cut -c 2-)
 echo "These are changelog items found for $version"
-echo "$log_items"
+echo "$changelog"
 read -r -p "Are you sure you want to publish the release? [y/N] " response
 case "$response" in
     [yY][eE][sS]|[yY])
@@ -20,7 +20,7 @@ case "$response" in
         git add CHANGELOG.md
         git commit -m "Publish $version"
         git push
-        git tag "$version"
+        git tag -a "$version" -m "$changelog"
         git push origin "$version"
         echo "New version $version has been released"
         exit
