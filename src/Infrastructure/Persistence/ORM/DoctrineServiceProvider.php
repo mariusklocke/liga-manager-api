@@ -77,9 +77,11 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     'user' => $config->getValue('mysql.user'),
                     'password' => $config->getValue('mysql.password'),
                     'host' => $config->getValue('mysql.host'),
-                    'driver' => 'pdo_mysql',
-                    'driverOptions' => [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"]
+                    'driver' => 'pdo_mysql'
                 ];
+                if ($params['driver'] === 'pdo_mysql') {
+                    $params['driverOptions'] = [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"];
+                }
                 if ($config->getValue('mysql.password.file')) {
                     /** @var FilesystemService $filesystem */
                     $filesystem = $container->get(FilesystemService::class);
