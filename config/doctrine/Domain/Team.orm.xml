@@ -8,7 +8,7 @@
         <field name="name" type="string" length="255" />
         <field name="createdAt" column="created_at" type="custom_datetime"/>
         <embedded name="contact" class="HexagonalPlayground\Domain\Value\ContactPerson" />
-        <field name="logoId" column="logo_id" type="string" length="255" />
+        <field name="logoId" column="logo_id" type="string" length="255" nullable="true" />
         <one-to-many field="homeMatches" target-entity="HexagonalPlayground\Domain\MatchEntity" mapped-by="homeTeam" index-by="id"/>
         <one-to-many field="guestMatches" target-entity="HexagonalPlayground\Domain\MatchEntity" mapped-by="guestTeam" index-by="id"/>
     </entity>
