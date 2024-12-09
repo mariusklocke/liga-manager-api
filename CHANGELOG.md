@@ -2,6 +2,15 @@
 
 ## NEXT
 
+## 1.22.1 - 2024-12-09
+* Improvement: Update docker images to PHP 8.4
+* Improvement: Add proxy support to RateLimitMiddleware
+* Improvement: Make healthchecks optional in docker
+* Improvement: Make EmailHealthCheck a regular healthcheck
+* Improvement: Replace [coveralls.io](https://coveralls.io) with [codecov.io](https://codecov.io)
+* Improvement: Refactor config handling
+* Improvement: Update composer packages
+
 ## 1.22.0 - 2024-10-17
 * Feature: Add command for email health checks
 * Feature: Add commands for uploading and cleaning up team logos
