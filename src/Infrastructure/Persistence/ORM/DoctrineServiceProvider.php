@@ -75,14 +75,16 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 if ($config->getValue('db.url')) {
                     $url = parse_url($config->getValue('db.url'));
                     $params = [
-                        'dbname' => $url['path'],
+                        'dbname' => ltrim($url['path'], '/'),
                         'user' => $url['user'],
-                        'password' => $url['pass'],
                         'host' => $url['host'],
                         'driver' => str_replace('-', '_', $url['scheme'])
                     ];
                     if (isset($url['port'])) {
                         $params['port'] = (int)$url['port'];
+                    }
+                    if (isset($url['pass'])) {
+                        $params['password'] = $url['pass'];
                     }
                     $passwordFile = $config->getValue('db.password.file');
                 } else {
