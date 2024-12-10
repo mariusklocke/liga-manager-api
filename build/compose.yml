@@ -22,15 +22,13 @@ services:
       - APP_BASE_URL=http://nginx
       - ADMIN_EMAIL=admin@example.com
       - ADMIN_PASSWORD=123456
+      - DB_PASSWORD_FILE=/run/secrets/db-password
+      - DB_URL=${DB_DRIVER}://test@${DB_HOST}/test
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=phpunit
       - EMAIL_URL=smtp://test:9ecd4875@maildev:1025?verify_peer=0
       - JWT_SECRET_FILE=/run/secrets/jwt-secret
       - LOG_LEVEL=warning
-      - MYSQL_DATABASE=test
-      - MYSQL_HOST=mariadb
-      - MYSQL_PASSWORD_FILE=/run/secrets/db-password
-      - MYSQL_USER=test
       - REDIS_HOST=redis
     volumes:
       - ${PWD}/.git:/var/www/api/.git
@@ -107,9 +105,9 @@ services:
       interval: 1m
       timeout: 5s
 volumes:
+  logos:
   mariadb-data:
   postgres-data:
-  logos:
 secrets:
   db-password:
     file: ${PWD}/build/.secrets/db-password

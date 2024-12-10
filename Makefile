@@ -2,13 +2,17 @@ export SHELL:=/bin/bash
 export SHELLOPTS:=$(if $(SHELLOPTS),$(SHELLOPTS):)pipefail:errexit
 
 export MARIADB_VERSION ?= 10.11
+export POSTGRES_VERSION ?= 17
 export REDIS_VERSION ?= 6
 export TARGET_TYPE ?= fpm
 export MARIADB_IMAGE = mariadb:${MARIADB_VERSION}
+export POSTGRES_IMAGE = postgres:${POSTGRES_VERSION}-alpine
 export REDIS_IMAGE = redis:${REDIS_VERSION}-alpine
 export COMPOSE_FILE = build/compose.yml
 export COMPOSE_PROJECT_NAME = liga-manager-api-build
 export DOCKER_USERNAME = mklocke
+export DB_DRIVER ?= pdo-mysql
+export DB_HOSTNAME ?= mariadb
 
 ifeq (${GITHUB_REF_TYPE}, tag)
 	export TAG = ${GITHUB_REF_NAME}
