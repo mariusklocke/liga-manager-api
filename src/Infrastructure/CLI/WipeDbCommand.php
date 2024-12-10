@@ -30,8 +30,17 @@ class WipeDbCommand extends Command
 
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
+        $schemaManager = $connection->createSchemaManager();
+        $tables = $schemaManager->listTableNames();
 
-        foreach ($connection->fetchFirstColumn('SHOW TABLES') as $table) {
+        foreach ($tables as $table) {
+            $foreignKeys = $schemaManager->listTableForeignKeys($table);
+            foreach ($foreignKeys as $foreignKey) {
+                $connection->executeStatement($connection->getDatabasePlatform()->getDropForeignKeySQL($foreignKey->getName(), $table));
+            }
+        }
+
+        foreach ($tables as $table) {
             $connection->executeStatement($connection->getDatabasePlatform()->getDropTableSQL($table));
         }
 

@@ -19,18 +19,17 @@ class BrowseDbCommand extends Command
     {
         /** @var Connection $dbConnection */
         $dbConnection = $this->container->get(Connection::class);
+        $schemaManager = $dbConnection->createSchemaManager();
+        $queryBuilder = $dbConnection->createQueryBuilder();
 
         $styledIo = $this->getStyledIO($input, $output);
 
-        $table = $styledIo->choice(
-            'Please select a table',
-            $dbConnection->fetchFirstColumn("SHOW TABLES")
-        );
-
-        $styledIo->table(
-            $dbConnection->fetchFirstColumn("SHOW COLUMNS FROM `$table`"),
-            $dbConnection->fetchAllNumeric("SELECT * FROM `$table`")
-        );
+        $table = $styledIo->choice('Please select a table', $schemaManager->listTableNames());
+        $columns = array_keys($schemaManager->listTableColumns($table));
+        $query = $queryBuilder->select('*')->from($table)->getSQL();
+        $data = $dbConnection->fetchAllNumeric($query);
+        
+        $styledIo->table($columns, $data);
 
         return 0;
     }
