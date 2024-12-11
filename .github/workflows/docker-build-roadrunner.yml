@@ -20,6 +20,7 @@ jobs:
           TARGET_TYPE: "roadrunner"
       - name: Test with PostgreSQL
         run: make test
+        env:
           DB_DRIVER: "pdo-pgsql"
           DB_HOST: "postgres"
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
