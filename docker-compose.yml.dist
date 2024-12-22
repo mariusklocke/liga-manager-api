@@ -18,8 +18,12 @@ services:
 
   php:
     image: mklocke/liga-manager-api:latest-roadrunner
+    build:
+      context: ${PWD}
+      dockerfile: ${PWD}/docker/php/roadrunner/Dockerfile
+      args:
+        APP_VERSION: dev-latest
     volumes:
-      - .:/var/www/api
       - logos:/var/www/logos
     depends_on:
       - mariadb
@@ -27,7 +31,7 @@ services:
       - .env
 
   mariadb:
-    image: mariadb:10.11
+    image: mariadb:11.4
     volumes:
       - mysql-data:/var/lib/mysql
       - mysql-backup:/backup

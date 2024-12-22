@@ -1,7 +1,7 @@
 export SHELL:=/bin/bash
 export SHELLOPTS:=$(if $(SHELLOPTS),$(SHELLOPTS):)pipefail:errexit
 
-export MARIADB_VERSION ?= 10.11
+export MARIADB_VERSION ?= 11.4
 export POSTGRES_VERSION ?= 17
 export REDIS_VERSION ?= 6
 export TARGET_TYPE ?= fpm
