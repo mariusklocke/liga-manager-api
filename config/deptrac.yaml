@@ -3,6 +3,7 @@ deptrac:
     - ../src
   exclude_files:
     - .*test.*
+    - '#^__CG__.*\.php$#'
   layers:
     - name: Application
       collectors:
