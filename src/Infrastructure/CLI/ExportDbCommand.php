@@ -4,7 +4,19 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Doctrine\DBAL\Connection;
-use InvalidArgumentException;
+use Doctrine\DBAL\Types\BinaryType;
+use Doctrine\DBAL\Types\BlobType;
+use Doctrine\DBAL\Types\DateImmutableType;
+use Doctrine\DBAL\Types\DateTimeImmutableType;
+use Doctrine\DBAL\Types\DateTimeType;
+use Doctrine\DBAL\Types\DateType;
+use Doctrine\DBAL\Types\FloatType;
+use Doctrine\DBAL\Types\IntegerType;
+use Doctrine\DBAL\Types\JsonType;
+use Doctrine\DBAL\Types\StringType;
+use Doctrine\DBAL\Types\TextType;
+use Doctrine\DBAL\Types\Type;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -44,39 +56,47 @@ class ExportDbCommand extends Command
     {
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
-        $count = $connection->transactional(function () use ($connection, $input) {
-            return $this->exportXml($connection, $input);
+        $outputFile = $input->getArgument('file');
+        $anonymize = (bool)$input->getOption('anonymize');
+        $count = $connection->transactional(function () use ($connection, $outputFile, $anonymize) {
+            return $this->exportXml($connection, $outputFile, $anonymize);
         });
         $this->getStyledIO($input, $output)->success('Successfully exported ' . $count . ' records.');
 
         return 0;
     }
 
-    private function exportXml(Connection $connection, InputInterface $input): int
+    private function exportXml(Connection $connection, string $outputFile, bool $anonymize): int
     {
         $writer = new XMLWriter();
-        $writer->openUri('file://' . $this->makePathAbsolute($input->getArgument('file')));
+        $writer->openUri($outputFile);
         $writer->setIndent(true);
         $writer->startDocument();
         $writer->startElement('database');
 
+        $schemaManager = $connection->createSchemaManager();
         $count = 0;
-        foreach ($connection->fetchFirstColumn("SHOW TABLES") as $table) {
+        foreach ($schemaManager->listTableNames() as $table) {
             $types = [];
-            foreach ($connection->fetchAllAssociative("DESCRIBE $table") as $column) {
-                $types[$column['Field']] = $column['Type'];
+            foreach ($schemaManager->listTableColumns($table) as $column) {
+                $mappedType = $this->mapType($column->getType());
+                if (null === $mappedType) {
+                    throw new RuntimeException('Unsupported type ' . get_class($column->getType()) . ' for ' . $column->getName() . ' in ' . $table);
+                }
+                $types[$column->getName()] = $mappedType;
             }
             $writer->startElement('table');
             $writer->writeAttribute('name', $table);
-            foreach ($connection->iterateAssociative("SELECT * FROM `$table`") as $row) {
-                if ($input->getOption('anonymize')) {
+            $query = $connection->createQueryBuilder()->select('*')->from($table)->getSQL();
+            foreach ($connection->iterateAssociative($query) as $row) {
+                if ($anonymize) {
                     $row = $this->anonymize($row);
                 }
 
                 $writer->startElement('row');
 
                 foreach ($row as $column => $value) {
-                    $type = $this->mapType($types[$column]);
+                    $type = $types[$column];
                     $writer->startElement('column');
                     $writer->writeAttribute('name', $column);
                     $writer->writeAttribute('type', $type);
@@ -109,51 +129,36 @@ class ExportDbCommand extends Command
 
     private function encodeValue(string $type, mixed $value): string
     {
-        if (str_starts_with($type, 'varchar') || str_starts_with($type, 'longtext')) {
-            return (string)$value;
+        $value = (string)$value;
+
+        if ($type === 'binary') {
+            $value = bin2hex($value);
         }
-        if (str_starts_with($type, 'int')) {
-            return (string)$value;
-        }
-        if (str_starts_with($type, 'float') || str_starts_with($type, 'double')) {
-            return (string)$value;
-        }
-        if (str_starts_with($type, 'datetime') || str_starts_with($type, 'date')) {
-            return (string)$value;
-        }
-        if (str_starts_with($type, 'varbinary')) {
-            return bin2hex($value);
-        }
-        throw new InvalidArgumentException('Unsupported type: ' . $type);
+
+        return $value;
     }
 
-    private function mapType(string $type): string
+    private function mapType(Type $type): ?string
     {
-        if (str_starts_with($type, 'varchar') || str_starts_with($type, 'longtext')) {
+        if ($type instanceof StringType || $type instanceof TextType) {
             return 'string';
         }
-        if (str_starts_with($type, 'int')) {
+        if ($type instanceof IntegerType) {
             return 'integer';
         }
-        if (str_starts_with($type, 'float') || str_starts_with($type, 'double')) {
+        if ($type instanceof FloatType) {
             return 'float';
         }
-        if (str_starts_with($type, 'datetime') || str_starts_with($type, 'date')) {
+        if ($type instanceof DateTimeImmutableType || $type instanceof DateImmutableType || $type instanceof DateTimeType || $type instanceof DateType) {
             return 'string';
         }
-        if (str_starts_with($type, 'varbinary')) {
+        if ($type instanceof BinaryType || $type instanceof BlobType) {
             return 'binary';
         }
-        throw new InvalidArgumentException('Unsupported type: ' . $type);
-    }
-
-    private function makePathAbsolute(string $filePath): string
-    {
-        if ($filePath[0] === DIRECTORY_SEPARATOR) {
-            return $filePath;
-        } else {
-            return getcwd() . DIRECTORY_SEPARATOR . $filePath;
+        if ($type instanceof JsonType) {
+            return 'json';
         }
+        return null;
     }
 
     private function anonymize(array $record): array

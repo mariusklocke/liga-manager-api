@@ -141,7 +141,6 @@ class CliTest extends TestCase
      */
     public function testDatabaseCanBeExported(): string
     {
-        $this->markTestSkipped('incompatible with postgres');
         $xmlFile = tempnam(sys_get_temp_dir(), 'database');
 
         // Test anonymized export
@@ -181,7 +180,6 @@ class CliTest extends TestCase
     #[Depends("testDatabaseCanBeExported")]
     public function testDatabaseCanBeImported(string $xmlFile): void
     {
-        $this->markTestSkipped('incompatible with postgres');
         $tester = $this->getCommandTester('app:db:import');
         $exitCode = $tester->execute(['file' => $xmlFile]);
         $output = $tester->getDisplay();

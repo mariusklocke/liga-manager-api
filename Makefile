@@ -52,9 +52,9 @@ test:
 	docker compose up --detach --quiet-pull
 	docker compose exec php composer install --no-cache --no-progress
 	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
-	docker compose exec php phpunit -c config/phpunit.xml --display-deprecations --display-warnings
+	docker compose exec php phpunit -c config/phpunit.xml --testdox --display-deprecations --display-warnings
 	docker compose exec -u root php xdebug on
-	docker compose exec php phpunit -c config/phpunit.xml --coverage-clover coverage.xml
+	docker compose exec php phpunit -c config/phpunit.xml --testdox --coverage-clover coverage.xml
 	if [[ -n "${CODECOV_TOKEN}" ]]; then
 		docker compose cp php:/var/www/api/coverage.xml coverage.xml
 	fi
