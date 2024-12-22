@@ -134,7 +134,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 /** @var FilesystemService $filesystem */
                 $filesystem = $container->get(FilesystemService::class);
                 $config = new Configuration();
-                $config->setProxyDir($$filesystem->joinPaths([__DIR__, 'Proxy']));
+                $config->setProxyDir($filesystem->joinPaths([__DIR__, 'Proxy']));
                 $config->setProxyNamespace(implode('\\', [__NAMESPACE__, 'Proxy']));
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
                 $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_NEVER);
