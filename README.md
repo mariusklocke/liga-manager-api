@@ -69,9 +69,13 @@ Same rules for that script: Please have a look inside, before running it.
 
 If you need to change paths, make your sure to reflect the changes in `docker-compose.yml` and your nginx configuration.
 
-## OS users & file permissions
+## Users & Permissions
 
-Configure `user: 1000:1000` in `docker-compose.yml` if you want to mount the project files into the container.
+Since this application generates code when starting up (Doctrine proxy classes), it is advisable NOT to mount the project dir into the container.
+The recommended development model is: Use a `build` config for the `php` service in `docker-compose.yml` and rebuild the container when changing sources.
+This should be sufficiently fast due to Docker build layer caching. Rebuilding the container on changes can be automated by running `docker compose watch`. 
+
+The docker containers built by this project come in two flavors: `PHP-FPM` and `Roadrunner`. Both following the same execution model: Container is initialized as `root` user and start a control process as `root` user. The control process forks worker processes running as `www-data` user. This means that the `entrypoint` script always should be run as `root`. Since the worker processes are dealing with public HTTP traffic there are running as non-priviled user. In contrast to many other PHP-deployments the PHP code inside the container is owned by `root`. By using this approach the running application is not able to modify its own code. It is NOT advisable to override the initializing user by using the `user` property in `docker-compose.yml`.
 
 ## Maintenance Mode
 
