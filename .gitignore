@@ -1,4 +1,5 @@
 .idea
+.zed
 vendor
 bin/*.phar
 /phpda*
@@ -9,3 +10,4 @@ import
 *.sql.gz
 docker/nginx/certs
 env.json
+docker/.secrets
