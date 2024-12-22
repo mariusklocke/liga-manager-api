@@ -30,7 +30,11 @@ class MigrateDbCommand extends Command
             $count++;
         }
 
-        $this->getStyledIO($input, $output)->success("Migrated database using $count queries");
+        if ($count > 0) {
+            $output->writeln("Database successfully migrated using $count queries.");
+        } else {
+            $output->writeln("Database already up to date. Nothing to migrate.");
+        }
 
         return 0;
     }
