@@ -131,11 +131,13 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Configuration::class => DI\factory(function (ContainerInterface $container) {
+                /** @var FilesystemService $filesystem */
+                $filesystem = $container->get(FilesystemService::class);
                 $config = new Configuration();
-                $config->setProxyDir(sys_get_temp_dir());
-                $config->setProxyNamespace('DoctrineProxies');
+                $config->setProxyDir($filesystem->joinPaths([__DIR__, 'Proxy']));
+                $config->setProxyNamespace(implode('\\', [__NAMESPACE__, 'Proxy']));
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
-                $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_FILE_NOT_EXISTS);
+                $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_NEVER);
                 $config->setMiddlewares([$container->get(LoggingMiddleware::class)]);
 
                 return $config;
