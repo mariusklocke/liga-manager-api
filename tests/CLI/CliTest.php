@@ -59,6 +59,10 @@ class CliTest extends TestCase
     public function testMigratingDatabase(): void
     {
         $tester = $this->getCommandTester('app:db:migrate');
+        self::assertExecutionSuccess($tester->execute(['--dry-run' => null]));
+        self::assertStringContainsString('No queries were executed', $tester->getDisplay());
+
+        $tester = $this->getCommandTester('app:db:migrate');
         self::assertExecutionSuccess($tester->execute([]));
     }
 
