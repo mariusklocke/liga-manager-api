@@ -10,10 +10,19 @@ jobs:
         run: make build
         env:
           TARGET_TYPE: "roadrunner"
-      - name: Test
+      - name: Test with MariaDB
         run: make test
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          DB_DRIVER: "pdo-mysql"
+          DB_HOST: "mariadb"
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          TARGET_TYPE: "roadrunner"
+      - name: Test with PostgreSQL
+        run: make test
+        env:
+          DB_DRIVER: "pdo-pgsql"
+          DB_HOST: "postgres"
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           TARGET_TYPE: "roadrunner"
       - name: Publish

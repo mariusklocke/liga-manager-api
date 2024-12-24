@@ -25,22 +25,35 @@ class ImportDbCommand extends Command
     {
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
-        $inputFile  = $input->getArgument('file');
-        $chunkSize  = (int)$input->getOption('chunk-size');
+        $schemaManager = $connection->createSchemaManager();
+        $tables = $schemaManager->listTables();
 
-        $this->setForeignKeyChecks($connection, false);
+        $inputFile = $input->getArgument('file');
+        $chunkSize = (int)$input->getOption('chunk-size');
+
+        foreach ($tables as $table) {
+            foreach ($table->getForeignKeys() as $foreignKey) {
+                $connection->executeQuery(
+                    $connection->getDatabasePlatform()->getDropForeignKeySQL($foreignKey->getName(), $table->getName())
+                );
+            }
+        }
+
         $count = $connection->transactional(function () use ($connection, $inputFile, $chunkSize) {
             return $this->importXml($connection, $inputFile, $chunkSize);
         });
-        $this->setForeignKeyChecks($connection, true);
+
+        foreach ($tables as $table) {
+            foreach ($table->getForeignKeys() as $foreignKey) {
+                $connection->executeQuery(
+                    $connection->getDatabasePlatform()->getCreateForeignKeySQL($foreignKey, $table->getName())
+                );
+            }
+        }
+
         $this->getStyledIO($input, $output)->success('Successfully imported ' . $count . ' records.');
 
         return 0;
-    }
-
-    private function setForeignKeyChecks(Connection $connection, bool $enabled): void
-    {
-        $connection->executeQuery('SET FOREIGN_KEY_CHECKS=' . ($enabled ? '1' : '0'));
     }
 
     private function importXml(Connection $connection, string $inputFile, int $chunkSize): int
@@ -51,7 +64,7 @@ class ImportDbCommand extends Command
         $types = null;
         $count = 0;
         $reader = new XMLReader();
-        $reader->open('file://' . $this->makePathAbsolute($inputFile));
+        $reader->open($inputFile);
         while ($reader->read()) {
             // Start element
             if ($reader->nodeType === XMLReader::ELEMENT) {
@@ -141,7 +154,8 @@ class ImportDbCommand extends Command
             'integer' => Types::INTEGER,
             'float' => Types::FLOAT,
             'boolean' => Types::BOOLEAN,
-            'binary' => Types::BINARY
+            'binary' => Types::BINARY,
+            'json' => Types::JSON
         ];
 
         if (!isset($typeMap[$type])) {
@@ -151,7 +165,7 @@ class ImportDbCommand extends Command
         return $typeMap[$type];
     }
 
-    private function decodeValue(string $type, string $value): string|int|float|bool
+    private function decodeValue(string $type, string $value): string|int|float|bool|array
     {
         switch ($type) {
             case 'string':
@@ -164,16 +178,9 @@ class ImportDbCommand extends Command
                 return (bool)$value;
             case 'binary':
                 return hex2bin($value);
+            case 'json':
+                return json_decode($value, true);
         }
         throw new InvalidArgumentException(sprintf('Unknown type "%s"', $type));
-    }
-
-    private function makePathAbsolute(string $filePath): string
-    {
-        if ($filePath[0] === DIRECTORY_SEPARATOR) {
-            return $filePath;
-        } else {
-            return getcwd() . DIRECTORY_SEPARATOR . $filePath;
-        }
     }
 }

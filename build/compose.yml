@@ -22,15 +22,13 @@ services:
       - APP_BASE_URL=http://nginx
       - ADMIN_EMAIL=admin@example.com
       - ADMIN_PASSWORD=123456
+      - DB_PASSWORD_FILE=/run/secrets/db-password
+      - DB_URL=${DB_DRIVER}://test@${DB_HOST}/test
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=phpunit
       - EMAIL_URL=smtp://test:9ecd4875@maildev:1025?verify_peer=0
       - JWT_SECRET_FILE=/run/secrets/jwt-secret
       - LOG_LEVEL=warning
-      - MYSQL_DATABASE=test
-      - MYSQL_HOST=mariadb
-      - MYSQL_PASSWORD_FILE=/run/secrets/db-password
-      - MYSQL_USER=test
       - REDIS_HOST=redis
     volumes:
       - ${PWD}/.git:/var/www/api/.git
@@ -61,7 +59,7 @@ services:
       - MARIADB_PASSWORD_FILE=/run/secrets/db-password
       - MARIADB_USER=test
     volumes:
-      - db-data:/var/lib/mysql
+      - mariadb-data:/var/lib/mysql
     secrets:
       - source: db-password
         target: db-password
@@ -69,6 +67,25 @@ services:
         target: db-root-password
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
+  postgres:
+    image: ${POSTGRES_IMAGE}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    secrets:
+      - source: db-password
+        target: db-password
+      - source: db-root-password
+        target: db-root-password
+    environment:
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    healthcheck:
+      test: ["CMD", "pg_isready", "--quiet", "--user", "test"]
       start_period: 1m
       start_interval: 5s
       interval: 1m
@@ -94,8 +111,9 @@ services:
       interval: 1m
       timeout: 5s
 volumes:
-  db-data:
   logos:
+  mariadb-data:
+  postgres-data:
 secrets:
   db-password:
     file: ${PWD}/build/.secrets/db-password

@@ -72,20 +72,38 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 $doctrineConfig = $container->get(Configuration::class);
                 /** @var Config $config */
                 $config = $container->get(Config::class);
-                $params = [
-                    'dbname' => $config->getValue('mysql.database'),
-                    'user' => $config->getValue('mysql.user'),
-                    'password' => $config->getValue('mysql.password'),
-                    'host' => $config->getValue('mysql.host'),
-                    'driver' => 'pdo_mysql'
-                ];
+                if ($config->getValue('db.url')) {
+                    $url = parse_url($config->getValue('db.url'));
+                    $params = [
+                        'dbname' => ltrim($url['path'], '/'),
+                        'user' => $url['user'],
+                        'host' => $url['host'],
+                        'driver' => str_replace('-', '_', $url['scheme'])
+                    ];
+                    if (isset($url['port'])) {
+                        $params['port'] = (int)$url['port'];
+                    }
+                    if (isset($url['pass'])) {
+                        $params['password'] = $url['pass'];
+                    }
+                    $passwordFile = $config->getValue('db.password.file');
+                } else {
+                    $params = [
+                        'dbname' => $config->getValue('mysql.database'),
+                        'user' => $config->getValue('mysql.user'),
+                        'password' => $config->getValue('mysql.password'),
+                        'host' => $config->getValue('mysql.host'),
+                        'driver' => 'pdo_mysql'
+                    ];
+                    $passwordFile = $config->getValue('mysql.password.file');
+                }
                 if ($params['driver'] === 'pdo_mysql') {
                     $params['driverOptions'] = [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"];
                 }
-                if ($config->getValue('mysql.password.file')) {
+                if ($passwordFile) {
                     /** @var FilesystemService $filesystem */
                     $filesystem = $container->get(FilesystemService::class);
-                    $params['password'] = $filesystem->getFileContents($config->getValue('mysql.password.file'));
+                    $params['password'] = $filesystem->getFileContents($passwordFile);
                 }
                 $customTypes = [
                     CustomBinaryType::class => [

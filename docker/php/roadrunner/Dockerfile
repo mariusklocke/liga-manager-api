@@ -8,7 +8,7 @@ COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 ENV PHP_VERSION="8.4"
 
 # Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcntl pdo_mysql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
     && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \ 
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
