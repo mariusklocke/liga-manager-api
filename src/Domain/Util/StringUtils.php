@@ -58,4 +58,17 @@ class StringUtils
     {
         return (new EmailValidator())->isValid($value, new RFCValidation());
     }
+
+    /**
+     * Determines if a string is a valid URL
+     * 
+     * @param string $value
+     * @return bool
+     */
+    public static function isValidUrl(string $value): bool
+    {
+        $parsed = parse_url($value);
+
+        return is_array($parsed) && isset($parsed['scheme']) && isset($parsed['host']);
+    }
 }

@@ -23,6 +23,16 @@ class CliTest extends TestCase
         $this->app = new Application();
     }
 
+    public function testValidatingConfig(): void
+    {
+        $tester = $this->getCommandTester('app:config:validate');
+        $exitCode = $tester->execute([]);
+        $output = $tester->getDisplay();
+
+        self::assertExecutionSuccess($exitCode);
+        self::assertStringContainsString('The config is valid', $output);
+    }
+
     public function testSetupEnv(): void
     {
         $input = [
