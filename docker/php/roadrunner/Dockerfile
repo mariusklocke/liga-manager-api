@@ -1,4 +1,4 @@
-FROM ghcr.io/roadrunner-server/roadrunner:2024.2 AS roadrunner
+FROM ghcr.io/roadrunner-server/roadrunner:2024.3 AS roadrunner
 FROM alpine:3.21
 ARG APP_VERSION
 
