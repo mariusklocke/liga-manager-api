@@ -32,7 +32,7 @@ endif
 .PHONY: build test publish
 
 build:
-	docker compose build php
+	docker build --build-arg APP_VERSION=${APP_VERSION} --file "docker/php/${TARGET_TYPE}/Dockerfile" --pull --tag "${TARGET_IMAGE}" .
 
 test:
 	set -x

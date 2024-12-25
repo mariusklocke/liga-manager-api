@@ -9,15 +9,7 @@ services:
         condition: service_healthy
   php:
     image: ${TARGET_IMAGE}
-    pull_policy: missing
-    build:
-      context: ${PWD}
-      dockerfile: ${PWD}/docker/php/${TARGET_TYPE}/Dockerfile
-      args:
-        APP_VERSION: ${APP_VERSION}
-      cache_from:
-        - ${TARGET_IMAGE}
-      pull: true
+    pull_policy: never
     environment:
       - APP_BASE_URL=http://nginx
       - ADMIN_EMAIL=admin@example.com
