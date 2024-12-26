@@ -26,7 +26,7 @@ $ docker compose down
 $ docker compose down -v
 ```
 
-For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
+For more information on how to manage containers, please refer to the [docker compose CLI reference](https://docs.docker.com/reference/cli/docker/compose/).
 
 ## Useful commands
 
