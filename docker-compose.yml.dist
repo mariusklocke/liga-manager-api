@@ -13,8 +13,6 @@ services:
       - ./docker/nginx/dev-roadrunner.conf:/etc/nginx/conf.d/default.conf
       - logos:/var/www/logos:ro
       - ./docker/ui/appsettings.json:/var/www/ui/appsettings.json:ro
-    depends_on:
-      - php
 
   php:
     image: mklocke/liga-manager-api:latest-roadrunner
@@ -25,32 +23,54 @@ services:
         APP_VERSION: dev-latest
     volumes:
       - logos:/var/www/logos
-    depends_on:
-      - mariadb
     env_file:
       - .env
+    healthcheck:
+      test: [ "CMD", "docker-php-healthcheck" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
 
   mariadb:
     image: mariadb:11.4
     volumes:
       - mysql-data:/var/lib/mysql
-      - mysql-backup:/backup
-    ports:
-      - "3306:3306"
-    env_file:
-      - .env
+    environment:  
+      - MARIADB_DATABASE=lima
+      - MARIADB_USER=lima
+      - MARIADB_PASSWORD=dev
+      - MARIADB_ROOT_PASSWORD=dev
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
 
   redis:
     image: redis:6-alpine
-    ports:
-      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "PING" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
 
   maildev:
     image: maildev/maildev:latest
     ports:
       - "1080:1080"
+    environment:
+      - MAILDEV_INCOMING_USER=lima
+      - MAILDEV_INCOMING_PASS=foobar
+    healthcheck:
+      test: [ "CMD", "wget", "-O", '-', 'http://127.0.0.1:1080/healthz' ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
 
 volumes:
   mysql-data:
-  mysql-backup:
   logos:

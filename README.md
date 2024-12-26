@@ -4,53 +4,51 @@
 A working installation of `docker` and `docker compose`.
 
 ## Getting started
-This application comes with an example configuration for running with `docker compose`. To get started rename `.env.dist` to `.env` and `docker-compose.yml.dist` to `docker-compose.yml` and adjust both configuration files to your local needs.
+This application comes with an example configuration for running with `docker compose`. To get started copy `.env.dist` to `.env` and `docker-compose.yml.dist` to `docker-compose.yml` and adjust both configuration files to your local needs.
 
 The file `docker-compose.yml.dist` contains a default configuration suitable for local development.
 
-Build the image using:
+Once you are ready, use following commands to get started:
 ```bash
-$ make build
-```
-
-Now you are ready to start the containers
-```bash
+# Create/start containers
 $ docker compose up -d
-```
 
-To set up your `.env` file follow the instructions given from
-```bash
-$ docker compose exec php lima app:env:setup
+# Start containers (must be created)
+$ docker compose start
+
+# Stop containers
+$ docker compose stop
+
+# Stop/delete containers
+$ docker compose down
+
+# Stop/delete containers and delete volumes
+$ docker compose down -v
 ```
 
 For more information on how to manage containers, please refer to the [docker-compose CLI reference](https://docs.docker.com/compose/reference/overview/#command-options-overview-and-help)
 
 ## Useful commands
 
-```bash
-# Wipe database
-$ docker compose exec php lima app:db:wipe
+Each of the following commands can be run like `docker compose exec php lima app:config:validate` once the containers are running.
 
-# Run migrations
-$ docker compose exec php lima app:db:migrate
-
-# Create a new user (any role)
-$ docker compose exec php lima app:user:create
-
-# Create the default admin user
-$ docker compose exec php lima app:user:create --default
-
-# Load demo data
-$ docker compose exec php lima app:db:demo-data
-
-# Export database
-$ docker compose exec php lima app:db:export database.xml
-
-# Export database anonymized
-$ docker compose exec php lima app:db:export database.xml --anonymize
-
-# Import database
-$ docker compose exec php lima app:db:import database.xml
+```
+  app:config:validate               Validate the config (does not check backing services connection)
+  app:db:browse                     Browse the database interactively
+  app:db:demo-data                  Load demo data into current database
+  app:db:export                     Export the database
+  app:db:import                     Import a database
+  app:db:migrate                    Migrate the database
+  app:db:wipe                       Erase all data from the current database
+  app:env:setup                     Setup environment config interactively
+  app:health:check                  Performs health checks
+  app:import:season                 Import season data from L98 files
+  app:logo:cleanup                  Cleanup logos not referenced by a team
+  app:logo:import                   Import a logo (source file will be deleted)
+  app:send-test-mail                
+  app:user:create                   Create a user
+  app:user:delete                   Delete a user
+  app:user:list                     List users
 ```
 
 ## Enable HTTPS
