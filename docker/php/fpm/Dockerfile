@@ -51,8 +51,8 @@ WORKDIR ${APP_HOME}
 ENV COMPOSER_ALLOW_SUPERUSER="1"
 COPY composer.lock composer.json ./
 RUN set -e \
-    && composer install --optimize-autoloader --no-cache --no-dev --no-progress \
-    && composer config version ${APP_VERSION}
+    && composer config version ${APP_VERSION} \
+    && composer install --optimize-autoloader --no-cache --no-dev --no-progress
 
 # Install own application sources
 COPY templates templates/
