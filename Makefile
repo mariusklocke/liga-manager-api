@@ -28,23 +28,15 @@ else
 	export TARGET_IMAGE = mklocke/liga-manager-api:${TAG}
 endif
 
-.ONESHELL:
-.PHONY: build test publish
+.PHONY: build test clean publish
 
 build:
 	docker build --build-arg APP_VERSION=${APP_VERSION} --file "docker/php/${TARGET_TYPE}/Dockerfile" --pull --tag "${TARGET_IMAGE}" .
 
 test:
-	set -x
-	function tearDown {
-		docker compose logs php
-		docker compose down -v
-		rm -rf "build/.secrets"
-	}
-	trap tearDown EXIT
-	if [[ -n "${DOCKER_TOKEN}" ]]; then
-		echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-	fi
+ifdef DOCKER_TOKEN
+	echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+endif
 	mkdir -p "build/.secrets"
 	openssl rand -hex 16 | tr -d '\n' > build/.secrets/db-password
 	openssl rand -hex 16 | tr -d '\n' > build/.secrets/db-root-password
@@ -55,9 +47,14 @@ test:
 	docker compose exec php phpunit -c config/phpunit.xml --testdox --display-deprecations --display-warnings
 	docker compose exec -u root php xdebug on
 	docker compose exec php phpunit -c config/phpunit.xml --testdox --coverage-clover coverage.xml
-	if [[ -n "${CODECOV_TOKEN}" ]]; then
-		docker compose cp php:/var/www/api/coverage.xml coverage.xml
-	fi
+ifdef CODECOV_TOKEN
+	docker compose cp php:/var/www/api/coverage.xml coverage.xml
+endif
+
+clean:
+	docker compose logs php || true
+	docker compose down -v || true
+	rm -rf "build/.secrets" || true
 
 publish:
 	echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin

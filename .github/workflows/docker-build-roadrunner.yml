@@ -36,3 +36,9 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: ./coverage.xml
+      - name: Cleanup
+        run: make clean
+        if: always()
+        env:
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          TARGET_TYPE: "roadrunner"
