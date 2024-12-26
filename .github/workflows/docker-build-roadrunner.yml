@@ -18,8 +18,24 @@ jobs:
           DB_HOST: "mariadb"
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           TARGET_TYPE: "roadrunner"
+      - name: Cleanup after MariaDB tests
+        run: make clean
+        if: always()
+        env:
+          DB_DRIVER: "pdo-mysql"
+          DB_HOST: "mariadb"
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          TARGET_TYPE: "roadrunner"
       - name: Test with PostgreSQL
         run: make test
+        env:
+          DB_DRIVER: "pdo-pgsql"
+          DB_HOST: "postgres"
+          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+          TARGET_TYPE: "roadrunner"
+      - name: Cleanup after PostgreSQL tests
+        run: make clean
+        if: always()
         env:
           DB_DRIVER: "pdo-pgsql"
           DB_HOST: "postgres"
@@ -36,9 +52,3 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: ./coverage.xml
-      - name: Cleanup
-        run: make clean
-        if: always()
-        env:
-          DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
-          TARGET_TYPE: "roadrunner"
