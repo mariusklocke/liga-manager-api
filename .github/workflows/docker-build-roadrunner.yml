@@ -43,6 +43,7 @@ jobs:
           TARGET_TYPE: "roadrunner"
       - name: Publish
         run: make publish
+        if: github.ref_type == 'tag' || github.ref_name == 'master'
         env:
           DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
           TARGET_TYPE: "roadrunner"
