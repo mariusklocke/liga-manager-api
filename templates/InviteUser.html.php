@@ -74,12 +74,12 @@
           <!-- Content -->
           <div class="content">
             <h1>Deine Einladung</h1>
-            <p>Hey Alice! Du wurdest von Bob zum Liga-Manager eingeladen.</p>
-            <a href="https://www.example.com" class="cta-button">Registrieren</a>
+            <p>Hey <?php echo htmlentities($receiver); ?>, du wurdest von <?php echo htmlentities($sender); ?> zum Liga-Manager eingeladen.</p>
+            <a href="<?php echo $targetLink; ?>" class="cta-button">Registrieren</a>
           </div>
           <!-- Footer -->
           <div class="footer">
-            <p>Deine Einladung ist g&uuml;ltig bis: 31.12.2024 15:30 Uhr.</p>
+            <p>Deine Einladung ist g&uuml;ltig bis: <?php echo $validUntil->format('d.m.Y H:i'); ?> Uhr.</p>
             <p>Bitte leite deine Einladung nicht an eine andere Person weiter.</p>
           </div>
         </div>

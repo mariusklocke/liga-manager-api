@@ -73,12 +73,12 @@
           <!-- Content -->
           <div class="content">
             <h1>Passwort zur&uuml;cksetzen</h1>
-            <p>Hey Alice! Nutze den Link um ein neues Passwort zu vergeben.</p>
-            <a href="https://www.example.com" class="cta-button">Neues Passwort setzen</a>
+            <p>Hey <?php echo htmlentities($receiver); ?>, nutze den folgenden Link um ein neues Passwort zu vergeben.</p>
+            <a href="<?php echo $targetLink; ?>" class="cta-button">Neues Passwort setzen</a>
           </div>
           <!-- Footer -->
           <div class="footer">
-            <p>Der Link ist g&uuml;ltig bis: 31.12.2024 15:30 Uhr.</p>
+            <p>Der Link ist g&uuml;ltig bis: <?php echo $validUntil->format('d.m.Y H:i'); ?> Uhr.</p>
             <p>Bitte leite diese E-Mail nicht an eine andere Person weiter.</p>
             <p>Wenn du keine Passwort R&uuml;cksetzung angefordert hast, kannst du diese E-Mail bedenkenlos l&ouml;schen.</p>
           </div>

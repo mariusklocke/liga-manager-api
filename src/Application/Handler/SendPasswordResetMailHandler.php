@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
+use HexagonalPlayground\Application\Email\HtmlUtilsTrait;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
@@ -14,6 +15,8 @@ use HexagonalPlayground\Domain\Event\Event;
 
 class SendPasswordResetMailHandler
 {
+    use HtmlUtilsTrait;
+
     private UserRepositoryInterface $userRepository;
     private TemplateRendererInterface $templateRenderer;
     private MailerInterface $mailer;
@@ -51,11 +54,11 @@ class SendPasswordResetMailHandler
         $recipient = [$user->getEmail() => $user->getFullName()];
         $subject   = 'Reset your password';
         $mailBody  = $this->templateRenderer->render('PasswordReset.html.php', [
-            'title'      => $subject,
-            'userName'   => $user->getFirstName(),
-            'targetLink' => $targetLink
+            'receiver'   => $user->getFirstName(),
+            'targetLink' => $targetLink,
+            'validUntil' => $expiresAt
         ]);
-
+        $subject = $this->extractTitle($mailBody);
         $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
 
         $this->mailer->send($message);
