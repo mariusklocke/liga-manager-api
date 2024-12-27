@@ -2,6 +2,15 @@
 
 ## NEXT
 
+## 1.23.0 - 2024-12-27
+* Feature: Add command for validating config
+* Improvement: Add support for PostgreSQL database
+* Improvement: Modernize email templates
+* Improvement: Use `doctrine/orm` instead of `doctrine/migratios` for DB migrations
+* Improvement: Improved support for `docker secrets`
+* Improvement: Move doctrine proxies to `src` folder
+* Improvement: Bump MariaDB version to 11.4 in CI actions
+
 ## 1.22.1 - 2024-12-09
 * Improvement: Update docker images to PHP 8.4
 * Improvement: Add proxy support to RateLimitMiddleware
