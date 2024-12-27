@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
+use HexagonalPlayground\Application\Email\HtmlUtilsTrait;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
@@ -14,6 +15,8 @@ use HexagonalPlayground\Domain\User;
 
 class SendInviteMailHandler implements AuthAwareHandler
 {
+    use HtmlUtilsTrait;
+
     private UserRepositoryInterface $userRepository;
     private TemplateRendererInterface $templateRenderer;
     private MailerInterface $mailer;
@@ -49,14 +52,14 @@ class SendInviteMailHandler implements AuthAwareHandler
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
 
         $recipient = [$user->getEmail() => $user->getFullName()];
-        $subject   = 'You have been invited';
         $mailBody  = $this->templateRenderer->render('InviteUser.html.php', [
-            'title'      => $subject,
-            'userName'   => $user->getFirstName(),
+            'sender'     => $authContext->getUser()->getFirstName(),
+            'receiver'   => $user->getFirstName(),
             'targetLink' => $targetLink,
             'validUntil' => $expiresAt
         ]);
 
+        $subject = $this->extractTitle($mailBody);
         $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
 
         $this->mailer->send($message);
