@@ -12,7 +12,7 @@ export COMPOSE_FILE = build/compose.yml
 export COMPOSE_PROJECT_NAME = liga-manager-api-build
 export DOCKER_USERNAME = mklocke
 export DB_DRIVER ?= pdo-mysql
-export DB_HOSTNAME ?= mariadb
+export DB_HOST ?= mariadb
 
 ifeq (${GITHUB_REF_TYPE}, tag)
 	export TAG = ${GITHUB_REF_NAME}
