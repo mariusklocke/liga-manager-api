@@ -80,7 +80,7 @@
           <div class="footer">
             <p>Der Link ist g&uuml;ltig bis: <?php echo $validUntil->format('d.m.Y H:i'); ?> Uhr.</p>
             <p>Bitte leite diese E-Mail nicht an eine andere Person weiter.</p>
-            <p>Wenn du keine Passwort R&uuml;cksetzung angefordert hast, kannst du diese E-Mail bedenkenlos l&ouml;schen.</p>
+            <p>Wenn du diese E-Mail wiederholt bekommst ohne sie selbst angefordert zu haben, melde dich bitte beim Admin-Team.</p>
           </div>
         </div>
       </td>
