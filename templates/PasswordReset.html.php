@@ -14,51 +14,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Passwort zur&uuml;cksetzen</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    img {
-      display: block;
-      max-width: 100%;
-      height: auto;
-    }
-    .container {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    .header {
-      text-align: center;
-      padding: 40px 0;
-    }
-    .content {
-      background-color: #ffffff;
-      padding: 20px;
-      text-align: center;
-    }
-    .cta-button {
-      background-color: #28a745;
-      color: #ffffff;
-      padding: 15px 25px;
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 5px;
-      display: inline-block;
-      margin-top: 20px;
-    }
-    .footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 12px;
-      color: #888888;
-    }
+    <?php echo file_get_contents(__DIR__ . '/assets/style.css'); ?>
   </style>
 </head>
 <body>
