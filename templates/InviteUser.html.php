@@ -25,7 +25,7 @@
         <div class="container">
           <!-- Header -->
           <div class="header">
-            <img src="data:image/jpeg;base64,<?php echo base64_encode(file_get_contents(__DIR__ . '/assets/logo.jpg')); ?>" alt="Wilde Liga Bremen">
+            <img src="https://www.wildeligabremen.de/wp-content/uploads/2023/05/cropped-Logo-mit-Schrift_30-Jahre-Kopie_2-e1683381765583.jpg" alt="Wilde Liga Bremen">
           </div>
           <!-- Content -->
           <div class="content">
