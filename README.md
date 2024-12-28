@@ -45,7 +45,7 @@ Each of the following commands can be run like `docker compose exec php lima app
   app:import:season                 Import season data from L98 files
   app:logo:cleanup                  Cleanup logos not referenced by a team
   app:logo:import                   Import a logo (source file will be deleted)
-  app:send-test-mail                
+  app:mail:send                     Send a mail with HTML body
   app:user:create                   Create a user
   app:user:delete                   Delete a user
   app:user:list                     List users
