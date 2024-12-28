@@ -1,7 +1,5 @@
 # CHANGELOG
 
-## NEXT
-
 ## 1.23.0 - 2024-12-27
 * Feature: Add command for validating config
 * Improvement: Add support for PostgreSQL database
