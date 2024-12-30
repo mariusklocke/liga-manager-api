@@ -42,4 +42,4 @@ jobs:
         uses: codecov/codecov-action@v4
         if: github.ref_type == 'branch'
         with:
-          files: ./coverage.xml
+          files: ./tests/coverage.xml

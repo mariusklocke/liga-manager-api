@@ -37,10 +37,7 @@ endif
 	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
 	docker compose exec php phpunit -c config/phpunit.xml --testdox --display-deprecations --display-warnings
 	docker compose exec -u root php xdebug on
-	docker compose exec php phpunit -c config/phpunit.xml --testdox --coverage-clover coverage.xml
-ifdef CODECOV_TOKEN
-	docker compose cp php:/var/www/api/coverage.xml coverage.xml
-endif
+	docker compose exec php phpunit -c config/phpunit.xml --testdox --coverage-clover tests/coverage.xml
 
 clean:
 	docker compose logs php || true
