@@ -1,37 +1,28 @@
 export SHELL:=/bin/bash
 export SHELLOPTS:=$(if $(SHELLOPTS),$(SHELLOPTS):)pipefail:errexit
 
+export APP_RUNTIME ?= fpm
+export APP_VERSION ?= latest
 export MARIADB_VERSION ?= 11.4
+export NGINX_VERSION ?= 1
 export POSTGRES_VERSION ?= 17
 export REDIS_VERSION ?= 6
-export TARGET_TYPE ?= fpm
-export MARIADB_IMAGE = mariadb:${MARIADB_VERSION}
-export POSTGRES_IMAGE = postgres:${POSTGRES_VERSION}-alpine
-export REDIS_IMAGE = redis:${REDIS_VERSION}-alpine
 export COMPOSE_FILE = build/compose.yml
 export COMPOSE_PROJECT_NAME = liga-manager-api-build
 export DOCKER_USERNAME = mklocke
 export DB_DRIVER ?= pdo-mysql
 export DB_HOST ?= mariadb
 
-ifeq (${GITHUB_REF_TYPE}, tag)
-	export TAG = ${GITHUB_REF_NAME}
-	export APP_VERSION = ${GITHUB_REF_NAME}
+ifeq (${APP_RUNTIME}, fpm)
+	export APP_TAG = ${APP_VERSION}
 else
- 	export TAG = latest
- 	export APP_VERSION = dev-latest
-endif
-
-ifneq (${TARGET_TYPE}, fpm)
-	export TARGET_IMAGE = mklocke/liga-manager-api:${TAG}-${TARGET_TYPE}
-else
-	export TARGET_IMAGE = mklocke/liga-manager-api:${TAG}
+	export APP_TAG = ${APP_VERSION}-${APP_RUNTIME}
 endif
 
 .PHONY: build test clean publish
 
 build:
-	docker build --build-arg APP_VERSION=${APP_VERSION} --file "docker/php/${TARGET_TYPE}/Dockerfile" --pull --tag "${TARGET_IMAGE}" .
+	docker build --build-arg APP_VERSION=${APP_VERSION} --file "docker/php/${APP_RUNTIME}/Dockerfile" --pull --tag "mklocke/liga-manager-api:${APP_TAG}" .
 
 test:
 ifdef DOCKER_TOKEN
@@ -58,4 +49,4 @@ clean:
 
 publish:
 	echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-	docker push --quiet "${TARGET_IMAGE}"
+	docker push --quiet "mklocke/liga-manager-api:${APP_TAG}"

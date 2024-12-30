@@ -113,6 +113,7 @@ by the application. Static values must be supplied from the outside (e.g. by usi
 | APP_HOME              | Dynamic  | Path to application home directory             |
 | APP_LOGOS_PATH        | Dynamic  | Path to directory for logos                    |
 | APP_LOGOS_PUBLIC_PATH | Static   | Public URL path to logos                       |
+| APP_VERSION           | Dynamic  | Application version                            |
 | DB_PASSWORD_FILE      | Static   | Path to DB password file                       |
 | DB_URL                | Static   | URL for database connection (MySQL/PostgreSQL) |
 | EMAIL_SENDER_ADDRESS  | Static   | Sender address for outbound emails             |

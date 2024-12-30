@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:1-alpine
+    image: nginx:${NGINX_VERSION}-alpine
     volumes:
       - ${PWD}/docker/nginx/build-${TARGET_TYPE}.conf:/etc/nginx/conf.d/default.conf
       - logos:/var/www/logos:ro
@@ -8,7 +8,7 @@ services:
       php:
         condition: service_healthy
   php:
-    image: ${TARGET_IMAGE}
+    image: mklocke/liga-manager-api:${APP_TAG}
     pull_policy: never
     environment:
       - APP_BASE_URL=http://nginx
@@ -43,7 +43,7 @@ services:
       interval: 1m
       timeout: 5s
   mariadb:
-    image: ${MARIADB_IMAGE}
+    image: mariadb:${MARIADB_VERSION}
     pull_policy: always
     environment:
       - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db-root-password
@@ -64,7 +64,7 @@ services:
       interval: 1m
       timeout: 5s
   postgres:
-    image: ${POSTGRES_IMAGE}
+    image: postgres:${POSTGRES_VERSION}-alpine
     volumes:
       - postgres-data:/var/lib/postgresql/data
     secrets:
@@ -83,7 +83,7 @@ services:
       interval: 1m
       timeout: 5s
   redis:
-    image: ${REDIS_IMAGE}
+    image: redis:${REDIS_VERSION}-alpine
     pull_policy: always
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]

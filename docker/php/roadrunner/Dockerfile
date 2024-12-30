@@ -4,7 +4,8 @@ ARG APP_VERSION
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 
-# Define PHP version
+# Define versions
+ENV APP_VERSION=${APP_VERSION}
 ENV PHP_VERSION="8.4"
 
 # Install packages for PHP and extensions
@@ -53,9 +54,7 @@ WORKDIR ${APP_HOME}
 # Install dependencies first
 ENV COMPOSER_ALLOW_SUPERUSER="1"
 COPY composer.lock composer.json ./
-RUN set -e \
-    && composer config version ${APP_VERSION} \
-    && composer install --optimize-autoloader --no-cache --no-dev --no-progress
+RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
 
 # Install own application sources
 COPY templates templates/
