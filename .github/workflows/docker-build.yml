@@ -38,6 +38,3 @@ jobs:
       - name: Publish
         run: make publish
         if: github.ref_type == 'tag' || github.ref_name == 'master'
-      - name: Cleanup
-        run: make clean
-        if: always()

@@ -57,7 +57,6 @@ RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
 COPY templates templates/
 COPY src src/
 COPY public public/
-COPY migrations migrations/
 COPY config config/
 COPY bin bin/
 

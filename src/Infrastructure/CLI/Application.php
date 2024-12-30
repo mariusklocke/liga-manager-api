@@ -3,19 +3,6 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\CLI;
 
-use Doctrine\Migrations\DependencyFactory;
-use Doctrine\Migrations\Tools\Console\Command\CurrentCommand;
-use Doctrine\Migrations\Tools\Console\Command\DumpSchemaCommand;
-use Doctrine\Migrations\Tools\Console\Command\ExecuteCommand;
-use Doctrine\Migrations\Tools\Console\Command\GenerateCommand;
-use Doctrine\Migrations\Tools\Console\Command\LatestCommand;
-use Doctrine\Migrations\Tools\Console\Command\ListCommand;
-use Doctrine\Migrations\Tools\Console\Command\MigrateCommand;
-use Doctrine\Migrations\Tools\Console\Command\RollupCommand;
-use Doctrine\Migrations\Tools\Console\Command\StatusCommand;
-use Doctrine\Migrations\Tools\Console\Command\SyncMetadataCommand;
-use Doctrine\Migrations\Tools\Console\Command\UpToDateCommand;
-use Doctrine\Migrations\Tools\Console\Command\VersionCommand;
 use Doctrine\ORM\Tools\Console\Command\GenerateProxiesCommand;
 use Doctrine\ORM\Tools\Console\Command\InfoCommand;
 use Doctrine\ORM\Tools\Console\Command\SchemaTool\CreateCommand;
@@ -70,13 +57,7 @@ class Application extends \Symfony\Component\Console\Application
 
         parent::__construct('Liga-Manager', $this->container->get('app.version'));
 
-        foreach ($this->getOwnCommands() as $command) {
-            $this->add($command);
-        }
-        foreach ($this->getDoctrineMigrationsCommands() as $command) {
-            $this->add($command);
-        }
-        foreach ($this->getDoctrineOrmCommands() as $command) {
+        foreach ($this->getCommands() as $command) {
             $this->add($command);
         }
     }
@@ -102,8 +83,9 @@ class Application extends \Symfony\Component\Console\Application
     /**
      * @return Iterator
      */
-    private function getOwnCommands(): Iterator
+    private function getCommands(): Iterator
     {
+        // Own commands
         yield new SetupEnvCommand($this->container, $this->authContext);
         yield new CreateUserCommand($this->container, $this->authContext);
         yield new DeleteUserCommand($this->container, $this->authContext);
@@ -120,36 +102,9 @@ class Application extends \Symfony\Component\Console\Application
         yield new MigrateDbCommand($this->container, $this->authContext);
         yield new ValidateConfigCommand($this->container, $this->authContext);
         yield new SendMailCommand($this->container, $this->authContext);
-    }
 
-    /**
-     * @return Iterator
-     */
-    private function getDoctrineMigrationsCommands(): Iterator
-    {
-        $dependencyFactory = $this->container->get(DependencyFactory::class);
-
-        yield new CurrentCommand($dependencyFactory);
-        yield new DumpSchemaCommand($dependencyFactory);
-        yield new ExecuteCommand($dependencyFactory);
-        yield new GenerateCommand($dependencyFactory);
-        yield new LatestCommand($dependencyFactory);
-        yield new MigrateCommand($dependencyFactory);
-        yield new RollupCommand($dependencyFactory);
-        yield new StatusCommand($dependencyFactory);
-        yield new VersionCommand($dependencyFactory);
-        yield new UpToDateCommand($dependencyFactory);
-        yield new SyncMetadataCommand($dependencyFactory);
-        yield new ListCommand($dependencyFactory);
-    }
-
-    /**
-     * @return Iterator
-     */
-    private function getDoctrineOrmCommands(): Iterator
-    {
+        // Doctrine ORM commands
         $emProvider = $this->container->get(EntityManagerProvider::class);
-
         yield new CreateCommand($emProvider);
         yield new UpdateCommand($emProvider);
         yield new DropCommand($emProvider);
