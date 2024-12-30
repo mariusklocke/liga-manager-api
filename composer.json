@@ -34,7 +34,6 @@
         "ext-xmlreader": "*",
         "ext-xmlwriter": "*",
         "doctrine/dbal": "^4.0.0",
-        "doctrine/migrations": "^3.7.2",
         "doctrine/orm": "~3.3.0",
         "firebase/php-jwt": "^6.10",
         "middlewares/trailing-slash": "^2.0.1",
