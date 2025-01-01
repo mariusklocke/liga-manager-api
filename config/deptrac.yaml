@@ -2,7 +2,6 @@ deptrac:
   paths:
     - ../src
   exclude_files:
-    - .*test.*
     - '#.*__CG__.*#'
   layers:
     - name: Application
