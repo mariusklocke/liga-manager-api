@@ -51,21 +51,32 @@ Each of the following commands can be run like `docker compose exec php lima app
   app:user:list                     List users
 ```
 
-## Enable HTTPS
+## FAQ
 
-The default nginx config for development contains configuration for HTTPS support.
-The only thing you need to do is to generate a certificate. You can use a self-signed certificate for simplicity, if you
-can tolerate the warnings in the browser.
+### How to generate certificate for HTTPS?
+At first you need to choose between: Using `localhost` or a custom DNS name like `lima.local`.
+
+You can use a self-signed certificate for simplicity, if you can tolerate the warnings in the browser.
 But there are already scripts helping you to generate a local CA certificate, which you can install in your browser or
 operating system.
 
-For generating a local root CA certificate, please refer to `docker/nginx/generate-root-cert.sh`. Please read the script
+For generating a local root CA certificate, please refer to [docker/nginx/generate-root-cert.sh](). Please read the script
 and verify the paths are valid for your system before running.
 
-To generate a signed certificate for `lima.local`, please check out `docker/nginx/generate-site-cert.sh`.
+To generate a CA-signed certificate for `lima.local`, please check out [docker/nginx/generate-site-cert.sh]().
 Same rules for that script: Please have a look inside, before running it.
 
-If you need to change paths, make your sure to reflect the changes in `docker-compose.yml` and your nginx configuration.
+### How to enable HTTPS?
+* Generate a certificate
+* Mount the certificate to the nginx container
+* Expose port `443/tcp` for the nginx container
+* Use either [docker/nginx/dev-roadrunner-ssl.conf]() or [docker/nginx/dev-fpm-ssl.conf]() as an nginx config
+
+### How to enable HTTP2 or HTTP3?
+* Enable HTTPS first
+* HTTP2 is enabled by the `http2 on` instruction in nginx config
+* HTTP3 is enabled by the `quic` and `add_header Alt-Svc` instructions in nginx config
+* For HTTP3, make sure you expose port `443/udp` for the nginx container
 
 ## Users & Permissions
 

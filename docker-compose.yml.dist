@@ -5,17 +5,19 @@ services:
       dockerfile: ./docker/nginx/Dockerfile
     ports:
       - "80:80/tcp"
-      - "443:443/tcp"
-      - "443:443/udp"
+      # Uncomment the following line for HTTPS support
+      #- "443:443/tcp"
+      # Uncomment the following line for HTTP3 support
+      #- "443:443/udp"
     volumes:
-      - /etc/ssl/certs:/etc/ssl/certs:ro
-      - /etc/ssl/private:/etc/ssl/private:ro
-      - ./docker/nginx/dev-roadrunner.conf:/etc/nginx/conf.d/default.conf
+      # Uncomment the following two lines for HTTPS support
+      #- /etc/ssl/certs/localhost.pem:/etc/nginx/localhost.pem:ro
+      #- /etc/ssl/private/localhost.key:/etc/nginx/localhost.key:ro
+      - ./docker/nginx/dev-roadrunner.conf:/etc/nginx/conf.d/default.conf:ro
       - logos:/var/www/logos:ro
       - ./docker/ui/appsettings.json:/var/www/ui/appsettings.json:ro
 
   php:
-    image: mklocke/liga-manager-api:latest-roadrunner
     build:
       context: ${PWD}
       dockerfile: ${PWD}/docker/php/roadrunner/Dockerfile
