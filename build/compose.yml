@@ -23,7 +23,6 @@ services:
       - LOG_LEVEL=warning
       - REDIS_HOST=redis
     volumes:
-      - ${PWD}/.git:/var/www/api/.git
       - ${PWD}/tests:/var/www/api/tests
       - logos:/var/www/logos
     secrets:
