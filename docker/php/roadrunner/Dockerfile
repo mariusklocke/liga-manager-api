@@ -1,15 +1,16 @@
 FROM ghcr.io/roadrunner-server/roadrunner:2024.3 AS roadrunner
 FROM alpine:3.21
 ARG APP_VERSION
+ARG PHP_VERSION
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
 
 # Define versions
 ENV APP_VERSION=${APP_VERSION}
-ENV PHP_VERSION="8.4"
+ENV PHP_VERSION=${PHP_VERSION}
 
 # Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xml xmlreader xmlwriter" \
     && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \ 
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
@@ -26,13 +27,8 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp mbstring opcache pcn
     && chmod +x /usr/local/bin/composer \
     && rm -rf /var/cache/*
 
-# Install xdebug helper
-COPY docker/php/xdebug.sh /usr/local/bin/xdebug
-RUN chmod +x /usr/local/bin/xdebug
-
 # Configure PHP
 COPY docker/php/php.ini /etc/php/php.ini
-RUN xdebug off
 
 # Configure RoadRunner
 COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml

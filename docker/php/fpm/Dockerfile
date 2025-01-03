@@ -1,12 +1,13 @@
 FROM alpine:3.21
 ARG APP_VERSION
+ARG PHP_VERSION
 
 # Define versions
 ENV APP_VERSION=${APP_VERSION}
-ENV PHP_VERSION="8.4"
+ENV PHP_VERSION=${PHP_VERSION}
 
 # Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gmp mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gmp mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xml xmlreader xmlwriter" \
     && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
@@ -25,14 +26,9 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gmp mbstring opcache
     && chmod +x /usr/local/bin/composer \
     && rm -rf /var/cache/*
 
-# Install xdebug helper
-COPY docker/php/xdebug.sh /usr/local/bin/xdebug
-RUN chmod +x /usr/local/bin/xdebug
-
 # Configure PHP
 COPY docker/php/fpm/docker.conf /etc/php/php-fpm.d/zz-docker.conf
 COPY docker/php/php.ini /etc/php/php.ini
-RUN xdebug off
 
 # Add healthcheck
 COPY docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
