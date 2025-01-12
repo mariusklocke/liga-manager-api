@@ -21,30 +21,13 @@ abstract class Controller implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        switch ($request->getMethod()) {
-            case 'GET':
-                return $this->get($request);
-            case 'POST':
-                return $this->post($request);
-            case 'DELETE':
-                return $this->delete($request);
+        $method = strtolower($request->getMethod());
+
+        if (!method_exists($this, $method)) {
+            throw new HttpMethodNotAllowedException($request);
         }
-        throw new HttpMethodNotAllowedException($request);
-    }
 
-    public function get(ServerRequestInterface $request): ResponseInterface
-    {
-        throw new HttpMethodNotAllowedException($request);
-    }
-
-    public function post(ServerRequestInterface $request): ResponseInterface
-    {
-        throw new HttpMethodNotAllowedException($request);
-    }
-
-    public function delete(ServerRequestInterface $request): ResponseInterface
-    {
-        throw new HttpMethodNotAllowedException($request);
+        return $this->$method($request);
     }
 
     /**
