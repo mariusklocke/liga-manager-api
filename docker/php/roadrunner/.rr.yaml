@@ -7,6 +7,9 @@ http:
   address: "0.0.0.0:8080"
   pool:
     num_workers: 1
+  middleware: [ "http_metrics" ]
+metrics:
+  address: "0.0.0.0:8081"
 logs:
   channels:
     http:

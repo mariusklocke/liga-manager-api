@@ -7,11 +7,15 @@ services:
     depends_on:
       php:
         condition: service_healthy
+    networks:
+      default:
+        aliases:
+          - app.internal
   php:
     image: mklocke/liga-manager-api:${APP_TAG}
     pull_policy: never
     environment:
-      - APP_BASE_URL=http://nginx
+      - APP_BASE_URL=http://app.internal
       - ADMIN_EMAIL=admin@example.com
       - ADMIN_PASSWORD=123456
       - DB_PASSWORD_FILE=/run/secrets/db-password
