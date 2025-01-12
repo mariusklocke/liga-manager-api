@@ -25,7 +25,6 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\PublicKeyCredentialSourceRepository;
 use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
@@ -34,7 +33,6 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepositor
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\PitchRepository;
-use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\PublicKeyCredentialRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
@@ -168,8 +166,6 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 $filesystem = $container->get(FilesystemService::class);
                 $basePath   = $filesystem->joinPaths([$container->get('app.home'), 'config', 'doctrine']);
                 $driver     = new SimplifiedXmlDriver([
-                    $filesystem->joinPaths([$basePath, 'Infrastructure', 'API', 'Security', 'WebAuthn'])
-                    => "HexagonalPlayground\\Infrastructure\\API\\Security\\WebAuthn",
                     $filesystem->joinPaths([$basePath, 'Domain'])
                     => "HexagonalPlayground\\Domain",
                     $filesystem->joinPaths([$basePath, 'Domain', 'Event'])
@@ -192,7 +188,6 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             TeamRepositoryInterface::class => DI\get(TeamRepository::class),
             TournamentRepositoryInterface::class => DI\get(TournamentRepository::class),
             UserRepositoryInterface::class => DI\get(UserRepository::class),
-            PublicKeyCredentialSourceRepository::class => DI\get(PublicKeyCredentialRepository::class),
 
             HealthCheckInterface::class => DI\add(DI\get(DoctrineHealthCheck::class))
         ];

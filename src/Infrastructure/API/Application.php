@@ -18,8 +18,6 @@ use HexagonalPlayground\Infrastructure\API\Metrics\ServiceProvider as MetricsSer
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\RateLimitMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
-use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\RouteProvider as WebAuthnRouteProvider;
-use HexagonalPlayground\Infrastructure\API\Security\WebAuthn\ServiceProvider as WebAuthnServiceProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
@@ -50,7 +48,6 @@ class Application extends App
             new MailServiceProvider(),
             new EventServiceProvider(),
             new GraphQLServiceProvider(),
-            new WebAuthnServiceProvider(),
             new LogosServiceProvider(),
             new ApiServiceProvider(),
             new FilesystemServiceProvider(),
@@ -71,7 +68,6 @@ class Application extends App
         $this->group('/api', function (RouteCollectorProxyInterface $group) {
             $routeProviders = [
                 new GraphQLRouteProvider(),
-                new WebAuthnRouteProvider(),
                 new HealthRouteProvider(),
                 new LogosRouteProvider(),
                 new MetricsRouteProvider()

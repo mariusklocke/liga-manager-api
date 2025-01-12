@@ -20,9 +20,6 @@
         <testsuite name="Metrics">
             <directory>../tests/Metrics</directory>
         </testsuite>
-        <testsuite name="WebAuthn">
-            <directory>../tests/WebAuthn</directory>
-        </testsuite>
         <testsuite name="Unit">
             <directory>../tests/Unit</directory>
         </testsuite>
