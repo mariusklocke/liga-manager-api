@@ -12,6 +12,13 @@ $logger = $app->getContainer()->get(LoggerInterface::class);
 /** @var PSR7Worker $worker */
 $worker = $app->getContainer()->get(PSR7Worker::class);
 
+$logger->info('Roadrunner worker started: Waiting for requests', [
+    'versions' => [
+        'app' => getenv('APP_VERSION'),
+        'php' => getenv('PHP_VERSION'),
+    ]
+]);
+
 while (true) {
     try {
         $request = $worker->waitRequest();
