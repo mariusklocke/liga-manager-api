@@ -59,6 +59,10 @@ class HtmlMailRenderer
     public function render(array $data): string
     {
         $document = new DOMDocument();
+
+        // Add DOCTYPE declaration for HTML5
+        $document->insertBefore($document->createProcessingInstruction('DOCTYPE', 'html'), $document->firstChild);
+
         $html = $this->addElement($document, $document, 'html');
 
         $this->addHeadElement($document, $html, $data);
