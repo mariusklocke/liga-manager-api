@@ -67,7 +67,7 @@ class HtmlMailRenderer
         $html = $this->addElement($document, $document, 'html');
 
         // <head>
-        $head = $this->addElement($document, $document, 'head');
+        $head = $this->addElement($document, $html, 'head');
         $this->addElement($document, $head, 'meta', ['charset' => 'UTF-8']);
         $this->addElement($document, $head, 'meta', ['name' => 'viewport', 'value' => 'width=device-width, initial-scale=1.0']);
         $this->addElement($document, $head, 'title', [], $data['title']);
