@@ -55,13 +55,8 @@ class SendPasswordResetMailHandler
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
 
         $recipient = [$user->getEmail() => $user->getFullName()];
-        $subject   = 'Reset your password';
         $mailData  = [
-            'subject' => 'Passwort zurücksetzen',
-            'logo' => [
-                'src' => 'https://www.wildeligabremen.de/wp-content/uploads/2023/05/cropped-Logo-mit-Schrift_30-Jahre-Kopie_2-e1683381765583.jpg',
-                'alt' => 'Wilde Liga Bremen',
-            ],
+            'title' => 'Passwort zurücksetzen',
             'content' => [
                 'text' => sprintf('Hey %s, nutze den folgenden Link um ein neues Passwort zu vergeben.', $user->getFirstName()),
                 'action' => [
@@ -78,7 +73,7 @@ class SendPasswordResetMailHandler
             ]
         ];
         $mailBody = $renderer->render($mailData);
-        $subject = $mailData['subject'];
+        $subject = $mailData['title'];
         $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
 
         $this->mailer->send($message);

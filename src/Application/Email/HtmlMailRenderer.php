@@ -73,7 +73,7 @@ class HtmlMailRenderer
         
         $this->addElement($document, $head, 'meta', ['charset' => 'UTF-8']);
         $this->addElement($document, $head, 'meta', ['name' => 'viewport', 'value' => 'width=device-width, initial-scale=1.0']);
-        $this->addElement($document, $head, 'title', [], $data['subject']);
+        $this->addElement($document, $head, 'title', [], $data['title']);
 
         return $head;
     }
@@ -97,13 +97,13 @@ class HtmlMailRenderer
         // Header
         $header = $this->addElement($document, $container, 'div', ['class' => 'header']);
         $this->addElement($document, $header, 'img', [
-            'src' => $data['logo']['src'],
-            'alt' => $data['logo']['alt']
+            'src' => 'https://www.wildeligabremen.de/wp-content/uploads/2023/05/cropped-Logo-mit-Schrift_30-Jahre-Kopie_2-e1683381765583.jpg',
+            'alt' => 'Wilde Liga Bremen'
         ]);
 
         // Content
         $content = $this->addElement($document, $container, 'div', ['class' => 'content']);
-        $this->addElement($document, $content, 'h1', [], $data['subject']);
+        $this->addElement($document, $content, 'h1', [], $data['title']);
         $this->addElement($document, $content, 'p', [], $data['content']['text']);
         $this->addElement($document, $content, 'a', [
             'class' => 'cta-button',
