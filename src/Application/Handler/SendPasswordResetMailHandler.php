@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
+use HexagonalPlayground\Application\Email\HtmlMailRenderer;
 use HexagonalPlayground\Application\Email\HtmlUtilsTrait;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
@@ -42,6 +43,8 @@ class SendPasswordResetMailHandler
      */
     public function __invoke(SendPasswordResetMailCommand $command): array
     {
+        $renderer = new HtmlMailRenderer();
+
         try {
             $user = $this->userRepository->findByEmail($command->getEmail());
         } catch (NotFoundException $e) {
@@ -53,12 +56,29 @@ class SendPasswordResetMailHandler
 
         $recipient = [$user->getEmail() => $user->getFullName()];
         $subject   = 'Reset your password';
-        $mailBody  = $this->templateRenderer->render('PasswordReset.html.php', [
-            'receiver'   => $user->getFirstName(),
-            'targetLink' => $targetLink,
-            'validUntil' => $expiresAt
-        ]);
-        $subject = $this->extractTitle($mailBody);
+        $mailData  = [
+            'subject' => 'Passwort zurücksetzen',
+            'logo' => [
+                'src' => 'https://www.wildeligabremen.de/wp-content/uploads/2023/05/cropped-Logo-mit-Schrift_30-Jahre-Kopie_2-e1683381765583.jpg',
+                'alt' => 'Wilde Liga Bremen',
+            ],
+            'content' => [
+                'text' => sprintf('Hey %s, nutze den folgenden Link um ein neues Passwort zu vergeben.', $user->getFirstName()),
+                'action' => [
+                    'href' => $targetLink,
+                    'label' => 'Neues Passwort setzen'
+                ]
+            ],
+            'footer' => [
+                'hints' => [
+                    sprintf('Der Link ist gültig bis: %s', $expiresAt->format('d.m.Y H:i')),
+                    'Bitte leite diese E-Mail nicht an eine andere Person weiter.',
+                    'Wenn du diese E-Mail wiederholt bekommst ohne sie selbst angefordert zu haben, melde dich bitte beim Admin-Team.'
+                ]
+            ]
+        ];
+        $mailBody = $renderer->render($mailData);
+        $subject = $mailData['subject'];
         $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
 
         $this->mailer->send($message);
