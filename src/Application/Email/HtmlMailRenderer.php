@@ -60,33 +60,30 @@ class HtmlMailRenderer
     {
         $document = new DOMDocument();
 
-        // Add DOCTYPE declaration for HTML5
+        // <?DOCTYPE html>
         $document->insertBefore($document->createProcessingInstruction('DOCTYPE', 'html'), $document->firstChild);
 
+        // <html>
         $html = $this->addElement($document, $document, 'html');
 
-        $this->addHeadElement($document, $html, $data);
-        $this->addBodyElement($document, $html, $data);
-
-        return $document->saveHTML();
-    }
-
-    private function addHeadElement(DOMDocument $document, DOMNode $parent, array $data): DOMElement
-    {
-        $head = $this->addElement($document, $parent, 'head');
-        
+        // <head>
+        $head = $this->addElement($document, $document, 'head');
         $this->addElement($document, $head, 'meta', ['charset' => 'UTF-8']);
         $this->addElement($document, $head, 'meta', ['name' => 'viewport', 'value' => 'width=device-width, initial-scale=1.0']);
         $this->addElement($document, $head, 'title', [], $data['title']);
 
-        return $head;
+        // <body>
+        $body = $this->addElement($document, $html, 'body');
+        $container = $this->addContainer($document, $body);
+        $this->addHeader($document, $container, $data);
+        $this->addContent($document, $container, $data);
+        $this->addFooter($document, $container, $data);
+
+        return $document->saveHTML();
     }
 
-    private function addBodyElement(DOMDocument $document, DOMNode $parent, array $data): DOMElement
+    private function addContainer(DOMDocument $document, DOMNode $body): DOMElement
     {
-        $body = $this->addElement($document, $parent, 'body');
-
-        // Table + Container
         $table = $this->addElement($document, $body, 'table', [
             'role' => 'presentation',
             'width' => '100%',
@@ -96,17 +93,26 @@ class HtmlMailRenderer
         ]);
         $tableRow = $this->addElement($document, $table, 'tr');
         $tableCol = $this->addElement($document, $tableRow, 'td', ['align' => 'center']);
-        $container = $this->addElement($document, $tableCol, 'div', ['class' => 'container']);
+        
+        return $this->addElement($document, $tableCol, 'div', ['class' => 'container']);
+    }
 
-        // Header
+    private function addHeader(DOMDocument $document, DOMNode $container, array $data): DOMElement
+    {
         $header = $this->addElement($document, $container, 'div', ['class' => 'header']);
+
         $this->addElement($document, $header, 'img', [
             'src' => 'https://www.wildeligabremen.de/wp-content/uploads/2023/05/cropped-Logo-mit-Schrift_30-Jahre-Kopie_2-e1683381765583.jpg',
             'alt' => 'Wilde Liga Bremen'
         ]);
 
-        // Content
+        return $header;
+    }
+
+    private function addContent(DOMDocument $document, DOMNode $container, array $data): DOMElement
+    {
         $content = $this->addElement($document, $container, 'div', ['class' => 'content']);
+
         $this->addElement($document, $content, 'h1', [], $data['title']);
         $this->addElement($document, $content, 'p', [], $data['content']['text']);
         $this->addElement($document, $content, 'a', [
@@ -114,13 +120,18 @@ class HtmlMailRenderer
             'href' => $data['content']['action']['href']
         ], $data['content']['action']['label']);
 
-        // Footer
+        return $content;
+    }
+
+    private function addFooter(DOMDocument $document, DOMNode $container, array $data): DOMElement
+    {
         $footer = $this->addElement($document, $container, 'div', ['class' => 'footer']);
+
         foreach ($data['footer']['hints'] as $hint) {
             $this->addElement($document, $footer, 'p', [], $hint);
         }
 
-        return $body;
+        return $footer;
     }
 
     private function addElement(DOMDocument $document, DOMNode $parent, string $tag, array $attributes = [], ?string $text = null): DOMElement
