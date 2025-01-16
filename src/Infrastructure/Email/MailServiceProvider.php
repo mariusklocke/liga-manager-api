@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\Email;
 use DI;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Mailer\Mailer;

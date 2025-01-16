@@ -10,6 +10,7 @@ use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
+use HexagonalPlayground\Application\Translator;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\User;
 
@@ -20,17 +21,20 @@ class SendInviteMailHandler implements AuthAwareHandler
     private UserRepositoryInterface $userRepository;
     private MailerInterface $mailer;
     private AccessLinkGeneratorInterface $accessLinkGenerator;
+    private Translator $translator;
 
     /**
      * @param UserRepositoryInterface $userRepository
      * @param MailerInterface $mailer
      * @param AccessLinkGeneratorInterface $accessLinkGenerator
+     * @param Translator $translator
      */
-    public function __construct(UserRepositoryInterface $userRepository, MailerInterface $mailer, AccessLinkGeneratorInterface $accessLinkGenerator)
+    public function __construct(UserRepositoryInterface $userRepository, MailerInterface $mailer, AccessLinkGeneratorInterface $accessLinkGenerator, Translator $translator)
     {
         $this->userRepository = $userRepository;
         $this->mailer = $mailer;
         $this->accessLinkGenerator = $accessLinkGenerator;
+        $this->translator = $translator;
     }
 
     /**
@@ -67,7 +71,7 @@ class SendInviteMailHandler implements AuthAwareHandler
             ]
         ];
         $mailBody = $renderer->render($mailData);
-        $subject  = $mailBody['title'];
+        $subject  = $mailData['title'];
         $message  = $this->mailer->createMessage($recipient, $subject, $mailBody);
 
         $this->mailer->send($message);
