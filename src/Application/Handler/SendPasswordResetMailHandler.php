@@ -56,19 +56,19 @@ class SendPasswordResetMailHandler
 
         $recipient = [$user->getEmail() => $user->getFullName()];
         $mailData  = [
-            'title' => 'Passwort zurücksetzen',
+            'title' => $this->translator->get('mail.resetPassword.title'),
             'content' => [
-                'text' => sprintf('Hey %s, nutze den folgenden Link um ein neues Passwort zu vergeben.', $user->getFirstName()),
+                'text' => sprintf($this->translator->get('mail.resetPassword.content.text'), $user->getFirstName()),
                 'action' => [
                     'href' => $targetLink,
-                    'label' => 'Neues Passwort setzen'
+                    'label' => $this->translator->get('mail.resetPassword.content.action')
                 ]
             ],
             'footer' => [
                 'hints' => [
-                    sprintf('Der Link ist gültig bis: %s', $expiresAt->format('d.m.Y H:i')),
-                    'Bitte leite diese E-Mail nicht an eine andere Person weiter.',
-                    'Wenn du diese E-Mail wiederholt bekommst ohne sie selbst angefordert zu haben, melde dich bitte beim Admin-Team.'
+                    sprintf($this->translator->get('mail.resetPassword.hints.validity'), $expiresAt->format('d.m.Y H:i')),
+                    $this->translator->get('mail.resetPassword.hints.disclosure'),
+                    $this->translator->get('mail.resetPassword.hints.flooding')
                 ]
             ]
         ];
