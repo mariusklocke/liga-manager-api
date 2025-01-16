@@ -1,0 +1,27 @@
+{
+    "mail": {
+        "inviteUser": {
+            "title": "Deine Einladung",
+            "content": {
+                "text": "Hey %s, du wurdest von %s zum Liga-Manager eingeladen.",
+                "action": "Registrieren"
+            },
+            "hints": {
+                "validity": "Deine Einladung ist gültig bis: %s",
+                "disclosure": "Bitte leite deine Einladung nicht an eine andere Person weiter."
+            }
+        },
+        "resetPassword": {
+            "title": "Passwort zurücksetzen",
+            "content": {
+                "text": "Hey %s, nutze den folgenden Link um ein neues Passwort zu vergeben.",
+                "action": "Neues Passwort setzen"
+            },
+            "hints": {
+                "validity": "Der Link ist gültig bis: %s",
+                "disclosure": "Bitte leite diese E-Mail nicht an eine andere Person weiter.",
+                "flooding": "Wenn du diese E-Mail wiederholt bekommst ohne sie selbst angefordert zu haben, melde dich bitte beim Admin-Team."
+            }
+        }
+    }
+}

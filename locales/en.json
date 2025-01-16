@@ -1,0 +1,27 @@
+{
+    "mail": {
+        "inviteUser": {
+            "title": "Your invite",
+            "content": {
+                "text": "Hey %s, you have been invited from %s to join Liga-Manager.",
+                "action": "Register"
+            },
+            "hints": {
+                "validity": "Your invite is valid until: %s",
+                "disclosure": "Please do not forward your invite to another person."
+            }
+        },
+        "resetPassword": {
+            "title": "Password reset",
+            "content": {
+                "text": "Hey %s, use the following link for setting a new password.",
+                "action": "Set new password"
+            },
+            "hints": {
+                "validity": "The link is valid until: %s",
+                "disclosure": "Please do not forward this mail to another person.",
+                "flooding": "If you receive this mail repeatedly, but you did not request it, please contact the admin team."
+            }
+        }
+    }
+}

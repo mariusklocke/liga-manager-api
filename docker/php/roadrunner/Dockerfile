@@ -53,8 +53,8 @@ COPY composer.lock composer.json ./
 RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
 
 # Install own application sources
-COPY templates templates/
 COPY src src/
+COPY locales locales/
 COPY config config/
 COPY bin bin/
 

@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
+use HexagonalPlayground\Application\Email\HtmlMailRenderer;
 use HexagonalPlayground\Application\Email\HtmlUtilsTrait;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
@@ -48,19 +49,30 @@ class SendInviteMailHandler implements AuthAwareHandler
         /** @var User $user */
         $user  = $this->userRepository->find($command->getUserId());
 
+        $renderer   = new HtmlMailRenderer();
         $expiresAt  = new DateTimeImmutable('now + 1 day');
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
 
         $recipient = [$user->getEmail() => $user->getFullName()];
-        $mailBody  = $this->templateRenderer->render('InviteUser.html.php', [
-            'sender'     => $authContext->getUser()->getFirstName(),
-            'receiver'   => $user->getFirstName(),
-            'targetLink' => $targetLink,
-            'validUntil' => $expiresAt
-        ]);
-
-        $subject = $this->extractTitle($mailBody);
-        $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
+        $mailData  = [
+            'title' => 'Deine Einladung',
+            'content' => [
+                'text' => sprintf('Hey %s, du wurdest von %s zum Liga-Manager eingeladen.', $user->getFirstName(), $authContext->getUser()->getFirstName()),
+                'action' => [
+                    'href' => $targetLink,
+                    'label' => 'Registrieren'
+                ]
+            ],
+            'footer' => [
+                'hints' => [
+                    sprintf('Deine Einladung ist gültig bis: %s', $expiresAt->format('d.m.Y H:i')),
+                    'Bitte leite deine Einladung nicht an eine andere Person weiter.'
+                ]
+            ]
+        ];
+        $mailBody = $renderer->render($mailData);
+        $subject  = $mailBody['title'];
+        $message  = $this->mailer->createMessage($recipient, $subject, $mailBody);
 
         $this->mailer->send($message);
 
