@@ -57,7 +57,7 @@ class SendInviteMailHandler implements AuthAwareHandler
         $mailData  = [
             'title' => $this->translator->get('mail.inviteUser.title'),
             'content' => [
-                'text' => sprintf($this->translator->get('mail.inviteUser.content.text'), $user->getFirstName(), $authContext->getUser()->getFirstName()),
+                'text' => $this->translator->get('mail.inviteUser.content.text', [$user->getFirstName(), $authContext->getUser()->getFirstName()]),
                 'action' => [
                     'href' => $targetLink,
                     'label' => $this->translator->get('mail.inviteUser.content.action')
@@ -65,7 +65,7 @@ class SendInviteMailHandler implements AuthAwareHandler
             ],
             'footer' => [
                 'hints' => [
-                    sprintf($this->translator->get('mail.inviteUser.hints.validity'), $expiresAt->format('d.m.Y H:i')),
+                    $this->translator->get('mail.inviteUser.hints.validity', [$expiresAt->format('d.m.Y H:i')]),
                     $this->translator->get('mail.inviteUser.hints.disclosure')
                 ]
             ]

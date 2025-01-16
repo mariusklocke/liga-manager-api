@@ -13,7 +13,7 @@ class Translator
         $this->translations = [];
     }
 
-    public function get(string $key, string $locale = 'de'): string
+    public function get(string $key, array $params = [], string $locale = 'de'): string
     {
         if (!isset($this->translations[$locale])) {
             $filePath = join(
@@ -28,7 +28,13 @@ class Translator
             $this->translations[$locale] = $this->flattenArray(json_decode(file_get_contents($filePath), true));
         }
 
-        return $this->translations[$locale][$key] ?? '';
+        $value = $this->translations[$locale][$key] ?? '';
+
+        if ($value !== '' && count($params) > 0) {
+            $value = sprintf($value, ...$params);
+        }
+
+        return $value;
     }
 
     private function flattenArray(array $array, string $parentKey = ''): array

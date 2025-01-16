@@ -58,7 +58,7 @@ class SendPasswordResetMailHandler
         $mailData  = [
             'title' => $this->translator->get('mail.resetPassword.title'),
             'content' => [
-                'text' => sprintf($this->translator->get('mail.resetPassword.content.text'), $user->getFirstName()),
+                'text' => $this->translator->get('mail.resetPassword.content.text', [$user->getFirstName()]),
                 'action' => [
                     'href' => $targetLink,
                     'label' => $this->translator->get('mail.resetPassword.content.action')
@@ -66,7 +66,7 @@ class SendPasswordResetMailHandler
             ],
             'footer' => [
                 'hints' => [
-                    sprintf($this->translator->get('mail.resetPassword.hints.validity'), $expiresAt->format('d.m.Y H:i')),
+                    $this->translator->get('mail.resetPassword.hints.validity', [$expiresAt->format('d.m.Y H:i')]),
                     $this->translator->get('mail.resetPassword.hints.disclosure'),
                     $this->translator->get('mail.resetPassword.hints.flooding')
                 ]
