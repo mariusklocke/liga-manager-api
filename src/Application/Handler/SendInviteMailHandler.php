@@ -55,18 +55,18 @@ class SendInviteMailHandler implements AuthAwareHandler
 
         $recipient = [$user->getEmail() => $user->getFullName()];
         $mailData  = [
-            'title' => 'Deine Einladung',
+            'title' => $this->translator->get('mail.inviteUser.title'),
             'content' => [
-                'text' => sprintf('Hey %s, du wurdest von %s zum Liga-Manager eingeladen.', $user->getFirstName(), $authContext->getUser()->getFirstName()),
+                'text' => sprintf($this->translator->get('mail.inviteUser.content.text'), $user->getFirstName(), $authContext->getUser()->getFirstName()),
                 'action' => [
                     'href' => $targetLink,
-                    'label' => 'Registrieren'
+                    'label' => $this->translator->get('mail.inviteUser.content.action')
                 ]
             ],
             'footer' => [
                 'hints' => [
-                    sprintf('Deine Einladung ist gültig bis: %s', $expiresAt->format('d.m.Y H:i')),
-                    'Bitte leite deine Einladung nicht an eine andere Person weiter.'
+                    sprintf($this->translator->get('mail.inviteUser.hints.validity'), $expiresAt->format('d.m.Y H:i')),
+                    $this->translator->get('mail.inviteUser.hints.disclosure')
                 ]
             ]
         ];
