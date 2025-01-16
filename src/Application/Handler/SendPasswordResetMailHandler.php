@@ -11,7 +11,6 @@ use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
-use HexagonalPlayground\Application\TemplateRendererInterface;
 use HexagonalPlayground\Domain\Event\Event;
 
 class SendPasswordResetMailHandler
@@ -19,20 +18,17 @@ class SendPasswordResetMailHandler
     use HtmlUtilsTrait;
 
     private UserRepositoryInterface $userRepository;
-    private TemplateRendererInterface $templateRenderer;
     private MailerInterface $mailer;
     private AccessLinkGeneratorInterface $accessLinkGenerator;
 
     /**
      * @param UserRepositoryInterface $userRepository
-     * @param TemplateRendererInterface $templateRenderer
      * @param MailerInterface $mailer
      * @param AccessLinkGeneratorInterface $accessLinkGenerator
      */
-    public function __construct(UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer, AccessLinkGeneratorInterface $accessLinkGenerator)
+    public function __construct(UserRepositoryInterface $userRepository, MailerInterface $mailer, AccessLinkGeneratorInterface $accessLinkGenerator)
     {
         $this->userRepository      = $userRepository;
-        $this->templateRenderer    = $templateRenderer;
         $this->mailer              = $mailer;
         $this->accessLinkGenerator = $accessLinkGenerator;
     }
