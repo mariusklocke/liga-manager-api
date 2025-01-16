@@ -39,7 +39,7 @@ class Translator
             $newKey = $parentKey ? $parentKey . '.' . $key : $key;
 
             if (is_array($value)) {
-                $flattened = array_merge($flattened, flattenArray($value, $newKey));
+                $flattened = array_merge($flattened, $this->flattenArray($value, $newKey));
             } else {
                 $flattened[$newKey] = $value;
             }
