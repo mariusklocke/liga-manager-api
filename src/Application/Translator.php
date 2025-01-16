@@ -25,7 +25,7 @@ class Translator
                 throw new RuntimeException("Failed to find translations for locale $locale");
             }
 
-            $this->translations = $this->flattenArray(json_decode(file_get_contents($filePath), true));
+            $this->translations[$locale] = $this->flattenArray(json_decode(file_get_contents($filePath), true));
         }
 
         return $this->translations[$locale][$key] ?? '';
