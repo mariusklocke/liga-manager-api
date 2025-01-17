@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Handler;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\HtmlMailRenderer;
-use HexagonalPlayground\Application\Email\HtmlUtilsTrait;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
@@ -16,8 +15,6 @@ use HexagonalPlayground\Domain\User;
 
 class SendInviteMailHandler implements AuthAwareHandler
 {
-    use HtmlUtilsTrait;
-
     private UserRepositoryInterface $userRepository;
     private MailerInterface $mailer;
     private AccessLinkGeneratorInterface $accessLinkGenerator;

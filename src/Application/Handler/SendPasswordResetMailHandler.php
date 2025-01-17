@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Application\Handler;
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Email\HtmlMailRenderer;
-use HexagonalPlayground\Application\Email\HtmlUtilsTrait;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
@@ -16,8 +15,6 @@ use HexagonalPlayground\Domain\Event\Event;
 
 class SendPasswordResetMailHandler
 {
-    use HtmlUtilsTrait;
-
     private UserRepositoryInterface $userRepository;
     private MailerInterface $mailer;
     private AccessLinkGeneratorInterface $accessLinkGenerator;
