@@ -2,15 +2,22 @@
 
 namespace HexagonalPlayground\Application;
 
+use DateTimeInterface;
+use IntlDateFormatter;
 use RuntimeException;
 
 class Translator
 {
+    /** @var string[][] */
     private array $translations;
+    
+    /** @var IntlDateFormatter[] */
+    private array $dateFormatters;
 
     public function __construct()
     {
         $this->translations = [];
+        $this->dateFormatters = [];
     }
 
     public function get(string $locale, string $key, array $params = []): string
@@ -35,6 +42,15 @@ class Translator
         }
 
         return $value;
+    }
+
+    public function getLocalizedDateTime(string $locale, DateTimeInterface $dateTime): string
+    {
+        if (!isset($this->dateFormatters[$locale])) {
+            $this->dateFormatters[$locale] = new IntlDateFormatter($locale, IntlDateFormatter::LONG, IntlDateFormatter::LONG);
+        }
+
+        return $this->dateFormatters[$locale]->format($dateTime);
     }
 
     private function flattenArray(array $array, string $parentKey = ''): array

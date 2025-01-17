@@ -67,7 +67,7 @@ class SendPasswordResetMailHandler
             ],
             'footer' => [
                 'hints' => [
-                    $this->translator->get($locale, 'mail.resetPassword.hints.validity', [$expiresAt->format('d.m.Y H:i')]),
+                    $this->translator->get($locale, 'mail.resetPassword.hints.validity', [$this->translator->getLocalizedDateTime($locale, $expiresAt)]),
                     $this->translator->get($locale, 'mail.resetPassword.hints.disclosure'),
                     $this->translator->get($locale, 'mail.resetPassword.hints.flooding')
                 ]

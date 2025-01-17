@@ -66,7 +66,7 @@ class SendInviteMailHandler implements AuthAwareHandler
             ],
             'footer' => [
                 'hints' => [
-                    $this->translator->get($locale, 'mail.inviteUser.hints.validity', [$expiresAt->format('d.m.Y H:i')]),
+                    $this->translator->get($locale, 'mail.inviteUser.hints.validity', [$this->translator->getLocalizedDateTime($locale, $expiresAt)]),
                     $this->translator->get($locale, 'mail.inviteUser.hints.disclosure')
                 ]
             ]
