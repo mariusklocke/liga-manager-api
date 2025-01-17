@@ -13,7 +13,7 @@ class Translator
         $this->translations = [];
     }
 
-    public function get(string $key, array $params = [], string $locale = 'de'): string
+    public function get(string $locale, string $key, array $params = []): string
     {
         if (!isset($this->translations[$locale])) {
             $filePath = join(

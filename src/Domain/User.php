@@ -331,4 +331,9 @@ class User extends Entity
             self::ROLE_TEAM_MANAGER
         ];
     }
+
+    public function getLocale(): string
+    {
+        return 'de';
+    }
 }

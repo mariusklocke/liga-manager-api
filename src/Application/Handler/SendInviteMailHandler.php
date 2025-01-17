@@ -52,21 +52,22 @@ class SendInviteMailHandler implements AuthAwareHandler
         $renderer   = new HtmlMailRenderer();
         $expiresAt  = new DateTimeImmutable('now + 1 day');
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
+        $locale     = $user->getLocale();
 
         $recipient = [$user->getEmail() => $user->getFullName()];
         $mailData  = [
-            'title' => $this->translator->get('mail.inviteUser.title'),
+            'title' => $this->translator->get($locale, 'mail.inviteUser.title'),
             'content' => [
-                'text' => $this->translator->get('mail.inviteUser.content.text', [$user->getFirstName(), $authContext->getUser()->getFirstName()]),
+                'text' => $this->translator->get($locale, 'mail.inviteUser.content.text', [$user->getFirstName(), $authContext->getUser()->getFirstName()]),
                 'action' => [
                     'href' => $targetLink,
-                    'label' => $this->translator->get('mail.inviteUser.content.action')
+                    'label' => $this->translator->get($locale, 'mail.inviteUser.content.action')
                 ]
             ],
             'footer' => [
                 'hints' => [
-                    $this->translator->get('mail.inviteUser.hints.validity', [$expiresAt->format('d.m.Y H:i')]),
-                    $this->translator->get('mail.inviteUser.hints.disclosure')
+                    $this->translator->get($locale, 'mail.inviteUser.hints.validity', [$expiresAt->format('d.m.Y H:i')]),
+                    $this->translator->get($locale, 'mail.inviteUser.hints.disclosure')
                 ]
             ]
         ];

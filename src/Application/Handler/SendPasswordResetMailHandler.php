@@ -53,22 +53,23 @@ class SendPasswordResetMailHandler
 
         $expiresAt  = new DateTimeImmutable('now + 1 day');
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
+        $locale     = $user->getLocale();
 
         $recipient = [$user->getEmail() => $user->getFullName()];
         $mailData  = [
-            'title' => $this->translator->get('mail.resetPassword.title'),
+            'title' => $this->translator->get($locale, 'mail.resetPassword.title'),
             'content' => [
-                'text' => $this->translator->get('mail.resetPassword.content.text', [$user->getFirstName()]),
+                'text' => $this->translator->get($locale, 'mail.resetPassword.content.text', [$user->getFirstName()]),
                 'action' => [
                     'href' => $targetLink,
-                    'label' => $this->translator->get('mail.resetPassword.content.action')
+                    'label' => $this->translator->get($locale, 'mail.resetPassword.content.action')
                 ]
             ],
             'footer' => [
                 'hints' => [
-                    $this->translator->get('mail.resetPassword.hints.validity', [$expiresAt->format('d.m.Y H:i')]),
-                    $this->translator->get('mail.resetPassword.hints.disclosure'),
-                    $this->translator->get('mail.resetPassword.hints.flooding')
+                    $this->translator->get($locale, 'mail.resetPassword.hints.validity', [$expiresAt->format('d.m.Y H:i')]),
+                    $this->translator->get($locale, 'mail.resetPassword.hints.disclosure'),
+                    $this->translator->get($locale, 'mail.resetPassword.hints.flooding')
                 ]
             ]
         ];
