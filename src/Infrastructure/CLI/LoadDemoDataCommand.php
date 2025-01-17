@@ -145,7 +145,8 @@ class LoadDemoDataCommand extends Command
                 'user' . $i,
                 'admin' . $i,
                 User::ROLE_TEAM_MANAGER,
-                [array_shift($teamIds)]
+                [array_shift($teamIds)],
+                'en'
             );
 
             $this->getCommandBus()->execute($command, $this->getAuthContext());

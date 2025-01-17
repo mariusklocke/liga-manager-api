@@ -74,6 +74,10 @@ class UpdateUserHandler implements AuthAwareHandler
             }
         }
 
+        if (null !== $command->getLocale()) {
+            $user->setLocale($command->getLocale());
+        }
+
         $this->userRepository->save($user);
 
         return [];

@@ -25,6 +25,9 @@ class CreateUserCommand implements CommandInterface
     /** @var string[] */
     private array $teamIds;
 
+    /** @var string|null */
+    private ?string $locale;
+
     /**
      * @param string|null $id
      * @param string $email
@@ -33,6 +36,7 @@ class CreateUserCommand implements CommandInterface
      * @param string $lastName
      * @param string $role
      * @param string[] $teamIds
+     * @param string|null $locale
      */
     public function __construct(
         ?string $id,
@@ -41,7 +45,8 @@ class CreateUserCommand implements CommandInterface
         string $firstName,
         string $lastName,
         string $role,
-        array $teamIds
+        array $teamIds,
+        ?string $locale
     ) {
         $this->setId($id);
         $this->email = $email;
@@ -52,6 +57,7 @@ class CreateUserCommand implements CommandInterface
         $this->teamIds = array_map(function (string $teamId) {
             return $teamId;
         }, $teamIds);
+        $this->locale = $locale;
     }
 
     /**
@@ -100,5 +106,13 @@ class CreateUserCommand implements CommandInterface
     public function getTeamIds(): array
     {
         return $this->teamIds;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLocale(): ?string
+    {
+        return $this->locale;
     }
 }

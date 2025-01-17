@@ -21,7 +21,8 @@ class UserRepository extends AbstractRepository
             new DateTimeField('last_password_change', true),
             new StringField('role', false),
             new StringField('first_name', false),
-            new StringField('last_name', false)
+            new StringField('last_name', false),
+            new StringField('locale', true)
         ];
     }
 }

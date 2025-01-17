@@ -23,6 +23,9 @@ class UpdateUserCommand implements CommandInterface
     /** @var string[]|null */
     private ?array $teamIds = null;
 
+    /** @var string|null */
+    private ?string $locale;
+
     /**
      * @param string $userId
      * @param string|null $email
@@ -30,20 +33,21 @@ class UpdateUserCommand implements CommandInterface
      * @param string|null $lastName
      * @param string|null $role
      * @param string[]|null $teamIds
+     * @param string|null $locale
      */
-    public function __construct(string $userId, ?string $email, ?string $firstName, ?string $lastName, ?string $role, ?array $teamIds)
+    public function __construct(string $userId, ?string $email, ?string $firstName, ?string $lastName, ?string $role, ?array $teamIds, ?string $locale)
     {
         $this->userId = $userId;
         $this->email  = $email;
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->role = $role;
-
         if (null !== $teamIds) {
             $this->teamIds = array_map(function (string $teamId) {
                 return $teamId;
             }, $teamIds);
         }
+        $this->locale = $locale;
     }
 
     /**
@@ -92,5 +96,13 @@ class UpdateUserCommand implements CommandInterface
     public function getTeamIds(): ?array
     {
         return $this->teamIds;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLocale(): ?string
+    {
+        return $this->locale;
     }
 }

@@ -22,6 +22,7 @@ class CreateUserCommand extends Command
         $this->addOption('first-name', null, InputOption::VALUE_REQUIRED);
         $this->addOption('last-name', null, InputOption::VALUE_REQUIRED);
         $this->addOption('role', null, InputOption::VALUE_REQUIRED);
+        $this->addOption('locale', null, InputOption::VALUE_REQUIRED);
         $this->addOption('default', null, InputOption::VALUE_NONE);
     }
 
@@ -34,7 +35,8 @@ class CreateUserCommand extends Command
             $this->getFirstName($input, $output),
             $this->getLastName($input, $output),
             $this->getRole($input, $output),
-            []
+            [],
+            $this->getLocale($input, $output)
         );
 
         $this->container->get(CommandBus::class)->execute($command, $this->getAuthContext());
@@ -116,6 +118,23 @@ class CreateUserCommand extends Command
 
         if ($input->isInteractive()) {
             return $this->getStyledIO($input, $output)->choice('Choose a role', User::getRoles());
+        }
+
+        return null;
+    }
+
+    private function getLocale(InputInterface $input, OutputInterface $output): ?string
+    {
+        if ($input->getOption('default')) {
+            return 'en';
+        }
+
+        if ($input->getOption('locale')) {
+            return $input->getOption('locale');
+        }
+
+        if ($input->isInteractive()) {
+            return $this->getStyledIO($input, $output)->choice('Choose a locale', User::getLocales());
         }
 
         return null;

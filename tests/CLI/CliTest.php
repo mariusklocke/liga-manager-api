@@ -79,7 +79,7 @@ class CliTest extends TestCase
     public function testCreatingUser(): void
     {
         $tester = $this->getCommandTester('app:user:create');
-        $tester->setInputs(['mary.poppins@example.com', DataGenerator::generatePassword(), 'Mary', 'Poppins', 'admin']);
+        $tester->setInputs(['mary.poppins@example.com', DataGenerator::generatePassword(), 'Mary', 'Poppins', 'admin', 'en']);
         self::assertExecutionSuccess($tester->execute([]));
 
         $tester = $this->getCommandTester('app:user:create');

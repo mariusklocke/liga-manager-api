@@ -53,7 +53,7 @@ class SendPasswordResetMailHandler
 
         $expiresAt  = new DateTimeImmutable('now + 1 day');
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
-        $locale     = $user->getLocale();
+        $locale     = $user->getLocale() ?? 'de';
 
         $recipient = [$user->getEmail() => $user->getFullName()];
         $mailData  = [

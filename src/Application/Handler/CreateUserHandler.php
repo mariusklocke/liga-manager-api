@@ -39,8 +39,17 @@ class CreateUserHandler implements AuthAwareHandler
         $authContext->getUser()->assertIsAdmin();
 
         $this->userRepository->assertEmailDoesNotExist($command->getEmail());
-        $user = new User($command->getId(), $command->getEmail(), $command->getPassword(), $command->getFirstName(), $command->getLastName());
-        $user->setRole($command->getRole());
+
+        $user = new User(
+            $command->getId(),
+            $command->getEmail(),
+            $command->getPassword(),
+            $command->getFirstName(),
+            $command->getLastName(),
+            $command->getRole(),
+            $command->getLocale()
+        );
+
         foreach ($command->getTeamIds() as $teamId) {
             /** @var Team $team */
             $team = $this->teamRepository->find($teamId);
