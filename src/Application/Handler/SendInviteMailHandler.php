@@ -6,6 +6,7 @@ use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Email\HtmlMailRenderer;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Email\MessageBody;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
@@ -51,26 +52,23 @@ class SendInviteMailHandler implements AuthAwareHandler
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
         $locale     = $user->getLocale() ?? 'de';
 
-        $recipient = [$user->getEmail() => $user->getFullName()];
-        $mailData  = [
-            'title' => $this->translator->get($locale, 'mail.inviteUser.title'),
-            'content' => [
-                'text' => $this->translator->get($locale, 'mail.inviteUser.content.text', [$user->getFirstName(), $authContext->getUser()->getFirstName()]),
-                'action' => [
-                    'href' => $targetLink,
-                    'label' => $this->translator->get($locale, 'mail.inviteUser.content.action')
-                ]
+        $messageBody = new MessageBody(
+            $this->translator->get($locale, 'mail.inviteUser.title'),
+            $this->translator->get($locale, 'mail.inviteUser.content.text', [$user->getFirstName(), $authContext->getUser()->getFirstName()]),
+            [
+                $this->translator->get($locale, 'mail.inviteUser.content.action') => $targetLink
             ],
-            'footer' => [
-                'hints' => [
-                    $this->translator->get($locale, 'mail.inviteUser.hints.validity', [$this->translator->getLocalizedDateTime($locale, $expiresAt)]),
-                    $this->translator->get($locale, 'mail.inviteUser.hints.disclosure')
-                ]
+            [
+                $this->translator->get($locale, 'mail.inviteUser.hints.validity', [$this->translator->getLocalizedDateTime($locale, $expiresAt)]),
+                $this->translator->get($locale, 'mail.inviteUser.hints.disclosure')
             ]
-        ];
-        $mailBody = $renderer->render($mailData);
-        $subject  = $mailData['title'];
-        $message  = $this->mailer->createMessage($recipient, $subject, $mailBody);
+        );
+
+        $message = $this->mailer->createMessage(
+            [$user->getEmail() => $user->getFullName()],
+            $messageBody->title,
+            $renderer->render($messageBody)
+        );
 
         $this->mailer->send($message);
 

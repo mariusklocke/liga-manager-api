@@ -56,7 +56,7 @@ class HtmlMailRenderer
         ]
     ];
 
-    public function render(array $data): string
+    public function render(MessageBody $data): string
     {
         $document = new DOMDocument();
 
@@ -70,12 +70,12 @@ class HtmlMailRenderer
         $head = $this->addElement($document, $html, 'head');
         $this->addElement($document, $head, 'meta', ['charset' => 'UTF-8']);
         $this->addElement($document, $head, 'meta', ['name' => 'viewport', 'value' => 'width=device-width, initial-scale=1.0']);
-        $this->addElement($document, $head, 'title', [], $data['title']);
+        $this->addElement($document, $head, 'title', [], $data->title);
 
         // <body>
         $body = $this->addElement($document, $html, 'body');
         $container = $this->addContainer($document, $body);
-        $this->addHeader($document, $container, $data);
+        $this->addHeader($document, $container);
         $this->addContent($document, $container, $data);
         $this->addFooter($document, $container, $data);
 
@@ -97,7 +97,7 @@ class HtmlMailRenderer
         return $this->addElement($document, $tableCol, 'div', ['class' => 'container']);
     }
 
-    private function addHeader(DOMDocument $document, DOMNode $container, array $data): DOMElement
+    private function addHeader(DOMDocument $document, DOMNode $container): DOMElement
     {
         $header = $this->addElement($document, $container, 'div', ['class' => 'header']);
 
@@ -109,25 +109,25 @@ class HtmlMailRenderer
         return $header;
     }
 
-    private function addContent(DOMDocument $document, DOMNode $container, array $data): DOMElement
+    private function addContent(DOMDocument $document, DOMNode $container, MessageBody $data): DOMElement
     {
         $content = $this->addElement($document, $container, 'div', ['class' => 'content']);
 
-        $this->addElement($document, $content, 'h1', [], $data['title']);
-        $this->addElement($document, $content, 'p', [], $data['content']['text']);
-        $this->addElement($document, $content, 'a', [
-            'class' => 'cta-button',
-            'href' => $data['content']['action']['href']
-        ], $data['content']['action']['label']);
+        $this->addElement($document, $content, 'h1', [], $data->title);
+        $this->addElement($document, $content, 'p', [], $data->content);
+
+        foreach ($data->actions as $label => $link) {
+            $this->addElement($document, $content, 'a', ['class' => 'cta-button', 'href' => $link], $label);
+        }
 
         return $content;
     }
 
-    private function addFooter(DOMDocument $document, DOMNode $container, array $data): DOMElement
+    private function addFooter(DOMDocument $document, DOMNode $container, MessageBody $data): DOMElement
     {
         $footer = $this->addElement($document, $container, 'div', ['class' => 'footer']);
 
-        foreach ($data['footer']['hints'] as $hint) {
+        foreach ($data->hints as $hint) {
             $this->addElement($document, $footer, 'p', [], $hint);
         }
 

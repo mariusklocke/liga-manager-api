@@ -7,6 +7,7 @@ use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Email\HtmlMailRenderer;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Email\MessageBody;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
@@ -48,31 +49,27 @@ class SendPasswordResetMailHandler
             return []; // Simply do nothing, when user cannot be found to prevent user discovery attacks
         }
 
-        $expiresAt  = new DateTimeImmutable('now + 1 day');
-        $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
-        $locale     = $user->getLocale() ?? 'de';
-
-        $recipient = [$user->getEmail() => $user->getFullName()];
-        $mailData  = [
-            'title' => $this->translator->get($locale, 'mail.resetPassword.title'),
-            'content' => [
-                'text' => $this->translator->get($locale, 'mail.resetPassword.content.text', [$user->getFirstName()]),
-                'action' => [
-                    'href' => $targetLink,
-                    'label' => $this->translator->get($locale, 'mail.resetPassword.content.action')
-                ]
+        $expiresAt   = new DateTimeImmutable('now + 1 day');
+        $targetLink  = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
+        $locale      = $user->getLocale() ?? 'de';
+        $messageBody = new MessageBody(
+            $this->translator->get($locale, 'mail.resetPassword.title'),
+            $this->translator->get($locale, 'mail.resetPassword.content.text', [$user->getFirstName()]),
+            [
+                $this->translator->get($locale, 'mail.resetPassword.content.action') => $targetLink
             ],
-            'footer' => [
-                'hints' => [
-                    $this->translator->get($locale, 'mail.resetPassword.hints.validity', [$this->translator->getLocalizedDateTime($locale, $expiresAt)]),
-                    $this->translator->get($locale, 'mail.resetPassword.hints.disclosure'),
-                    $this->translator->get($locale, 'mail.resetPassword.hints.flooding')
-                ]
+            [
+                $this->translator->get($locale, 'mail.resetPassword.hints.validity', [$this->translator->getLocalizedDateTime($locale, $expiresAt)]),
+                $this->translator->get($locale, 'mail.resetPassword.hints.disclosure'),
+                $this->translator->get($locale, 'mail.resetPassword.hints.flooding')
             ]
-        ];
-        $mailBody = $renderer->render($mailData);
-        $subject = $mailData['title'];
-        $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
+        );
+
+        $message = $this->mailer->createMessage(
+            [$user->getEmail() => $user->getFullName()],
+            $messageBody->title,
+            $renderer->render($messageBody)
+        );
 
         $this->mailer->send($message);
 
