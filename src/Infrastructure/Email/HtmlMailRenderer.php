@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Application\Email;
+namespace HexagonalPlayground\Infrastructure\Email;
 
+use HexagonalPlayground\Application\Email\MessageBody;
 use DOMDocument;
 use DOMElement;
 use DOMNode;

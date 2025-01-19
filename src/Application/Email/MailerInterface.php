@@ -8,13 +8,7 @@ interface MailerInterface
     /**
      * @param array $to
      * @param string $subject
-     * @param string $html
-     * @return object
+     * @param MessageBody $body
      */
-    public function createMessage(array $to, string $subject, string $html): object;
-
-    /**
-     * @param object $message
-     */
-    public function send(object $message);
+    public function send(array $to, string $subject, MessageBody $body);
 }

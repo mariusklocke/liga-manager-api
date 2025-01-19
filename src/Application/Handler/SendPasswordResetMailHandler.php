@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
-use HexagonalPlayground\Application\Email\HtmlMailRenderer;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Email\MessageBody;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
@@ -41,8 +40,6 @@ class SendPasswordResetMailHandler
      */
     public function __invoke(SendPasswordResetMailCommand $command): array
     {
-        $renderer = new HtmlMailRenderer();
-
         try {
             $user = $this->userRepository->findByEmail($command->getEmail());
         } catch (NotFoundException $e) {
@@ -65,13 +62,11 @@ class SendPasswordResetMailHandler
             ]
         );
 
-        $message = $this->mailer->createMessage(
+        $this->mailer->send(
             [$user->getEmail() => $user->getFullName()],
             $messageBody->title,
-            $renderer->render($messageBody)
+            $messageBody
         );
-
-        $this->mailer->send($message);
 
         return [];
     }

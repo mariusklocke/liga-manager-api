@@ -4,7 +4,6 @@ namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
-use HexagonalPlayground\Application\Email\HtmlMailRenderer;
 use HexagonalPlayground\Application\Email\MailerInterface;
 use HexagonalPlayground\Application\Email\MessageBody;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
@@ -47,7 +46,6 @@ class SendInviteMailHandler implements AuthAwareHandler
         /** @var User $user */
         $user  = $this->userRepository->find($command->getUserId());
 
-        $renderer   = new HtmlMailRenderer();
         $expiresAt  = new DateTimeImmutable('now + 1 day');
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
         $locale     = $user->getLocale() ?? 'de';
@@ -64,13 +62,11 @@ class SendInviteMailHandler implements AuthAwareHandler
             ]
         );
 
-        $message = $this->mailer->createMessage(
+        $this->mailer->send(
             [$user->getEmail() => $user->getFullName()],
             $messageBody->title,
-            $renderer->render($messageBody)
+            $messageBody
         );
-
-        $this->mailer->send($message);
 
         return [];
     }
