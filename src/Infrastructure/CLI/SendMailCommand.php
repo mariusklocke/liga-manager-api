@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Email\MessageBody;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +27,10 @@ class SendMailCommand extends Command
         $mailer->send(
             [$input->getArgument('recipient') => ''],
             $input->getArgument('subject'),
-            $input->getArgument('content')
+            new MessageBody(
+                $input->getArgument('subject'),
+                $input->getArgument('content')
+            )
         );
 
         $this->getStyledIO($input, $output)->success('Mail has been to ' . $input->getArgument('recipient'));
