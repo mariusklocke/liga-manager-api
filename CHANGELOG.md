@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 1.24.0 - 2025-01-21
+* Feature: Add user locale for localized emails
+* Improvement: Send emails with additional plaintext content
+* Improvement: Remove `doctrine/migrations`
+* Improvement: Update composer packages
+* Improvement: Exclude xdebug from docker images
+* Improvement: Remove experimental WebAuthn feature
+* Improvement: Enable Roadrunner metrics
+
 ## 1.23.1 - 2024-12-28
 * Bugfix: Fix email logo not loading in Gmail
 
