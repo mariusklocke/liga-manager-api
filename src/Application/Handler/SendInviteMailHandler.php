@@ -4,36 +4,34 @@ namespace HexagonalPlayground\Application\Handler;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Application\Command\SendInviteMailCommand;
-use HexagonalPlayground\Application\Email\HtmlUtilsTrait;
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Email\MessageBody;
 use HexagonalPlayground\Application\Security\AccessLinkGeneratorInterface;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
-use HexagonalPlayground\Application\TemplateRendererInterface;
+use HexagonalPlayground\Application\Translator;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\User;
 
 class SendInviteMailHandler implements AuthAwareHandler
 {
-    use HtmlUtilsTrait;
-
     private UserRepositoryInterface $userRepository;
-    private TemplateRendererInterface $templateRenderer;
     private MailerInterface $mailer;
     private AccessLinkGeneratorInterface $accessLinkGenerator;
+    private Translator $translator;
 
     /**
      * @param UserRepositoryInterface $userRepository
-     * @param TemplateRendererInterface $templateRenderer
      * @param MailerInterface $mailer
      * @param AccessLinkGeneratorInterface $accessLinkGenerator
+     * @param Translator $translator
      */
-    public function __construct(UserRepositoryInterface $userRepository, TemplateRendererInterface $templateRenderer, MailerInterface $mailer, AccessLinkGeneratorInterface $accessLinkGenerator)
+    public function __construct(UserRepositoryInterface $userRepository, MailerInterface $mailer, AccessLinkGeneratorInterface $accessLinkGenerator, Translator $translator)
     {
         $this->userRepository = $userRepository;
-        $this->templateRenderer = $templateRenderer;
         $this->mailer = $mailer;
         $this->accessLinkGenerator = $accessLinkGenerator;
+        $this->translator = $translator;
     }
 
     /**
@@ -50,19 +48,25 @@ class SendInviteMailHandler implements AuthAwareHandler
 
         $expiresAt  = new DateTimeImmutable('now + 1 day');
         $targetLink = $this->accessLinkGenerator->generateAccessLink($user, $expiresAt, $command->getTargetPath());
+        $locale     = $user->getLocale() ?? 'de';
 
-        $recipient = [$user->getEmail() => $user->getFullName()];
-        $mailBody  = $this->templateRenderer->render('InviteUser.html.php', [
-            'sender'     => $authContext->getUser()->getFirstName(),
-            'receiver'   => $user->getFirstName(),
-            'targetLink' => $targetLink,
-            'validUntil' => $expiresAt
-        ]);
+        $messageBody = new MessageBody(
+            $this->translator->get($locale, 'mail.inviteUser.title'),
+            $this->translator->get($locale, 'mail.inviteUser.content.text', [$user->getFirstName(), $authContext->getUser()->getFirstName()]),
+            [
+                $this->translator->get($locale, 'mail.inviteUser.content.action') => $targetLink
+            ],
+            [
+                $this->translator->get($locale, 'mail.inviteUser.hints.validity', [$this->translator->getLocalizedDateTime($locale, $expiresAt)]),
+                $this->translator->get($locale, 'mail.inviteUser.hints.disclosure')
+            ]
+        );
 
-        $subject = $this->extractTitle($mailBody);
-        $message = $this->mailer->createMessage($recipient, $subject, $mailBody);
-
-        $this->mailer->send($message);
+        $this->mailer->send(
+            [$user->getEmail() => $user->getFullName()],
+            $messageBody->title,
+            $messageBody
+        );
 
         return [];
     }

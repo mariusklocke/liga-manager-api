@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Email\MessageBody;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,10 +13,10 @@ class SendMailCommand extends Command
     protected function configure(): void
     {
         $this->setName('app:mail:send');
-        $this->setDescription('Send a mail with HTML body');
+        $this->setDescription('Send a mail using an arbitrary content');
         $this->addArgument('recipient', InputArgument::REQUIRED, 'Recipients mail address');
         $this->addArgument('subject', InputArgument::REQUIRED, 'Mail subject');
-        $this->addArgument('html-file', InputArgument::REQUIRED, 'Path to an HTML file containing the message body');
+        $this->addArgument('content', InputArgument::REQUIRED, 'Mail content text');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -23,13 +24,14 @@ class SendMailCommand extends Command
         /** @var MailerInterface $mailer */
         $mailer = $this->container->get(MailerInterface::class);
 
-        $message = $mailer->createMessage(
+        $mailer->send(
             [$input->getArgument('recipient') => ''],
             $input->getArgument('subject'),
-            file_get_contents($input->getArgument('html-file'))
+            new MessageBody(
+                $input->getArgument('subject'),
+                $input->getArgument('content')
+            )
         );
-
-        $mailer->send($message);
 
         $this->getStyledIO($input, $output)->success('Mail has been to ' . $input->getArgument('recipient'));
 

@@ -79,7 +79,7 @@ class CliTest extends TestCase
     public function testCreatingUser(): void
     {
         $tester = $this->getCommandTester('app:user:create');
-        $tester->setInputs(['mary.poppins@example.com', DataGenerator::generatePassword(), 'Mary', 'Poppins', 'admin']);
+        $tester->setInputs(['mary.poppins@example.com', DataGenerator::generatePassword(), 'Mary', 'Poppins', 'admin', 'en']);
         self::assertExecutionSuccess($tester->execute([]));
 
         $tester = $this->getCommandTester('app:user:create');
@@ -204,15 +204,12 @@ class CliTest extends TestCase
 
     public function testSendingMail(): void
     {
-        $htmlFile = tempnam(sys_get_temp_dir(), 'message');
-        file_put_contents($htmlFile, '<!doctype html><html><body><p>This is just a test</p></body></html>');
         $tester = $this->getCommandTester('app:mail:send');
         self::assertExecutionSuccess($tester->execute([
             'recipient' => 'test@example.com',
             'subject' => 'Test',
-            'html-file' => $htmlFile
+            'content' => 'This is just a test'
         ]));
-        unlink($htmlFile);
     }
 
     public function testImportingLogo(): string

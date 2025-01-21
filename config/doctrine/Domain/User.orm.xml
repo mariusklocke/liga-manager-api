@@ -12,6 +12,7 @@
         <field name="role" type="string" length="255" />
         <field name="firstName" column="first_name" type="string" length="255" />
         <field name="lastName" column="last_name" type="string" length="255" />
+        <field name="locale" column="locale" type="string" length="255" nullable="true" />
         <many-to-many target-entity="HexagonalPlayground\Domain\Team" field="teams" index-by="id">
             <join-table name="users_teams_link">
                 <join-columns>

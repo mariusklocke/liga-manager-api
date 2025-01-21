@@ -40,6 +40,9 @@ class User extends Entity
     /** @var string */
     private string $role;
 
+    /** @var string|null */
+    private ?string $locale;
+
     /**
      * @param string $id
      * @param string $email
@@ -47,6 +50,7 @@ class User extends Entity
      * @param string $firstName
      * @param string $lastName
      * @param string $role
+     * @param string|null $locale
      */
     public function __construct(
         string $id,
@@ -54,7 +58,8 @@ class User extends Entity
         ?string $password,
         string $firstName,
         string $lastName,
-        string $role = self::ROLE_TEAM_MANAGER
+        string $role = self::ROLE_TEAM_MANAGER,
+        ?string $locale = null
     ) {
         parent::__construct($id);
         $this->setEmail($email);
@@ -62,6 +67,7 @@ class User extends Entity
         $this->setFirstName($firstName);
         $this->setLastName($lastName);
         $this->setRole($role);
+        $this->setLocale($locale);
         $this->teams = new ArrayCollection();
     }
 
@@ -258,15 +264,14 @@ class User extends Entity
      */
     public function getPublicProperties(): array
     {
-        $data = [
+        return [
             'id' => $this->id,
             'email' => $this->email,
             'role' => $this->role,
             'first_name' => $this->firstName,
-            'last_name' => $this->lastName
+            'last_name' => $this->lastName,
+            'locale' => $this->locale
         ];
-
-        return $data;
     }
 
     /**
@@ -330,5 +335,32 @@ class User extends Entity
             self::ROLE_ADMIN,
             self::ROLE_TEAM_MANAGER
         ];
+    }
+
+    /**
+     * Returns an array of valid locales
+     */
+    public static function getLocales(): array
+    {
+        return ['de', 'en'];
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    /**
+     * @param string|null $locale
+     */
+    public function setLocale(?string $locale): void
+    {
+        if ($locale !== null) {
+            Assert::oneOf($locale, self::getLocales(), 'Unsupported locale. Valid: [%s], Got: %s', InvalidInputException::class);
+        }
+        $this->locale = $locale;
     }
 }

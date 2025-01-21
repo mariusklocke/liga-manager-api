@@ -45,6 +45,9 @@ class UserType extends ObjectType implements QueryTypeInterface
                     ],
                     'last_name' => [
                         'type' => Type::nonNull(Type::string())
+                    ],
+                    'locale' => [
+                        'type' => UserLocaleType::getInstance()
                     ]
                 ];
             }

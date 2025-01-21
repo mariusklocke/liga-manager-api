@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\Email;
 
 use HexagonalPlayground\Application\Email\MailerInterface;
+use HexagonalPlayground\Application\Email\MessageBody;
 use HexagonalPlayground\Infrastructure\Config;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Address;
@@ -13,14 +14,18 @@ class SymfonyMailer implements MailerInterface
 {
     private Mailer $mailer;
     private Config $config;
+    private HtmlMailRenderer $htmlRenderer;
+    private TextMailRenderer $textRenderer;
 
-    public function __construct(Mailer $mailer, Config $config)
+    public function __construct(Mailer $mailer, Config $config, HtmlMailRenderer $htmlRenderer, TextMailRenderer $textRenderer)
     {
         $this->mailer = $mailer;
         $this->config = $config;
+        $this->htmlRenderer = $htmlRenderer;
+        $this->textRenderer = $textRenderer;
     }
 
-    public function createMessage(array $to, string $subject, string $html): object
+    public function send(array $to, string $subject, MessageBody $body): void
     {
         $message = new Email();
 
@@ -34,13 +39,9 @@ class SymfonyMailer implements MailerInterface
         }
 
         $message->subject($subject);
-        $message->html($html);
+        $message->html($this->htmlRenderer->render($body));
+        $message->text($this->textRenderer->render($body));
 
-        return $message;
-    }
-
-    public function send(object $message): void
-    {
         $this->mailer->send($message);
     }
 }
