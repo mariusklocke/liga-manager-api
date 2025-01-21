@@ -22,6 +22,7 @@ case "$response" in
         git push
         git tag -a "$version" -m "$changelog"
         git push origin "$version"
+        gh release create "$version" --title "$version" --notes-from-tag
         echo "New version $version has been released"
         exit
         ;;
