@@ -2,6 +2,7 @@
 
 namespace HexagonalPlayground\Tests\GraphQL;
 
+use DOMDocument;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
@@ -90,6 +91,7 @@ class UserTest extends TestCase
         $recipient = current($recipients);
         self::assertIsObject($recipient);
         self::assertEquals($user['email'], $recipient->address);
+        self::assertHtmlMailBodyIsValid($mail->html);
     }
 
     public function testPasswordResetDoesNotErrorWithUnknownEmail(): void
@@ -167,6 +169,7 @@ class UserTest extends TestCase
         $recipient = current($recipients);
         self::assertIsObject($recipient);
         self::assertEquals($user['email'], $recipient->address);
+        self::assertHtmlMailBodyIsValid($mail->html);
 
         return $user;
     }
@@ -204,5 +207,17 @@ class UserTest extends TestCase
         $this->client->useCredentials($user['email'], $user['password']);
         $this->expectClientException();
         $this->client->getAuthenticatedUser();
+    }
+
+    /**
+     * @param string $html
+     */
+    private static function assertHtmlMailBodyIsValid(string $html): void
+    {
+        $document = new DOMDocument();
+        $document->loadHTML($html);
+
+        self::assertCount(1, $document->getElementsByTagName('title'));
+        self::assertCount(1, $document->getElementsByTagName('img'));
     }
 }
