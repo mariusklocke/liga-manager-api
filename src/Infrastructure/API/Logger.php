@@ -26,18 +26,14 @@ class Logger extends AbstractLogger
     public function __construct(Config $config)
     {
         $filePath = $config->getValue('log.path', '');
-        if ($filePath !== '') {
-            $this->stream = fopen($filePath, 'a');
-        } else {
-            $this->stream = null;
-        }
-
         $minLevel = $config->getValue('log.level', LogLevel::DEBUG);
+
         if (!array_key_exists($minLevel, self::$severityMap)) {
             throw new InvalidArgumentException('Invalid argument: minLevel is not a valid log level');
         }
 
-        $this->minLevel = $minLevel;
+        $this->stream   = $filePath !== '' ? fopen($filePath, 'a') : null;
+        $this->minLevel = $minLevel;        
     }
 
     /**
