@@ -104,10 +104,6 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     $params['password'] = $filesystem->getFileContents($passwordFile);
                 }
                 $customTypes = [
-                    CustomBinaryType::class => [
-                        'dbType' => 'CustomBinary',
-                        'doctrineType' => CustomBinaryType::NAME
-                    ],
                     CustomDateTimeType::class => [
                         'dbType' => 'CustomDateTime',
                         'doctrineType' => CustomDateTimeType::NAME
