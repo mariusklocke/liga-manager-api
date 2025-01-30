@@ -106,27 +106,38 @@ class ErrorMiddleware implements MiddlewareInterface
      */
     private function logException(Throwable $exception, ServerRequestInterface $request, bool $expected): void
     {
+        $message = $exception->getMessage();
+        $context = [];
+        
         try {
-            $message = $exception->getMessage();
-            $context = [
-                'exception' => [
-                    'class' => get_class($exception),
-                    'code' => $exception->getCode()
-                ],
-                'request' => [
-                    'method' => $request->getMethod(),
-                    'path' => $request->getUri()->getPath()
-                ]
+            $context['exception'] = [
+                'class' => get_class($exception),
+                'code' => $exception->getCode()
             ];
+            if (!$expected) {
+                $context['exception']['trace'] = explode("\n", $exception->getTraceAsString());
+            }
+        } catch (Throwable) {
+            unset($context['exception']);
+        }
 
+        try {
+            $context['request'] = [
+                'method' => $request->getMethod(),
+                'path' => $request->getUri()->getPath()
+            ];
+        } catch (Throwable) {
+            unset($context['request']);
+        }
+
+        try {
             if ($expected) {
                 $this->logger->notice($message, $context);
             } else {
-                $context['exception']['trace'] = $exception->getTrace();
                 $this->logger->error($message, $context);
             }
         } catch (Throwable) {
-            // Ignore errors when logging
+            // Ignore errors when writing logs
         }
     }
 }
