@@ -9,4 +9,9 @@ class SerializedArrayField extends Field
     {
         return json_decode($row[$this->getName()], true);
     }
+
+    public function validate(mixed $value): void
+    {
+        // TODO: Implement
+    }
 }

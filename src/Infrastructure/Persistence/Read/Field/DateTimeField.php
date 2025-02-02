@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Field;
 
+use HexagonalPlayground\Application\TypeAssert;
 use DateTimeImmutable;
+use DateTimeInterface;
 use DateTimeZone;
 
 class DateTimeField extends Field
@@ -32,5 +34,10 @@ class DateTimeField extends Field
 
         // Adjust timezone identifier for not breaking tests
         return str_replace('+00:00', 'Z', $string);
+    }
+
+    public function validate(mixed $value): void
+    {
+        TypeAssert::assertInstanceOf($value, DateTimeInterface::class, $this->getName());
     }
 }

@@ -36,4 +36,6 @@ abstract class Field
 
         return $clone;
     }
+
+    abstract public function validate(mixed $value): void;
 }

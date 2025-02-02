@@ -71,24 +71,11 @@ class DbalGateway implements ReadDbGatewayInterface
         $this->parameterInc = 0;
 
         foreach ($filters as $filter) {
-            $field = $fields[$filter->getField()] ?? null;
-
-            if ($field === null) {
-                throw new InvalidInputException('Invalid Filter: Unknown field');
-            }
-
-            $filter->validate($field);
-            $this->applyFilter($query, $filter, $field);
+            $this->applyFilter($query, $filter);
         }
 
         foreach ($sortings as $sorting) {
-            $field = $fields[$sorting->getField()] ?? null;
-
-            if ($field === null) {
-                throw new InvalidInputException('Invalid Sorting: Unknown field');
-            }
-
-            $this->applySorting($query, $sorting, $field);
+            $this->applySorting($query, $sorting);
         }
 
         if ($pagination !== null) {
@@ -103,20 +90,19 @@ class DbalGateway implements ReadDbGatewayInterface
     /**
      * @param QueryBuilder $query
      * @param Filter $filter
-     * @param Field $field
      * @throws InvalidInputException
      */
-    private function applyFilter(QueryBuilder $query, Filter $filter, Field $field): void
+    private function applyFilter(QueryBuilder $query, Filter $filter): void
     {
         switch (true) {
             case $filter instanceof RangeFilter:
-                $this->applyRangeFilter($query, $filter, $field);
+                $this->applyRangeFilter($query, $filter, $filter->getField());
                 break;
             case $filter instanceof EqualityFilter:
-                $this->applyEqualityFilter($query, $filter, $field);
+                $this->applyEqualityFilter($query, $filter, $filter->getField());
                 break;
             case $filter instanceof PatternFilter:
-                $this->applyPatternFilter($query, $filter, $field);
+                $this->applyPatternFilter($query, $filter, $filter->getField());
                 break;
             default:
                 throw new InvalidInputException('Unsupported filter type');
@@ -203,11 +189,10 @@ class DbalGateway implements ReadDbGatewayInterface
     /**
      * @param QueryBuilder $query
      * @param Sorting $sorting
-     * @param Field $field
      */
-    private function applySorting(QueryBuilder $query, Sorting $sorting, Field $field): void
+    private function applySorting(QueryBuilder $query, Sorting $sorting): void
     {
-        $query->addOrderBy($field->getName(), $sorting->getDirection());
+        $query->addOrderBy($sorting->getField()->getName(), $sorting->getDirection());
     }
 
     /**

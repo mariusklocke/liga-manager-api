@@ -10,6 +10,7 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Field\DateTimeField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\IntegerField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\StringField;
+use RuntimeException;
 
 class RankingRepository extends AbstractRepository
 {
@@ -90,7 +91,7 @@ class RankingRepository extends AbstractRepository
             $this->getTableName(),
             $this->flattenedFieldDefinitions,
             [],
-            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])]
+            [new EqualityFilter($this->getField('season_id'), Filter::MODE_INCLUDE, [$seasonId])]
         );
 
         return $this->hydrator->hydrateOne($result);
@@ -106,8 +107,8 @@ class RankingRepository extends AbstractRepository
             'ranking_positions',
             $this->flattenedPositionFields,
             [],
-            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])],
-            [new Sorting('sort_index', Sorting::DIRECTION_ASCENDING)]
+            [new EqualityFilter($this->getPositionField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
+            [new Sorting($this->getPositionField('sort_index'), Sorting::DIRECTION_ASCENDING)]
         );
 
         return $this->positionHydrator->hydrateMany($result);
@@ -123,10 +124,32 @@ class RankingRepository extends AbstractRepository
             'ranking_penalties',
             $this->flattenedPenaltyFields,
             [],
-            [new EqualityFilter('season_id', Filter::MODE_INCLUDE, [$seasonId])],
-            [new Sorting('created_at', Sorting::DIRECTION_ASCENDING)]
+            [new EqualityFilter($this->getPenaltyField('season_id'), Filter::MODE_INCLUDE, [$seasonId])],
+            [new Sorting($this->getPenaltyField('created_at'), Sorting::DIRECTION_ASCENDING)]
         );
 
         return $this->penaltyHydrator->hydrateMany($result);
+    }
+
+    private function getPenaltyField(string $name): Field
+    {
+        foreach ($this->penaltyFields as $field) {
+            if ($field->getName() === $name) {
+                return $field;
+            }
+        }
+
+        throw new RuntimeException(sprintf('Unknown field "%s" for table "ranking_penalties"', $name));
+    }
+
+    private function getPositionField(string $name): Field
+    {
+        foreach ($this->positionFields as $field) {
+            if ($field->getName() === $name) {
+                return $field;
+            }
+        }
+
+        throw new RuntimeException(sprintf('Unknown field "%s" for table "ranking_positions"', $name));
     }
 }

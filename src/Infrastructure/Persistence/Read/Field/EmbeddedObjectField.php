@@ -39,4 +39,9 @@ class EmbeddedObjectField extends Field
 
         return count($result) ? $result : null;
     }
+
+    public function validate(mixed $value): void
+    {
+        // TODO: Implement
+    }
 }

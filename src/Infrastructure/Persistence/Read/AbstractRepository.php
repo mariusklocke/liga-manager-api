@@ -9,6 +9,7 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Pagination;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Criteria\Sorting;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\EmbeddedObjectField;
 use HexagonalPlayground\Infrastructure\Persistence\Read\Field\Field;
+use RuntimeException;
 
 abstract class AbstractRepository
 {
@@ -61,7 +62,7 @@ abstract class AbstractRepository
             $this->getTableName(),
             $this->flattenedFieldDefinitions,
             [],
-            [new EqualityFilter('id', Filter::MODE_INCLUDE, [$id])]
+            [new EqualityFilter($this->getField('id'), Filter::MODE_INCLUDE, [$id])]
         ));
     }
 
@@ -93,4 +94,15 @@ abstract class AbstractRepository
      * @return string
      */
     abstract protected function getTableName(): string;
+
+    public function getField(string $name): Field
+    {
+        foreach ($this->getFieldDefinitions() as $field) {
+            if ($field->getName() === $name) {
+                return $field;
+            }
+        }
+
+        throw new RuntimeException(sprintf('Unknown field "%s" for table "%s"', $name, $this->getTableName()));
+    }
 }

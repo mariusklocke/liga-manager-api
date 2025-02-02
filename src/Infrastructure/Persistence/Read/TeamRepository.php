@@ -53,7 +53,7 @@ class TeamRepository extends AbstractRepository
             $fields,
             ['seasons_teams_link' => 'id = team_id'],
             [new EqualityFilter(
-                'season_id',
+                $fields['season_id'],
                 Filter::MODE_INCLUDE,
                 $seasonIds
             )]
@@ -76,7 +76,7 @@ class TeamRepository extends AbstractRepository
             $fields,
             ['users_teams_link' => 'id = team_id'],
             [new EqualityFilter(
-                'user_id',
+                $fields['user_id'],
                 Filter::MODE_INCLUDE,
                 $userIds
             )]
