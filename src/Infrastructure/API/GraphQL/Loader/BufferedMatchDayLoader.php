@@ -94,7 +94,7 @@ class BufferedMatchDayLoader implements BufferedLoaderInterface
 
         if (count($tournamentIds)) {
             $filter = new EqualityFilter(
-                $this->matchDayRepository->getField('season_id'),
+                $this->matchDayRepository->getField('tournament_id'),
                 Filter::MODE_INCLUDE,
                 $tournamentIds
             );
