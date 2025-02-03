@@ -70,7 +70,7 @@ class BufferedTeamLoader implements BufferedLoaderInterface
 
         if (count($teamIds)) {
             $filter = new EqualityFilter(
-                'id',
+                $this->teamRepository->getField('id'),
                 Filter::MODE_INCLUDE,
                 $teamIds
             );

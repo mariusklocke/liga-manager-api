@@ -10,27 +10,17 @@ abstract class Filter
     public const MODE_INCLUDE = 'include';
     public const MODE_EXCLUDE = 'exclude';
 
-    /** @var string */
-    protected string $field;
+    protected Field $field;
 
-    /** @var string */
     protected string $mode;
 
-    /**
-     * @return string
-     */
-    public function getField(): string
+    public function getField(): Field
     {
         return $this->field;
     }
 
-    /**
-     * @return string
-     */
     public function getMode(): string
     {
         return $this->mode;
     }
-
-    abstract public function validate(Field $fieldDefinition): void;
 }

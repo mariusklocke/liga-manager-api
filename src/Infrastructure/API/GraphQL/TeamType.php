@@ -76,7 +76,7 @@ class TeamType extends ObjectType implements QueryTypeInterface
                     $repo = $context->getContainer()->get(TeamRepository::class);
 
                     $filter = new PatternFilter(
-                        'name',
+                        $repo->getField('name'),
                         Filter::MODE_INCLUDE,
                         $args['pattern']
                     );

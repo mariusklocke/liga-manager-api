@@ -59,13 +59,13 @@ class BufferedMatchDayLoader implements BufferedLoaderInterface
 
         if (count($seasonIds)) {
             $filter = new EqualityFilter(
-                'season_id',
+                $this->matchDayRepository->getField('season_id'),
                 Filter::MODE_INCLUDE,
                 $seasonIds
             );
 
             $sorting = new Sorting(
-                'number',
+                $this->matchDayRepository->getField('number'),
                 Sorting::DIRECTION_ASCENDING
             );
 
@@ -94,13 +94,13 @@ class BufferedMatchDayLoader implements BufferedLoaderInterface
 
         if (count($tournamentIds)) {
             $filter = new EqualityFilter(
-                'tournament_id',
+                $this->matchDayRepository->getField('tournament_id'),
                 Filter::MODE_INCLUDE,
                 $tournamentIds
             );
 
             $sorting = new Sorting(
-                'number',
+                $this->matchDayRepository->getField('number'),
                 Sorting::DIRECTION_ASCENDING
             );
 
