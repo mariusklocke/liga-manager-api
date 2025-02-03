@@ -50,6 +50,14 @@ class CliTest extends TestCase
         self::assertExecutionSuccess($exitCode);
     }
 
+    public function testListingVersions(): void
+    {
+        $tester = $this->getCommandTester('app:versions:list');
+        $exitCode = $tester->execute([]);
+
+        self::assertExecutionSuccess($exitCode);
+    }
+
     public function testSetupEnv(): void
     {
         $input = [
