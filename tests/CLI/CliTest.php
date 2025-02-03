@@ -11,6 +11,7 @@ use HexagonalPlayground\Infrastructure\CLI\Application;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
+use SebastianBergmann\Type\VoidType;
 use Symfony\Component\Console\Tester\CommandTester;
 use XMLReader;
 
@@ -21,6 +22,14 @@ class CliTest extends TestCase
     protected function setUp(): void
     {
         $this->app = new Application();
+    }
+
+    public function testShowConfig(): void
+    {
+        $tester = $this->getCommandTester('app:config:show');
+        $exitCode = $tester->execute([]);
+
+        self::assertExecutionSuccess($exitCode);
     }
 
     public function testValidatingConfig(): void
