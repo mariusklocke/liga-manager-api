@@ -103,6 +103,7 @@ class Application extends \Symfony\Component\Console\Application
         yield new ValidateConfigCommand($this->container, $this->authContext);
         yield new SendMailCommand($this->container, $this->authContext);
         yield new ShowConfigCommand($this->container, $this->authContext);
+        yield new InspectContainerCommand($this->container, $this->authContext);
 
         // Doctrine ORM commands
         $emProvider = $this->container->get(EntityManagerProvider::class);

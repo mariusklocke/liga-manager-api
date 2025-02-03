@@ -42,6 +42,14 @@ class CliTest extends TestCase
         self::assertStringContainsString('The config is valid', $output);
     }
 
+    public function testInspectingContainer(): void
+    {
+        $tester = $this->getCommandTester('app:container:inspect');
+        $exitCode = $tester->execute([]);
+
+        self::assertExecutionSuccess($exitCode);
+    }
+
     public function testSetupEnv(): void
     {
         $input = [
