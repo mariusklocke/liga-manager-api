@@ -3,27 +3,15 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Event\RequestEvent;
 use HexagonalPlayground\Infrastructure\API\Event\ResponseEvent;
-use HexagonalPlayground\Infrastructure\API\ServiceProvider as ApiServiceProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRouteProvider;
-use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
-use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\RouteProvider as LogosRouteProvider;
-use HexagonalPlayground\Infrastructure\API\Logos\ServiceProvider as LogosServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Metrics\RouteProvider as MetricsRouteProvider;
-use HexagonalPlayground\Infrastructure\API\Metrics\ServiceProvider as MetricsServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\RateLimitMiddleware;
-use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
-use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
-use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
-use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
-use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
-use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use Iterator;
 use Middlewares\TrailingSlash;
 use Psr\Container\ContainerInterface;
@@ -39,22 +27,7 @@ class Application extends App
 {
     public function __construct()
     {
-        $serviceProviders = [
-            new HealthServiceProvider(),
-            new ApplicationServiceProvider(),
-            new DoctrineServiceProvider(),
-            new ReadRepositoryProvider(),
-            new SecurityServiceProvider(),
-            new MailServiceProvider(),
-            new EventServiceProvider(),
-            new GraphQLServiceProvider(),
-            new LogosServiceProvider(),
-            new ApiServiceProvider(),
-            new FilesystemServiceProvider(),
-            new MetricsServiceProvider()
-        ];
-
-        $container = ContainerBuilder::build($serviceProviders);
+        $container = ContainerBuilder::build(new ServiceProvider());
 
         parent::__construct($container->get(ResponseFactoryInterface::class), $container);
 

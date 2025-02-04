@@ -11,15 +11,8 @@ use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
 use Doctrine\ORM\Tools\Console\Command\ValidateSchemaCommand;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use HexagonalPlayground\Application\Security\AuthContext;
-use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
 use HexagonalPlayground\Domain\User;
-use HexagonalPlayground\Infrastructure\CLI\ServiceProvider as CliServiceProvider;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
-use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
-use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
-use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
-use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
-use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,17 +25,7 @@ class Application extends \Symfony\Component\Console\Application
 
     public function __construct()
     {
-        $serviceProviders = [
-            new ApplicationServiceProvider(),
-            new DoctrineServiceProvider(),
-            new ReadRepositoryProvider(),
-            new MailServiceProvider(),
-            new EventServiceProvider(),
-            new CliServiceProvider(),
-            new FilesystemServiceProvider()
-        ];
-
-        $this->container = ContainerBuilder::build($serviceProviders);
+        $this->container = ContainerBuilder::build(new ServiceProvider());
 
         $user = new User(
             'cli',
