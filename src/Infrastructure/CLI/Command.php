@@ -17,6 +17,7 @@ abstract class Command extends SymfonyCommand
 {
     protected ContainerInterface $container;
     protected AuthContext $authContext;
+    protected StyleInterface $style;
 
     public function __construct(ContainerInterface $container, AuthContext $authContext)
     {
@@ -30,6 +31,8 @@ abstract class Command extends SymfonyCommand
      */
     public function run(InputInterface $input, OutputInterface $output): int
     {
+        $this->style = new SymfonyStyle($input, $output);
+
         /** @var LoggerInterface $logger */
         $logger = $this->container->get(LoggerInterface::class);
         $logger->debug("Starting command {$this->getName()}");

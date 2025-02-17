@@ -15,6 +15,20 @@ class InputParser
     }
 
     /**
+     * Parses a float from a string
+     *
+     * @param string $value
+     * @return float
+     */
+    public static function parseFloat(string $value): float
+    {
+        if (is_numeric($value)) {
+            return (float) $value;
+        }
+        throw new InvalidInputException('Cannot parse float. Got: ' . $value);
+    }
+
+    /**
      * Parses an integer from a string
      *
      * @param string $value
