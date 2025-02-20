@@ -28,11 +28,16 @@ class MetricsTest extends HttpTest
 
         foreach ($expectedMetrics as $metric) {
             self::assertMatchesRegularExpression(
-                sprintf('/^%s \d+$/m', $metric['name']),
+                sprintf('/^# TYPE %s %s$/m', $metric['name'], $metric['type']),
                 $actualMetrics
             );
+            if ($metric['type'] === 'gauge') {
+                $pattern = '/^%s [\d.e+]+$/m';
+            } else {
+                $pattern = '/^%s \d+$/m';
+            }
             self::assertMatchesRegularExpression(
-                sprintf('/^# TYPE %s %s$/m', $metric['name'], $metric['type']),
+                sprintf($pattern, $metric['name']),
                 $actualMetrics
             );
         }
