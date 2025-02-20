@@ -24,14 +24,6 @@ class ServiceProvider implements ServiceProviderInterface
                 'php_memory_usage' => 'Amount of used memory in bytes',
                 'php_memory_peak_usage' => 'Amount of peak used memory in bytes'
             ],
-            ApcuStore::class => DI\create()->constructor(
-                DI\get('app.metrics.counters'),
-                DI\get('app.metrics.gauges')
-            ),
-            RoadRunnerStore::class => DI\create()->constructor(
-                DI\get('app.metrics.counters'),
-                DI\get('app.metrics.gauges')
-            ),
             StoreInterface::class => DI\factory(function (ContainerInterface $container): StoreInterface {
                 $exportUrl = getenv('METRICS_EXPORT_URL');
                 $publishUrl = getenv('METRICS_PUBLISH_URL');
