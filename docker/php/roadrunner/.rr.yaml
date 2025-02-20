@@ -10,6 +10,8 @@ http:
   middleware: [ "http_metrics" ]
 metrics:
   address: "0.0.0.0:8081"
+rpc:
+  listen: tcp://127.0.0.1:6001
 logs:
   channels:
     http:
@@ -19,6 +21,18 @@ logs:
       output: stdout
       err_output: stderr
     server:
+      mode: raw
+      level: info
+      encoding: console
+      output: stdout
+      err_output: stderr
+    metrics:
+      mode: raw
+      level: info
+      encoding: console
+      output: stdout
+      err_output: stderr
+    rpc:
       mode: raw
       level: info
       encoding: console
