@@ -9,10 +9,12 @@ use Spiral\RoadRunner\Metrics\Metrics;
 class RoadRunnerStore implements StoreInterface
 {
     private Metrics $metrics;
+    private string $exportUrl;
 
-    public function __construct(array $counters, array $gauges)
+    public function __construct(array $counters, array $gauges, string $exportUrl, string $publishUrl)
     {
-        $this->metrics = new Metrics(RPC::create('tcp://127.0.0.1:6001'));
+        $this->metrics = new Metrics(RPC::create($publishUrl));
+        $this->exportUrl = $exportUrl;
         
         foreach ($counters as $name => $help) {
             $this->metrics->declare($name, Collector::counter()->withHelp($help));
@@ -30,7 +32,7 @@ class RoadRunnerStore implements StoreInterface
 
     public function export(): string
     {
-        return file_get_contents('http://127.0.0.1:8081');
+        return file_get_contents($this->exportUrl);
     }
 
     public function set(string $name, float $value): void

@@ -33,11 +33,22 @@ class ServiceProvider implements ServiceProviderInterface
                 DI\get('app.metrics.gauges')
             ),
             StoreInterface::class => DI\factory(function (ContainerInterface $container): StoreInterface {
-                if (php_sapi_name() === 'fpm-fcgi') {
-                    return $container->get(ApcuStore::class);
-                } else {
-                    return $container->get(RoadRunnerStore::class);
+                $exportUrl = getenv('METRICS_EXPORT_URL');
+                $publishUrl = getenv('METRICS_PUBLISH_URL');
+
+                if ($exportUrl && $publishUrl) {
+                    return new RoadRunnerStore(
+                        $container->get('app.metrics.counters'),
+                        $container->get('app.metrics.gauges'),
+                        $exportUrl,
+                        $publishUrl
+                    );
                 }
+
+                return new ApcuStore(
+                    $container->get('app.metrics.counters'),
+                    $container->get('app.metrics.gauges')
+                );
             }),
             EventSubscriberInterface::class => DI\add(DI\get(EventSubscriber::class))
         ];
