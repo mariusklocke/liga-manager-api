@@ -4,14 +4,14 @@ namespace HexagonalPlayground\Infrastructure\API\Metrics;
 
 class ApcuStore implements StoreInterface
 {
-    private const KEY_PREFIX = 'metrics';
-    private array $counters;
-    private array $gauges;
+    private array $definitions;
 
-    public function __construct(array $counters, array $gauges)
+    /**
+     * @param Definition[] $definitions
+     */
+    public function __construct(array $definitions)
     {
-        $this->counters = $counters;
-        $this->gauges = $gauges;
+        $this->definitions = $definitions;
     }
 
     public function add(string $name): void
@@ -23,18 +23,14 @@ class ApcuStore implements StoreInterface
     {
         $result = [];
 
-        foreach ($this->counters as $name => $help) {
-            $value = (int)\apcu_fetch($this->buildKey($name));
-            $result[] = sprintf('# HELP %s %s', $name, $help);
-            $result[] = sprintf('# TYPE %s %s', $name, 'counter');
-            $result[] = sprintf('%s %d', $name, $value);
-        }
-
-        foreach ($this->gauges as $name => $help) {
-            $value = (float)\apcu_fetch($this->buildKey($name));
-            $result[] = sprintf('# HELP %s %s', $name, $help);
-            $result[] = sprintf('# TYPE %s %s', $name, 'gauge');
-            $result[] = sprintf('%s %e', $name, $value);
+        foreach ($this->definitions as $definition) {
+            $result[] = sprintf('# HELP %s %s', $definition->name, $definition->help);
+            $result[] = sprintf('# TYPE %s %s', $definition->name, $definition->type);
+            if ($definition->type === 'counter') {
+                $result[] = sprintf('%s %d', $definition->name, $this->get($definition->name));
+            } else {
+                $result[] = sprintf('%s %e', $definition->name, $this->get($definition->name));
+            }
         }
 
         return implode(PHP_EOL, $result);
@@ -45,8 +41,13 @@ class ApcuStore implements StoreInterface
         \apcu_store($this->buildKey($name), $value);
     }
 
+    private function get(string $name): mixed
+    {
+        return \apcu_fetch($this->buildKey($name));
+    }
+
     private function buildKey(string $name): string
     {
-        return self::KEY_PREFIX . '.' . $name;
+        return 'metrics.' . $name;
     }
 }

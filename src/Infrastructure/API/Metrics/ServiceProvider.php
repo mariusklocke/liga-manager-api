@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\Metrics;
+
 use HexagonalPlayground\Application\ServiceProviderInterface;
 
 use DI;
@@ -12,35 +13,26 @@ class ServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            'app.metrics.counters' => [
-                'php_requests_total' => 'Amount of total HTTP requests',
-                'php_requests_failed' => 'Amount of failed HTTP requests',
-                'php_requests_auth_jwt' => 'Amount of HTTP requests with JWT authentication',
-                'php_requests_auth_basic' => 'Amount of HTTP requests with Basic authentication',
-                'php_requests_auth_none' => 'Amount of HTTP requests without authentication',
-                'php_database_queries' => 'Amount of database queries executed'
-            ],
-            'app.metrics.gauges' => [
-                'php_memory_usage' => 'Amount of used memory in bytes',
-                'php_memory_peak_usage' => 'Amount of peak used memory in bytes'
+            Definition::class => [
+                DI\create(Definition::class)->constructor('php_database_queries', 'counter', 'Executed database queries'),
+                DI\create(Definition::class)->constructor('php_memory_usage', 'gauge', 'Used memory in bytes'),
+                DI\create(Definition::class)->constructor('php_memory_peak_usage', 'gauge', 'Peak used memory in bytes'),
+                DI\create(Definition::class)->constructor('php_requests_total', 'counter', 'Total HTTP requests'),
+                DI\create(Definition::class)->constructor('php_requests_failed', 'counter', 'Failed HTTP requests'),
+                DI\create(Definition::class)->constructor('php_requests_auth_jwt', 'counter', 'HTTP requests with JWT auth'),
+                DI\create(Definition::class)->constructor('php_requests_auth_basic', 'counter', 'HTTP requests with Basic auth'),
+                DI\create(Definition::class)->constructor('php_requests_auth_none', 'counter', 'HTTP request without auth'),
             ],
             StoreInterface::class => DI\factory(function (ContainerInterface $container): StoreInterface {
+                $definitions = $container->get(Definition::class);
                 $exportUrl = getenv('METRICS_EXPORT_URL');
                 $publishUrl = getenv('METRICS_PUBLISH_URL');
 
                 if ($exportUrl && $publishUrl) {
-                    return new RoadRunnerStore(
-                        $container->get('app.metrics.counters'),
-                        $container->get('app.metrics.gauges'),
-                        $exportUrl,
-                        $publishUrl
-                    );
+                    return new RoadRunnerStore($definitions, $exportUrl, $publishUrl);
                 }
 
-                return new ApcuStore(
-                    $container->get('app.metrics.counters'),
-                    $container->get('app.metrics.gauges')
-                );
+                return new ApcuStore($definitions);
             }),
             EventSubscriberInterface::class => DI\add(DI\get(EventSubscriber::class))
         ];
