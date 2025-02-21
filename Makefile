@@ -45,10 +45,11 @@ endif
 	docker compose exec php phpunit -c config/phpunit.xml --testdox --display-deprecations --display-warnings
 	docker compose exec php apk add --no-cache php$(subst .,,${PHP_VERSION})-xdebug
 	docker compose exec php sh -c "echo 'zend_extension=xdebug.so' > /etc/php/conf.d/50_xdebug.ini"
-	docker compose exec php phpunit -c config/phpunit.xml --testdox --coverage-clover tests/coverage.xml
+	docker compose exec php phpunit -c config/phpunit.xml --testdox --coverage-clover tests/coverage.xml -d error_log=php-errors.log
 
 clean:
 	docker compose logs php || true
+	docker compose exec php cat php-errors.log || true
 	docker compose down -v || true
 	rm -rf "build/.secrets" || true
 
