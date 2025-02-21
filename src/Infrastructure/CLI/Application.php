@@ -13,6 +13,13 @@ use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
+use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
+use HexagonalPlayground\Infrastructure\CLI\ServiceProvider as CliServiceProvider;
+use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
+use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
+use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
+use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +32,7 @@ class Application extends \Symfony\Component\Console\Application
 
     public function __construct()
     {
-        $this->container = ContainerBuilder::build(new ServiceProvider());
+        $this->container = ContainerBuilder::build($this->getServiceProviders());
 
         $user = new User(
             'cli',
@@ -97,5 +104,21 @@ class Application extends \Symfony\Component\Console\Application
         yield new GenerateProxiesCommand($emProvider);
         yield new ValidateSchemaCommand($emProvider);
         yield new InfoCommand($emProvider);
+    }
+
+    /**
+     * Returns an iterator for common service providers
+     * 
+     * @return ServiceProviderInterface[]
+     */
+    private function getServiceProviders(): Iterator
+    {
+        yield new ApplicationServiceProvider();
+        yield new CliServiceProvider();
+        yield new DoctrineServiceProvider();
+        yield new EventServiceProvider();
+        yield new FilesystemServiceProvider();
+        yield new MailServiceProvider();
+        yield new ReadRepositoryProvider();
     }
 }

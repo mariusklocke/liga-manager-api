@@ -9,14 +9,14 @@ class MetricsTest extends HttpTest
     public function testMetricsCanBeQueried(): void
     {
         $expectedMetrics = [
-            ['name' => 'requests_total', 'type' => 'counter'],
-            ['name' => 'requests_failed', 'type' => 'counter'],
-            ['name' => 'requests_auth_none', 'type' => 'counter'],
-            ['name' => 'requests_auth_jwt', 'type' => 'counter'],
-            ['name' => 'requests_auth_basic', 'type' => 'counter'],
-            ['name' => 'memory_usage', 'type' => 'gauge'],
-            ['name' => 'memory_peak_usage', 'type' => 'gauge'],
-            ['name' => 'database_queries', 'type' => 'counter']
+            ['name' => 'php_requests_total', 'type' => 'counter'],
+            ['name' => 'php_requests_failed', 'type' => 'counter'],
+            ['name' => 'php_requests_auth_none', 'type' => 'counter'],
+            ['name' => 'php_requests_auth_jwt', 'type' => 'counter'],
+            ['name' => 'php_requests_auth_basic', 'type' => 'counter'],
+            ['name' => 'php_memory_usage', 'type' => 'gauge'],
+            ['name' => 'php_memory_peak_usage', 'type' => 'gauge'],
+            ['name' => 'php_database_queries', 'type' => 'counter']
         ];
 
         $request = $this->createRequest('GET', '/api/metrics');
@@ -28,11 +28,16 @@ class MetricsTest extends HttpTest
 
         foreach ($expectedMetrics as $metric) {
             self::assertMatchesRegularExpression(
-                sprintf('/^%s \d+$/m', $metric['name']),
+                sprintf('/^# TYPE %s %s$/m', $metric['name'], $metric['type']),
                 $actualMetrics
             );
+            if ($metric['type'] === 'gauge') {
+                $pattern = '/^%s [\d.e+]+$/m';
+            } else {
+                $pattern = '/^%s \d+$/m';
+            }
             self::assertMatchesRegularExpression(
-                sprintf('/^# TYPE %s %s$/m', $metric['name'], $metric['type']),
+                sprintf($pattern, $metric['name']),
                 $actualMetrics
             );
         }

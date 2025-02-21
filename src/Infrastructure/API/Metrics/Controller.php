@@ -19,14 +19,6 @@ class Controller extends BaseController
 
     public function get(ServerRequestInterface $request): ResponseInterface
     {
-        $result = '';
-
-        foreach ($this->metricsStore->getMetrics() as $metric) {
-            $result .= sprintf('# HELP %s %s', $metric->getName(), $metric->getHelp()) . PHP_EOL;
-            $result .= sprintf('# TYPE %s %s', $metric->getName(), $metric->getType()) . PHP_EOL;
-            $result .= sprintf('%s %d', $metric->getName(), $metric->getValue()) . PHP_EOL;
-        }
-
-        return $this->buildTextResponse($result);
+        return $this->buildTextResponse($this->metricsStore->export());
     }
 }

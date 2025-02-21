@@ -25,32 +25,26 @@ class EventSubscriber implements EventSubscriberInterface
 
     public function handleResponseEvent(ResponseEvent $event): void
     {
-        $path = $event->getRequest()->getUri()->getPath();
-        if ($path === '/api/health' || $path === '/api/metrics') {
-            return;
-        }
-
-        $this->metricsStore->incrementCounter('requests_total');
+        $this->metricsStore->add('php_requests_total');
         if ($event->getResponse()->getStatusCode() >= 400) {
-            $this->metricsStore->incrementCounter('requests_failed');
+            $this->metricsStore->add('php_requests_failed');
         }
 
         $authHeader = $event->getRequest()->getHeader('Authorization')[0] ?? null;
         if ($authHeader === null) {
-            $this->metricsStore->incrementCounter('requests_auth_none');
+            $this->metricsStore->add('php_requests_auth_none');
         } else if (preg_match('/^bearer/i', $authHeader)) {
-            $this->metricsStore->incrementCounter('requests_auth_jwt');
+            $this->metricsStore->add('php_requests_auth_jwt');
         } else if (preg_match('/^basic/i', $authHeader)) {
-            $this->metricsStore->incrementCounter('requests_auth_basic');
+            $this->metricsStore->add('php_requests_auth_basic');
         }
+
+        $this->metricsStore->set('php_memory_usage', (float)memory_get_usage());
+        $this->metricsStore->set('php_memory_peak_usage', (float)memory_get_peak_usage());
     }
 
     public function handleQueryEvent(QueryEvent $event): void
     {
-        if ($event->getQuery() === 'SELECT 1') {
-            return;
-        }
-
-        $this->metricsStore->incrementCounter('database_queries');
+        $this->metricsStore->add('php_database_queries');
     }
 }

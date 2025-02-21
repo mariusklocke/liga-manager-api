@@ -12,6 +12,18 @@ use HexagonalPlayground\Infrastructure\API\Metrics\RouteProvider as MetricsRoute
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\RateLimitMiddleware;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
+use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
+use HexagonalPlayground\Infrastructure\API\ServiceProvider as ApiServiceProvider;
+use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Logos\ServiceProvider as LogosServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Metrics\ServiceProvider as MetricsServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
+use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
+use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
+use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
+use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use Iterator;
 use Middlewares\TrailingSlash;
 use Psr\Container\ContainerInterface;
@@ -27,7 +39,7 @@ class Application extends App
 {
     public function __construct()
     {
-        $container = ContainerBuilder::build(new ServiceProvider());
+        $container = ContainerBuilder::build($this->getServiceProviders());
 
         parent::__construct($container->get(ResponseFactoryInterface::class), $container);
 
@@ -83,5 +95,26 @@ class Application extends App
         yield $container->get(MaintenanceModeMiddleware::class);
         yield $container->get(ErrorMiddleware::class);
         yield $container->get(LoggingMiddleware::class);
+    }
+
+    /**
+     * Returns an iterator for service providers
+     * 
+     * @return ServiceProviderInterface[]
+     */
+    private function getServiceProviders(): Iterator
+    {
+        yield new ApiServiceProvider();
+        yield new ApplicationServiceProvider();
+        yield new DoctrineServiceProvider();
+        yield new EventServiceProvider();
+        yield new FilesystemServiceProvider();
+        yield new GraphQLServiceProvider();
+        yield new HealthServiceProvider();
+        yield new LogosServiceProvider();
+        yield new MailServiceProvider();
+        yield new MetricsServiceProvider();
+        yield new ReadRepositoryProvider();
+        yield new SecurityServiceProvider();
     }
 }

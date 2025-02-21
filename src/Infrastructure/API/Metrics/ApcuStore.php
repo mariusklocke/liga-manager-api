@@ -2,67 +2,52 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Metrics;
 
-use InvalidArgumentException;
-use Iterator;
-
 class ApcuStore implements StoreInterface
 {
-    private const KEY_PREFIX = 'metrics';
-    private array $counters;
-    private array $gauges;
+    private array $definitions;
 
-    public function __construct(array $counters, array $gauges)
+    /**
+     * @param Definition[] $definitions
+     */
+    public function __construct(array $definitions)
     {
-        $this->counters = $counters;
-        $this->gauges = $gauges;
+        $this->definitions = $definitions;
     }
 
-    public function getCounterValue(string $name): int
+    public function add(string $name): void
     {
-        $this->assertCounterExists($name);
-
-        $value = \apcu_fetch($this->buildKey($name));
-
-        return (int)$value;
-    }
-
-    public function getGaugeValue(string $name): int
-    {
-        switch ($name) {
-            case 'memory_usage':
-                return \memory_get_usage();
-            case 'memory_peak_usage':
-                return \memory_get_peak_usage();
-        }
-
-        throw new InvalidArgumentException("Unknown gauge metric: $name");
-    }
-
-    public function getMetrics(): Iterator
-    {
-        foreach ($this->counters as $name => $help) {
-            yield new Metric($name, 'counter', $help, $this->getCounterValue($name));
-        }
-        foreach ($this->gauges as $name => $help) {
-            yield new Metric($name, 'gauge', $help, $this->getGaugeValue($name));
-        }
-    }
-
-    public function incrementCounter(string $name): void
-    {
-        $this->assertCounterExists($name);
         \apcu_inc($this->buildKey($name));
+    }
+
+    public function export(): string
+    {
+        $result = [];
+
+        foreach ($this->definitions as $definition) {
+            $result[] = sprintf('# HELP %s %s', $definition->name, $definition->help);
+            $result[] = sprintf('# TYPE %s %s', $definition->name, $definition->type);
+            if ($definition->type === 'counter') {
+                $result[] = sprintf('%s %d', $definition->name, $this->get($definition->name));
+            } else {
+                $result[] = sprintf('%s %e', $definition->name, $this->get($definition->name));
+            }
+        }
+
+        return implode(PHP_EOL, $result);
+    }
+
+    public function set(string $name, float $value): void
+    {
+        \apcu_store($this->buildKey($name), $value);
+    }
+
+    private function get(string $name): mixed
+    {
+        return \apcu_fetch($this->buildKey($name));
     }
 
     private function buildKey(string $name): string
     {
-        return self::KEY_PREFIX . '.' . $name;
-    }
-
-    private function assertCounterExists(string $name): void
-    {
-        if (!array_key_exists($name, $this->counters)) {
-            throw new InvalidArgumentException("Unknown counter metric: $name");
-        }
+        return 'metrics.' . $name;
     }
 }

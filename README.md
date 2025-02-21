@@ -133,6 +133,8 @@ by the application. Static values must be supplied from the outside (e.g. by usi
 | JWT_SECRET            | Static   | Hex-encoded secret for JSON Web Tokens         |
 | LOG_LEVEL             | Static   | Minimum level for log messages                 |
 | LOG_PATH              | Static   | Path to log file                               |
+| METRICS_PUBLISH_URL   | Dynamic  | URL for publishing metrics                     |
+| METRICS_EXPORT_URL    | Dynamic  | URL for exporting metrics                      |
 | RATE_LIMIT            | Static   | Defines an API rate limit                      |
 | REDIS_HOST            | Static   | Hostname or IP address running Redis           |
 
