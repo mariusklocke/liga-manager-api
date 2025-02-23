@@ -40,6 +40,7 @@ RUN chmod +x /usr/local/bin/docker-php-entrypoint
 # Create application directories
 ENV APP_HOME="/var/www/api"
 ENV APP_LOGOS_PATH="/var/www/logos"
+ENV APP_SERVER_INTERNAL="fcgi://127.0.0.1:9000"
 RUN mkdir -p ${APP_HOME} ${APP_LOGOS_PATH}
 WORKDIR ${APP_HOME}
 

@@ -95,6 +95,7 @@ class Application extends \Symfony\Component\Console\Application
         yield new ShowConfigCommand($this->container, $this->authContext);
         yield new InspectContainerCommand($this->container, $this->authContext);
         yield new ListVersionsCommand($this->container, $this->authContext);
+        yield new QueryApiCommand($this->container, $this->authContext);
 
         // Doctrine ORM commands
         $emProvider = $this->container->get(EntityManagerProvider::class);
