@@ -82,7 +82,7 @@ Same rules for that script: Please have a look inside, before running it.
 
 Since this application generates code when starting up (Doctrine proxy classes), it is advisable NOT to mount the project dir into the container.
 The recommended development model is: Use a `build` config for the `php` service in `docker-compose.yml` and rebuild the container when changing sources.
-This should be sufficiently fast due to Docker build layer caching. Rebuilding the container on changes can be automated by running `docker compose watch`. 
+This should be sufficiently fast due to Docker build layer caching. Rebuilding the container on changes can be automated by running `docker compose watch`.
 
 The docker containers built by this project come in two flavors: `PHP-FPM` and `Roadrunner`. Both following the same execution model: Container is initialized as `root` user and start a control process as `root` user. The control process forks worker processes running as `www-data` user. This means that the `entrypoint` script always should be run as `root`. It is NOT advisable to override the initializing user by using the `user` property in `docker-compose.yml`. Since the worker processes are dealing with public HTTP traffic, they are running as a non-privileged user anyway. In contrast to many other PHP-deployments the PHP code inside the container is owned by `root`. By using this approach the running application is not able to modify its own code.
 
@@ -116,27 +116,28 @@ input does not cause errors in the API.
 The following table lists the environment variables used in the application. Dynamic values are populated automatically
 by the application. Static values must be supplied from the outside (e.g. by using a `.env` file)
 
-| Name                  | Mode     | Description                                    |
-|-----------------------|----------|------------------------------------------------|
-| ADMIN_EMAIL           | Static   | Email address for default admin user           |
-| ADMIN_PASSWORD        | Static   | Password for default admin user                |
-| APP_BASE_URL          | Static   | Public base URL for the application            |
-| APP_HOME              | Dynamic  | Path to application home directory             |
-| APP_LOGOS_PATH        | Dynamic  | Path to directory for logos                    |
-| APP_LOGOS_PUBLIC_PATH | Static   | Public URL path to logos                       |
-| APP_VERSION           | Dynamic  | Application version                            |
-| DB_PASSWORD_FILE      | Static   | Path to DB password file                       |
-| DB_URL                | Static   | URL for database connection (MySQL/PostgreSQL) |
-| EMAIL_SENDER_ADDRESS  | Static   | Sender address for outbound emails             |
-| EMAIL_SENDER_NAME     | Static   | Sender name for outbound emails                |
-| EMAIL_URL             | Static   | URL to use for outbound emails (gateway)       |
-| JWT_SECRET            | Static   | Hex-encoded secret for JSON Web Tokens         |
-| LOG_LEVEL             | Static   | Minimum level for log messages                 |
-| LOG_PATH              | Static   | Path to log file                               |
-| METRICS_PUBLISH_URL   | Dynamic  | URL for publishing metrics                     |
-| METRICS_EXPORT_URL    | Dynamic  | URL for exporting metrics                      |
-| RATE_LIMIT            | Static   | Defines an API rate limit                      |
-| REDIS_HOST            | Static   | Hostname or IP address running Redis           |
+| Name                  | Mode     | Description                                     |
+|-----------------------|----------|-------------------------------------------------|
+| ADMIN_EMAIL           | Static   | Email address for default admin user            |
+| ADMIN_PASSWORD        | Static   | Password for default admin user                 |
+| APP_BASE_URL          | Static   | Public base URL for the application             |
+| APP_HOME              | Dynamic  | Path to application home directory              |
+| APP_LOGOS_PATH        | Dynamic  | Path to directory for logos                     |
+| APP_LOGOS_PUBLIC_PATH | Static   | Public URL path to logos                        |
+| APP_SERVER_INTERNAL   | Dynamic  | Internal URL for application server (HTTP/FCGI) |
+| APP_VERSION           | Dynamic  | Application version                             |
+| DB_PASSWORD_FILE      | Static   | Path to DB password file                        |
+| DB_URL                | Static   | URL for database connection (MySQL/PostgreSQL)  |
+| EMAIL_SENDER_ADDRESS  | Static   | Sender address for outbound emails              |
+| EMAIL_SENDER_NAME     | Static   | Sender name for outbound emails                 |
+| EMAIL_URL             | Static   | URL to use for outbound emails (gateway)        |
+| JWT_SECRET            | Static   | Hex-encoded secret for JSON Web Tokens          |
+| LOG_LEVEL             | Static   | Minimum level for log messages                  |
+| LOG_PATH              | Static   | Path to log file                                |
+| METRICS_PUBLISH_URL   | Dynamic  | URL for publishing metrics                      |
+| METRICS_EXPORT_URL    | Dynamic  | URL for exporting metrics                       |
+| RATE_LIMIT            | Static   | Defines an API rate limit                       |
+| REDIS_HOST            | Static   | Hostname or IP address running Redis            |
 
 ## Naming Conventions
 
