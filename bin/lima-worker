@@ -2,45 +2,5 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use HexagonalPlayground\Infrastructure\API\Application;
-use Psr\Log\LoggerInterface;
-use Spiral\RoadRunner\Http\PSR7Worker;
-
-$app = new Application();
-/** @var LoggerInterface $logger */
-$logger = $app->getContainer()->get(LoggerInterface::class);
-/** @var PSR7Worker $worker */
-$worker = $app->getContainer()->get(PSR7Worker::class);
-
-$logger->info('Roadrunner worker started: Waiting for requests', [
-    'versions' => [
-        'app' => getenv('APP_VERSION'),
-        'php' => getenv('PHP_VERSION'),
-    ]
-]);
-
-while (true) {
-    try {
-        $request = $worker->waitRequest();
-        if ($request === null) {
-            break;
-        }
-    } catch (\Throwable $e) {
-        $worker->respond($app->getResponseFactory()->createResponse(400));
-        continue;
-    }
-
-    try {
-        $response = $app->handle($request);
-    } catch (\Throwable $e) {
-        $response = $app->getResponseFactory()->createResponse(500);
-        $logger->error((string)$e);
-    } finally {
-        $worker->respond($response);
-        if ($response->getStatusCode() === 500) {
-            // in case of unexpected error the application state can be corrupted: it's safer to terminate
-            $logger->error('Terminating worker process due to unexpected error.');
-            exit(1);
-        }
-    }
-}
+$worker = new HexagonalPlayground\Infrastructure\API\Worker();
+$worker->run();
