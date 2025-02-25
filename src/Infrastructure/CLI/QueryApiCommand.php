@@ -5,12 +5,14 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Exception;
 use GuzzleHttp\Client;
-use Nyholm\Psr7\Request;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\StreamableInputInterface;
 
 class QueryApiCommand extends Command
 {
@@ -18,18 +20,17 @@ class QueryApiCommand extends Command
     {
         $this->setName('app:api:query');
         $this->setDescription('Sends an arbirary request to the API');
+        $this->addArgument('method', InputArgument::REQUIRED, 'HTTP method (GET, POST, PUT, DELETE)');
         $this->addArgument('path', InputArgument::REQUIRED, 'URL path');
-        $this->addOption('headers', null, InputOption::VALUE_NONE, 'Show response headers in output');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $client  = $this->createClient();
-        $request = new Request('GET', $input->getArgument('path'));
-
+        $client   = $this->createClient();
+        $request  = $this->createRequest($input);
         $response = $client->sendRequest($request);
 
-        if ($input->getOption('headers')) {
+        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
             foreach ($response->getHeaders() as $name => $values) {
                 $output->writeln($name . ': ' . implode(', ', $values));
             }
@@ -62,5 +63,29 @@ class QueryApiCommand extends Command
         }
 
         throw new Exception("Unsupported API server protocol: " . $parsedUrl['scheme']);
+    }
+
+    private function createRequest(InputInterface $input): RequestInterface
+    {
+        $method = strtoupper($input->getArgument('method'));
+        $path   = $input->getArgument('path');
+
+        if (!in_array($method, ['GET', 'POST', 'PUT', 'DELETE'])) {
+            throw new Exception('Invalid HTTP method: ' . $method);
+        }
+        
+        $request = new Request($method, $path);
+
+        if (in_array($request->getMethod(), ['POST', 'PUT'])) {
+            if ($input instanceof StreamableInputInterface) {
+                $request = $request->withHeader('Content-Type', 'application/json');
+                $data = stream_get_contents($input->getStream());
+                $request = $request->withBody(Utils::streamFor($data));   
+            } else {
+                throw new Exception('POST and PUT requests require a streamable input');
+            }
+        }
+
+        return $request;
     }
 }
