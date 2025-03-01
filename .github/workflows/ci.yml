@@ -1,0 +1,119 @@
+name: Continuous Integration
+on: [push]
+env:
+  APP_VERSION: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+  CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+  DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
+jobs:
+  build-fpm-mariadb:
+    runs-on: ubuntu-latest
+    env:
+      APP_RUNTIME: "fpm"
+      DB_DRIVER: "pdo-mysql"
+      DB_HOST: "mariadb"
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Build image
+        run: make build
+      - name: Test image
+        run: make test
+      - name: Cleanup
+        run: make clean
+        if: always()
+      - name: Publish image
+        run: make publish
+        if: github.ref_type == 'tag' || github.ref_name == 'master'
+      - name: Upload code coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-fpm-mariadb
+          path: build/coverage.xml
+  build-fpm-postgres:
+    runs-on: ubuntu-latest
+    env:
+      APP_RUNTIME: "fpm"
+      DB_DRIVER: "pdo-pgsql"
+      DB_HOST: "postgres"
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Build image
+        run: make build
+      - name: Test image
+        run: make test
+      - name: Cleanup
+        run: make clean
+        if: always()
+      - name: Upload code coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-fpm-postgres
+          path: build/coverage.xml
+  build-roadrunner-mariadb:
+    runs-on: ubuntu-latest
+    env:
+      APP_RUNTIME: "roadrunner"
+      DB_DRIVER: "pdo-mysql"
+      DB_HOST: "mariadb"
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Build image
+        run: make build
+      - name: Test image
+        run: make test
+      - name: Cleanup
+        run: make clean
+        if: always()
+      - name: Publish image
+        run: make publish
+        if: github.ref_type == 'tag' || github.ref_name == 'master'
+      - name: Upload code coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-roadrunner-mariadb
+          path: build/coverage.xml
+  build-roadrunner-postgres:
+    runs-on: ubuntu-latest
+    env:
+      APP_RUNTIME: "roadrunner"
+      DB_DRIVER: "pdo-pgsql"
+      DB_HOST: "postgres"
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Build image
+        run: make build
+      - name: Test image
+        run: make test
+      - name: Cleanup
+        run: make clean
+        if: always()
+      - name: Upload code coverage artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-roadrunner-postgres
+          path: build/coverage.xml
+  upload-coverage:
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'branch'
+    needs:
+      - build-fpm-mariadb
+      - build-fpm-postgres
+      - build-roadrunner-mariadb
+      - build-roadrunner-postgres
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+          path: build
+      - name: List code coverage reports
+        run: ls -R build
+      - name: Upload report to codecov.io
+        uses: codecov/codecov-action@v4
+        with:
+          files: build/coverage-*/coverage.xml
