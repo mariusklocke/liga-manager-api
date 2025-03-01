@@ -11,6 +11,7 @@ use HexagonalPlayground\Infrastructure\CLI\Application;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use XMLReader;
 
@@ -116,12 +117,18 @@ class CommandTest extends TestCase
 
         // Verbose output
         $tester = $this->getCommandTester('app:api:query');
-        self::assertExecutionSuccess($tester->execute(['method' => 'GET', 'path' => '/api/graphql', '-v' => null]));
+        self::assertExecutionSuccess($tester->execute(
+            ['method' => 'GET', 'path' => '/api/graphql'],
+            ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
+        ));
         self::assertMatchesRegularExpression('/Status: 200/i', $tester->getDisplay());
 
         // Very verbose output
         $tester = $this->getCommandTester('app:api:query');
-        self::assertExecutionSuccess($tester->execute(['method' => 'GET', 'path' => '/api/graphql', '-vv' => null]));
+        self::assertExecutionSuccess($tester->execute(
+            ['method' => 'GET', 'path' => '/api/graphql'],
+            ['verbosity' => OutputInterface::VERBOSITY_VERY_VERBOSE]
+        ));
         self::assertMatchesRegularExpression('/Content-Length: \d+/i', $tester->getDisplay());
     }
 
