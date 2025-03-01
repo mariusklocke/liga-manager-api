@@ -36,11 +36,13 @@ class QueryApiCommand extends Command
 
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
             foreach ($response->getHeaders() as $name => $values) {
-                if ($name === 'Status') {
-                    continue;
+                if ($name !== 'Status') {
+                    $output->writeln($name . ': ' . implode(', ', $values));
                 }
-                $output->writeln($name . ': ' . implode(', ', $values));
             }
+        }
+
+        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
             $output->writeln('');
         }
 
