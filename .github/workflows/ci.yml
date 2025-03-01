@@ -114,6 +114,6 @@ jobs:
       - name: List code coverage reports
         run: ls -R build
       - name: Upload report to codecov.io
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: build/coverage-*/coverage.xml
