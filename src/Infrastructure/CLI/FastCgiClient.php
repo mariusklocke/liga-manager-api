@@ -58,6 +58,8 @@ class FastCgiClient implements ClientInterface
 
     private function mapResponse(ProvidesResponseData $input): ResponseInterface
     {
-        return new Response(200, $input->getHeaders(), $input->getBody());
+        $status = $input->getHeader('status')[0] ?? 200;
+
+        return new Response((int)$status, $input->getHeaders(), $input->getBody());
     }
 }

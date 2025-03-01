@@ -31,7 +31,14 @@ class QueryApiCommand extends Command
         $response = $client->sendRequest($request);
 
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
+            $output->writeln('Status: ' . $response->getStatusCode());
+        }
+
+        if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
             foreach ($response->getHeaders() as $name => $values) {
+                if ($name === 'Status') {
+                    continue;
+                }
                 $output->writeln($name . ': ' . implode(', ', $values));
             }
             $output->writeln('');
@@ -39,7 +46,7 @@ class QueryApiCommand extends Command
 
         $output->writeln((string)$response->getBody());
 
-        return 0;
+        return $response->getStatusCode() >= 200 && $response->getStatusCode() < 300 ? 0 : 1;
     }
 
     private function createClient(): ClientInterface

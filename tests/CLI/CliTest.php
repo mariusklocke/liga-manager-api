@@ -11,7 +11,6 @@ use HexagonalPlayground\Infrastructure\CLI\Application;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
-use SebastianBergmann\Type\VoidType;
 use Symfony\Component\Console\Tester\CommandTester;
 use XMLReader;
 
@@ -82,6 +81,38 @@ class CliTest extends TestCase
     {
         $tester = $this->getCommandTester('app:health:check');
         self::assertExecutionSuccess($tester->execute([]));
+    }
+
+    public function testQueryingApi(): void
+    {
+        // Valid GET request
+        $tester = $this->getCommandTester('app:api:query');
+        self::assertExecutionSuccess($tester->execute(['method' => 'GET', 'path' => '/api/graphql']));
+
+        // Invalid GET Request
+        $tester = $this->getCommandTester('app:api:query');
+        self::assertExecutionFailed($tester->execute(['method' => 'GET', 'path' => '/non-existing']));
+
+        // Valid POST request
+        $tester = $this->getCommandTester('app:api:query');
+        $body = [
+            'query' => 'query allTeams {
+              allTeams {
+                id
+              }
+            }',
+            'variables' => []
+        ];
+        $tester->setInputs([json_encode($body)]);
+        self::assertExecutionSuccess($tester->execute(['method' => 'POST', 'path' => '/api/graphql']));
+
+        // Invalid POST request
+        $tester = $this->getCommandTester('app:api:query');
+        $body = [
+            'query' => ''
+        ];
+        $tester->setInputs([json_encode($body)]);
+        self::assertExecutionFailed($tester->execute(['method' => 'POST', 'path' => '/api/graphql']));
     }
 
     public function testWipingDatabase(): void
@@ -305,6 +336,11 @@ class CliTest extends TestCase
     private static function assertExecutionSuccess(int $exitCode): void
     {
         self::assertEquals(0, $exitCode);
+    }
+
+    private static function assertExecutionFailed(int $exitCode): void
+    {
+        self::assertNotEquals(0, $exitCode);
     }
 
     private static function countXmlNodes(string $filePath): array
