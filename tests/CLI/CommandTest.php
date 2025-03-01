@@ -113,6 +113,16 @@ class CommandTest extends TestCase
         ];
         $tester->setInputs([json_encode($body)]);
         self::assertExecutionFailed($tester->execute(['method' => 'POST', 'path' => '/api/graphql']));
+
+        // Verbose output
+        $tester = $this->getCommandTester('app:api:query');
+        self::assertExecutionSuccess($tester->execute(['method' => 'GET', 'path' => '/api/graphql', '-v' => null]));
+        self::assertMatchesRegularExpression('/Status: 200/i', $tester->getDisplay());
+
+        // Very verbose output
+        $tester = $this->getCommandTester('app:api:query');
+        self::assertExecutionSuccess($tester->execute(['method' => 'GET', 'path' => '/api/graphql', '-vv' => null]));
+        self::assertMatchesRegularExpression('/Content-Length: \d+/i', $tester->getDisplay());
     }
 
     public function testWipingDatabase(): void
