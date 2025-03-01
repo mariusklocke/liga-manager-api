@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use XMLReader;
 
-class CliTest extends TestCase
+class CommandTest extends TestCase
 {
     private Application $app;
 
