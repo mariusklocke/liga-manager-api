@@ -8,6 +8,7 @@ use hollodotme\FastCGI\Client;
 use hollodotme\FastCGI\Interfaces\ConfiguresSocketConnection;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
 use hollodotme\FastCGI\Interfaces\ProvidesResponseData;
+use hollodotme\FastCGI\Requests\DeleteRequest;
 use hollodotme\FastCGI\Requests\GetRequest;
 use hollodotme\FastCGI\Requests\PostRequest;
 use hollodotme\FastCGI\SocketConnections\NetworkSocket;
@@ -44,7 +45,13 @@ class FastCgiClient implements ClientInterface
                 break;
             case 'POST':
                 $result = new PostRequest($this->scriptPath, (string)$request->getBody());
-                $result->setContentType($request->getHeader('Content-Type')[0]);
+                $contentType = $request->getHeader('Content-Type')[0] ?? null;
+                if ($contentType) {
+                    $result->setContentType($contentType);
+                }
+                break;
+            case 'DELETE':
+                $result = new DeleteRequest($this->scriptPath, '');
                 break;
             default:
                 throw new Exception("Unsupported HTTP method: {$request->getMethod()}");

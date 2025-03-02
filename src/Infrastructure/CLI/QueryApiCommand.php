@@ -20,7 +20,7 @@ class QueryApiCommand extends Command
     {
         $this->setName('app:api:query');
         $this->setDescription('Sends an arbirary request to the API');
-        $this->addArgument('method', InputArgument::REQUIRED, 'HTTP method (GET, POST, PUT, DELETE)');
+        $this->addArgument('method', InputArgument::REQUIRED, 'HTTP method (GET, POST, DELETE)');
         $this->addArgument('path', InputArgument::REQUIRED, 'URL path');
     }
 
@@ -79,20 +79,16 @@ class QueryApiCommand extends Command
         $method = strtoupper($input->getArgument('method'));
         $path   = $input->getArgument('path');
 
-        if (!in_array($method, ['GET', 'POST', 'PUT', 'DELETE'])) {
+        if (!in_array($method, ['GET', 'POST', 'DELETE'])) {
             throw new Exception('Invalid HTTP method: ' . $method);
         }
         
         $request = new Request($method, $path);
 
-        if (in_array($request->getMethod(), ['POST', 'PUT'])) {
-            if ($input instanceof StreamableInputInterface) {
-                $request = $request->withHeader('Content-Type', 'application/json');
-                $data = stream_get_contents($input->getStream());
-                $request = $request->withBody(Utils::streamFor($data));   
-            } else {
-                throw new Exception('POST and PUT requests require a streamable input');
-            }
+        if ($request->getMethod() === 'POST' && $input instanceof StreamableInputInterface) {
+            $request = $request->withHeader('Content-Type', 'application/json');
+            $data = stream_get_contents($input->getStream());
+            $request = $request->withBody(Utils::streamFor($data));
         }
 
         return $request;
