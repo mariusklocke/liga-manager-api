@@ -23,6 +23,7 @@ use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\StreamableInputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Application extends \Symfony\Component\Console\Application
@@ -56,6 +57,10 @@ class Application extends \Symfony\Component\Console\Application
     {
         $input = $this->container->get(InputInterface::class);
         $output = $this->container->get(OutputInterface::class);
+
+        if ($input instanceof StreamableInputInterface) {
+            $input->setStream(fopen('php://stdin', 'r'));
+        }
 
         return parent::run($input, $output);
     }
@@ -95,6 +100,7 @@ class Application extends \Symfony\Component\Console\Application
         yield new ShowConfigCommand($this->container, $this->authContext);
         yield new InspectContainerCommand($this->container, $this->authContext);
         yield new ListVersionsCommand($this->container, $this->authContext);
+        yield new QueryApiCommand($this->container, $this->authContext);
 
         // Doctrine ORM commands
         $emProvider = $this->container->get(EntityManagerProvider::class);
