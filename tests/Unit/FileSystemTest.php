@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Tests\Unit;
 
 use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
+use HexagonalPlayground\Tests\Framework\File;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 
 class FileSystemTest extends TestCase
@@ -20,9 +20,12 @@ class FileSystemTest extends TestCase
 
     public function testBasicFileOperations(): void
     {
-        self::assertTrue($this->service->isDirectory(sys_get_temp_dir()));
+        $tempFile = File::temp('filesystem_test_', '.tmp');
+        $tempDir  = dirname($tempFile->getPath());
 
-        $basePath = $this->service->joinPaths([sys_get_temp_dir(), uniqid('phpunit')]);
+        self::assertTrue($this->service->isDirectory($tempDir));
+
+        $basePath = $this->service->joinPaths([$tempDir, uniqid('phpunit')]);
         $this->service->createDirectory($basePath);
         self::assertTrue($this->service->isDirectory($basePath));
         self::assertCount(0, $this->service->getDirectoryContents($basePath));
@@ -41,36 +44,40 @@ class FileSystemTest extends TestCase
         self::assertFalse($this->service->isDirectory($basePath));
     }
 
-    public function testFileCanBeWritten(): string
+    public function testFileCanBeWritten(): void
     {
-        $tempFilePath = tempnam(sys_get_temp_dir(), uniqid('phpunit'));
-        $stream = $this->service->openFile($tempFilePath, 'w');
-        self::assertFalse($stream->isReadable());
-        self::assertTrue($stream->isWritable());
-        self::assertSame(0, $stream->getSize());
-        self::assertSame(\strlen(__CLASS__), $stream->write(__CLASS__));
-        self::assertSame(\strlen(__CLASS__), $stream->tell());
-        self::assertSame(\strlen(__CLASS__), $stream->getSize());
-        $stream->close();
-
-        return $tempFilePath;
+        $tempFile = File::temp('filesystem_test_', '.tmp');
+        try {
+            $stream = $this->service->openFile($tempFile->getPath(), 'w');
+            self::assertFalse($stream->isReadable());
+            self::assertTrue($stream->isWritable());
+            self::assertSame(0, $stream->getSize());
+            self::assertSame(\strlen(__CLASS__), $stream->write(__CLASS__));
+            self::assertSame(\strlen(__CLASS__), $stream->tell());
+            self::assertSame(\strlen(__CLASS__), $stream->getSize());
+            $stream->close();
+        } finally {
+            $tempFile->delete();
+        }
     }
 
-    /**
-     * @param string $tempFilePath
-     */
-    #[Depends("testFileCanBeWritten")]
-    public function testFileCanBeRead(string $tempFilePath): void
+    public function testFileCanBeRead(): void
     {
-        $stream = $this->service->openFile($tempFilePath, 'r');
-        self::assertFalse($stream->isWritable());
-        self::assertTrue($stream->isReadable());
-        self::assertTrue($stream->isSeekable());
-        self::assertFalse($stream->eof());
-        self::assertSame(\strlen(__CLASS__), $stream->getSize());
-        self::assertSame(__CLASS__, (string) $stream);
-        self::assertTrue($stream->eof());
-        self::assertSame(\strlen(__CLASS__), $stream->tell());
-        $stream->close();
+        $tempFile = File::temp('filesystem_test_', '.tmp');
+        $tempFile->write(__CLASS__);
+        try {
+            $stream = $this->service->openFile($tempFile->getPath(), 'r');
+            self::assertFalse($stream->isWritable());
+            self::assertTrue($stream->isReadable());
+            self::assertTrue($stream->isSeekable());
+            self::assertFalse($stream->eof());
+            self::assertSame(\strlen(__CLASS__), $stream->getSize());
+            self::assertSame(__CLASS__, (string) $stream);
+            self::assertTrue($stream->eof());
+            self::assertSame(\strlen(__CLASS__), $stream->tell());
+            $stream->close();
+        } finally {
+            $tempFile->delete();
+        }
     }
 }

@@ -9,6 +9,7 @@ use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Infrastructure\CLI\Application;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
+use HexagonalPlayground\Tests\Framework\File;
 use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -224,34 +225,34 @@ class CommandTest extends TestCase
     }
 
     /**
-     * @return string
+     * @return File
      */
-    public function testDatabaseCanBeExported(): string
+    public function testDatabaseCanBeExported(): File
     {
-        $xmlFile = tempnam(sys_get_temp_dir(), 'database');
+        $xmlFile = File::temp('database', '.xml');
 
         // Test anonymized export
         $tester = $this->getCommandTester('app:db:export');
-        $exitCode = $tester->execute(['file' => $xmlFile, '--anonymize' => null]);
+        $exitCode = $tester->execute(['file' => $xmlFile->getPath(), '--anonymize' => null]);
         $output = $tester->getDisplay();
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('Successfully exported', $output);
-        self::assertGreaterThan(0, filesize($xmlFile));
-        $nodeCounts = self::countXmlNodes($xmlFile);
+        self::assertGreaterThan(0, $xmlFile->getSize());
+        $nodeCounts = self::countXmlNodes($xmlFile->getPath());
         self::assertSame(1, $nodeCounts['database']);
         self::assertGreaterThan(0, $nodeCounts['table']);
         self::assertGreaterThan(0, $nodeCounts['row']);
         self::assertGreaterThan(0, $nodeCounts['column']);
 
         // Test regular export
-        unlink($xmlFile);
+        $xmlFile->delete();
         $tester = $this->getCommandTester('app:db:export');
-        $exitCode = $tester->execute(['file' => $xmlFile]);
+        $exitCode = $tester->execute(['file' => $xmlFile->getPath()]);
         $output = $tester->getDisplay();
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('Successfully exported', $output);
-        self::assertGreaterThan(0, filesize($xmlFile));
-        $nodeCounts = self::countXmlNodes($xmlFile);
+        self::assertGreaterThan(0, $xmlFile->getSize());
+        $nodeCounts = self::countXmlNodes($xmlFile->getPath());
         self::assertSame(1, $nodeCounts['database']);
         self::assertGreaterThan(0, $nodeCounts['table']);
         self::assertGreaterThan(0, $nodeCounts['row']);
@@ -261,18 +262,18 @@ class CommandTest extends TestCase
     }
 
     /**
-     * @param string $xmlFile
+     * @param File $xmlFile
      * @return void
      */
     #[Depends("testDatabaseCanBeExported")]
-    public function testDatabaseCanBeImported(string $xmlFile): void
+    public function testDatabaseCanBeImported(File $xmlFile): void
     {
         $tester = $this->getCommandTester('app:db:import');
-        $exitCode = $tester->execute(['file' => $xmlFile]);
+        $exitCode = $tester->execute(['file' => $xmlFile->getPath()]);
         $output = $tester->getDisplay();
         self::assertExecutionSuccess($exitCode);
         self::assertStringContainsString('Successfully imported', $output);
-        unlink($xmlFile);
+        $xmlFile->delete();
     }
 
     public function testSendingMail(): void
@@ -285,21 +286,21 @@ class CommandTest extends TestCase
         ]));
     }
 
-    public function testImportingLogo(): string
+    public function testImportingLogo(): File
     {
         $teamId = DataGenerator::generateId();
         $this->getCommandBus()->execute(new CreateTeamCommand($teamId, $teamId), $this->getAuthContext());
-        $sourcePath = tempnam(sys_get_temp_dir(), 'logo');
+        $logoFile = File::temp('logo', '.webp');
         $sourceData = DataGenerator::generateBytes(16);
-        file_put_contents($sourcePath, $sourceData);
-        self::assertFileExists($sourcePath);
+        $logoFile->write($sourceData);
+        self::assertTrue($logoFile->exists());
 
         $tester = $this->getCommandTester('app:logo:import');
-        $exitCode = $tester->execute(['file' => $sourcePath, 'teamId' => $teamId]);
+        $exitCode = $tester->execute(['file' => $logoFile->getPath(), 'teamId' => $teamId]);
         $output = $tester->getDisplay();
 
         self::assertExecutionSuccess($exitCode);
-        self::assertFileDoesNotExist($sourcePath);
+        self::assertFalse($logoFile->exists());
         $targetPath = null;
         foreach (preg_split('/\s+/', $output) as $word) {
             if (str_ends_with($word, '.webp')) {
@@ -308,31 +309,32 @@ class CommandTest extends TestCase
             }
         }
         self::assertIsString($targetPath, "Failed to find logo path in \"$output\"");
-        self::assertFileExists($targetPath);
-        $targetData = file_get_contents($targetPath);
+        $resultFile = new File(dirname($targetPath), basename($targetPath));
+        self::assertTrue($resultFile->exists());
+        $targetData = $resultFile->read();
         self::assertSame($sourceData, $targetData);
 
-        return $targetPath;
+        return $resultFile;
     }
 
     #[Depends("testImportingLogo")]
-    public function testCleanupLogo(string $referencedLogoPath): void
+    public function testCleanupLogo(File $referencedLogoFile): void
     {
-        self::assertFileExists($referencedLogoPath);
-        $logoDirectory = dirname($referencedLogoPath);
+        self::assertTrue($referencedLogoFile->exists());
+        $logoDirectory = dirname($referencedLogoFile->getPath());
         self::assertDirectoryExists($logoDirectory);
         $staleLogoId = DataGenerator::generateId();
-        $staleLogoPath = join(DIRECTORY_SEPARATOR, [$logoDirectory, "$staleLogoId.webp"]);
+        $staleLogoFile = new File($logoDirectory, "$staleLogoId.webp");
         $staleLogoData = DataGenerator::generateBytes(16);
-        file_put_contents($staleLogoPath, $staleLogoData);
-        self::assertFileExists($staleLogoPath);
+        $staleLogoFile->write($staleLogoData);
+        self::assertTrue($staleLogoFile->exists());
 
         $tester = $this->getCommandTester('app:logo:cleanup');
         $exitCode = $tester->execute([]);
 
         self::assertExecutionSuccess($exitCode);
-        self::assertFileDoesNotExist($staleLogoPath);
-        self::assertFileExists($referencedLogoPath);
+        self::assertFalse($staleLogoFile->exists());
+        self::assertTrue($referencedLogoFile->exists());
     }
 
     private function getCommandTester(string $commandName): CommandTester

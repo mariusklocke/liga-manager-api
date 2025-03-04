@@ -4,33 +4,29 @@ namespace HexagonalPlayground\Tests\Unit;
 
 use HexagonalPlayground\Infrastructure\API\Logger;
 use HexagonalPlayground\Infrastructure\Config;
+use HexagonalPlayground\Tests\Framework\File;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
 
 class LoggerTest extends TestCase
 {
-    private string $filePath;
+    private File $logFile;
 
     protected function setUp(): void
     {
-        $this->filePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid('phpunit', true);
-        if (file_exists($this->filePath)) {
-            unlink($this->filePath);
-        }
+        $this->logFile = File::temp('logger_test_', '.log');
     }
 
     protected function tearDown(): void
     {
-        if (file_exists($this->filePath)) {
-            unlink($this->filePath);
-        }
+        $this->logFile->delete();
     }
 
     public function testLoggerRespectsMinLevel(): void
     {
         $config = new Config([
-            'log.path' => $this->filePath,
+            'log.path' => $this->logFile->getPath(),
             'log.level' => 'info'
         ]);
         $logger = new Logger($config);
@@ -45,7 +41,7 @@ class LoggerTest extends TestCase
         $logger->info($message);
         $logger->debug($message);
 
-        $output = file_get_contents($this->filePath);
+        $output = $this->logFile->read();
         $expectedLevels = [
             LogLevel::EMERGENCY,
             LogLevel::ALERT,
@@ -65,7 +61,7 @@ class LoggerTest extends TestCase
     public function testInitiatingWithInvalidMinLevelFails(): void
     {
         $config = new Config([
-            'log.path' => $this->filePath,
+            'log.path' => $this->logFile->getPath(),
             'log.level' => 'invalid'
         ]);
         self::expectException(InvalidArgumentException::class);

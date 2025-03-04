@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Tests\Framework\DataGenerator;
+use HexagonalPlayground\Tests\Framework\File;
 use PHPUnit\Framework\Attributes\Depends;
 
 class TeamTest extends TestCase
@@ -95,7 +96,7 @@ class TeamTest extends TestCase
             $headers = ['Authorization' => "Bearer $token"];
 
             // Upload logo
-            $request = $this->buildUploadRequest('POST', $url, $tempFile, $fileMediaType, $headers);
+            $request = $this->buildUploadRequest('POST', $url, $tempFile->getPath(), $fileMediaType, $headers);
             $response = $this->psrClient->sendRequest($request);
             self::assertSame(201, $response->getStatusCode(), (string)$response->getBody());
             self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
@@ -106,7 +107,7 @@ class TeamTest extends TestCase
             self::assertSame(302, $response->getStatusCode(), (string)$response->getBody());
             self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
         } finally {
-            unlink($tempFile);
+            $tempFile->delete();
         }
 
         return $teamId;
@@ -148,13 +149,11 @@ class TeamTest extends TestCase
         self::assertNull($team);
     }
 
-    private function generateRandomFile(): string
+    private function generateRandomFile(): File
     {
-        $tempFilename = sprintf("random_image_%s.webp", uniqid());
-        $tempPath = join(DIRECTORY_SEPARATOR, [sys_get_temp_dir(), $tempFilename]);
+        $tempFile = File::temp('random_image_', '.webp');
+        $tempFile->write(bin2hex(random_bytes(16)));
 
-        file_put_contents($tempPath, bin2hex(random_bytes(16)));
-
-        return $tempPath;
+        return $tempFile;
     }
 }
