@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Infrastructure\Filesystem;
 
-use InvalidArgumentException;
+use RuntimeException;
 
 trait PathTrait
 {
@@ -14,9 +14,7 @@ trait PathTrait
     public function __construct(string ...$parts)
     {
         $this->path = join(DIRECTORY_SEPARATOR, $parts);
-        if ($this->path === '') {
-            throw new InvalidArgumentException('Cannot construct file or directory: Empty path');
-        }
+        $this->assertTrue($this->path !== '', 'Cannot construct file or directory: Empty path');
     }
 
     /**
@@ -77,5 +75,18 @@ trait PathTrait
     public function isWritable(): bool
     {
         return is_writable($this->path);
+    }
+
+    /**
+     * Asserts that a value is true
+     * 
+     * @param bool $value
+     * @param string $message
+     */
+    private function assertTrue(bool $value, string $message): void
+    {
+        if (!$value) {
+            throw new RuntimeException($message);
+        }
     }
 }

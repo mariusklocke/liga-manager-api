@@ -26,6 +26,7 @@ class File
     public function delete(): void
     {
         if ($this->exists()) {
+            $this->assertTrue($this->isWritable(), "Cannot delete {$this->path}: File is not writable");
             unlink($this->path);
         }
     }
@@ -69,6 +70,9 @@ class File
      */
     public function read(): string
     {
+        $this->assertTrue($this->exists(), "Cannot read {$this->path}: File does not exist");
+        $this->assertTrue($this->isReadable(), "Cannot read {$this->path}: File is not readable");
+
         return file_get_contents($this->path);
     }
 
@@ -79,6 +83,7 @@ class File
      */
     public function write(string $data): void
     {
+        $this->assertTrue(!$this->exists() || $this->isWritable(), "Cannot write to {$this->path}: File is not writable");
         file_put_contents($this->path, $data);
     }
 
