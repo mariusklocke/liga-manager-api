@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -30,11 +29,7 @@ class ServiceProvider implements ServiceProviderInterface
             Logger::class => DI\autowire(),
             LoggerInterface::class => DI\get(Logger::class),
             MaintenanceModeMiddleware::class => DI\factory(function (ContainerInterface $container) {
-                /** @var FilesystemService $filesystem */
-                $filesystem = $container->get(FilesystemService::class);
-                $filePath = $filesystem->joinPaths([$container->get('app.home'), '.maintenance']);
-
-                return new MaintenanceModeMiddleware($filesystem, $filePath);
+                return new MaintenanceModeMiddleware($container->get('app.home'));
             })
         ];
     }

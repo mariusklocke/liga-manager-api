@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API;
 
-use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
+use HexagonalPlayground\Infrastructure\Filesystem\File;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -11,17 +11,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class MaintenanceModeMiddleware implements MiddlewareInterface
 {
-    private FilesystemService $filesystemService;
-    private string $filePath;
+    private File $file;
 
     /**
-     * @param FilesystemService $filesystemService
-     * @param string $filePath
+     * @param string $appHome
      */
-    public function __construct(FilesystemService $filesystemService, string $filePath)
+    public function __construct(string $appHome)
     {
-        $this->filesystemService = $filesystemService;
-        $this->filePath = $filePath;
+        $this->file = new File($appHome, '.maintenance');
     }
 
     /**
@@ -29,7 +26,7 @@ class MaintenanceModeMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if ($this->filesystemService->isFile($this->filePath)) {
+        if ($this->file->exists()) {
             throw new MaintenanceModeException('API unavailable due to maintenance work.');
         }
 

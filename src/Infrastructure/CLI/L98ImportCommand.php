@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Import\Executor;
-use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
+use HexagonalPlayground\Infrastructure\Filesystem\File;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,8 +22,6 @@ class L98ImportCommand extends Command
     {
         $styledIo = $this->getStyledIO($input, $output);
 
-        /** @var FilesystemService $filesystem */
-        $filesystem = $this->container->get(FilesystemService::class);
         /** @var Executor $executor */
         $executor = $this->container->get(Executor::class);
         /** @var TeamMapper $teamMapper */
@@ -35,7 +33,8 @@ class L98ImportCommand extends Command
 
         foreach ($input->getArgument('files') as $path) {
             $styledIo->text('Started processing ' . $path);
-            $stream = $filesystem->openFile($path, 'r');
+            $inputFile = new File($path);
+            $stream = $inputFile->open('r');
             $executor($stream, $this->getAuthContext(), $teamMapper);
             $stream->close();
             $styledIo->text('Finished processing ' . $path);

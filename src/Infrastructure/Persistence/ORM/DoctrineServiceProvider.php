@@ -26,7 +26,8 @@ use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\Config;
-use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
+use HexagonalPlayground\Infrastructure\Filesystem\Directory;
+use HexagonalPlayground\Infrastructure\Filesystem\File;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Logging\Middleware as LoggingMiddleware;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepository;
@@ -99,9 +100,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     $params['driverOptions'] = [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"];
                 }
                 if ($passwordFile) {
-                    /** @var FilesystemService $filesystem */
-                    $filesystem = $container->get(FilesystemService::class);
-                    $params['password'] = $filesystem->getFileContents($passwordFile);
+                    $params['password'] = (new File($passwordFile))->read();
                 }
                 $customTypes = [
                     CustomDateTimeType::class => [
@@ -143,10 +142,9 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             }),
 
             Configuration::class => DI\factory(function (ContainerInterface $container) {
-                /** @var FilesystemService $filesystem */
-                $filesystem = $container->get(FilesystemService::class);
+                $proxyDir = new Directory(__DIR__, 'Proxy');
                 $config = new Configuration();
-                $config->setProxyDir($filesystem->joinPaths([__DIR__, 'Proxy']));
+                $config->setProxyDir($proxyDir->getPath());
                 $config->setProxyNamespace(implode('\\', [__NAMESPACE__, 'Proxy']));
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
                 $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_NEVER);
@@ -158,17 +156,14 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             ObjectManager::class => DI\get(EntityManagerInterface::class),
 
             SimplifiedXmlDriver::class => DI\factory(function (ContainerInterface $container) {
-                /** @var FilesystemService $filesystem */
-                $filesystem = $container->get(FilesystemService::class);
-                $basePath   = $filesystem->joinPaths([$container->get('app.home'), 'config', 'doctrine']);
-                $driver     = new SimplifiedXmlDriver([
-                    $filesystem->joinPaths([$basePath, 'Domain'])
-                    => "HexagonalPlayground\\Domain",
-                    $filesystem->joinPaths([$basePath, 'Domain', 'Event'])
-                    => "HexagonalPlayground\\Domain\\Event",
-                    $filesystem->joinPaths([$basePath, 'Domain', 'Value'])
-                    => "HexagonalPlayground\\Domain\\Value"
-                ]);
+                $basePath   = (new Directory($container->get('app.home'), 'config', 'doctrine'))->getPath();
+                $prefixes   = [
+                    (new Directory($basePath, 'Domain'))->getPath() => "HexagonalPlayground\\Domain",
+                    (new Directory($basePath, 'Domain', 'Event'))->getPath() => "HexagonalPlayground\\Domain\\Event",
+                    (new Directory($basePath, 'Domain', 'Value'))->getPath() => "HexagonalPlayground\\Domain\\Value"
+                ];
+
+                $driver = new SimplifiedXmlDriver($prefixes);
                 $driver->setGlobalBasename('global');
 
                 return $driver;

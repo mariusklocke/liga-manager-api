@@ -14,7 +14,6 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             StreamFactoryInterface::class => DI\get(Psr17Factory::class),
-            FilesystemService::class => DI\autowire(),
             TeamLogoRepository::class => DI\autowire()
         ];
     }

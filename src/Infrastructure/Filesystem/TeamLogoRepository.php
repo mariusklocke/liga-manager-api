@@ -9,41 +9,36 @@ use Psr\Http\Message\UploadedFileInterface;
 
 class TeamLogoRepository
 {
-    private FilesystemService $filesystemService;
-    private Config $config;
+    private Directory $storageDirectory;
+    private string $publicPath;
 
-    public function __construct(FilesystemService $filesystemService, Config $config)
+    public function __construct(Config $config)
     {
-        $this->filesystemService = $filesystemService;
-        $this->config = $config;
+        $this->storageDirectory = new Directory($config->getValue('app.logos.path', ''));
+        $this->publicPath = $config->getValue('app.logos.public.path', '/logos');
     }
 
     public function delete(string $logoId): void
     {
-        $this->filesystemService->deleteFile($this->generatePrivatePath($logoId));
+        $file = $this->getStorageFile($logoId);
+        $file->delete();
     }
 
     public function generatePublicPath(string $logoId): string
     {
-        return join('/', [
-            $this->config->getValue('app.logos.public.path', '/logos'),
-            "$logoId.webp"
-        ]);
+        return join('/', [$this->publicPath, "$logoId.webp"]);
     }
 
-    public function generatePrivatePath(string $logoId): string
+    public function getStorageFile(string $logoId): File
     {
-        return $this->filesystemService->joinPaths([
-            $this->config->getValue('app.logos.path', ''),
-            "$logoId.webp"
-        ]);
+        return new File($this->storageDirectory->getPath(), "$logoId.webp");
     }
 
     public function save(UploadedFileInterface $uploadedFile): string
     {
         $logoId = Uuid::create();
 
-        $uploadedFile->moveTo($this->generatePrivatePath($logoId));
+        $uploadedFile->moveTo($this->getStorageFile($logoId)->getPath());
 
         return $logoId;
     }
@@ -51,12 +46,13 @@ class TeamLogoRepository
     public function findAll(): array
     {
         $logoIds = [];
-        $directory = $this->config->getValue('app.logos.path', '');
-        foreach ($this->filesystemService->getDirectoryIterator($directory) as $filename) {
-            if (str_ends_with($filename, '.webp')) {
-                $logoIds[] = str_replace('.webp', '', $filename);
+
+        foreach ($this->storageDirectory->list() as $item) {
+            if ($item instanceof File && str_ends_with($item->getName(), '.webp')) {
+                $logoIds[] = str_replace('.webp', '', $item->getName());
             }
         }
+
         return $logoIds;
     }
 }

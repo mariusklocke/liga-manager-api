@@ -4,7 +4,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Domain\Team;
-use HexagonalPlayground\Infrastructure\Filesystem\FilesystemService;
+use HexagonalPlayground\Infrastructure\Filesystem\File;
 use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,8 +23,6 @@ class ImportLogoCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        /** @var FilesystemService $filesystemService */
-        $filesystemService = $this->container->get(FilesystemService::class);
         /** @var TeamLogoRepository $teamLogoRepository */
         $teamLogoRepository = $this->container->get(TeamLogoRepository::class);
         /** @var TeamRepositoryInterface $teamRepository */
@@ -34,15 +32,15 @@ class ImportLogoCommand extends Command
         /** @var Team $team */
         $team = $teamRepository->find($input->getArgument('teamId'));
 
-        $filePath = $input->getArgument('file');
-        $stream = $filesystemService->openFile($filePath, 'r');
+        $inputFile = new File($input->getArgument('file'));
+        $stream = $inputFile->open('r');
         $uploadedFile = $uploadedFileFactory->createUploadedFile($stream, $stream->getSize());
         $logoId = $teamLogoRepository->save($uploadedFile);
         $team->setLogoId($logoId);
         $teamRepository->save($team);
         $teamRepository->flush();
-        $filesystemService->deleteFile($filePath);
-        $filePath = $teamLogoRepository->generatePrivatePath($logoId);
+        $inputFile->delete();
+        $filePath = $teamLogoRepository->getStorageFile($logoId)->getPath();
 
         $this->getStyledIO($input, $output)->success("Team logo has been imported to $filePath");
 
