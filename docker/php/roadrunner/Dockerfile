@@ -10,7 +10,7 @@ ENV APP_VERSION=${APP_VERSION}
 ENV PHP_VERSION=${PHP_VERSION}
 
 # Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp intl mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xml xmlreader xmlwriter" \
+RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp intl mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
     && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \ 
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
@@ -40,6 +40,10 @@ RUN chmod +x /usr/local/bin/docker-php-healthcheck
 # Add entrypoint
 COPY docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
+
+# Add extension helper script
+COPY docker/php/php-ext-configure.sh /usr/local/bin/php-ext-configure
+RUN chmod +x /usr/local/bin/php-ext-configure
 
 # Create application directories
 ENV APP_HOME="/var/www/api"

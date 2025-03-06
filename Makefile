@@ -43,8 +43,7 @@ endif
 	docker compose exec php composer install --no-cache --no-progress
 	docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
 	docker compose exec php phpunit -c config/phpunit.xml --testdox --display-deprecations --display-warnings
-	docker compose exec php apk add --no-cache php$(subst .,,${PHP_VERSION})-xdebug
-	docker compose exec php sh -c "echo 'zend_extension=xdebug.so' > /etc/php/conf.d/50_xdebug.ini"
+	docker compose exec php php-ext-configure enable xdebug
 	docker compose exec php phpunit -c config/phpunit.xml --testdox --coverage-clover coverage.xml -d error_log=php-errors.log
 	docker compose exec php cat coverage.xml > build/coverage.xml
 
