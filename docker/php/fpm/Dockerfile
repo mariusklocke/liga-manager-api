@@ -18,6 +18,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gmp intl mbstring op
     && apk upgrade \
     && apk add --no-cache curl fcgi icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
+    && rm -rf /etc/php/php-fpm.d \
     && test -e /usr/sbin/php-fpm || ln -s /usr/sbin/php-fpm${PHP_VERSION/./} /usr/sbin/php-fpm \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
     && adduser -u 82 -D -S -G www-data www-data \
@@ -26,7 +27,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gmp intl mbstring op
     && rm -rf /var/cache/*
 
 # Configure PHP
-COPY docker/php/fpm/docker.conf /etc/php/php-fpm.d/zz-docker.conf
+COPY docker/php/fpm/php-fpm.conf /etc/php/php-fpm.conf
 COPY docker/php/php.ini /etc/php/php.ini
 
 # Add healthcheck
