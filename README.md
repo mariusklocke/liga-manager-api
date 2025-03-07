@@ -1,4 +1,4 @@
-![Build Status](https://github.com/mariusklocke/liga-manager-api/actions/workflows/docker-build.yml/badge.svg)
+![Build Status](https://github.com/mariusklocke/liga-manager-api/actions/workflows/ci.yml/badge.svg)
 [![Coverage Status](https://codecov.io/gh/mariusklocke/liga-manager-api/graph/badge.svg?token=08EF0R5UTL)](https://codecov.io/gh/mariusklocke/liga-manager-api)
 ## Requirements
 A working installation of `docker` and `docker compose`.
@@ -35,22 +35,26 @@ For more information on how to manage containers, please refer to the [docker co
 Each of the following commands can be run like `docker compose exec php lima app:config:validate` once the containers are running.
 
 ```
-  app:config:validate               Validate the config (does not check backing services connection)
-  app:db:browse                     Browse the database interactively
-  app:db:demo-data                  Load demo data into current database
-  app:db:export                     Export the database
-  app:db:import                     Import a database
-  app:db:migrate                    Migrate the database
-  app:db:wipe                       Erase all data from the current database
-  app:env:setup                     Setup environment config interactively
-  app:health:check                  Performs health checks
-  app:import:season                 Import season data from L98 files
-  app:logo:cleanup                  Cleanup logos not referenced by a team
-  app:logo:import                   Import a logo (source file will be deleted)
-  app:mail:send                     Send a mail with HTML body
-  app:user:create                   Create a user
-  app:user:delete                   Delete a user
-  app:user:list                     List users
+  app:api:query           Sends an arbirary request to the API
+  app:config:show         Show config
+  app:config:validate     Validate the config (does not check backing services connection)
+  app:container:inspect   Inspect the dependency injection container
+  app:db:browse           Browse the database interactively
+  app:db:demo-data        Load demo data into current database
+  app:db:export           Export the database
+  app:db:import           Import a database
+  app:db:migrate          Migrate the database
+  app:db:wipe             Erase all data from the current database
+  app:env:setup           Setup environment config interactively
+  app:health:check        Performs health checks
+  app:import:season       Import season data from L98 files
+  app:logo:cleanup        Cleanup logos not referenced by a team
+  app:logo:import         Import a logo (source file will be deleted)
+  app:mail:send           Send a mail using an arbitrary content
+  app:user:create         Create a user
+  app:user:delete         Delete a user
+  app:user:list           List users
+  app:versions:list       List versions
 ```
 
 ## FAQ
