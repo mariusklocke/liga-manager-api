@@ -18,6 +18,8 @@ jobs:
         run: make build
       - name: Test image
         run: make test
+      - name: Create tarball
+        run: make tarball
       - name: Publish image
         run: make publish
         if: github.ref_type == 'tag' || github.ref_name == 'master'
@@ -26,6 +28,11 @@ jobs:
         with:
           name: coverage-fpm-mariadb
           path: build/coverage.xml
+      - name: Upload tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarball
+          path: build/liga-manager-api.tar.gz
   build-fpm-postgres:
     runs-on: ubuntu-latest
     env:

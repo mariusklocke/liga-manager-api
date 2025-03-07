@@ -33,3 +33,6 @@ publish:
 
 release:
 	build/release.sh
+
+tarball:
+	build/tarball.sh
