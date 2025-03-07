@@ -4,7 +4,9 @@
 A working installation of `docker` and `docker compose`.
 
 ## Getting started
-This application comes with an example configuration for running with `docker compose`. To get started copy `.env.dist` to `.env` and `docker-compose.yml.dist` to `docker-compose.yml` and adjust both configuration files to your local needs.
+This application comes with an example configuration for running with `docker compose`.
+
+To get started copy `docker-compose.yml.dist` to `docker-compose.yml` and adjust `docker-compose.yml` to your local needs.
 
 The file `docker-compose.yml.dist` contains a default configuration suitable for local development.
 
@@ -114,7 +116,7 @@ input does not cause errors in the API.
 ## Environment variables
 
 The following table lists the environment variables used in the application. Dynamic values are populated automatically
-by the application. Static values must be supplied from the outside (e.g. by using a `.env` file)
+by the application. Static values must be supplied from the outside (e.g. by using the `environment` section in your `docker-compose.yml`)
 
 | Name                  | Mode     | Description                                     |
 |-----------------------|----------|-------------------------------------------------|

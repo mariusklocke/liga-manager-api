@@ -25,8 +25,17 @@ services:
         APP_VERSION: dev-latest
     volumes:
       - logos:/var/www/logos
-    env_file:
-      - .env
+    environment:
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=123456
+      - APP_BASE_URL=https://localhost
+      - DB_URL=pdo-mysql://lima:dev@mariadb/lima
+      - EMAIL_SENDER_ADDRESS=noreply@example.com
+      - EMAIL_SENDER_NAME=Wilde Liga Bremen
+      - EMAIL_URL=smtp://lima:foobar@maildev:1025?verify_peer=0
+      - JWT_SECRET=0123456789abcdef
+      - LOG_LEVEL=debug
+      - REDIS_HOST=redis
     healthcheck:
       test: [ "CMD", "docker-php-healthcheck" ]
       start_period: 1m
