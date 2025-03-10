@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 1.25.0 - 2025-03-10
+* Feature: Add CLI command to send API requests
+* Feature: Add CLI command to list versions
+* Feature: Add CLI command to show config
+* Feature: Add CLI command to inspect container
+* Improvement: Refactor build scripts
+* Improvement: Update default configs for development
+* Improvement: Add `php-ext-configure` to quickly toggle PHP extensions
+* Improvement: Refactor filesystem access classes
+* Improvement: Refactor roadrunner worker code
+* Improvement: Integrate roadrunner RPC interface for metrics
+* Improvement: Refactor filter handling
+
 ## 1.24.0 - 2025-01-21
 * Feature: Add user locale for localized emails
 * Improvement: Send emails with additional plaintext content
