@@ -6,7 +6,7 @@ env:
   DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 jobs:
   build-fpm-mariadb:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     env:
       APP_RUNTIME: "fpm"
       DB_DRIVER: "pdo-mysql"
@@ -34,7 +34,7 @@ jobs:
           name: tarball
           path: build/liga-manager-api.tar.gz
   build-fpm-postgres:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     env:
       APP_RUNTIME: "fpm"
       DB_DRIVER: "pdo-pgsql"
@@ -52,7 +52,7 @@ jobs:
           name: coverage-fpm-postgres
           path: build/coverage.xml
   build-roadrunner-mariadb:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     env:
       APP_RUNTIME: "roadrunner"
       DB_DRIVER: "pdo-mysql"
@@ -73,7 +73,7 @@ jobs:
           name: coverage-roadrunner-mariadb
           path: build/coverage.xml
   build-roadrunner-postgres:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     env:
       APP_RUNTIME: "roadrunner"
       DB_DRIVER: "pdo-pgsql"
