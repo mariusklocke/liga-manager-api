@@ -23,7 +23,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp intl mbstring opcach
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
     && adduser -u 82 -D -S -G www-data www-data \
-    && curl -L -o /usr/local/bin/composer https://getcomposer.org/download/latest-stable/composer.phar \
+    && curl -sSL -o /usr/local/bin/composer https://getcomposer.org/download/latest-stable/composer.phar \
     && chmod +x /usr/local/bin/composer \
     && rm -rf /var/cache/*
 
