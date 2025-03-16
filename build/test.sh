@@ -6,8 +6,11 @@ function cleanup()
     docker compose logs php || true
 	docker compose exec php cat php-errors.log || true
 	docker compose down -v || true
-	rm -rf "build/.secrets" || true
 }
+
+export DB_PASSWORD=$(openssl rand -hex 16 | tr -d '\n')
+export DB_ROOT_PASSWORD=$(openssl rand -hex 16 | tr -d '\n')
+export JWT_SECRET=$(openssl rand -hex 16 | tr -d '\n')
 
 trap cleanup EXIT
 
@@ -15,10 +18,6 @@ if [[ -n "${DOCKER_TOKEN}" ]]; then
     echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 fi
 
-mkdir -p "build/.secrets"
-openssl rand -hex 16 | tr -d '\n' > build/.secrets/db-password
-openssl rand -hex 16 | tr -d '\n' > build/.secrets/db-root-password
-openssl rand -hex 16 | tr -d '\n' > build/.secrets/jwt-secret
 docker compose up --detach --quiet-pull
 docker compose exec php composer install --no-cache --no-progress
 docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress

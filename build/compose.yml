@@ -111,8 +111,8 @@ volumes:
   postgres-data:
 secrets:
   db-password:
-    file: ${PWD}/build/.secrets/db-password
+    environment: DB_PASSWORD
   db-root-password:
-    file: ${PWD}/build/.secrets/db-root-password
+    environment: DB_ROOT_PASSWORD
   jwt-secret:
-    file: ${PWD}/build/.secrets/jwt-secret
+    environment: JWT_SECRET
