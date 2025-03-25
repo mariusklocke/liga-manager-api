@@ -50,7 +50,7 @@
         "spiral/roadrunner-metrics": "^3.2",
         "symfony/console": "^7.0.2",
         "symfony/mailer": "^7.0.2",
-        "webonyx/graphql-php": "^14.11.10"
+        "webonyx/graphql-php": "^15.20.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^12.0.4",

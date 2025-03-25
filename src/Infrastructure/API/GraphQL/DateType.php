@@ -4,15 +4,20 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 
 use DateTimeImmutable;
+use DateTimeInterface;
+use GraphQL\Error\Error;
+use GraphQL\Error\SerializationError;
 use GraphQL\Language\AST\Node;
-use GraphQL\Type\Definition\StringType;
+use GraphQL\Language\AST\StringValueNode;
+use GraphQL\Language\Printer;
+use GraphQL\Type\Definition\ScalarType;
 use HexagonalPlayground\Application\InputParser;
 
-class DateType extends StringType
+class DateType extends ScalarType
 {
     use SingletonTrait;
 
-    public $name = 'Date';
+    public string $name = 'Date';
 
     /**
      * @param mixed $value
@@ -20,7 +25,7 @@ class DateType extends StringType
      */
     public function parseValue($value): ?DateTimeImmutable
     {
-        return $value !== null ? InputParser::parseDate(parent::parseValue($value)) : null;
+        return $value !== null ? InputParser::parseDate($value) : null;
     }
 
     /**
@@ -30,6 +35,33 @@ class DateType extends StringType
      */
     public function parseLiteral($valueNode, ?array $variables = null): ?DateTimeImmutable
     {
-        return $this->parseValue($this->parseLiteral($valueNode, $variables));
+        if ($valueNode instanceof StringValueNode) {
+            return $this->parseValue($valueNode->value);
+        }
+
+        $notString = Printer::doPrint($valueNode);
+        throw new Error("DateType cannot represent a non string value: {$notString}", $valueNode);
+    }
+
+    /**
+     * @param mixed $value
+     * @return string
+     * @throws SerializationError
+     */
+    public function serialize($value): string
+    {
+        if (is_string($value)) {
+            return $value;
+        }
+
+        if ($value instanceof DateTimeInterface) {
+            return $value->format('Y-m-d');
+        }
+
+        $type = gettype($value);
+        if ($type === 'object') {
+            $type = get_class($value);
+        }
+        throw new SerializationError("DateType cannot represent internal type: {$type}");
     }
 }
