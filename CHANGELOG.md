@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.25.1 - 2025-03-25
+* Improvement: Update composer packages
+* Improvement: Use in-memory secrets in build
+
 ## 1.25.0 - 2025-03-10
 * Feature: Add CLI command to send API requests
 * Feature: Add CLI command to list versions
