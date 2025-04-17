@@ -13,28 +13,9 @@ metrics:
 rpc:
   listen: tcp://127.0.0.1:6001
 logs:
+  mode: raw
+  level: info
+  encoding: console
   channels:
     http:
-      mode: raw
-      level: panic
-      encoding: console
-      output: stdout
-      err_output: stderr
-    server:
-      mode: raw
-      level: info
-      encoding: console
-      output: stdout
-      err_output: stderr
-    metrics:
-      mode: raw
-      level: info
-      encoding: console
-      output: stdout
-      err_output: stderr
-    rpc:
-      mode: raw
-      level: info
-      encoding: console
-      output: stdout
-      err_output: stderr
+      level: error

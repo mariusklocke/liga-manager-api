@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\Console\EntityManagerProvider;
 use HexagonalPlayground\Application\Import\TeamMapperInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\Config;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
@@ -45,7 +46,12 @@ class ServiceProvider implements ServiceProviderInterface
             }),
             InputInterface::class => DI\get(ArgvInput::class),
             LoggerInterface::class => DI\factory(function (ContainerInterface $container) {
-                return new ConsoleLogger($container->get(OutputInterface::class));
+                $input = $container->get(InputInterface::class);
+                if ($input->isInteractive()) {
+                    return new ConsoleLogger($container->get(OutputInterface::class));
+                } else {
+                    return new Logger($container->get(OutputInterface::class), $container->get(Config::class));
+                }
             }),
             OutputInterface::class => DI\get(ConsoleOutput::class),
             TeamMapperInterface::class => DI\get(TeamMapper::class),
