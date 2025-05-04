@@ -145,10 +145,7 @@ class CommandTest extends TestCase
         $tester = $this->getCommandTester('app:db:migrate');
         self::assertExecutionSuccess($tester->execute(
             ['--dry-run' => null],
-            [
-                'interactive' => true,
-                'verbosity' => OutputInterface::VERBOSITY_VERY_VERBOSE
-            ]
+            ['verbosity' => OutputInterface::VERBOSITY_VERY_VERBOSE]
         ));
         self::assertStringContainsString('No queries were executed', $tester->getDisplay());
 
