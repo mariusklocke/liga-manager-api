@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.25.2 - 2025-05-04
+* Improvement: Update composer packages
+* Improvement: Update roadrunner to 2025.1.1
+
 ## 1.25.1 - 2025-03-25
 * Improvement: Update composer packages
 * Improvement: Use in-memory secrets in build
