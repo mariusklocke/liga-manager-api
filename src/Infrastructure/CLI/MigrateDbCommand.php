@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Tools\SchemaTool;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,15 +22,13 @@ class MigrateDbCommand extends Command
     {
         /** @var EntityManagerInterface $entityManager */
         $entityManager = $this->container->get(EntityManagerInterface::class);
-        /** @var LoggerInterface $logger */
-        $logger = $this->container->get(LoggerInterface::class);
         $schemaTool = new SchemaTool($entityManager);
         $metadataFactory = $entityManager->getMetadataFactory();
         $dryRun = (bool)$input->getOption('dry-run');
 
         $count = 0;
         foreach ($schemaTool->getUpdateSchemaSql($metadataFactory->getAllMetadata()) as $sql) {
-            $logger->debug($sql);
+            $output->writeln($sql);
             if (!$dryRun) {
                 $entityManager->getConnection()->executeStatement($sql);
             }
@@ -39,14 +36,14 @@ class MigrateDbCommand extends Command
         }
 
         if ($dryRun) {
-            $logger->info("Dry-Run activated: $count queries were generated. No queries were executed.");
+            $output->writeln("Dry-Run activated: $count queries were generated. No queries were executed.");
             return 0;
         }
 
         if ($count > 0) {
-            $logger->info("Database successfully migrated using $count queries.");
+            $output->writeln("Database successfully migrated using $count queries.");
         } else {
-            $logger->info("Database already up to date. Nothing to migrate.");
+            $output->writeln("Database already up to date. Nothing to migrate.");
         }
 
         return 0;
