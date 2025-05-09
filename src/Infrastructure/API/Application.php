@@ -52,8 +52,9 @@ class Application extends App
         $routeCollector = $this->getRouteCollector();
         $routeCollector->setDefaultInvocationStrategy(new RequestHandler(true));
 
-        $this->group('/api', function (RouteCollectorProxyInterface $group) {
-            foreach ($this->getRouteProviders() as $provider) {
+        $routeProviders = $this->getRouteProviders();
+        $this->group('/api', function (RouteCollectorProxyInterface $group) use ($routeProviders) {
+            foreach ($routeProviders as $provider) {
                 $provider->register($group);
             }
         });
