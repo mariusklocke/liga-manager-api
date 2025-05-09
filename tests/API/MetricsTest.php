@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace HexagonalPlayground\Tests\Metrics;
+namespace HexagonalPlayground\Tests\API;
 
 use HexagonalPlayground\Tests\Framework\HttpTest;
 

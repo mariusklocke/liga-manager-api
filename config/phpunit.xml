@@ -8,20 +8,17 @@
         </include>
     </source>
     <testsuites>
+        <testsuite name="Unit">
+            <directory>../tests/Unit</directory>
+        </testsuite>
         <testsuite name="CLI">
             <directory>../tests/CLI</directory>
         </testsuite>
+        <testsuite name="API">
+            <directory>../tests/API</directory>
+        </testsuite>
         <testsuite name="GraphQL">
             <directory>../tests/GraphQL</directory>
-        </testsuite>
-        <testsuite name="Health">
-            <directory>../tests/Health</directory>
-        </testsuite>
-        <testsuite name="Metrics">
-            <directory>../tests/Metrics</directory>
-        </testsuite>
-        <testsuite name="Unit">
-            <directory>../tests/Unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>
