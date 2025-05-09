@@ -6,18 +6,22 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
+use HexagonalPlayground\Infrastructure\API\Limits;
 
 class Controller extends BaseController
 {
+    private Limits $limits;
     private string $appVersion;
 
     /**
      * @param ResponseFactoryInterface $responseFactory
+     * @param Limits $limits
      * @param string $appVersion
      */
-    public function __construct(ResponseFactoryInterface $responseFactory, string $appVersion)
+    public function __construct(ResponseFactoryInterface $responseFactory, Limits $limits, string $appVersion)
     {
         parent::__construct($responseFactory);
+        $this->limits = $limits;
         $this->appVersion = $appVersion;
     }
 
@@ -26,10 +30,10 @@ class Controller extends BaseController
         return $this->buildJsonResponse([
             'limits' => [
                 'logos' => [
-                    'size' => '2M',
-                    'types' => ['image/webp']
+                    'size' => $this->limits->uploadFileSize,
+                    'types' => $this->limits->uploadFileTypes,
                 ],
-                'requests' => '5r/s'
+                'requests' => $this->limits->requestsPerSecond,
             ],
             'version' => $this->appVersion
         ]);

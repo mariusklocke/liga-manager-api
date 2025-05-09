@@ -21,14 +21,14 @@ class IndexTest extends HttpTest
         self::assertObjectHasProperty('logos', $payload->limits);
         self::assertIsObject($payload->limits->logos);
         self::assertObjectHasProperty('size', $payload->limits->logos);
-        self::assertIsString($payload->limits->logos->size);
-        self::assertGreaterThan(0, strlen($payload->limits->logos->size));
+        self::assertIsInt($payload->limits->logos->size);
+        self::assertGreaterThan(0, $payload->limits->logos->size);
         self::assertObjectHasProperty('types', $payload->limits->logos);
         self::assertIsArray($payload->limits->logos->types);
         self::assertGreaterThan(0, count($payload->limits->logos->types));
         self::assertObjectHasProperty('requests', $payload->limits);
-        self::assertIsString($payload->limits->requests);
-        self::assertGreaterThan(0, strlen($payload->limits->requests));
+        self::assertIsInt($payload->limits->requests);
+        self::assertGreaterThan(0, $payload->limits->requests);
         self::assertObjectHasProperty('version', $payload);
         self::assertIsString($payload->version);
         self::assertGreaterThan(0, strlen($payload->version));

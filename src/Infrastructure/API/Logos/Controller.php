@@ -8,6 +8,7 @@ use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
+use HexagonalPlayground\Infrastructure\API\Limits;
 use HexagonalPlayground\Infrastructure\API\Security\AuthorizationTrait;
 use HexagonalPlayground\Infrastructure\Filesystem\TeamLogoRepository;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -22,17 +23,20 @@ class Controller extends BaseController
     private TeamRepositoryInterface $teamRepository;
     private TeamLogoRepository $teamLogoRepository;
     private LoggerInterface $logger;
+    private Limits $limits;
 
     public function __construct(
         ResponseFactoryInterface $responseFactory,
         TeamRepositoryInterface $teamRepository,
         TeamLogoRepository $teamLogoRepository,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        Limits $limits
     ) {
       parent::__construct($responseFactory);
       $this->teamRepository = $teamRepository;
       $this->teamLogoRepository = $teamLogoRepository;
       $this->logger = $logger;
+      $this->limits = $limits;
     }
 
     public function get(ServerRequestInterface $request): ResponseInterface
@@ -131,7 +135,7 @@ class Controller extends BaseController
 
     private function checkUploadedFile(UploadedFileInterface $uploadedFile): void
     {
-        $maxFileSize = $this->parseByteSize(ini_get('upload_max_filesize'));
+        $maxFileSize = $this->limits->uploadFileSize;
         $fileSize = (int)$uploadedFile->getSize();
 
         if ($fileSize > $maxFileSize || $uploadedFile->getError() === UPLOAD_ERR_INI_SIZE) {
@@ -146,31 +150,14 @@ class Controller extends BaseController
             throw new InternalException("Invalid file upload: Code " . $uploadedFile->getError());
         }
 
+        $allowedMediaTypes = $this->limits->uploadFileTypes;
         $mediaType = $uploadedFile->getClientMediaType();
-        if ($mediaType !== 'image/webp') {
-            throw new InvalidInputException("Invalid media type. Expected: image/webp. Got: $mediaType");
+        if (!in_array($mediaType, $allowedMediaTypes, true)) {
+            throw new InvalidInputException(sprintf(
+                "Invalid media type. Expected: %s. Got: %s",
+                implode(', ', $allowedMediaTypes),
+                $mediaType
+            ));
         }
-    }
-
-    /**
-     * Converts a byte size string with SI-prefixes to number of bytes
-     *
-     * @param string $byteSize
-     * @return int
-     */
-    private function parseByteSize(string $byteSize): int
-    {
-        $factorMap = [
-            'K' => pow(2, 10),
-            'M' => pow(2, 20),
-            'G' => pow(2, 30)
-        ];
-
-        $prefix = $byteSize[strlen($byteSize) - 1];
-        if (!array_key_exists($prefix, $factorMap)) {
-            return (int)$byteSize;
-        }
-
-        return substr($byteSize, 0, -1) * $factorMap[$prefix];
     }
 }

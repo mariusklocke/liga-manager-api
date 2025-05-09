@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\Index;
 
 use DI;
 use HexagonalPlayground\Application\ServiceProviderInterface;
+use HexagonalPlayground\Infrastructure\API\Limits;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
@@ -16,6 +17,7 @@ class ServiceProvider implements ServiceProviderInterface
             Controller::class => DI\factory(function (ContainerInterface $container) {
                 return new Controller(
                     $container->get(ResponseFactoryInterface::class),
+                    $container->get(Limits::class),
                     $container->get('app.version')
                 );
             }),
