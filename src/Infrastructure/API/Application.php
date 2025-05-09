@@ -5,21 +5,21 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Infrastructure\API\Event\RequestEvent;
 use HexagonalPlayground\Infrastructure\API\Event\ResponseEvent;
-use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRouteProvider;
-use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
-use HexagonalPlayground\Infrastructure\API\Index\RouteProvider as IndexRouteProvider;
-use HexagonalPlayground\Infrastructure\API\Logos\RouteProvider as LogosRouteProvider;
-use HexagonalPlayground\Infrastructure\API\Metrics\RouteProvider as MetricsRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\RateLimitMiddleware;
 use HexagonalPlayground\Infrastructure\ContainerBuilder;
 use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvider;
 use HexagonalPlayground\Infrastructure\API\ServiceProvider as ApiServiceProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLServiceProvider;
+use HexagonalPlayground\Infrastructure\API\GraphQL\Controller as GraphQLController;
 use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Health\Controller as HealthController;
 use HexagonalPlayground\Infrastructure\API\Index\ServiceProvider as IndexServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Index\Controller as IndexController;
 use HexagonalPlayground\Infrastructure\API\Logos\ServiceProvider as LogosServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Logos\Controller as LogosController;
 use HexagonalPlayground\Infrastructure\API\Metrics\ServiceProvider as MetricsServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Metrics\Controller as MetricsController;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
 use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
@@ -35,7 +35,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 use Slim\Handlers\Strategies\RequestHandler;
-use Slim\Interfaces\RouteCollectorProxyInterface;
 
 class Application extends App
 {
@@ -49,15 +48,9 @@ class Application extends App
             $this->add($middleware);
         }
 
-        $routeCollector = $this->getRouteCollector();
-        $routeCollector->setDefaultInvocationStrategy(new RequestHandler(true));
+        $this->routeCollector->setDefaultInvocationStrategy(new RequestHandler(true));
 
-        $routeProviders = $this->getRouteProviders();
-        $this->group('/api', function (RouteCollectorProxyInterface $group) use ($routeProviders) {
-            foreach ($routeProviders as $provider) {
-                $provider->register($group);
-            }
-        });
+        $this->registerRoutes();
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -116,16 +109,17 @@ class Application extends App
     }
 
     /**
-     * Returns an iterator for route providers
-     *
-     * @return RouteProviderInterface[]
+     * Register routes
      */
-    private function getRouteProviders(): Iterator
+    private function registerRoutes(): void
     {
-        yield new IndexRouteProvider();
-        yield new GraphQLRouteProvider();
-        yield new HealthRouteProvider();
-        yield new LogosRouteProvider();
-        yield new MetricsRouteProvider();
+        $this->get('/api', IndexController::class);
+        $this->get('/api/graphql', GraphQLController::class);
+        $this->post('/api/graphql', GraphQLController::class);
+        $this->get('/api/health', HealthController::class);
+        $this->get('/api/logos', LogosController::class);
+        $this->post('/api/logos', LogosController::class);
+        $this->delete('/api/logos', LogosController::class);
+        $this->get('/api/metrics', MetricsController::class);
     }
 }
