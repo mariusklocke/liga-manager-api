@@ -7,6 +7,7 @@ use HexagonalPlayground\Infrastructure\API\Event\RequestEvent;
 use HexagonalPlayground\Infrastructure\API\Event\ResponseEvent;
 use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
+use HexagonalPlayground\Infrastructure\API\Index\RouteProvider as IndexRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\RouteProvider as LogosRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Metrics\RouteProvider as MetricsRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
@@ -16,6 +17,7 @@ use HexagonalPlayground\Application\ServiceProvider as ApplicationServiceProvide
 use HexagonalPlayground\Infrastructure\API\ServiceProvider as ApiServiceProvider;
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
+use HexagonalPlayground\Infrastructure\API\Index\ServiceProvider as IndexServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\ServiceProvider as LogosServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Metrics\ServiceProvider as MetricsServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
@@ -51,14 +53,7 @@ class Application extends App
         $routeCollector->setDefaultInvocationStrategy(new RequestHandler(true));
 
         $this->group('/api', function (RouteCollectorProxyInterface $group) {
-            $routeProviders = [
-                new GraphQLRouteProvider(),
-                new HealthRouteProvider(),
-                new LogosRouteProvider(),
-                new MetricsRouteProvider()
-            ];
-
-            foreach ($routeProviders as $provider) {
+            foreach ($this->getRouteProviders() as $provider) {
                 $provider->register($group);
             }
         });
@@ -111,10 +106,25 @@ class Application extends App
         yield new FilesystemServiceProvider();
         yield new GraphQLServiceProvider();
         yield new HealthServiceProvider();
+        yield new IndexServiceProvider();
         yield new LogosServiceProvider();
         yield new MailServiceProvider();
         yield new MetricsServiceProvider();
         yield new ReadRepositoryProvider();
         yield new SecurityServiceProvider();
+    }
+
+    /**
+     * Returns an iterator for route providers
+     *
+     * @return RouteProviderInterface[]
+     */
+    private function getRouteProviders(): Iterator
+    {
+        yield new IndexRouteProvider();
+        yield new GraphQLRouteProvider();
+        yield new HealthRouteProvider();
+        yield new LogosRouteProvider();
+        yield new MetricsRouteProvider();
     }
 }
