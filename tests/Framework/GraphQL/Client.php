@@ -3,6 +3,7 @@
 namespace HexagonalPlayground\Tests\Framework\GraphQL;
 
 use HexagonalPlayground\Tests\Framework\JsonResponseParser;
+use HexagonalPlayground\Tests\Framework\OpenApiValidator;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
@@ -14,13 +15,15 @@ class Client
     private ServerRequestFactoryInterface $requestFactory;
     private array $headers;
     private JsonResponseParser $parser;
+    private OpenApiValidator $schemaValidator;
 
     public function __construct(ClientInterface $httpClient, ServerRequestFactoryInterface $requestFactory)
     {
-        $this->httpClient     = $httpClient;
-        $this->requestFactory = $requestFactory;
-        $this->headers        = [];
-        $this->parser         = new JsonResponseParser();
+        $this->httpClient      = $httpClient;
+        $this->requestFactory  = $requestFactory;
+        $this->headers         = [];
+        $this->parser          = new JsonResponseParser();
+        $this->schemaValidator = new OpenApiValidator();
     }
 
     public function useCredentials(string $email, string $password): void
@@ -462,14 +465,16 @@ GRAPHQL;
 
     private function request(string $query, array $variables = []): ResponseInterface
     {
-        $request = $this->requestFactory->createServerRequest('POST', '/api/graphql/');
+        $request = $this->requestFactory->createServerRequest('POST', '/api/graphql');
         foreach ($this->headers as $name => $value) {
             $request = $request->withHeader($name, $value);
         }
         $request = $request->withHeader('Content-Type', 'application/json');
         $request->getBody()->write(json_encode(['query' => $query, 'variables' => $variables]));
+        $response = $this->httpClient->sendRequest($request);
+        $this->schemaValidator->validateResponse($request, $response);
 
-        return $this->httpClient->sendRequest($request);
+        return $response;
     }
 
     public function cancelMatch($matchId, $reason): void
@@ -930,11 +935,12 @@ GRAPHQL;
 
     public function getSchema(): string
     {
-        $request = $this->requestFactory->createServerRequest('GET', '/api/graphql/');
+        $request = $this->requestFactory->createServerRequest('GET', '/api/graphql');
         foreach ($this->headers as $name => $value) {
             $request = $request->withHeader($name, $value);
         }
         $response = $this->httpClient->sendRequest($request);
+        $this->schemaValidator->validateResponse($request, $response);
 
         return (string)$response->getBody();
     }
