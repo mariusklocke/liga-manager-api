@@ -22,6 +22,8 @@ abstract class HttpTest extends TestCase
 
     protected ServerRequestFactoryInterface $requestFactory;
 
+    protected OpenApiValidator $schemaValidator;
+
     private static ?RequestHandlerInterface $app = null;
 
     protected function setUp(): void
@@ -38,6 +40,7 @@ abstract class HttpTest extends TestCase
         }
         $this->parser = new JsonResponseParser();
         $this->authenticator = new RequestAuthenticator();
+        $this->schemaValidator = new OpenApiValidator();
     }
 
     /**
