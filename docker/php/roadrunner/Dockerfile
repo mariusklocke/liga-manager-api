@@ -56,7 +56,7 @@ WORKDIR ${APP_HOME}
 
 # Install dependencies first
 ENV COMPOSER_ALLOW_SUPERUSER="1"
-COPY composer.lock composer.json ./
+COPY composer.lock composer.json openapi.yml ./
 RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
 
 # Install own application sources
