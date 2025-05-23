@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "92004e5a821071348e9a025008b14ea4",
+    "content-hash": "c7cf355d3c89639fccb94d8dd60eb46e",
     "packages": [
         {
             "name": "brick/math",
@@ -5225,73 +5225,6 @@
                 "source": "https://github.com/phar-io/version/tree/3.2.1"
             },
             "time": "2022-02-21T01:04:05+00:00"
-        },
-        {
-            "name": "php-openapi/openapi",
-            "version": "2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/openapi-php/php-openapi.git",
-                "reference": "406597506ec8dfa2bd3c07c54db09a0d899df1dd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/openapi-php/php-openapi/zipball/406597506ec8dfa2bd3c07c54db09a0d899df1dd",
-                "reference": "406597506ec8dfa2bd3c07c54db09a0d899df1dd",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "justinrainbow/json-schema": "^5.2 || ^6.0",
-                "php": "^8.1 || ^8.2 || ^8.3 || ^8.4",
-                "symfony/yaml": "^6.1 || ^7.0"
-            },
-            "require-dev": {
-                "apis-guru/openapi-directory": "1.0.0",
-                "cebe/indent": "*",
-                "doctrine/coding-standard": "^12.0",
-                "mermade/openapi3-examples": "1.0.0",
-                "oai/openapi-specification-3.0": "3.0.3",
-                "oai/openapi-specification-3.1": "3.1.1",
-                "phpstan/phpstan": "^1.10.0",
-                "phpunit/phpunit": "^10.0",
-                "rector/rector": "^1.0"
-            },
-            "bin": [
-                "bin/php-openapi"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "openapiphp\\openapi\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Carsten Brandt",
-                    "email": "mail@cebe.cc",
-                    "homepage": "https://cebe.cc/",
-                    "role": "Creator"
-                },
-                {
-                    "name": "Vicent Valls",
-                    "email": "vizzent@gmail.com"
-                }
-            ],
-            "description": "Read and write OpenAPI yaml/json files and make the content accessible in PHP objects.",
-            "homepage": "https://github.com/openapi-php/php-openapi",
-            "keywords": [
-                "openapi"
-            ],
-            "support": {
-                "issues": "https://github.com/openapi-php/php-openapi/issues",
-                "source": "https://github.com/openapi-php/php-openapi"
-            },
-            "time": "2025-02-13T12:51:29+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
