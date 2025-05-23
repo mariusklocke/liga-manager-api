@@ -8,6 +8,7 @@ use HexagonalPlayground\Infrastructure\API\Application;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -59,5 +60,20 @@ abstract class HttpTest extends TestCase
         }
 
         return $request;
+    }
+
+    /**
+     * Sends a request to the application and validates the response against the OpenAPI schema.
+     * 
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    protected function sendRequest(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = $this->client->sendRequest($request);
+
+        $this->schemaValidator->validateResponse($request, $response);
+
+        return $response;
     }
 }

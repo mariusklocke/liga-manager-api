@@ -10,9 +10,8 @@ class HealthTest extends HttpTest
     {
         $request = $this->createRequest('GET', '/api/health');
 
-        $response = $this->client->sendRequest($request);
+        $response = $this->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
-        $this->schemaValidator->validateResponse($request, $response);
 
         $status = $this->parser->parse($response);
         self::assertIsObject($status);
@@ -33,14 +32,12 @@ class HealthTest extends HttpTest
         $filePath = '.maintenance';
         touch($filePath);
         $request = $this->createRequest('GET', '/api/health');
-        $response = $this->client->sendRequest($request);
+        $response = $this->sendRequest($request);
         self::assertSame(503, $response->getStatusCode());
-        $this->schemaValidator->validateResponse($request, $response);
 
         unlink($filePath);
         $request = $this->createRequest('GET', '/api/health');
-        $response = $this->client->sendRequest($request);
+        $response = $this->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
-        $this->schemaValidator->validateResponse($request, $response);
     }
 }
