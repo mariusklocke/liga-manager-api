@@ -13,9 +13,11 @@ use HexagonalPlayground\Infrastructure\API\Application;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\MaildevClient;
+use HexagonalPlayground\Tests\Framework\OpenApiValidator;
 use HexagonalPlayground\Tests\Framework\PsrSlimClient;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -29,6 +31,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     private ServerRequestFactoryInterface $requestFactory;
     private UploadedFileFactoryInterface $uploadedFileFactory;
     private StreamFactoryInterface $streamFactory;
+    private OpenApiValidator $schemaValidator;
     private static ?Application $app = null;
 
     protected function setUp(): void
@@ -51,6 +54,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
         $this->client = new Client($this->psrClient, $this->requestFactory);
         $this->mailClient = new MaildevClient();
+        $this->schemaValidator = new OpenApiValidator();
     }
 
     protected function useAdminAuth(): void
@@ -152,5 +156,20 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         }
 
         return $request;
+    }
+
+    /**
+     * Sends a request to the application and validates the response against the OpenAPI schema.
+     * 
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
+    protected function sendRequest(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = $this->psrClient->sendRequest($request);
+
+        $this->schemaValidator->validateResponse($request, $response);
+
+        return $response;
     }
 }
