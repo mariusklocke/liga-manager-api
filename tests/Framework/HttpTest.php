@@ -2,16 +2,11 @@
 
 namespace HexagonalPlayground\Tests\Framework;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\HttpFactory;
-use HexagonalPlayground\Infrastructure\API\Application;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 abstract class HttpTest extends TestCase
 {
@@ -25,23 +20,13 @@ abstract class HttpTest extends TestCase
 
     protected OpenApiValidator $schemaValidator;
 
-    private static ?RequestHandlerInterface $app = null;
-
     protected function setUp(): void
     {
-        if (!extension_loaded('xdebug')) {
-            $this->client = new Client(['base_uri' => getenv('APP_BASE_URL')]);
-            $this->requestFactory = new HttpFactory();
-        } else {
-            if (null === self::$app) {
-                self::$app = new Application();
-            }
-            $this->client = new PsrSlimClient(self::$app);
-            $this->requestFactory = new Psr17Factory();
-        }
-        $this->parser = new JsonResponseParser();
-        $this->authenticator = new RequestAuthenticator();
-        $this->schemaValidator = new OpenApiValidator();
+        $this->client = Container::getInstance()->get(ClientInterface::class);
+        $this->requestFactory = Container::getInstance()->get(ServerRequestFactoryInterface::class);
+        $this->parser = Container::getInstance()->get(JsonResponseParser::class);
+        $this->authenticator = Container::getInstance()->get(RequestAuthenticator::class);
+        $this->schemaValidator = Container::getInstance()->get(OpenApiValidator::class);
     }
 
     /**

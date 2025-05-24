@@ -6,16 +6,12 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\MultipartStream;
-use HexagonalPlayground\Infrastructure\API\Application;
+use HexagonalPlayground\Tests\Framework\Container;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use HexagonalPlayground\Tests\Framework\MaildevClient;
 use HexagonalPlayground\Tests\Framework\OpenApiValidator;
-use HexagonalPlayground\Tests\Framework\PsrSlimClient;
-use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
@@ -32,29 +28,16 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     private UploadedFileFactoryInterface $uploadedFileFactory;
     private StreamFactoryInterface $streamFactory;
     private OpenApiValidator $schemaValidator;
-    private static ?Application $app = null;
 
     protected function setUp(): void
     {
-        if (!extension_loaded('xdebug')) {
-            $httpFactory = new HttpFactory();
-            $this->requestFactory = $httpFactory;
-            $this->uploadedFileFactory = $httpFactory;
-            $this->streamFactory = $httpFactory;
-            $this->psrClient = new GuzzleClient(['base_uri' => getenv('APP_BASE_URL')]);
-        } else {
-            $psr17Factory = new Psr17Factory();
-            $this->requestFactory = $psr17Factory;
-            $this->uploadedFileFactory = $psr17Factory;
-            $this->streamFactory = $psr17Factory;
-            if (null === self::$app) {
-                self::$app = new Application();
-            }
-            $this->psrClient = new PsrSlimClient(self::$app);
-        }
-        $this->client = new Client($this->psrClient, $this->requestFactory);
-        $this->mailClient = new MaildevClient();
-        $this->schemaValidator = new OpenApiValidator();
+        $this->client = Container::getInstance()->get(Client::class);
+        $this->psrClient = Container::getInstance()->get(ClientInterface::class);
+        $this->mailClient = Container::getInstance()->get(MaildevClient::class);
+        $this->requestFactory = Container::getInstance()->get(ServerRequestFactoryInterface::class);
+        $this->uploadedFileFactory = Container::getInstance()->get(UploadedFileFactoryInterface::class);
+        $this->streamFactory = Container::getInstance()->get(StreamFactoryInterface::class);
+        $this->schemaValidator = Container::getInstance()->get(OpenApiValidator::class);
     }
 
     protected function useAdminAuth(): void
