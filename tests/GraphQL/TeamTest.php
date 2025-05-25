@@ -97,13 +97,13 @@ class TeamTest extends TestCase
 
             // Upload logo
             $request = $this->buildUploadRequest('POST', $url, $tempFile->getPath(), $fileMediaType, $headers);
-            $response = $this->psrClient->sendRequest($request);
+            $response = $this->sendRequest($request);
             self::assertSame(201, $response->getStatusCode(), (string)$response->getBody());
             self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
 
             // Verify logo is present
             $request = $this->buildRequest('GET', $url, $headers);
-            $response = $this->psrClient->sendRequest($request);
+            $response = $this->sendRequest($request);
             self::assertSame(302, $response->getStatusCode(), (string)$response->getBody());
             self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
         } finally {
@@ -124,11 +124,11 @@ class TeamTest extends TestCase
         $url = "/api/logos?teamId=$teamId";
         $headers = ['Authorization' => "Bearer $token"];
         $request = $this->buildRequest('DELETE', $url, $headers);
-        $response = $this->psrClient->sendRequest($request);
+        $response = $this->sendRequest($request);
         self::assertSame(204, $response->getStatusCode());
 
         $request = $this->buildRequest('GET', $url, $headers);
-        $response = $this->psrClient->sendRequest($request);
+        $response = $this->sendRequest($request);
         self::assertSame(404, $response->getStatusCode());
 
         return $teamId;

@@ -20,7 +20,7 @@ class MetricsTest extends HttpTest
         ];
 
         $request = $this->createRequest('GET', '/api/metrics');
-        $response = $this->client->sendRequest($request);
+        $response = $this->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
         $contentType = $response->getHeader('Content-Type')[0];
         self::assertStringStartsWith('text/plain', $contentType);
@@ -47,14 +47,13 @@ class MetricsTest extends HttpTest
     {
         $filePath = '.maintenance';
         touch($filePath);
-        $response = $this->client->sendRequest(
-            $this->createRequest('GET', '/api/metrics')
-        );
+        $request = $this->createRequest('GET', '/api/metrics');
+        $response = $this->sendRequest($request);
         self::assertSame(503, $response->getStatusCode());
+
         unlink($filePath);
-        $response = $this->client->sendRequest(
-            $this->createRequest('GET', '/api/metrics')
-        );
+        $request = $this->createRequest('GET', '/api/metrics');
+        $response = $this->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
     }
 }
