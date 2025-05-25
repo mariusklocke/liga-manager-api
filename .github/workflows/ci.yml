@@ -5,6 +5,17 @@ env:
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
   DOCKER_TOKEN: ${{ secrets.DOCKER_TOKEN }}
 jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Build docs
+        run: make docs
+      - name: Upload docs as pages artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: docs
   build-fpm-mariadb:
     runs-on: ubuntu-latest
     env:
@@ -90,6 +101,15 @@ jobs:
         with:
           name: coverage-roadrunner-postgres
           path: build/coverage.xml
+  deploy-docs:
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag' || github.ref_name == 'master'
+    needs: build-docs
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Deploy pages from artifact
+        uses: actions/deploy-pages@v4
   upload-coverage:
     runs-on: ubuntu-latest
     if: github.ref_type == 'branch'
