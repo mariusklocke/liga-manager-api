@@ -10,7 +10,7 @@ class IndexTest extends HttpTest
     {
         $request = $this->createRequest('GET', '/api');
 
-        $response = $this->client->sendRequest($request);
+        $response = $this->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
 
         $payload = $this->parser->parse($response);

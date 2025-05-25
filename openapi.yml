@@ -8,6 +8,8 @@ info:
 servers:
   - url: https://manager.wildeligabremen.de
 tags:
+  - name: About
+    description: Endpoints for information about the API
   - name: GraphQL
     description: Endpoints for GraphQL schema, queries and mutations
   - name: Health
@@ -17,6 +19,34 @@ tags:
   - name: Metrics
     description: Endpoints for API metrics
 paths:
+  /api:
+    get:
+      tags: 
+        - About 
+      summary: Get version and limits
+      description: Use this endpoint to get the version and limits of the API.
+      operationId: getIndex
+      security: []
+      responses: 
+        200:
+          description: Request successful
+          content:
+            application/json:
+              examples:
+                success:
+                  value:
+                    version: "1.25.2"
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+        429:
+          $ref: "#/components/responses/429"
+        500: 
+          $ref: "#/components/responses/500"
+        503: 
+          $ref: "#/components/responses/503"
   /api/graphql:
     get:
       tags:
