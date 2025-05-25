@@ -20,7 +20,7 @@ else
 	export APP_TAG = ${APP_VERSION}-${APP_RUNTIME}
 endif
 
-.PHONY: build test publish
+.PHONY: build test publish release tarball docs
 
 build:
 	build/build.sh
@@ -36,3 +36,6 @@ release:
 
 tarball:
 	build/tarball.sh
+
+docs:
+	build/docs.sh
