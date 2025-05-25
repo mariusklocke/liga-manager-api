@@ -1,0 +1,436 @@
+openapi: 3.1.1
+info:
+  title: Liga-Manager API
+  version: "1.0"
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+servers:
+  - url: https://manager.wildeligabremen.de
+tags:
+  - name: GraphQL
+    description: Endpoints for GraphQL schema, queries and mutations
+  - name: Health
+    description: Endpoints for health checking
+  - name: Logos
+    description: Endpoints for team logos
+  - name: Metrics
+    description: Endpoints for API metrics
+paths:
+  /api/graphql:
+    get:
+      tags:
+        - GraphQL
+      summary: Get schema
+      description: Returns the GraphQL schema. See [here](https://graphql.org/learn/)
+      operationId: getGraphQLSchema
+      security: []
+      responses:
+        200:
+          description: Request successful
+          content:
+            text/plain:
+              examples:
+                simple:
+                  value: |
+                    type Event {
+                      id: String!
+                      occurred_at: String!
+                      type: String!
+                    }
+                    enum UserRole {
+                      admin
+                      team_manager
+                    }
+        429:
+          $ref: "#/components/responses/429"
+        500: 
+          $ref: "#/components/responses/500"
+        503: 
+          $ref: "#/components/responses/503"
+    post:
+      tags:
+        - GraphQL
+      summary: Execute a query or a mutation
+      description: Use this endpoint to query or mutate data.
+      operationId: executeGraphQLQuery
+      security: 
+        - basicAuth: []
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            examples:
+              query:
+                value:
+                  query: query { allTeams { id name } }
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                variables:
+                  type: object
+              required:
+                - query
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+        409:
+          $ref: "#/components/responses/409"
+        429:
+          $ref: "#/components/responses/429"
+        500: 
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+  /api/health:
+    get:
+      tags:
+        - Health
+      summary: Get API health
+      description: Use this endpoint to check the health of the API.
+      operationId: getHealth
+      security: []
+      responses:
+        200:
+          description: All health checks passed
+          content:
+            application/json:
+              examples:
+                pass:
+                  value:
+                    checks:
+                      doctrine: OK
+                      redis: OK
+              schema:
+                type: object
+                properties:
+                  checks:
+                    type: object
+                    properties:
+                      doctrine:
+                        type: string
+                      redis:
+                        type: string
+        429:
+          $ref: "#/components/responses/429"
+        500: 
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+  /api/logos:
+    parameters:
+      - name: teamId
+        in: query
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Logos
+      summary: Get team logo
+      operationId: getLogo
+      security: []
+      responses:
+        302:
+          description: Resource found
+          headers:
+            Location:
+              description: Path to image file
+              schema:
+                type: string
+        404:
+          $ref: "#/components/responses/404"
+        429:
+          $ref: "#/components/responses/429"
+        500: 
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+    post:
+      tags:
+        - Logos
+      summary: Upload team logo
+      operationId: uploadLogo
+      description: Allows image upload with `image/webp` content type
+      security: 
+        - basicAuth: []
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data: {}
+      responses:
+        201:
+          description: Resource created successfully
+          headers:
+            Location:
+              description: Path to image file
+              schema:
+                type: string
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        429:
+          $ref: "#/components/responses/429"
+        500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+    delete:
+      tags:
+        - Logos
+      summary: Delete team logo
+      operationId: deleteLogo
+      security: 
+        - basicAuth: []
+        - bearerAuth: []
+      responses:
+        204:
+          description: Request successful
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+        429:
+          $ref: "#/components/responses/429"
+        500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+  /api/metrics:
+    get:
+      tags:
+        - Metrics
+      summary: Get metrics
+      description: Use this endpoint to get metrics in OpenMetrics/Prometheus format.
+      operationId: getMetrics
+      security: []
+      responses:
+        200:
+          description: Request successful
+          content:
+            text/plain:
+              examples:
+                simple:
+                  value: |
+                    # HELP php_database_queries Executed database queries
+                    # TYPE php_database_queries counter
+                    php_database_queries 14948
+                    # HELP php_memory_peak_usage Peak used memory in bytes
+                    # TYPE php_memory_peak_usage gauge
+                    php_memory_peak_usage 1.9067392e+07
+                    # HELP php_memory_usage Used memory in bytes
+                    # TYPE php_memory_usage gauge
+                    php_memory_usage 1.5303712e+07
+                    # HELP php_requests_auth_basic HTTP requests with Basic auth
+                    # TYPE php_requests_auth_basic counter
+                    php_requests_auth_basic 4
+                    # HELP php_requests_auth_jwt HTTP requests with JWT auth
+                    # TYPE php_requests_auth_jwt counter
+                    php_requests_auth_jwt 70
+                    # HELP php_requests_auth_none HTTP request without auth
+                    # TYPE php_requests_auth_none counter
+                    php_requests_auth_none 13418
+                    # HELP php_requests_failed Failed HTTP requests
+                    # TYPE php_requests_failed counter
+                    php_requests_failed 6
+                    # HELP php_requests_total Total HTTP requests
+                    # TYPE php_requests_total counter
+                    php_requests_total 13492
+        429:
+          $ref: "#/components/responses/429"
+        500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+components:
+  responses:
+    400:
+      description: Invalid input data
+      content:
+        application/json:
+          examples:
+            invalid:
+              value:
+                errors:
+                  - code: ERR-INVALID-INPUT
+                    message: Invalid input data
+            uniqueness:
+              value:
+                errors:
+                  - code: ERR-UNIQUENESS
+                    message: A value violates a uniqueness constraint
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+    401:
+      description: Could not authenticate the user
+      content:
+        application/json:
+          examples:
+            authentication:
+              value:
+                errors:
+                  - code: ERR-AUTHENTICATION
+                    message: Could not authenticate the user
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+    403:
+      description: User does not have permission to access the resource
+      content:
+        application/json:
+          examples:
+            permission:
+              value:
+                errors:
+                  - code: ERR-PERMISSION
+                    message: User does not have permission to access the resource
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+    404:
+      description: Resource not found
+      content:
+        application/json:
+          examples:
+            notFound:
+              value:
+                errors:
+                  - code: ERR-NOT-FOUND
+                    message: Resource not found
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+    409:
+      description: Conflict with existing resource
+      content:
+        application/json:
+          examples:
+            conflict:
+              value:
+                errors:
+                  - code: ERR-CONFLICT
+                    message: Conflict with existing resource
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+    429:
+      description: Too many requests
+      content:
+        application/json:
+          examples:
+            tooManyRequests:
+              value:
+                errors:
+                  - code: ERR-RATE-LIMIT
+                    message: Too many requests
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+    500:
+      description: Internal error
+      content:
+        application/json:
+          examples:
+            internal:
+              value:
+                errors:
+                  - code: ERR-INTERNAL
+                    message: Internal error
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+    503:
+      description: API unavailable due to maintenance work
+      content:
+        application/json:
+          examples:
+            maintenance:
+              value:
+                errors:
+                  - code: ERR-MAINTENANCE-MODE
+                    message: API unavailable due to maintenance work
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Error"
+  schemas:
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          enum:
+            - ERR-AUTHENTICATION
+            - ERR-CONFLICT
+            - ERR-INTERNAL
+            - ERR-INVALID-INPUT
+            - ERR-MAINTENANCE-MODE
+            - ERR-METHOD-NOT-ALLOWED
+            - ERR-NOT-FOUND
+            - ERR-PERMISSION
+            - ERR-RATE-LIMIT
+            - ERR-UNIQUENESS
+        message:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    basicAuth:
+      type: http
+      scheme: basic

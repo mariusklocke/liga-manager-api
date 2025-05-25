@@ -6,6 +6,7 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Domain\Team;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\Security\AuthorizationTrait;
@@ -40,7 +41,7 @@ class Controller extends BaseController
         $team = $this->findTeam($request->getQueryParams());
 
         if ($team->getLogoId() === null) {
-            return $this->buildResponse(404);
+            throw new NotFoundException("Logo not found for team with ID: " . $team->getId());
         }
 
         $location = $this->teamLogoRepository->generatePublicPath($team->getLogoId());

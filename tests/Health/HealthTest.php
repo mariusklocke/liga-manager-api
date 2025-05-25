@@ -8,12 +8,9 @@ class HealthTest extends HttpTest
 {
     public function testHealthCheckIsSuccessful(): void
     {
-        $request = $this->createRequest(
-            'GET',
-            '/api/health',
-        );
+        $request = $this->createRequest('GET', '/api/health');
 
-        $response = $this->client->sendRequest($request);
+        $response = $this->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
 
         $status = $this->parser->parse($response);
@@ -34,14 +31,13 @@ class HealthTest extends HttpTest
     {
         $filePath = '.maintenance';
         touch($filePath);
-        $response = $this->client->sendRequest(
-            $this->createRequest('GET', '/api/health')
-        );
+        $request = $this->createRequest('GET', '/api/health');
+        $response = $this->sendRequest($request);
         self::assertSame(503, $response->getStatusCode());
+
         unlink($filePath);
-        $response = $this->client->sendRequest(
-            $this->createRequest('GET', '/api/health')
-        );
+        $request = $this->createRequest('GET', '/api/health');
+        $response = $this->sendRequest($request);
         self::assertSame(200, $response->getStatusCode());
     }
 }
