@@ -105,6 +105,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref_type == 'tag' || github.ref_name == 'master'
     needs: build-docs
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
