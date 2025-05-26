@@ -103,7 +103,7 @@ jobs:
           path: build/coverage.xml
   deploy-docs:
     runs-on: ubuntu-latest
-    # if: github.ref_type == 'tag' || github.ref_name == 'master'
+    if: github.ref_type == 'tag' || github.ref_name == 'master'
     needs: build-docs
     permissions:
       pages: write      # to deploy to Pages
