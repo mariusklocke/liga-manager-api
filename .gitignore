@@ -12,3 +12,4 @@ docker/nginx/certs
 env.json
 docker/.secrets
 src/Infrastructure/Persistence/ORM/Proxy
+/docs
