@@ -57,6 +57,10 @@ Each of the following commands can be run like `docker compose exec php lima app
   app:versions:list       List versions
 ```
 
+## API docs
+
+The current API documentation cound be found here: https://mariusklocke.github.io/liga-manager-api
+
 ## FAQ
 
 ### How to generate certificate for HTTPS?
