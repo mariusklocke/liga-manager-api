@@ -8,9 +8,13 @@ function cleanup()
 	docker compose down -v || true
 }
 
-export DB_PASSWORD=$(openssl rand -hex 16 | tr -d '\n')
-export DB_ROOT_PASSWORD=$(openssl rand -hex 16 | tr -d '\n')
-export JWT_SECRET=$(openssl rand -hex 16 | tr -d '\n')
+function generate_secret() {
+    tr -dc a-f0-9 </dev/urandom | head -c 32
+}
+
+export DB_PASSWORD=$(generate_secret)
+export DB_ROOT_PASSWORD=$(generate_secret)
+export JWT_SECRET=$(generate_secret)
 
 trap cleanup EXIT
 
