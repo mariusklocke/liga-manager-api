@@ -3,9 +3,10 @@ set -ex
 
 function cleanup()
 {
-    docker compose logs php || true
-	docker compose exec php cat php-errors.log || true
-	docker compose down -v || true
+    set +e
+    docker compose logs php
+	docker compose exec php cat php-errors.log
+	docker compose down -v
 }
 
 function generate_secret() {
