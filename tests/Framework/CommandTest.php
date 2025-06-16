@@ -11,17 +11,19 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class CommandTest extends TestCase
 {
-    private Application $app;
+    private static ?Application $app = null;
 
-    protected function setUp(): void
+    private function getApplication(): Application
     {
-        $this->app = new Application();
+        self::$app ??= new Application();
+
+        return self::$app;
     }
 
     protected function runCommand(string $name, array $args = [], array $inputs = [], array $options = []): CommandResult
     {
         $options['capture_stderr_separately'] = $options['capture_stderr_separately'] ?? true;
-        $tester = new CommandTester($this->app->get($name));
+        $tester = new CommandTester($this->getApplication()->get($name));
         $tester->setInputs($inputs);
         $exitCode = $tester->execute($args, $options);
 
@@ -30,12 +32,12 @@ abstract class CommandTest extends TestCase
 
     protected function getCommandBus(): CommandBus
     {
-        return $this->app->getContainer()->get(CommandBus::class);
+        return $this->getApplication()->getContainer()->get(CommandBus::class);
     }
 
     protected function getAuthContext(): AuthContext
     {
-        return $this->app->getAuthContext();
+        return $this->getApplication()->getAuthContext();
     }
 
     protected static function assertExecutionSuccess(int $exitCode): void
