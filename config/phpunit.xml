@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.1/phpunit.xsd" bootstrap="../vendor/autoload.php"
-         beStrictAboutOutputDuringTests="true" cacheResult="false">
+         beStrictAboutOutputDuringTests="true" cacheResult="false" colors="true">
     <source>
         <include>
             <directory>../src</directory>
@@ -21,4 +21,8 @@
             <directory>../tests/GraphQL</directory>
         </testsuite>
     </testsuites>
+    <extensions>
+        <bootstrap class="RobinIngelbrecht\PHPUnitPrettyPrint\PhpUnitExtension">
+        </bootstrap>
+    </extensions>
 </phpunit>

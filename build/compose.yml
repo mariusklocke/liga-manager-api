@@ -47,7 +47,6 @@ services:
       timeout: 5s
   mariadb:
     image: mariadb:${MARIADB_VERSION}
-    pull_policy: always
     environment:
       - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db-root-password
       - MARIADB_DATABASE=test
@@ -87,7 +86,6 @@ services:
       timeout: 5s
   redis:
     image: redis:${REDIS_VERSION}-alpine
-    pull_policy: always
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]
       start_period: 1m
