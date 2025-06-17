@@ -3,43 +3,49 @@
 namespace HexagonalPlayground\Tests\Unit;
 
 use HexagonalPlayground\Domain\Value\GeographicLocation;
+use HexagonalPlayground\Tests\Framework\DataGenerator;
+use Iterator;
 use PHPUnit\Framework\TestCase;
 
 class ValueObjectTest extends TestCase
 {
-    private GeographicLocation $waltersHouse;
-
-    private GeographicLocation $whiteHouse;
+    private array $locations;
 
     protected function setUp(): void
     {
-        $this->waltersHouse = new GeographicLocation(-106.536548, 35.126091);
-        $this->whiteHouse = new GeographicLocation(-77.036578,38.897580);
+        $this->locations = iterator_to_array($this->generateLocations(2));
     }
 
     public function testCanBeCheckedForEquality(): void
     {
-        self::assertTrue($this->waltersHouse->equals(clone $this->waltersHouse));
-        self::assertFalse($this->waltersHouse->equals($this->whiteHouse));
-        self::assertFalse($this->whiteHouse->equals($this->waltersHouse));
+        self::assertTrue($this->locations[0]->equals(clone $this->locations[0]));
+        self::assertFalse($this->locations[0]->equals($this->locations[1]));
+        self::assertFalse($this->locations[1]->equals($this->locations[0]));
     }
 
     public function testCanBeConvertedToArray(): void
     {
-        $array = $this->whiteHouse->toArray();
+        $array = $this->locations[1]->toArray();
 
-        self::assertSame($this->whiteHouse->getLatitude(), $array['latitude']);
-        self::assertSame($this->whiteHouse->getLongitude(), $array['longitude']);
+        self::assertSame($this->locations[1]->getLatitude(), $array['latitude']);
+        self::assertSame($this->locations[1]->getLongitude(), $array['longitude']);
     }
 
     public function testCanBeIterated(): void
     {
-        $values = $this->whiteHouse->toArray();
+        $values = $this->locations[1]->toArray();
         $properties = array_keys($values);
 
-        foreach ($this->whiteHouse->getIterator() as $key => $value) {
+        foreach ($this->locations[1]->getIterator() as $key => $value) {
             self::assertTrue(in_array($key, $properties));
             self::assertSame($values[$key], $value);
+        }
+    }
+
+    private function generateLocations(int $count): Iterator
+    {
+        for ($i = 0; $i < $count; $i++) {
+            yield new GeographicLocation(DataGenerator::generateLongitude(), DataGenerator::generateLatitude());
         }
     }
 }
