@@ -28,13 +28,9 @@ class Controller extends BaseController
     public function get(ServerRequestInterface $request): ResponseInterface
     {
         return $this->buildJsonResponse([
-            'limits' => [
-                'logos' => [
-                    'size' => $this->limits->uploadFileSize,
-                    'types' => $this->limits->uploadFileTypes,
-                ],
-                'requests' => $this->limits->requestsPerSecond,
-            ],
+            'allowed_file_types' => $this->limits->uploadFileTypes,
+            'max_file_size' => $this->limits->uploadFileSize,
+            'max_requests' => $this->limits->requestsPerSecond,
             'version' => $this->appVersion
         ]);
     }

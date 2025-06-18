@@ -16,19 +16,25 @@ class IndexTest extends HttpTest
         $payload = $this->parser->parse($response);
         self::assertIsObject($payload);
 
-        self::assertObjectHasProperty('limits', $payload);
-        self::assertIsObject($payload->limits);
-        self::assertObjectHasProperty('logos', $payload->limits);
-        self::assertIsObject($payload->limits->logos);
-        self::assertObjectHasProperty('size', $payload->limits->logos);
-        self::assertIsInt($payload->limits->logos->size);
-        self::assertGreaterThan(0, $payload->limits->logos->size);
-        self::assertObjectHasProperty('types', $payload->limits->logos);
-        self::assertIsArray($payload->limits->logos->types);
-        self::assertGreaterThan(0, count($payload->limits->logos->types));
-        self::assertObjectHasProperty('requests', $payload->limits);
-        self::assertIsInt($payload->limits->requests);
-        self::assertGreaterThan(0, $payload->limits->requests);
+        // allowed file types
+        self::assertObjectHasProperty('allowed_file_types', $payload);
+        self::assertIsArray($payload->allowed_file_types);
+        self::assertGreaterThan(0, count($payload->allowed_file_types));
+        foreach ($payload->allowed_file_types as $type) {
+            self::assertIsString($type);
+        }
+
+        // max file size
+        self::assertObjectHasProperty('max_file_size', $payload);
+        self::assertIsInt($payload->max_file_size);
+        self::assertGreaterThan(0, $payload->max_file_size);
+
+        // max requests
+        self::assertObjectHasProperty('max_requests', $payload);
+        self::assertIsInt($payload->max_requests);
+        self::assertGreaterThan(0, $payload->max_requests);
+
+        // version
         self::assertObjectHasProperty('version', $payload);
         self::assertIsString($payload->version);
         self::assertGreaterThan(0, strlen($payload->version));
