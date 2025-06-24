@@ -182,6 +182,8 @@ paths:
                   description: Image binary data in `image/webp` format
                   type: string
                   format: binary
+              required: 
+                - file
             encoding:
               file:
                 contentType: image/webp
@@ -205,6 +207,19 @@ paths:
           $ref: "#/components/responses/500"
         503:
           $ref: "#/components/responses/503"
+      x-codeSamples:
+        - lang: cURL
+          source: |
+            curl --request POST \
+            --header 'Authorization: Bearer ey...' \
+            --url 'https://manager.wildeligabremen.de/api/logos?teamId=b1a2628a-1cda-4c4e-8985-ee8f6a9a4197'
+            --form file=@/path/to/image.webp
+        - lang: HTTPie
+          source: |
+            http POST \
+            'https://manager.wildeligabremen.de/api/logos?teamId=b1a2628a-1cda-4c4e-8985-ee8f6a9a4197' \
+            --auth-type bearer --auth 'ey...' \
+            --form file@/path/to/image.webp
     delete:
       tags:
         - Logos
