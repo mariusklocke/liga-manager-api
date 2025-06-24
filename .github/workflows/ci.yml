@@ -7,6 +7,7 @@ env:
 jobs:
   build-docs:
     runs-on: ubuntu-latest
+    if: github.ref_type == 'branch'
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -103,7 +104,7 @@ jobs:
           path: build/coverage.xml
   deploy-docs:
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tag' || github.ref_name == 'master'
+    if: github.ref_name == 'master'
     needs: build-docs
     permissions:
       pages: write      # to deploy to Pages
