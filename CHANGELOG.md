@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 1.25.3 - 2025-06-24
+* Improvement: Add OpenAPI spec
+* Improvement: Provide API docs
+* Improvement: Run tests against OpenAPI spec
+* Improvement: Refactor CLI tests
+* Improvement: Update composer packages
+
 ## 1.25.2 - 2025-05-04
 * Improvement: Update composer packages
 * Improvement: Update roadrunner to 2025.1.1
