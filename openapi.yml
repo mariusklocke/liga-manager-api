@@ -174,7 +174,17 @@ paths:
         - bearerAuth: []
       requestBody:
         content:
-          multipart/form-data: {}
+          multipart/form-data:
+            schema: 
+              type: object
+              properties:
+                file:
+                  description: Image binary data in `image/webp` format
+                  type: string
+                  format: binary
+            encoding:
+              file:
+                contentType: image/webp
       responses:
         201:
           description: Resource created successfully
