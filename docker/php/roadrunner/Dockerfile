@@ -21,6 +21,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp iconv intl mbstring 
     && apk upgrade \
     && apk add --no-cache curl icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
+    && rm -rf /etc/php/conf.d \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
     && adduser -u 82 -D -S -G www-data www-data \
     && curl -sSL -o /usr/local/bin/composer https://getcomposer.org/download/latest-stable/composer.phar \
@@ -40,10 +41,6 @@ RUN chmod +x /usr/local/bin/docker-php-healthcheck
 # Add entrypoint
 COPY docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
-
-# Add extension helper script
-COPY docker/php/php-ext-configure.sh /usr/local/bin/php-ext-configure
-RUN chmod +x /usr/local/bin/php-ext-configure
 
 # Create application directories
 ENV APP_HOME="/var/www/api"

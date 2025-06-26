@@ -19,6 +19,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gmp iconv intl mbstr
     && apk add --no-cache curl fcgi icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
     && rm -rf /etc/php/php-fpm.d \
+    && rm -rf /etc/php/conf.d \
     && test -e /usr/sbin/php-fpm || ln -s /usr/sbin/php-fpm${PHP_VERSION/./} /usr/sbin/php-fpm \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
     && adduser -u 82 -D -S -G www-data www-data \
@@ -37,10 +38,6 @@ RUN chmod +x /usr/local/bin/docker-php-healthcheck
 # Add entrypoint
 COPY docker/php/fpm/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 RUN chmod +x /usr/local/bin/docker-php-entrypoint
-
-# Add extension helper script
-COPY docker/php/php-ext-configure.sh /usr/local/bin/php-ext-configure
-RUN chmod +x /usr/local/bin/php-ext-configure
 
 # Create application directories
 ENV APP_HOME="/var/www/api"
