@@ -35,12 +35,10 @@ COPY docker/php/php.ini /etc/php/php.ini
 COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
 
 # Add healthcheck
-COPY docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck
-RUN chmod +x /usr/local/bin/docker-php-healthcheck
+COPY --chmod=755 docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck
 
 # Add entrypoint
-COPY docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
-RUN chmod +x /usr/local/bin/docker-php-entrypoint
+COPY --chmod=755 docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
 # Create application directories
 ENV APP_HOME="/var/www/api"

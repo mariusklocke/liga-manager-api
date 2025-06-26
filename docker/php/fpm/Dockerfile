@@ -32,12 +32,10 @@ COPY docker/php/fpm/php-fpm.conf /etc/php/php-fpm.conf
 COPY docker/php/php.ini /etc/php/php.ini
 
 # Add healthcheck
-COPY docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
-RUN chmod +x /usr/local/bin/docker-php-healthcheck
+COPY --chmod=755 docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
 
 # Add entrypoint
-COPY docker/php/fpm/entrypoint.sh /usr/local/bin/docker-php-entrypoint
-RUN chmod +x /usr/local/bin/docker-php-entrypoint
+COPY --chmod=755 docker/php/fpm/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
 # Create application directories
 ENV APP_HOME="/var/www/api"
