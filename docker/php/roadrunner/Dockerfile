@@ -53,10 +53,7 @@ COPY vendor vendor/
 COPY src src/
 COPY locales locales/
 COPY config config/
-COPY bin bin/
-
-# Configure permissions
-RUN chmod +x bin/*
+COPY --chmod=755 bin bin/
 
 ENV PATH="${PATH}:${APP_HOME}/bin:${APP_HOME}/vendor/bin"
 EXPOSE 8080
