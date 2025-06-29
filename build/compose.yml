@@ -28,6 +28,7 @@ services:
       - REDIS_HOST=redis
     volumes:
       - ${PWD}/tests:/var/www/api/tests
+      - ${PWD}/vendor:/var/www/api/vendor
       - logos:/var/www/logos
     secrets:
       - source: db-password

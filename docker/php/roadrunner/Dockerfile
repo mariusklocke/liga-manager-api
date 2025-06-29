@@ -24,8 +24,6 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gmp iconv intl mbstring 
     && rm -rf /etc/php/conf.d \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
     && adduser -u 82 -D -S -G www-data www-data \
-    && curl -sSL -o /usr/local/bin/composer https://getcomposer.org/download/latest-stable/composer.phar \
-    && chmod +x /usr/local/bin/composer \
     && rm -rf /var/cache/*
 
 # Configure PHP
@@ -49,12 +47,9 @@ ENV METRICS_EXPORT_URL="http://127.0.0.1:8081"
 RUN mkdir -p ${APP_HOME} ${APP_LOGOS_PATH}
 WORKDIR ${APP_HOME}
 
-# Install dependencies first
-ENV COMPOSER_ALLOW_SUPERUSER="1"
-COPY composer.lock composer.json openapi.yml ./
-RUN composer install --optimize-autoloader --no-cache --no-dev --no-progress
-
-# Install own application sources
+# Install application sources
+COPY openapi.yml ./
+COPY vendor vendor/
 COPY src src/
 COPY locales locales/
 COPY config config/

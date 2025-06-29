@@ -23,11 +23,27 @@ if [[ -n "${DOCKER_TOKEN}" ]]; then
     echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 fi
 
+# Install dev dependencies
+docker run --rm -v $PWD:/app -u $(id -u):$(id -g) --userns host \
+    composer install --ignore-platform-reqs --no-cache --no-progress
+
+# Start containers
 docker compose up --detach --quiet-pull
-docker compose exec php composer install --no-cache --no-progress
+
+# Verify architecture contraints
 docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
+
+# Validate OpenAPI spec
 docker compose exec php php-openapi validate openapi.yml
+
+# Run tests without coverage
 docker compose exec php phpunit -c config/phpunit.xml --display-deprecations --display-warnings
+
+# Enable xdebug
 docker compose exec php sh -c "echo 'zend_extension=xdebug' >> /etc/php/php.ini"
+
+# Run tests with coverage
 docker compose exec php phpunit -c config/phpunit.xml --coverage-clover coverage.xml -d error_log=php-errors.log
+
+# Extract coverage report
 docker compose exec php cat coverage.xml > build/coverage.xml
