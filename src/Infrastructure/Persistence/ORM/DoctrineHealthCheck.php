@@ -3,6 +3,8 @@
 namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\EntityManagerClosed;
 use Exception;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use Psr\Container\ContainerInterface;
@@ -25,7 +27,15 @@ class DoctrineHealthCheck implements HealthCheckInterface
      */
     public function __invoke(): void
     {
-        $this->container->get(Connection::class)->executeQuery('SELECT 1');
+        /** @var Connection */
+        $connection = $this->container->get(Connection::class);
+        $connection->executeQuery('SELECT 1');
+
+        /** @var EntityManagerInterface */
+        $entityManager = $this->container->get(EntityManagerInterface::class);
+        if (!$entityManager->isOpen()) {
+            throw EntityManagerClosed::create();
+        }
     }
 
     /**

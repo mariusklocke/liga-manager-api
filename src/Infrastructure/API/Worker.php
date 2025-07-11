@@ -55,11 +55,6 @@ class Worker extends PSR7Worker
                 $logger->error((string)$e);
             } finally {
                 $this->respond($response);
-                if ($response->getStatusCode() === 500) {
-                    // in case of unexpected error the application state can be corrupted: it's safer to terminate
-                    $logger->error('Terminating worker process due to unexpected error.');
-                    exit(1);
-                }
             }
         }
     }
