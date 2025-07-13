@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 1.25.4 - 2025-07-13
+* Improvement: Update Roadrunner to 2025.1.2
+* Improvement: Update composer packages
+* Improvement: Don't terminate worker process on internal server error
+* Improvement: Improve output on ListVersionsCommand
+* Improvement: Remove composer from docker images
+* Improvement: Reduce docker image layers
+
 ## 1.25.3 - 2025-06-24
 * Improvement: Add OpenAPI spec
 * Improvement: Provide API docs
