@@ -9,7 +9,7 @@ use HexagonalPlayground\Application\Security\AuthContext;
 use HexagonalPlayground\Domain\Event\Event;
 use HexagonalPlayground\Domain\Tournament;
 
-class EndSeasonHandler implements AuthAwareHandler
+class EndTournamentHandler implements AuthAwareHandler
 {
     /** @var TournamentRepositoryInterface */
     private TournamentRepositoryInterface $tournamentRepository;
