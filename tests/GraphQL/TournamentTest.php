@@ -21,6 +21,7 @@ class TournamentTest extends CompetitionTestCase
         self::assertNotNull($tournament);
         self::assertSame($tournamentId, $tournament->id);
         self::assertSame($tournamentId, $tournament->name);
+        self::assertSame(self::STATE_PREPARATION, $tournament->state);
 
         $allTournaments = $this->client->getAllTournaments();
         self::assertArrayContainsObjectWithAttribute($allTournaments, 'id', $tournamentId);
@@ -48,11 +49,43 @@ class TournamentTest extends CompetitionTestCase
 
         return $tournamentId;
     }
+    
+    /**
+     * @param string $tournamentId
+     * @return string
+     */
+    #[Depends("testTournamentRoundsCanBeCreated")]
+    public function testTournamentCanBeStarted(string $tournamentId): string
+    {
+        $this->client->startTournament($tournamentId);
+
+        $tournament = $this->client->getTournamentById($tournamentId);
+        self::assertSame($tournamentId, $tournament->id);
+        self::assertSame(self::STATE_PROGRESS, $tournament->state);
+
+        return $tournamentId;
+    }
+
+    /**
+     * @param string $tournamentId
+     * @return string
+     */
+    #[Depends("testTournamentCanBeStarted")]
+    public function testTournamentCanBeEnded(string $tournamentId): string
+    {
+        $this->client->endTournament($tournamentId);
+
+        $tournament = $this->client->getTournamentById($tournamentId);
+        self::assertSame($tournamentId, $tournament->id);
+        self::assertSame(self::STATE_ENDED, $tournament->state);
+        
+        return $tournamentId;
+    }
 
     /**
      * @param string $tournamentId
      */
-    #[Depends("testTournamentRoundsCanBeCreated")]
+    #[Depends("testTournamentCanBeEnded")]
     public function testTournamentCanBeDeleted(string $tournamentId): void
     {
         $countBefore = count($this->client->getAllTournaments());

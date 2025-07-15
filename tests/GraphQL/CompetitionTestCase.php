@@ -10,6 +10,10 @@ use HexagonalPlayground\Tests\Framework\DataGenerator;
 
 abstract class CompetitionTestCase extends TestCase
 {
+    public const STATE_PREPARATION = 'preparation';
+    public const STATE_PROGRESS = 'progress';
+    public const STATE_ENDED = 'ended';
+    
     protected static array $teamIds = [];
     protected static array $pitchIds = [];
     protected static array $teamManagers = [];
