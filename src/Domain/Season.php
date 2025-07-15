@@ -13,18 +13,11 @@ use HexagonalPlayground\Domain\Util\StringUtils;
 
 class Season extends Competition
 {
-    const STATE_PREPARATION = 'preparation';
-    const STATE_PROGRESS = 'progress';
-    const STATE_ENDED = 'ended';
-
     /** @var Collection */
     private Collection $teams;
 
     /** @var Ranking|null */
     private ?Ranking $ranking = null;
-
-    /** @var string */
-    private string $state;
 
     /** @var int */
     private int $matchDayCount;
@@ -139,59 +132,12 @@ class Season extends Competition
     }
 
     /**
-     * @return bool
-     */
-    private function hasStarted() : bool
-    {
-        return ($this->ranking !== null);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isInProgress(): bool
-    {
-        return $this->state === self::STATE_PROGRESS;
-    }
-
-    /**
-     * @return bool
-     */
-    private function hasMatches() : bool
-    {
-        return $this->matchDays->count() > 0;
-    }
-
-    /**
      * Initializes the season ranking
      */
     public function start(): void
     {
-        Assert::false(
-            $this->hasStarted(),
-            'Cannot start a season which has already been started',
-            ConflictException::class
-        );
-        Assert::true(
-            $this->hasMatches(),
-            'Cannot start a season which has no matches',
-            ConflictException::class
-        );
+        parent::start();
         $this->ranking = new Ranking($this);
-        $this->state = self::STATE_PROGRESS;
-    }
-
-    /**
-     * Finalizes the season
-     */
-    public function end(): void
-    {
-        Assert::true(
-            $this->hasStarted(),
-            'Cannot end a season which has not been started',
-            ConflictException::class
-        );
-        $this->state = self::STATE_ENDED;
     }
 
     /**

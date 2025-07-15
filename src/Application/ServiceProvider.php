@@ -22,6 +22,7 @@ use HexagonalPlayground\Application\Command\DeleteTeamCommand;
 use HexagonalPlayground\Application\Command\DeleteTournamentCommand;
 use HexagonalPlayground\Application\Command\DeleteUserCommand;
 use HexagonalPlayground\Application\Command\EndSeasonCommand;
+use HexagonalPlayground\Application\Command\EndTournamentCommand;
 use HexagonalPlayground\Application\Command\InvalidateAccessTokensCommand;
 use HexagonalPlayground\Application\Command\LocateMatchCommand;
 use HexagonalPlayground\Application\Command\RemoveRankingPenaltyCommand;
@@ -36,6 +37,7 @@ use HexagonalPlayground\Application\Command\SendInviteMailCommand;
 use HexagonalPlayground\Application\Command\SendPasswordResetMailCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Application\Command\StartTournamentCommand;
 use HexagonalPlayground\Application\Command\SubmitMatchResultCommand;
 use HexagonalPlayground\Application\Command\UpdatePitchContactCommand;
 use HexagonalPlayground\Application\Command\UpdateTeamContactCommand;
@@ -67,6 +69,7 @@ class ServiceProvider implements ServiceProviderInterface
                 DeleteTournamentCommand::class,
                 DeleteUserCommand::class,
                 EndSeasonCommand::class,
+                EndTournamentCommand::class,
                 InvalidateAccessTokensCommand::class,
                 LocateMatchCommand::class,
                 RemoveRankingPenaltyCommand::class,
@@ -81,6 +84,7 @@ class ServiceProvider implements ServiceProviderInterface
                 SendPasswordResetMailCommand::class,
                 SetTournamentRoundCommand::class,
                 StartSeasonCommand::class,
+                StartTournamentCommand::class,
                 SubmitMatchResultCommand::class,
                 UpdatePitchContactCommand::class,
                 UpdateTeamContactCommand::class,

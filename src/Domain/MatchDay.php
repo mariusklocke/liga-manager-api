@@ -65,6 +65,14 @@ class MatchDay extends Entity
     }
 
     /**
+     * @return Competition
+     */
+    public function getCompetition(): Competition
+    {
+        return $this->season ?? $this->tournament;
+    }
+
+    /**
      * @return MatchEntity[]
      */
     public function getMatches(): array

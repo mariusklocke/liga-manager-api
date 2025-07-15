@@ -7,6 +7,7 @@
         <id name="id" type="string" length="255" />
         <field name="name" type="string" length="255" />
         <field name="rounds" type="integer" />
+        <field name="state" type="string" length="255" />
         <one-to-many field="matchDays" target-entity="HexagonalPlayground\Domain\MatchDay" mapped-by="tournament" index-by="number" orphan-removal="true">
             <cascade>
                 <cascade-all/>

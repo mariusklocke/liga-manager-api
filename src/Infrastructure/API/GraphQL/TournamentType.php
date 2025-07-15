@@ -23,6 +23,9 @@ class TournamentType extends ObjectType implements QueryTypeInterface
                     'name' => [
                         'type' => Type::nonNull(Type::string())
                     ],
+                    'state' => [
+                        'type' => Type::nonNull(TournamentStateType::getInstance())
+                    ],
                     'rounds' => [
                         'type' => Type::listOf(MatchDayType::getInstance()),
                         'resolve' => function (array $root, $args, AppContext $context) {

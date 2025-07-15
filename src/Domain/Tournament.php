@@ -32,6 +32,7 @@ class Tournament extends Competition
             InvalidInputException::class
         );
         $this->name = $name;
+        $this->state = self::STATE_PREPARATION;
         $this->matchDays = new ArrayCollection();
         $this->updateRoundCount();
     }

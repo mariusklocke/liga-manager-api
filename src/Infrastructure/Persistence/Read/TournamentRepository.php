@@ -18,7 +18,8 @@ class TournamentRepository extends AbstractRepository
         return [
             new StringField('id', false),
             new StringField('name', false),
-            new IntegerField('rounds', false)
+            new IntegerField('rounds', false),
+            new StringField('state', false)
         ];
     }
 }
