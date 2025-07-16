@@ -12,9 +12,11 @@ use HexagonalPlayground\Application\Command\CreateSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateTeamCommand;
 use HexagonalPlayground\Application\Command\CreateTournamentCommand;
 use HexagonalPlayground\Application\Command\CreateUserCommand;
+use HexagonalPlayground\Application\Command\EndTournamentCommand;
 use HexagonalPlayground\Application\Command\ScheduleAllMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\SetTournamentRoundCommand;
 use HexagonalPlayground\Application\Command\StartSeasonCommand;
+use HexagonalPlayground\Application\Command\StartTournamentCommand;
 use HexagonalPlayground\Domain\Value\DatePeriod;
 use HexagonalPlayground\Domain\Value\MatchAppointment;
 use HexagonalPlayground\Domain\Value\TeamIdPair;
@@ -60,6 +62,11 @@ class LoadDemoDataCommand extends Command
         }
 
         $this->createTournamentRounds($tournamentIds, $teamIds);
+        array_pop($tournamentIds);
+        $this->startTournaments($tournamentIds);
+        array_pop($tournamentIds);
+        $this->endTournaments($tournamentIds);
+
         $output->writeln('Fixtures successfully loaded');
 
         return 0;
@@ -89,6 +96,22 @@ class LoadDemoDataCommand extends Command
             $start   = new DateTimeImmutable('next saturday');
             $period  = new DatePeriod($start, $start->modify('next sunday'));
             $command = new SetTournamentRoundCommand($tournamentId, 1, $pairs, $period);
+            $this->getCommandBus()->execute($command, $this->getAuthContext());
+        }
+    }
+
+    private function startTournaments(array $tournamentIds): void
+    {
+        foreach ($tournamentIds as $tournamentId) {
+            $command = new StartTournamentCommand($tournamentId);
+            $this->getCommandBus()->execute($command, $this->getAuthContext());
+        }
+    }
+
+    private function endTournaments(array $tournamentIds): void
+    {
+        foreach ($tournamentIds as $tournamentId) {
+            $command = new EndTournamentCommand($tournamentId);
             $this->getCommandBus()->execute($command, $this->getAuthContext());
         }
     }

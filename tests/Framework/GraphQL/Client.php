@@ -582,7 +582,8 @@ GRAPHQL;
 query tournament($id: String!) {
   tournament(id: $id) {
     id,
-    name
+    name,
+    state
   }
 }
 GRAPHQL;
@@ -598,6 +599,7 @@ query tournament($id: String!) {
   tournament(id: $id) {
     id,
     name,
+    state,
     rounds {
       id,
       number,
@@ -931,6 +933,32 @@ GRAPHQL;
         $data = $this->requestAndParse($query, ['pattern' => $pattern]);
 
         return $data->teamsByPattern;
+    }
+
+    public function startTournament($tournamentId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation startTournament($tournamentId: String!) {
+  startTournament(tournament_id: $tournamentId)
+}
+GRAPHQL;
+
+        $this->requestAndParse($query, [
+            'tournamentId' => $tournamentId
+        ]);
+    }
+
+    public function endTournament($tournamentId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation endTournament($tournamentId: String!) {
+  endTournament(tournament_id: $tournamentId)
+}
+GRAPHQL;
+
+        $this->requestAndParse($query, [
+            'tournamentId' => $tournamentId
+        ]);
     }
 
     public function getSchema(): string

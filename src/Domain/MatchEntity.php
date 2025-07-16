@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
+use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
@@ -61,6 +62,12 @@ class MatchEntity extends Entity
      */
     public function submitResult(MatchResult $matchResult): void
     {
+        Assert::true(
+            $this->matchDay->getCompetition()->isInProgress(),
+            'Cannot submit match result: Competition is not in progress',
+            ConflictException::class
+        );
+
         if ($this->hasResult()) {
             if ($this->matchResult->equals($matchResult)) {
                 return;
@@ -96,6 +103,12 @@ class MatchEntity extends Entity
      */
     public function cancel(string $reason): void
     {
+        Assert::true(
+            $this->matchDay->getCompetition()->isInProgress(),
+            'Cannot cancel match: Competition is not in progress',
+            ConflictException::class
+        );
+
         Assert::true(
             StringUtils::length($reason) <= 255,
             'Cancellation reason exceeds maximum length of 255',
