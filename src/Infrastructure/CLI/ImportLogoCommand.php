@@ -49,7 +49,8 @@ class ImportLogoCommand extends Command
         $inputFile->delete();
         $filePath = $teamLogoRepository->getStorageFile($logoId)->getPath();
 
-        $this->getStyledIO($input, $output)->success("Team logo has been imported. Path: $filePath");
+        $this->getStyledIO($input, $output)->success("Team logo has been imported.");
+        $this->getStyledIO($input, $output)->success("Path: $filePath");
 
         return 0;
     }
