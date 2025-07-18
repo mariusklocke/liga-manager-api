@@ -17,7 +17,7 @@ class ImportLogoCommand extends Command
     {
         $this->setName('app:logo:import');
         $this->setDescription('Import a logo (source file will be deleted)');
-        $this->addArgument('file', InputArgument::REQUIRED, 'Path to logo file (WEBP)');
+        $this->addArgument('file', InputArgument::REQUIRED, 'Path to logo file');
         $this->addArgument('teamId', InputArgument::REQUIRED, 'Team ID');
     }
 
@@ -33,8 +33,15 @@ class ImportLogoCommand extends Command
         $team = $teamRepository->find($input->getArgument('teamId'));
 
         $inputFile = new File($input->getArgument('file'));
+        $mediaType = mime_content_type($inputFile->getPath());
         $stream = $inputFile->open('r');
-        $uploadedFile = $uploadedFileFactory->createUploadedFile($stream, $stream->getSize());
+        $uploadedFile = $uploadedFileFactory->createUploadedFile(
+            $stream, 
+            $stream->getSize(),
+            UPLOAD_ERR_OK,
+            null,
+            $mediaType
+        );
         $logoId = $teamLogoRepository->save($uploadedFile);
         $team->setLogoId($logoId);
         $teamRepository->save($team);
@@ -42,7 +49,7 @@ class ImportLogoCommand extends Command
         $inputFile->delete();
         $filePath = $teamLogoRepository->getStorageFile($logoId)->getPath();
 
-        $this->getStyledIO($input, $output)->success("Team logo has been imported to $filePath");
+        $this->getStyledIO($input, $output)->success("Team logo has been imported. Path: $filePath");
 
         return 0;
     }

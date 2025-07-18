@@ -4,7 +4,6 @@ namespace HexagonalPlayground\Infrastructure\API\Logos;
 
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\TypeAssert;
-use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Domain\Team;
@@ -30,10 +29,10 @@ class Controller extends BaseController
         TeamLogoRepository $teamLogoRepository,
         LoggerInterface $logger
     ) {
-      parent::__construct($responseFactory);
-      $this->teamRepository = $teamRepository;
-      $this->teamLogoRepository = $teamLogoRepository;
-      $this->logger = $logger;
+        parent::__construct($responseFactory);
+        $this->teamRepository = $teamRepository;
+        $this->teamLogoRepository = $teamLogoRepository;
+        $this->logger = $logger;
     }
 
     public function get(ServerRequestInterface $request): ResponseInterface
@@ -85,15 +84,12 @@ class Controller extends BaseController
             ]
         ]);
 
-        $this->checkUploadedFile($file);
-
+        $logoId = $this->teamLogoRepository->save($file);
+        $publicPath = $this->teamLogoRepository->generatePublicPath($logoId);
         if ($team->getLogoId() !== null) {
             $this->teamLogoRepository->delete($team->getLogoId());
         }
-
-        $fileId = $this->teamLogoRepository->save($file);
-        $publicPath = $this->teamLogoRepository->generatePublicPath($fileId);
-        $team->setLogoId($fileId);
+        $team->setLogoId($logoId);
         $this->teamRepository->save($team);
         $this->teamRepository->flush();
 
@@ -128,50 +124,5 @@ class Controller extends BaseController
         $file = array_shift($files);
 
         return $file;
-    }
-
-    private function checkUploadedFile(UploadedFileInterface $uploadedFile): void
-    {
-        $maxFileSize = $this->parseByteSize(ini_get('upload_max_filesize'));
-        $fileSize = (int)$uploadedFile->getSize();
-
-        if ($fileSize > $maxFileSize || $uploadedFile->getError() === UPLOAD_ERR_INI_SIZE) {
-            throw new InvalidInputException("Invalid file upload: Exceeds max size of $maxFileSize bytes");
-        }
-
-        if ($fileSize === 0) {
-            throw new InvalidInputException("Invalid file upload: File is empty");
-        }
-
-        if ($uploadedFile->getError() !== UPLOAD_ERR_OK) {
-            throw new InternalException("Invalid file upload: Code " . $uploadedFile->getError());
-        }
-
-        $mediaType = $uploadedFile->getClientMediaType();
-        if ($mediaType !== 'image/webp') {
-            throw new InvalidInputException("Invalid media type. Expected: image/webp. Got: $mediaType");
-        }
-    }
-
-    /**
-     * Converts a byte size string with SI-prefixes to number of bytes
-     *
-     * @param string $byteSize
-     * @return int
-     */
-    private function parseByteSize(string $byteSize): int
-    {
-        $factorMap = [
-            'K' => pow(2, 10),
-            'M' => pow(2, 20),
-            'G' => pow(2, 30)
-        ];
-
-        $prefix = $byteSize[strlen($byteSize) - 1];
-        if (!array_key_exists($prefix, $factorMap)) {
-            return (int)$byteSize;
-        }
-
-        return substr($byteSize, 0, -1) * $factorMap[$prefix];
     }
 }

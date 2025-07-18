@@ -15,22 +15,16 @@ class LogoTest extends CommandTest
     {
         $teamId = DataGenerator::generateId();
         $this->getCommandBus()->execute(new CreateTeamCommand($teamId, $teamId), $this->getAuthContext());
-        $logoFile = File::temp('logo', '.webp');
-        $sourceData = DataGenerator::generateBytes(16);
-        $logoFile->write($sourceData);
+        $logoFile = DataGenerator::generateImage($this->getRandomImageType());
         self::assertTrue($logoFile->exists());
+        $sourceData = $logoFile->read();
 
         $result = $this->runCommand('app:logo:import', ['file' => $logoFile->getPath(), 'teamId' => $teamId]);
         self::assertExecutionSuccess($result->exitCode);
         self::assertFalse($logoFile->exists());
-        $targetPath = null;
-        foreach (preg_split('/\s+/', $result->output) as $word) {
-            if (str_ends_with($word, '.webp')) {
-                $targetPath = $word;
-                break;
-            }
-        }
-        self::assertIsString($targetPath, "Failed to find logo path in \"$result->output\"");
+        preg_match("/Path: (\S+)/", $result->output, $matches);
+        self::assertIsString($matches[1], "Failed to find logo path in \"$result->output\"");
+        $targetPath = $matches[1];
         $resultFile = new File(dirname($targetPath), basename($targetPath));
         self::assertTrue($resultFile->exists());
         $targetData = $resultFile->read();
@@ -45,15 +39,22 @@ class LogoTest extends CommandTest
         self::assertTrue($referencedLogoFile->exists());
         $logoDirectory = dirname($referencedLogoFile->getPath());
         self::assertDirectoryExists($logoDirectory);
+        $imageType = $this->getRandomImageType();
         $staleLogoId = DataGenerator::generateId();
-        $staleLogoFile = new File($logoDirectory, "$staleLogoId.webp");
-        $staleLogoData = DataGenerator::generateBytes(16);
-        $staleLogoFile->write($staleLogoData);
+        $staleLogoFile = DataGenerator::generateImage($imageType);
+        $staleLogoFile->move($logoDirectory, "$staleLogoId.$imageType");
         self::assertTrue($staleLogoFile->exists());
 
         $result = $this->runCommand('app:logo:cleanup');
         self::assertExecutionSuccess($result->exitCode);
         self::assertFalse($staleLogoFile->exists());
         self::assertTrue($referencedLogoFile->exists());
+    }
+
+    private function getRandomImageType(): string
+    {
+        $extensions = ['gif', 'jpg', 'png', 'webp'];
+
+        return $extensions[array_rand($extensions)];
     }
 }

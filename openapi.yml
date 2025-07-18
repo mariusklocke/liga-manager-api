@@ -168,7 +168,7 @@ paths:
         - Logos
       summary: Upload team logo
       operationId: uploadLogo
-      description: Allows image upload with `image/webp` content type
+      description: Allows image upload
       security: 
         - basicAuth: []
         - bearerAuth: []
@@ -179,7 +179,7 @@ paths:
               type: object
               properties:
                 file:
-                  description: Image binary data in `image/webp` format
+                  description: Image binary data - supports "image/gif", "image/jpeg", "image/png", "image/webp"
                   type: string
                   format: binary
               required: 
