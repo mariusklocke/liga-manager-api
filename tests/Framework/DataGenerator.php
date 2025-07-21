@@ -64,4 +64,36 @@ class DataGenerator
     {
         return random_bytes($length);
     }
+
+    public static function generateImage(string $format, int $width = 16, int $height = 16): File
+    {
+        $file = File::temp('random_image_', '.' . $format);
+        $image = imagecreatetruecolor($width, $height);
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                $red = random_int(0, 255);
+                $green = random_int(0, 255);
+                $blue = random_int(0, 255);
+                $color = imagecolorallocate($image, $red, $green, $blue);
+	            imagesetpixel($image, $x, $y, $color);
+            }
+        }
+        
+        switch ($format) {
+            case 'gif':
+                imagegif($image, $file->getPath());
+                break;
+            case 'jpg':
+                imagejpeg($image, $file->getPath());
+                break;
+            case 'png':
+                imagepng($image, $file->getPath());
+                break;
+            case 'webp':
+                imagewebp($image, $file->getPath());
+                break;
+        }
+
+        return $file;
+    }
 }

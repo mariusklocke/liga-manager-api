@@ -43,6 +43,13 @@ class File
         return filesize($this->path);
     }
 
+    public function move(string $directory, string $filename): void
+    {
+        $target = join(DIRECTORY_SEPARATOR, [$directory, $filename]);
+        rename($this->path, $target);
+        $this->path = $target;
+    }
+
     public function read(): string
     {
         return file_get_contents($this->path);

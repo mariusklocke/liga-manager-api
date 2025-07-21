@@ -88,7 +88,7 @@ class TeamTest extends TestCase
     #[Depends("testTeamContactCanBeUpdated")]
     public function testTeamLogoCanBeUploaded(string $teamId): string
     {
-        $tempFile = $this->generateRandomFile();
+        $tempFile = DataGenerator::generateImage($this->getRandomImageType());
         try {
             $token = $this->createAdminToken();
             $url = "/api/logos?teamId=$teamId";
@@ -149,11 +149,10 @@ class TeamTest extends TestCase
         self::assertNull($team);
     }
 
-    private function generateRandomFile(): File
+    private function getRandomImageType(): string
     {
-        $tempFile = File::temp('random_image_', '.webp');
-        $tempFile->write(bin2hex(random_bytes(16)));
+        $extensions = ['gif', 'jpg', 'png', 'webp'];
 
-        return $tempFile;
+        return $extensions[array_rand($extensions)];
     }
 }
