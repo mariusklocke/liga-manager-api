@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.26.0 - 2025-07-22
+* Feature: Support GIF, JPG and PNG images as team logos
+* Feature: Allow tournaments to be started and ended
+
 ## 1.25.4 - 2025-07-13
 * Improvement: Update Roadrunner to 2025.1.2
 * Improvement: Update composer packages
