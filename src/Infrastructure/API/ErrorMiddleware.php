@@ -17,6 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Slim\Exception\HttpMethodNotAllowedException;
 use Slim\Exception\HttpNotFoundException;
 use Throwable;
@@ -38,94 +39,77 @@ class ErrorMiddleware implements MiddlewareInterface
         try {
             return $handler->handle($request);
         } catch (InvalidInputException|UniquenessException $exception) {
-            $this->logException($exception, $request, true);
-            return $this->createErrorResponse(400, $exception->getMessage(), $exception->getCode());
+            return $this->createErrorResponse(400, $exception, $request);
         } catch (AuthenticationException $exception) {
-            $this->logException($exception, $request, true);
-            return $this->createErrorResponse(401, $exception->getMessage(), $exception->getCode());
+            return $this->createErrorResponse(401, $exception, $request);
         } catch (PermissionException $exception) {
-            $this->logException($exception, $request, true);
-            return $this->createErrorResponse(403, $exception->getMessage(), $exception->getCode());
+            return $this->createErrorResponse(403, $exception, $request);
         } catch (NotFoundException $exception) {
-            $this->logException($exception, $request, true);
-            return $this->createErrorResponse(404, $exception->getMessage(), $exception->getCode());
+            return $this->createErrorResponse(404, $exception, $request);
         } catch (HttpNotFoundException $exception) {
-            $this->logException($exception, $request, true);
-            return $this->createErrorResponse(404, 'Route not found', 'ERR-NOT-FOUND');
+            return $this->createErrorResponse(404, $exception, $request);
         } catch (HttpMethodNotAllowedException $exception) {
-            $this->logException($exception, $request, true);
-            $headers = ['Allow' => implode(', ', $exception->getAllowedMethods())];
-            return $this->createErrorResponse(405, $exception->getMessage(), 'ERR-METHOD-NOT-ALLOWED', $headers);
+            return $this->createErrorResponse(405, $exception, $request);
         } catch (ConflictException $exception) {
-            $this->logException($exception, $request, true);
-            return $this->createErrorResponse(409, $exception->getMessage(), $exception->getCode());
+            return $this->createErrorResponse(409, $exception, $request);
         } catch (RateLimitException $exception) {
-            $this->logException($exception, $request, true);
-            $headers = ['Retry-After' => 60];
-            return $this->createErrorResponse(429, $exception->getMessage(), $exception->getCode(), $headers);
+            return $this->createErrorResponse(429, $exception, $request);
         } catch (MaintenanceModeException $exception) {
-            $this->logException($exception, $request, true);
-            $headers = ['Retry-After' => 60];
-            return $this->createErrorResponse(503, $exception->getMessage(), $exception->getCode(), $headers);
+            return $this->createErrorResponse(503, $exception, $request);
         } catch (Throwable|InternalException $exception) {
-            $this->logException($exception, $request, false);
-            return $this->createErrorResponse(500, 'Internal Server Error', 'ERR-INTERNAL');
+            return $this->createErrorResponse(500, $exception, $request);
         }
     }
 
     /**
      * @param int $statusCode
-     * @param string $message
-     * @param string $errorCode
-     * @param array $headers
-     * @return ResponseInterface
-     */
-    private function createErrorResponse(int $statusCode, string $message, string $errorCode, array $headers = []): ResponseInterface
-    {
-        $this->logger->debug('Creating error response', [
-            'errorCode' => $errorCode,
-            'message' => $message,
-            'statusCode' => $statusCode
-        ]);
-
-        $response = $this->buildJsonResponse([
-            'errors' => [
-                [
-                    'code' => $errorCode,
-                    'message' => $message
-                ]
-            ]
-        ], $statusCode);
-
-        foreach ($headers as $name => $value) {
-            $response = $response->withHeader($name, (string)$value);
-        }
-
-        return $response;
-    }
-
-    /**
      * @param Throwable $exception
      * @param ServerRequestInterface $request
-     * @param bool $expected
-     * @return void
+     * @return ResponseInterface
      */
-    private function logException(Throwable $exception, ServerRequestInterface $request, bool $expected): void
+    private function createErrorResponse(int $statusCode, Throwable $exception, ServerRequestInterface $request): ResponseInterface
     {
-        $message = $exception->getMessage();
-        $context = [
-            'exception' => $exception,
-            'request' => $request
-        ];
+        $logLevel = $statusCode === 500 ? LogLevel::ERROR : LogLevel::NOTICE;
 
         try {
-            if ($expected) {
-                $this->logger->notice($message, $context);
-            } else {
-                $this->logger->error($message, $context);
-            }
+            $this->logger->log($logLevel, $exception->getMessage(), [
+                'exception' => $exception,
+                'request' => $request,
+            ]);
         } catch (Throwable) {
             // Ignore errors when writing logs
         }
+
+        $error = [];
+        $error['message'] = $exception->getMessage();
+        $error['code'] = $exception->getCode();
+        $headers = [];
+
+        if ($statusCode === 500) {
+            $error['message'] = 'Internal Server Error';
+            $error['code'] = 'ERR-INTERNAL';
+        }
+
+        if ($statusCode === 429 || $statusCode === 503) {
+            $headers['Retry-After'] = '60';
+        }
+
+        if ($exception instanceof HttpNotFoundException) {
+            $error['message'] = 'Route not found';
+            $error['code'] = 'ERR-NOT-FOUND';
+        }
+
+        if ($exception instanceof HttpMethodNotAllowedException) {
+            $error['code'] = 'ERR-METHOD-NOT-ALLOWED';
+            $headers['Allow'] = implode(', ', $exception->getAllowedMethods());
+        }
+
+        $response = $this->buildJsonResponse(['errors' => [$error]], $statusCode);
+
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
+
+        return $response;
     }
 }
