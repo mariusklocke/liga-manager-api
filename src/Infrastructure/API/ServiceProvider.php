@@ -29,7 +29,10 @@ class ServiceProvider implements ServiceProviderInterface
             Logger::class => DI\autowire(),
             LoggerInterface::class => DI\get(Logger::class),
             MaintenanceModeMiddleware::class => DI\factory(function (ContainerInterface $container) {
-                return new MaintenanceModeMiddleware($container->get('app.home'));
+                return new MaintenanceModeMiddleware(
+                    $container->get('app.home'),
+                    $container->get(LoggerInterface::class)
+                );
             })
         ];
     }

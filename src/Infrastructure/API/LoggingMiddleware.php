@@ -27,55 +27,29 @@ class LoggingMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $requestId = bin2hex(random_bytes(4));
-        $protocol = sprintf("HTTP/%s", $request->getProtocolVersion());
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
         $serverParams = $request->getServerParams();
+        $remoteAddress = $serverParams['REMOTE_ADDR'] ?? null;
 
-        $this->logger->debug("Received \"$method $path\"", [
-            'protocol' => $protocol,
-            'remoteAddress' => $serverParams['REMOTE_ADDR'] ?? null,
+        $this->logger->debug("Received request \"$method $path\"", [
+            'remoteAddress' => $remoteAddress,
             'requestId' => $requestId,
-            'headers' => $this->extractHeaders($request)
+            'request' => $request
         ]);
 
         $this->timer->start();
         $response = $handler->handle($request);
         $processingTime = $this->timer->stop();
-        $status = $response->getStatusCode();
 
-        $this->logger->debug("Handled \"$method $path\" with status $status", [
-            'requestId' => $requestId,
-            'bodySize' => sprintf('%d bytes', $response->getBody()->getSize()),
+        $this->logger->debug("Sending response for \"$method $path\"", [
+            'statusCode' => $response->getStatusCode(),
+            'remoteAddress' => $remoteAddress,
             'processingTime' => sprintf('%d ms', $processingTime),
+            'requestId' => $requestId,
+            'response' => $response
         ]);
 
         return $response;
-    }
-
-    private function extractHeaders(ServerRequestInterface $request): array
-    {
-        $result = [];
-
-        foreach ($request->getHeaders() as $name => $values) {
-            if (count($values) === 0 || $values[0] === '') {
-                continue;
-            }
-            $value = $values[0];
-
-            if ($name === 'Cookie') {
-                continue;
-            }
-
-            if ($name === 'Authorization') {
-                $segments = explode(' ', $value, 2);
-                $result[$name] = $segments[0];
-                continue;
-            }
-
-            $result[$name] = $value;
-        }
-
-        return $result;
     }
 }

@@ -82,6 +82,12 @@ class ErrorMiddleware implements MiddlewareInterface
      */
     private function createErrorResponse(int $statusCode, string $message, string $errorCode, array $headers = []): ResponseInterface
     {
+        $this->logger->debug('Creating error response', [
+            'errorCode' => $errorCode,
+            'message' => $message,
+            'statusCode' => $statusCode
+        ]);
+
         $response = $this->buildJsonResponse([
             'errors' => [
                 [

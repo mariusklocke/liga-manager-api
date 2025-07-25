@@ -8,17 +8,21 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class MaintenanceModeMiddleware implements MiddlewareInterface
 {
     private File $file;
+    private LoggerInterface $logger;
 
     /**
      * @param string $appHome
+     * @param LoggerInterface $logger
      */
-    public function __construct(string $appHome)
+    public function __construct(string $appHome, LoggerInterface $logger)
     {
         $this->file = new File($appHome, '.maintenance');
+        $this->logger = $logger;
     }
 
     /**
@@ -27,6 +31,7 @@ class MaintenanceModeMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($this->file->exists()) {
+            $this->logger->debug('Maintenance mode is enabled');
             throw new MaintenanceModeException('API unavailable due to maintenance work.');
         }
 

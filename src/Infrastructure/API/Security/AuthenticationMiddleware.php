@@ -11,6 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class AuthenticationMiddleware implements MiddlewareInterface
 {
@@ -65,6 +66,9 @@ class AuthenticationMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        /** @var LoggerInterface */
+        $logger = $this->container->get(LoggerInterface::class);
+
         $rawHeaderValue = $request->getHeader('Authorization')[0] ?? null;
         if (!is_string($rawHeaderValue)) {
             return $handler->handle($request);
@@ -73,15 +77,19 @@ class AuthenticationMiddleware implements MiddlewareInterface
         /** @var TokenServiceInterface $tokenService */
         $tokenService = $this->container->get(TokenServiceInterface::class);
 
+        $logger->debug('Parsing authentication header');
         list($type, $secret) = $this->parseAuthHeader($rawHeaderValue);
         switch (strtolower($type)) {
             case 'basic':
+                $logger->debug('Parsing credentials');
+                list($email, $password) = $this->parseCredentials($secret);
+
+                $logger->debug('Authenticating user with credentials');
                 /** @var PasswordAuthenticator $authenticator */
                 $authenticator = $this->container->get(PasswordAuthenticator::class);
-                list($email, $password) = $this->parseCredentials($secret);
                 $context  = $authenticator->authenticate($email, $password);
                 $response = $handler->handle($request->withAttribute('auth', $context));
-
+                
                 /**
                  * Creating the token after the controller is important when changing a user password
                  * In this case the token has to be created *AFTER* the password has been changed, because otherwise
@@ -89,15 +97,18 @@ class AuthenticationMiddleware implements MiddlewareInterface
                  *
                  * @see TokenAuthenticator::authenticate()
                  */
-
+                $logger->debug('Creating token');
                 $token = $tokenService->create($context->getUser(), new DateTimeImmutable('now + 1 year'));
 
                 return $response->withHeader('X-Token', $tokenService->encode($token));
 
             case 'bearer':
+                $logger->debug('Decoding token');
+                $token = $tokenService->decode($secret);
+
+                $logger->debug('Authenticating user with token');
                 /** @var TokenAuthenticator $authenticator */
                 $authenticator = $this->container->get(TokenAuthenticator::class);
-                $token         = $tokenService->decode($secret);
                 $context       = $authenticator->authenticate($token);
 
                 return $handler->handle($request->withAttribute('auth', $context));
