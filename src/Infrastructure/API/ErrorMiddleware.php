@@ -113,28 +113,10 @@ class ErrorMiddleware implements MiddlewareInterface
     private function logException(Throwable $exception, ServerRequestInterface $request, bool $expected): void
     {
         $message = $exception->getMessage();
-        $context = [];
-        
-        try {
-            $context['exception'] = [
-                'class' => get_class($exception),
-                'code' => $exception->getCode()
-            ];
-            if (!$expected) {
-                $context['exception']['trace'] = explode("\n", $exception->getTraceAsString());
-            }
-        } catch (Throwable) {
-            unset($context['exception']);
-        }
-
-        try {
-            $context['request'] = [
-                'method' => $request->getMethod(),
-                'path' => $request->getUri()->getPath()
-            ];
-        } catch (Throwable) {
-            unset($context['request']);
-        }
+        $context = [
+            'exception' => $exception,
+            'request' => $request
+        ];
 
         try {
             if ($expected) {

@@ -71,6 +71,10 @@ class Logger extends AbstractLogger
 
     private function encodeContext(array $context): string
     {
+        if (isset($context['exception']) && $context['exception'] instanceof Throwable) {
+            $context['exception'] = $this->serializeException($context['exception']);
+        }
+
         if (isset($context['request']) && $context['request'] instanceof MessageInterface) {
             $context['request'] = $this->serializeMessage($context['request']);
         }
@@ -110,5 +114,19 @@ class Logger extends AbstractLogger
         }
 
         return $headers;
+    }
+
+    private function serializeException(Throwable $exception): array
+    {
+        $serialized = [];
+        $serialized['class'] = get_class($exception);
+        $serialized['code'] = $exception->getCode();
+        $serialized['message'] = $exception->getMessage();
+        
+        if ($this->minLevel === LogLevel::DEBUG) {
+            $serialized['trace'] = $exception->getTraceAsString();
+        }
+
+        return $serialized;
     }
 }
