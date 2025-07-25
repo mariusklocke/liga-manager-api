@@ -31,8 +31,8 @@ class ContactPerson extends ValueObject
     {
         Assert::true(
             StringUtils::isValidEmailAddress($email),
-            'Invalid email address for contact',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'contactEmailInvalid'
         );
         $this->firstName = $firstName;
         $this->lastName = $lastName;

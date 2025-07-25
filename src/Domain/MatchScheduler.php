@@ -23,8 +23,8 @@ class MatchScheduler
 
         Assert::true(
             count($appointments) >= count($matches),
-            'Cannot schedule MatchDay with less appointments than matches.',
-            ConflictException::class
+            ConflictException::class,
+            'matchAppointmentsTooLow'
         );
 
         shuffle($appointments);
@@ -46,6 +46,7 @@ class MatchScheduler
                 }
             }
 
+            // TODO: Add message
             Assert::true(
                 $selectedAppointment !== null,
                 'Cannot find appointment for match ' . $match->getId(),
@@ -58,6 +59,7 @@ class MatchScheduler
 
             $pitch = $pitches[$selectedAppointment->getPitchId()] ?? null;
 
+            // TODO: Add message
             Assert::true(
                 $pitch !== null,
                 sprintf('Failed to find pitch with ID %s', $selectedAppointment->getPitchId()),
@@ -103,8 +105,8 @@ class MatchScheduler
             $kickoff = $kickoff->modify('+ 1 day');
             Assert::true(
                 $kickoff <= $matchDay->getEndDate()->setTime(23, 59, 59),
-                'Cannot determine kickoff day',
-                InternalException::class
+                InternalException::class,
+                'impossibleKickoffDay'
             );
         }
 

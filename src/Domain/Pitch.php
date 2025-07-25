@@ -31,13 +31,14 @@ class Pitch extends Entity
         parent::__construct($id);
         Assert::true(
             StringUtils::length($label) > 0,
-            "A pitch's label cannot be blank",
-            InvalidInputException::class
+            InvalidInputException::class,
+            'pitchLabelCannotBeBlank'
         );
         Assert::true(
             StringUtils::length($label) <= 255,
-            "A pitch's label cannot exceed 255 characters",
-            InvalidInputException::class
+            InvalidInputException::class,
+            'pitchLabelExceedsMaxLength',
+            [255]
         );
         $this->label = $label;
         $this->location = $location;
@@ -85,8 +86,8 @@ class Pitch extends Entity
     {
         Assert::true(
             $this->matches->isEmpty(),
-            'Cannot delete pitch which is used in matches',
-            ConflictException::class
+            ConflictException::class,
+            'pitchUsedInMatches'
         );
     }
 }

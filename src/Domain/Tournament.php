@@ -23,13 +23,14 @@ class Tournament extends Competition
         parent::__construct($id);
         Assert::true(
             StringUtils::length($name) > 0,
-            "A tournament's name cannot be blank",
-            InvalidInputException::class
+            InvalidInputException::class,
+            'tournamentNameCannotBeBlank'
         );
         Assert::true(
             StringUtils::length($name) <= 255,
-            "A tournament's name cannot exceed 255 characters",
-            InvalidInputException::class
+            InvalidInputException::class,
+            'tournamentNameExceedsMaxLength',
+            [255]
         );
         $this->name = $name;
         $this->state = self::STATE_PREPARATION;

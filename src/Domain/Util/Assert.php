@@ -11,31 +11,17 @@ class Assert
     }
 
     /**
-     * Asserts that a value is contained in a whitelist
-     *
-     * @param mixed $value
-     * @param array $whitelist
-     * @param string $message
-     * @param string $exceptionClass
-     */
-    public static function oneOf($value, array $whitelist, string $message, string $exceptionClass): void
-    {
-        if (!in_array($value, $whitelist, true)) {
-            throw new $exceptionClass(sprintf($message, implode(',', $whitelist), $value));
-        }
-    }
-
-    /**
      * Asserts that a boolean is false
      *
      * @param bool $value
-     * @param string $message
      * @param string $exceptionClass
+     * @param string $messageId
+     * @param string $messageParams
      */
-    public static function false(bool $value, string $message, string $exceptionClass): void
+    public static function false(bool $value, string $exceptionClass, string $messageId, array $messageParams = []): void
     {
         if ($value) {
-            throw new $exceptionClass($message);
+            throw new $exceptionClass($messageId, $messageParams);
         }
     }
 
@@ -43,13 +29,14 @@ class Assert
      * Asserts that a boolean is true
      *
      * @param bool $value
-     * @param string $message
      * @param string $exceptionClass
+     * @param string $messageId
+     * @param string $messageParams
      */
-    public static function true(bool $value, string $message, string $exceptionClass): void
+    public static function true(bool $value, string $exceptionClass, string $messageId, array $messageParams = []): void
     {
         if (!$value) {
-            throw new $exceptionClass($message);
+            throw new $exceptionClass($messageId, $messageParams);
         }
     }
 }

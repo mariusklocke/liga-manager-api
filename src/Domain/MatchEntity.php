@@ -49,8 +49,8 @@ class MatchEntity extends Entity
         parent::__construct($id);
         Assert::false(
             $homeTeam->equals($guestTeam),
-            'A team cannot play against itself',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'teamCannotPlayAgainstIfself'
         );
         $this->matchDay = $matchDay;
         $this->setHomeTeam($homeTeam);
@@ -64,8 +64,8 @@ class MatchEntity extends Entity
     {
         Assert::true(
             $this->matchDay->getCompetition()->isInProgress(),
-            'Cannot submit match result: Competition is not in progress',
-            ConflictException::class
+            ConflictException::class,
+            'competitionNotInProgress'
         );
 
         if ($this->hasResult()) {
@@ -105,14 +105,15 @@ class MatchEntity extends Entity
     {
         Assert::true(
             $this->matchDay->getCompetition()->isInProgress(),
-            'Cannot cancel match: Competition is not in progress',
-            ConflictException::class
+            ConflictException::class,
+            'competitionNotInProgress'
         );
 
         Assert::true(
             StringUtils::length($reason) <= 255,
-            'Cancellation reason exceeds maximum length of 255',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'cancellationReasonExceedsMaxLength',
+            [255]
         );
 
         if ($this->hasResult()) {

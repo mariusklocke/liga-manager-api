@@ -48,8 +48,8 @@ class Ranking
     {
         Assert::true(
             $this->season->isInProgress(),
-            'Cannot add a result to a season which is not in progress',
-            ConflictException::class
+            ConflictException::class,
+            'competitionNotInProgress'
         );
 
         $this->getPositionForTeam($homeTeamId)->addResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
@@ -66,8 +66,8 @@ class Ranking
     {
         Assert::true(
             $this->season->isInProgress(),
-            'Cannot revert a result from a season which is not in progress',
-            ConflictException::class
+            ConflictException::class,
+            'competitionNotInProgress'
         );
         $this->getPositionForTeam($homeTeamId)->revertResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
         $this->getPositionForTeam($guestTeamId)->revertResult($matchResult->getGuestScore(), $matchResult->getHomeScore());
@@ -81,13 +81,14 @@ class Ranking
     {
         Assert::true(
             $this->season->isInProgress(),
-            'Cannot add a penalty to season which is not in progress',
-            ConflictException::class
+            ConflictException::class,
+            'competitionNotInProgress'
         );
         Assert::true(
             $this->getPenalty($penalty->getId()) === null,
-            sprintf('Ranking penalty with ID %s already exists', $penalty->getId()),
-            UniquenessException::class
+            UniquenessException::class,
+            'penaltyAlreadyExists',
+            [$penalty->getId()]
         );
         $this->penalties[$penalty->getId()] = $penalty;
         $this->getPositionForTeam($penalty->getTeam()->getId())->subtractPoints($penalty->getPoints());
@@ -110,13 +111,14 @@ class Ranking
     {
         Assert::true(
             $this->season->isInProgress(),
-            'Cannot remove a penalty from a season which is not in progress',
-            ConflictException::class
+            ConflictException::class,
+            'competitionNotInProgress'
         );
         Assert::true(
             $this->getPenalty($penalty->getId()) !== null,
-            sprintf('Ranking penalty with ID %s does not exist', $penalty->getId()),
-            NotFoundException::class
+            NotFoundException::class,
+            'penaltyNotFound',
+            [$penalty->getId()]
         );
 
         $this->getPositionForTeam($penalty->getTeam()->getId())->addPoints($penalty->getPoints());
@@ -170,8 +172,9 @@ class Ranking
     {
         Assert::true(
             isset($this->positions[$teamId]),
-            sprintf('Team %s is not ranked', $teamId),
-            NotFoundException::class
+            NotFoundException::class,
+            'teamIsNotRanked',
+            [$teamId]
         );
 
         return $this->positions[$teamId];

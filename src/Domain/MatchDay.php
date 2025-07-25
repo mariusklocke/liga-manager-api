@@ -43,8 +43,8 @@ class MatchDay extends Entity
         parent::__construct($id);
         Assert::true(
             $startDate <= $endDate,
-            'Invalid date range: Start date cannot be after end date',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'invalidDateRange'
         );
         $this->setCompetition($competition);
         $this->number = $number;
@@ -95,8 +95,9 @@ class MatchDay extends Entity
     {
         Assert::false(
             $this->hasMatchWithResult(),
-            'Cannot clear matches with result. Failed for matchDay ' . $this->number,
-            ConflictException::class
+            ConflictException::class,
+            'matchDayAlreadyHasMatchesWithResults',
+            [$this->number]
         );
         $this->matches->clear();
     }
@@ -109,8 +110,8 @@ class MatchDay extends Entity
     {
         Assert::true(
             $startDate <= $endDate,
-            'Invalid date range: Start date cannot be after end date',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'invalidDateRange'
         );
         $this->startDate = $startDate;
         $this->endDate   = $endDate;

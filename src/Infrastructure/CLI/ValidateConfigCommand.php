@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Exception;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Infrastructure\Config;
 use Iterator;
@@ -64,116 +63,110 @@ class ValidateConfigCommand extends Command
     {
         // Optional: admin.email
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('admin.email') || StringUtils::isValidEmailAddress($config->getValue('admin.email')),
                 'Property "admin.email" is not a valid email address',
-                Exception::class
             );
         };
 
         // Required: app.base.url
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 $config->getValue('app.base.url') && StringUtils::isValidUrl($config->getValue('app.base.url')),
                 'Property "app.base.url" is not a valid URL',
-                Exception::class
             );
         };
 
         // Optional: db.password.file
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('db.password.file') || is_file($config->getValue('db.password.file')),
                 'Property "db.password.file" is not a path to a file',
-                Exception::class
             );
         };
 
          // Required: db.url
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 $config->getValue('db.url') && StringUtils::isValidUrl($config->getValue('db.url')),
                 'Property "db.url" is not a valid URL',
-                Exception::class
             );
         };
 
         // Optional: email.sender.address
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('email.sender.address') || StringUtils::isValidEmailAddress($config->getValue('email.sender.address')),
                 'Property "email.sender.address" is not a valid email address',
-                Exception::class
             );
         };
 
         // Optional: email.url
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('email.url') || StringUtils::isValidUrl($config->getValue('email.url')),
                 'Property "email.url" is not a valid URL',
-                Exception::class
             );
         };
 
         // Required: jwt.secret OR jwt.secret.file
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 $config->getValue('jwt.secret') || $config->getValue('jwt.secret.file'),
                 'One of the properties "jwt.secret" or "jwt.secret.file" is required',
-                Exception::class 
             );
         };
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('jwt.secret') || hex2bin($config->getValue('jwt.secret')) !== false,
                 'Property "jwt.secret" is not a hex encoded string',
-                Exception::class
             );
         };
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('jwt.secret.file') || is_file($config->getValue('jwt.secret.file')),
                 'Property "jwt.secret.file" is not a path to a file',
-                Exception::class
             );
         };
 
         // Optional: log.level
         yield function () use ($config): void {
             $logLevels = ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'];
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('log.level') || in_array($config->getValue('log.level'), $logLevels),
                 'Property "log.level" is not one of: ' . implode(',', $logLevels),
-                Exception::class
             );
         };
 
         // Optional: log.path
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('log.path') || is_resource(fopen($config->getValue('log.path'), 'a')),
                 'Property "log.path" is not a path to a writable file',
-                Exception::class
             );
         };
 
         // Optional: rate.limit
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 !$config->getValue('rate.limit') || preg_match('/^(\d+)r\/(\d+)s$/', $config->getValue('rate.limit')),
                 'Property "rate.limit" has invalid format: Use something like "500r/60s"',
-                Exception::class
             );
         };
 
         // Required: redis.host
         yield function () use ($config): void {
-            Assert::true(
+            $this->assertTrue(
                 (bool)$config->getValue('redis.host'),
                 'Property "redis.host" must not be empty',
-                Exception::class
             );
         };
+    }
+
+    private function assertTrue(bool $value, string $message): void
+    {
+        if (!$value) {
+            throw new Exception($message);
+        }
     }
 }

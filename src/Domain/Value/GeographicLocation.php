@@ -22,13 +22,13 @@ class GeographicLocation extends ValueObject
     {
         Assert::true(
             abs($longitude) <= 180.0,
-            'Invalid longitude: Has to be a float between -180.0 and 180.0',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'geoLocationLongitudeInvalid'
         );
         Assert::true(
             abs($latitude) <= 90.0,
-            'Invalid latitude: Has to be a float between -90.0 and 90.0',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'geoLocationLatitudeInvalid'
         );
         $this->longitude = $longitude;
         $this->latitude = $latitude;

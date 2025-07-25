@@ -97,36 +97,32 @@ class TeamLogoRepository
         // Assert does not exceed max file size
         Assert::true(
             $fileSize <= $maxFileSize && $uploadedFile->getError() !== UPLOAD_ERR_INI_SIZE,
-            "Invalid file upload: Exceeds max size of $maxFileSize bytes",
-            InvalidInputException::class
+            InvalidInputException::class,
+            'fileExceedsSizeLimit',
+            ["$maxFileSize Byte"]
         );
 
         // Assert not empty
         Assert::true(
             $fileSize > 0,
-            "Invalid file upload: File is empty",
-            InvalidInputException::class
+            InvalidInputException::class,
+            'fileIsEmpty'
         );
 
         // Assert no unexpected error
         Assert::true(
             $uploadedFile->getError() === UPLOAD_ERR_OK,
-            "Invalid file upload: Code " . $uploadedFile->getError(),
-            InvalidInputException::class
-        );
-
-        // Assert has media type
-        Assert::true(
-            $mediaType !== null,
-            "Missing media type",
-            InvalidInputException::class
+            InvalidInputException::class,
+            'fileUploadError',
+            [$uploadedFile->getError()]
         );
  
         // Assert media type is supported
         Assert::true(
             array_key_exists($mediaType, $this->imageTypes),
-            "Unsupported media type: $mediaType",
-            InvalidInputException::class
+            InvalidInputException::class,
+            'fileTypeUnsupported',
+            [implode(',', array_values($this->imageTypes))]
         );
     }
 

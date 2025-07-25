@@ -35,8 +35,8 @@ abstract class Competition extends Entity
     {
         Assert::false(
             $this->matchDays->containsKey($number),
-            'Cannot create match day. Number already exists',
-            UniquenessException::class
+            UniquenessException::class,
+            'matchDayNumberAlreadyExists'
         );
 
         $this->matchDays[$number] = new MatchDay($id, $this, $number, $startDate, $endDate);
@@ -59,13 +59,13 @@ abstract class Competition extends Entity
     {
         Assert::false(
             $this->hasStarted(),
-            'Cannot start a competition which has already been started',
-            ConflictException::class
+            ConflictException::class,
+            'competitionAlreadyStarted'
         );
         Assert::true(
             $this->hasMatches(),
-            'Cannot start a competition which has no matches',
-            ConflictException::class
+            ConflictException::class,
+            'competitionHasNoMatches'
         );
         $this->state = self::STATE_PROGRESS;
     }
@@ -77,8 +77,8 @@ abstract class Competition extends Entity
     {
         Assert::true(
             $this->hasStarted(),
-            'Cannot end a competition which has not been started',
-            ConflictException::class
+            ConflictException::class,
+            'competitionNotStarted'
         );
         $this->state = self::STATE_ENDED;
     }

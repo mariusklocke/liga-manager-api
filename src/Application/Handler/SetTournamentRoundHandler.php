@@ -42,14 +42,15 @@ class SetTournamentRoundHandler implements AuthAwareHandler
 
         Assert::true(
             count($command->getTeamIdPairs()) > 0,
-            'Team pairs cannot be empty',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'teamPairsEmpty'
         );
 
         Assert::true(
             count($command->getTeamIdPairs()) <= 64,
-            'Request exceeds maximum amount of 64 team pairs',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'teamPairsExceedLimit',
+            [64]
         );
 
         /** @var Tournament $tournament */

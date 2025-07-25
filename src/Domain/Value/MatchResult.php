@@ -45,13 +45,13 @@ class MatchResult extends ValueObject
     {
         Assert::true(
             $value >= 0,
-            'Match scores have to be greater or equal than 0',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'matchScoreTooLow'
         );
         Assert::true(
             $value <= 99,
-            'Match scores have to be less or equal than 99',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'matchScoreTooHigh'
         );
     }
 }

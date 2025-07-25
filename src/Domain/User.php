@@ -87,13 +87,15 @@ class User extends Entity
         if (null !== $password) {
             Assert::true(
                 StringUtils::length($password) >= 6,
-                'Password does not reach the minimum length of 6 characters',
-                InvalidInputException::class
+                InvalidInputException::class,
+                'userPasswordTooShort',
+                [6]
             );
             Assert::true(
                 StringUtils::length($password) <= 255,
-                'Password exceeds maximum length of 255 characters',
-                InvalidInputException::class
+                InvalidInputException::class,
+                'userPasswordTooLong',
+                [255]
             );
             $this->password = password_hash($password, PASSWORD_BCRYPT);
         } else {
@@ -160,11 +162,10 @@ class User extends Entity
      */
     public function setRole(string $role): void
     {
-        Assert::oneOf(
-            $role,
-            self::getRoles(),
-            'Invalid role value. Valid: [%s], Got: %s',
-            InvalidInputException::class
+        Assert::true(
+            in_array($role, self::getRoles()),
+            InvalidInputException::class,
+            'userRoleUnknown'
         );
         $this->role = $role;
     }
@@ -224,8 +225,8 @@ class User extends Entity
     {
         Assert::true(
             StringUtils::isValidEmailAddress($email),
-            'Invalid email address for user',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'userEmailInvalid'
         );
         $this->email = $email;
     }
@@ -279,11 +280,11 @@ class User extends Entity
      */
     public function assertIsAdmin(): void
     {
-        if ($this->hasRole(User::ROLE_ADMIN)) {
-            return;
-        }
-
-        throw new PermissionException('This action requires admin rights');
+        Assert::true(
+            $this->hasRole(User::ROLE_ADMIN),
+            PermissionException::class,
+            'userRequiresAdminRole'
+        );
     }
 
     /**
@@ -292,19 +293,11 @@ class User extends Entity
      */
     public function assertCanChangeMatch(MatchEntity $match): void
     {
-        if ($this->hasRole(User::ROLE_ADMIN)) {
-            return;
-        }
-
-        if ($this->isInTeam($match->getHomeTeam())) {
-            return;
-        }
-
-        if ($this->isInTeam($match->getGuestTeam())) {
-            return;
-        }
-
-        throw new PermissionException('User is not permitted to change this match');
+        Assert::true(
+            $this->hasRole(User::ROLE_ADMIN) || $this->isInTeam($match->getHomeTeam()) || $this->isInTeam($match->getGuestTeam()),
+            PermissionException::class,
+            'userNotPermittedToChangeMatch'
+        );
     }
 
     /**
@@ -313,15 +306,11 @@ class User extends Entity
      */
     public function assertCanManageTeam(Team $team): void
     {
-        if ($this->hasRole(User::ROLE_ADMIN)) {
-            return;
-        }
-
-        if ($this->isInTeam($team)) {
-            return;
-        }
-
-        throw new PermissionException('User is not permitted to manage this team');
+        Assert::true(
+            $this->hasRole(User::ROLE_ADMIN) || $this->isInTeam($team),
+            PermissionException::class,
+            'userNotPermittedToManageTeam'
+        );
     }
 
     /**
@@ -359,7 +348,11 @@ class User extends Entity
     public function setLocale(?string $locale): void
     {
         if ($locale !== null) {
-            Assert::oneOf($locale, self::getLocales(), 'Unsupported locale. Valid: [%s], Got: %s', InvalidInputException::class);
+            Assert::true(
+                in_array($locale, self::getLocales()),
+                InvalidInputException::class,
+                'userLocaleUnsupported'
+            );
         }
         $this->locale = $locale;
     }

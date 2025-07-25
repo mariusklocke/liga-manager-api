@@ -20,8 +20,8 @@ abstract class Entity
         if ($id !== null) {
             Assert::true(
                 StringUtils::length($id) > 0,
-                "An entity id cannot be blank",
-                InvalidInputException::class
+                InvalidInputException::class,
+                'idCannotBeBlank'
             );
             $this->id = $id;
         } else {

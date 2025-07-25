@@ -37,13 +37,13 @@ class RankingPenalty extends Entity
         parent::__construct($id);
         Assert::true(
             $points > 0,
-            'Points on a RankingPenalty have to be greater than 0',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'penaltyPointsNotPositive'
         );
         Assert::true(
             StringUtils::length($reason) > 0,
-            'Reason on a RankingPenalty cannot be empty string',
-            InvalidInputException::class
+            InvalidInputException::class,
+            'penaltyReasonCannotBeBlank'
         );
         $this->ranking   = $ranking;
         $this->team      = $team;
