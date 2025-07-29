@@ -280,11 +280,7 @@ class User extends Entity
      */
     public function assertIsAdmin(): void
     {
-        Assert::true(
-            $this->hasRole(User::ROLE_ADMIN),
-            PermissionException::class,
-            'userRequiresAdminRole'
-        );
+        $this->hasRole(User::ROLE_ADMIN) || throw new PermissionException('userRequiresAdminRole');
     }
 
     /**
@@ -293,11 +289,8 @@ class User extends Entity
      */
     public function assertCanChangeMatch(MatchEntity $match): void
     {
-        Assert::true(
-            $this->hasRole(User::ROLE_ADMIN) || $this->isInTeam($match->getHomeTeam()) || $this->isInTeam($match->getGuestTeam()),
-            PermissionException::class,
-            'userNotPermittedToChangeMatch'
-        );
+        $allowed = $this->hasRole(User::ROLE_ADMIN) || $this->isInTeam($match->getHomeTeam()) || $this->isInTeam($match->getGuestTeam());
+        $allowed || throw new PermissionException('userNotPermittedToChangeMatch');
     }
 
     /**
@@ -306,11 +299,7 @@ class User extends Entity
      */
     public function assertCanManageTeam(Team $team): void
     {
-        Assert::true(
-            $this->hasRole(User::ROLE_ADMIN) || $this->isInTeam($team),
-            PermissionException::class,
-            'userNotPermittedToManageTeam'
-        );
+        $this->hasRole(User::ROLE_ADMIN) || $this->isInTeam($team) || throw new PermissionException('userNotPermittedToManageTeam');
     }
 
     /**
@@ -348,11 +337,7 @@ class User extends Entity
     public function setLocale(?string $locale): void
     {
         if ($locale !== null) {
-            Assert::true(
-                in_array($locale, self::getLocales()),
-                InvalidInputException::class,
-                'userLocaleUnsupported'
-            );
+            in_array($locale, self::getLocales()) || throw new InvalidInputException('userLocaleUnsupported');
         }
         $this->locale = $locale;
     }
