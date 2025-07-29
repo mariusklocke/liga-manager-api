@@ -33,7 +33,7 @@ abstract class Competition extends Entity
      */
     public function createMatchDay(?string $id, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate): MatchDay
     {
-        $this->matchDays->containsKey($number) || throw new UniquenessException('matchDayNumberAlreadyExists');
+        !$this->matchDays->containsKey($number) || throw new UniquenessException('matchDayNumberAlreadyExists');
 
         $this->matchDays[$number] = new MatchDay($id, $this, $number, $startDate, $endDate);
 
