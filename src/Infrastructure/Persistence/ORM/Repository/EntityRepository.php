@@ -51,15 +51,9 @@ abstract class EntityRepository implements EntityRepositoryInterface
      */
     public function find(string $id): object
     {
-        $entity = $this->get($id);
-        if (null === $entity) {
-            $type = StringUtils::stripNamespace(static::getEntityClass());
-            throw new NotFoundException(
-                sprintf('Cannot find %s with ID %s', $type, $id)
-            );
-        }
+        $type = StringUtils::stripNamespace(static::getEntityClass());
 
-        return $entity;
+        return $this->get($id) ?? throw new NotFoundException('entityNotFound', [$type, $id]);
     }
 
     /**

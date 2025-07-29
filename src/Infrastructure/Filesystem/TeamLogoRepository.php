@@ -50,7 +50,7 @@ class TeamLogoRepository
                 return $item;
             }
         }
-        throw new NotFoundException("Cannot find logo file with ID $logoId");
+        throw new NotFoundException("logoNotFound", [$logoId]);
     }
 
     public function save(UploadedFileInterface $uploadedFile): string

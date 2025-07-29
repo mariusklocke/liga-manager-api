@@ -20,9 +20,7 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
         /** @var User|null $user */
         $user = $this->findOneBy(['email' => $email]);
 
-        if (null === $user) {
-            throw new NotFoundException('Cannot find user with email "' . $email . '"');
-        }
+        $user !== null || throw new NotFoundException('userNotFound', [$email]);
 
         return $user;
     }

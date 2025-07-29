@@ -110,12 +110,7 @@ class Ranking
             ConflictException::class,
             'competitionNotInProgress'
         );
-        Assert::true(
-            $this->getPenalty($penalty->getId()) !== null,
-            NotFoundException::class,
-            'penaltyNotFound',
-            [$penalty->getId()]
-        );
+        $this->getPenalty($penalty->getId()) !== null || throw new NotFoundException('penaltyNotFound', [$penalty->getId()]);
 
         $this->getPositionForTeam($penalty->getTeam()->getId())->addPoints($penalty->getPoints());
         $this->penalties->removeElement($penalty);
@@ -166,12 +161,7 @@ class Ranking
      */
     private function getPositionForTeam(string $teamId): RankingPosition
     {
-        Assert::true(
-            isset($this->positions[$teamId]),
-            NotFoundException::class,
-            'teamIsNotRanked',
-            [$teamId]
-        );
+        isset($this->positions[$teamId]) || throw new NotFoundException('teamIsNotRanked', [$teamId]);
 
         return $this->positions[$teamId];
     }

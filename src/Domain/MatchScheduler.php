@@ -59,12 +59,7 @@ class MatchScheduler
 
             $pitch = $pitches[$selectedAppointment->getPitchId()] ?? null;
 
-            // TODO: Add message
-            Assert::true(
-                $pitch !== null,
-                sprintf('Failed to find pitch with ID %s', $selectedAppointment->getPitchId()),
-                NotFoundException::class
-            );
+            $pitch !== null || throw new NotFoundException('pitchNotFound');
 
             $match->locate($pitch);
         }

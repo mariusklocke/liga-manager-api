@@ -39,9 +39,7 @@ class Controller extends BaseController
     {
         $team = $this->findTeam($request->getQueryParams());
 
-        if ($team->getLogoId() === null) {
-            throw new NotFoundException("Logo not found for team with ID: " . $team->getId());
-        }
+        $team->getLogoId() !== null || throw new NotFoundException('teamLogoNotFound', [$team->getId()]);
 
         $location = $this->teamLogoRepository->generatePublicPath($team->getLogoId());
 
