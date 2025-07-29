@@ -451,6 +451,12 @@ components:
             - ERR-UNIQUENESS
         message:
           type: string
+        localizedMessage:
+          type: object
+          description: Dictionary with two-letter language code as key and localized message as value
+      required:
+        - code
+        - message
   securitySchemes:
     bearerAuth:
       type: http

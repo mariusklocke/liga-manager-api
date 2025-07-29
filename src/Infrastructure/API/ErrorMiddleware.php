@@ -4,13 +4,16 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Application\Security\AuthenticationException;
+use HexagonalPlayground\Application\Translator;
 use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
+use HexagonalPlayground\Domain\Exception\LocalizableException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Domain\Exception\PermissionException;
 use HexagonalPlayground\Domain\Exception\UniquenessException;
 use HexagonalPlayground\Infrastructure\API\Security\RateLimitException;
+use Iterator;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -27,6 +30,8 @@ class ErrorMiddleware implements MiddlewareInterface
     use ResponseBuilderTrait;
 
     private LoggerInterface $logger;
+
+    private Translator $translator;
 
     public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory)
     {
@@ -104,6 +109,14 @@ class ErrorMiddleware implements MiddlewareInterface
             $headers['Allow'] = implode(', ', $exception->getAllowedMethods());
         }
 
+        if ($exception instanceof LocalizableException) {
+            $error['localizedMessage'] = [];
+            foreach ($this->getLocalizedErrorMessages($exception) as $locale => $message) {
+                $error['localizedMessage'][$locale] = $message;
+            }
+            $error['message'] = $error['localizedMessage']['en'] ?? $error['message'];
+        }
+
         $response = $this->buildJsonResponse(['errors' => [$error]], $statusCode);
 
         foreach ($headers as $name => $value) {
@@ -111,5 +124,18 @@ class ErrorMiddleware implements MiddlewareInterface
         }
 
         return $response;
+    }
+
+    private function getLocalizedErrorMessages(LocalizableException $exception): Iterator
+    {
+        foreach (['de', 'en'] as $locale) {
+            try {
+                $key = implode('.', ['error', $exception->getMessageId()]);
+                $params = $exception->getMessageParams();
+                yield $locale => $this->translator->get($locale, $key, $params);
+            } catch (Throwable) {
+                continue;
+            }
+        }
     }
 }
