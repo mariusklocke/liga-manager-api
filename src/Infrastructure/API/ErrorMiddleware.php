@@ -134,7 +134,7 @@ class ErrorMiddleware implements MiddlewareInterface
                 $key = implode('.', ['error', $exception->getMessageId()]);
                 $params = $exception->getMessageParams();
                 $message = $this->translator->get($locale, $key, $params);
-            } catch (Throwable $e) {
+            } catch (Throwable) {
                 $message = '';
             }
 
