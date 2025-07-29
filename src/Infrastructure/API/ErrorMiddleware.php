@@ -33,10 +33,11 @@ class ErrorMiddleware implements MiddlewareInterface
 
     private Translator $translator;
 
-    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory)
+    public function __construct(LoggerInterface $logger, ResponseFactoryInterface $responseFactory, Translator $translator)
     {
         $this->logger = $logger;
         $this->responseFactory = $responseFactory;
+        $this->translator = $translator;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -132,9 +133,14 @@ class ErrorMiddleware implements MiddlewareInterface
             try {
                 $key = implode('.', ['error', $exception->getMessageId()]);
                 $params = $exception->getMessageParams();
-                yield $locale => $this->translator->get($locale, $key, $params);
-            } catch (Throwable) {
-                continue;
+                $message = $this->translator->get($locale, $key, $params);
+            } catch (Throwable $e) {
+                $this->logger->error($e->getMessage());
+                $message = '';
+            }
+
+            if ($message !== '') {
+                yield $locale => $message;
             }
         }
     }
