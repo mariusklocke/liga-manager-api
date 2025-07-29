@@ -30,17 +30,10 @@ class TokenAuthenticator extends Authenticator
         }
 
         $now = new DateTimeImmutable();
-        if ($token->getExpiresAt() < $now) {
-            throw $this->createException('Token has expired');
-        }
 
-        if ($user->hasPasswordChangedSince($token->getIssuedAt())) {
-            throw $this->createException('Password has changed after token has been issued.');
-        }
-
-        if ($user->haveAccessTokensBeenInvalidatedSince($token->getIssuedAt())) {
-            throw $this->createException('Token has been invalidated');
-        }
+        $token->getExpiresAt() >= $now || throw $this->createException('tokenHasExpired');
+        !$user->hasPasswordChangedSince($token->getIssuedAt()) || throw $this->createException('passwordChangedAfterTokenIssued');
+        !$user->haveAccessTokensBeenInvalidatedSince($token->getIssuedAt()) || throw $this->createException('tokenHasBeenInvalidated');
 
         return new AuthContext($user);
     }

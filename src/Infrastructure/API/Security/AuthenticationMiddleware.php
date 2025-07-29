@@ -34,9 +34,8 @@ class AuthenticationMiddleware implements MiddlewareInterface
         $parts  = explode(' ', $rawHeaderValue, 2);
         $secret = count($parts) > 1 ? $parts[1] : $parts[0];
         $type   = count($parts) > 1 ? $parts[0]: 'bearer';
-        if (!is_string($type) || !is_string($secret)) {
-            throw new AuthenticationException('Malformed Authorization Header');
-        }
+        
+        is_string($type) && is_string($secret) || throw new AuthenticationException('malformedHeader', ['Authorization']);
 
         return [$type, $secret];
     }
@@ -50,9 +49,8 @@ class AuthenticationMiddleware implements MiddlewareInterface
         $parts    = explode(':', base64_decode($encoded), 2);
         $email    = $parts[0] ?? null;
         $password = $parts[1] ?? null;
-        if (!is_string($email) || !is_string($password)) {
-            throw new AuthenticationException('Malformed BasicAuth credentials');
-        }
+
+        is_string($email) && is_string($password) || throw new AuthenticationException('malformedHeader', ['Authorization']);
 
         return [$email, $password];
     }
@@ -114,6 +112,6 @@ class AuthenticationMiddleware implements MiddlewareInterface
                 return $handler->handle($request->withAttribute('auth', $context));
         }
 
-        throw new AuthenticationException('Unsupported authentication type');
+        throw new AuthenticationException('unsupportedAuthenticationType');
     }
 }

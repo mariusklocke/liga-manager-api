@@ -6,8 +6,6 @@ class AuthChecker
 {
     public function check(?AuthContext $authContext): void
     {
-        if (null === $authContext) {
-            throw new AuthenticationException('Missing Authentication');
-        }
+        null !== $authContext || throw new AuthenticationException('missingAuthentication');
     }
 }

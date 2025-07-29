@@ -64,7 +64,7 @@ class JsonWebTokenService implements TokenServiceInterface
         try {
             $payload = JWT::decode($encodedToken, $this->privateKey);
         } catch (\Exception $e) {
-            throw new AuthenticationException('Invalid Token');
+            throw new AuthenticationException('invalidToken');
         }
 
         $subject   = $payload->sub;

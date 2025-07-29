@@ -23,9 +23,4 @@ interface ExceptionInterface
      * @return string
      */
     public function getCode();
-
-    /**
-     * @return int
-     */
-    public function getHttpResponseCode();
 }

@@ -20,11 +20,11 @@ abstract class Authenticator
     }
 
     /**
-     * @param string $message
+     * @param string $messageId
      * @return AuthenticationException
      */
-    protected function createException(string $message = ''): AuthenticationException
+    protected function createException(string $messageId = ''): AuthenticationException
     {
-        return new AuthenticationException($message ?: 'Invalid Authentication');
+        return new AuthenticationException($messageId ?: 'invalidAuthentication');
     }
 }
