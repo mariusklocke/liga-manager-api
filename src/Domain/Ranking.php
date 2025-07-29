@@ -84,12 +84,8 @@ class Ranking
             ConflictException::class,
             'competitionNotInProgress'
         );
-        Assert::true(
-            $this->getPenalty($penalty->getId()) === null,
-            UniquenessException::class,
-            'penaltyAlreadyExists',
-            [$penalty->getId()]
-        );
+        $this->getPenalty($penalty->getId()) === null || throw new UniquenessException('penaltyAlreadyExists', [$penalty->getId()]);
+
         $this->penalties[$penalty->getId()] = $penalty;
         $this->getPositionForTeam($penalty->getTeam()->getId())->subtractPoints($penalty->getPoints());
         $this->reorder();

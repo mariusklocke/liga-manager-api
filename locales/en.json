@@ -54,6 +54,7 @@
         "tournamentNameCannotBeBlank": "Tournament name cannot be blank.",
         "tournamentNameExceedsMaxLength": "Tournament name exceeds the maximum length of %s characters.",
         "unsupportedAuthenticationType": "Unsupported authentication type.",
+        "userEmailAlreadyExists": "User with the given email address already exists.",
         "userEmailInvalid": "User email address is invalid.",
         "userLocaleUnsupported": "User locale is unsupported.",
         "userNotPermittedToChangeMatch": "User is not permitted to change the match.",

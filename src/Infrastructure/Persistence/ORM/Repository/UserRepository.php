@@ -34,14 +34,12 @@ class UserRepository extends EntityRepository implements UserRepositoryInterface
     public function assertEmailDoesNotExist(string $email): void
     {
         try {
-            $this->findByEmail($email);
-        } catch (NotFoundException $e) {
-            return;
+            $user = $this->findByEmail($email);
+        } catch (NotFoundException) {
+            $user = null;
         }
 
-        throw new UniquenessException(
-            sprintf("A user with email address %s already exists", $email)
-        );
+        $user === null || throw new UniquenessException('userEmailAlreadyExists');
     }
 
     /**
