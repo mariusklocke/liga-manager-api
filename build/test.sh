@@ -3,14 +3,11 @@ set -ex
 
 function cleanup()
 {
-    set +e
-    docker compose logs php
-	docker compose exec php cat php-errors.log
-	docker compose down -v
+    docker compose down -v
 }
 
 function generate_secret() {
-    tr -dc a-f0-9 </dev/urandom | head -c 32
+    tr -d '\n-' < /proc/sys/kernel/random/uuid
 }
 
 export DB_PASSWORD=$(generate_secret)
@@ -22,6 +19,9 @@ trap cleanup EXIT
 if [[ -n "${DOCKER_TOKEN}" ]]; then
     echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
 fi
+
+# Create fresh artifacts directory
+rm -rf build/artifacts && mkdir -m 777 build/artifacts
 
 # Install dev dependencies
 docker run --rm -v $PWD:/app -u $(id -u):$(id -g) --userns host \
@@ -43,7 +43,4 @@ docker compose exec php phpunit -c config/phpunit.xml --display-deprecations --d
 docker compose exec php sh -c "echo 'zend_extension=xdebug' >> /etc/php/php.ini"
 
 # Run tests with coverage
-docker compose exec php phpunit -c config/phpunit.xml --coverage-clover coverage.xml -d error_log=php-errors.log
-
-# Extract coverage report
-docker compose exec php cat coverage.xml > build/coverage.xml
+docker compose exec -e LOG_PATH=/artifacts/app-xdebug.log php phpunit -c config/phpunit.xml --coverage-clover /artifacts/coverage.xml

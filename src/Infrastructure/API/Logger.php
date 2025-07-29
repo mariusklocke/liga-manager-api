@@ -4,9 +4,11 @@ namespace HexagonalPlayground\Infrastructure\API;
 
 use HexagonalPlayground\Infrastructure\Config;
 use InvalidArgumentException;
+use Psr\Http\Message\MessageInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 use Stringable;
+use Throwable;
 
 class Logger extends AbstractLogger
 {
@@ -52,7 +54,12 @@ class Logger extends AbstractLogger
         $level = strtoupper($level);
         $line = "[$timestamp] $level: $message";
         if (count($context)) {
-            $line .= ' ' . json_encode($context);
+            try {
+                $encodedContext = $this->encodeContext($context);
+            } catch (Throwable) {
+                $encodedContext = '{}';
+            }
+            $line .= ' ' . $encodedContext;
         }
 
         if (is_resource($this->stream)) {
@@ -60,6 +67,66 @@ class Logger extends AbstractLogger
         } else {
             error_log($line);
         }
+    }
 
+    private function encodeContext(array $context): string
+    {
+        if (isset($context['exception']) && $context['exception'] instanceof Throwable) {
+            $context['exception'] = $this->serializeException($context['exception']);
+        }
+
+        if (isset($context['request']) && $context['request'] instanceof MessageInterface) {
+            $context['request'] = $this->serializeMessage($context['request']);
+        }
+
+        if (isset($context['response']) && $context['response'] instanceof MessageInterface) {
+            $context['response'] = $this->serializeMessage($context['response']);
+        }
+
+        return json_encode($context);
+    }
+
+    private function serializeMessage(MessageInterface $message): array
+    {
+        return [
+            'protocol' => sprintf("HTTP/%s", $message->getProtocolVersion()),
+            'headers' => $this->anonymizeHeaders($message),
+            'body' => (string)$message->getBody()
+        ];
+    }
+
+    private function anonymizeHeaders(MessageInterface $message): array
+    {
+        $headers = $message->getHeaders();
+
+        if (isset($headers['Cookie'])) {
+            $headers['Cookie'] = array_fill(0, count($headers['Cookie']), '--redacted---');
+        }
+
+        if (isset($headers['Authorization'])) {
+            $headers['Authorization'] = array_map(function (string $value): string {
+                return preg_replace('/(\S+) (\S+)/', '$1 ---redacted---', $value);
+            }, $headers['Authorization']);
+        }
+
+        if (isset($headers['X-Token'])) {
+            $headers['X-Token'] = array_fill(0, count($headers['X-Token']), '--redacted---');
+        }
+
+        return $headers;
+    }
+
+    private function serializeException(Throwable $exception): array
+    {
+        $serialized = [];
+        $serialized['class'] = get_class($exception);
+        $serialized['code'] = $exception->getCode();
+        $serialized['message'] = $exception->getMessage();
+        
+        if ($this->minLevel === LogLevel::DEBUG) {
+            $serialized['trace'] = $exception->getTraceAsString();
+        }
+
+        return $serialized;
     }
 }

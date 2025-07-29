@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 class RateLimitMiddleware implements MiddlewareInterface
 {
@@ -17,7 +18,9 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     private int $intervalSeconds;
 
-    public function __construct(Config $config)
+    private LoggerInterface $logger;
+
+    public function __construct(Config $config, LoggerInterface $logger)
     {
         $this->maxRequests = -1;
         $this->intervalSeconds = -1;
@@ -39,6 +42,9 @@ class RateLimitMiddleware implements MiddlewareInterface
         $clientIp = $this->getClientIp($request);
 
         if ($clientIp !== '' && $this->maxRequests > 0 && $this->intervalSeconds > 0) {
+            $this->logger->debug('Checking rate limit', [
+                'clientIp' => $clientIp
+            ]);
             $now = time();
             $minTime = $now - $this->intervalSeconds;
             $requestMap = apcu_fetch(self::APCU_KEY) ?: [];

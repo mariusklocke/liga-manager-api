@@ -35,11 +35,11 @@ jobs:
       - name: Publish image
         run: make publish
         if: github.ref_type == 'tag' || github.ref_name == 'master'
-      - name: Upload code coverage artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-fpm-mariadb
-          path: build/coverage.xml
+          name: build-fpm-mariadb
+          path: build/artifacts
       - name: Upload tarball
         uses: actions/upload-artifact@v4
         with:
@@ -58,11 +58,11 @@ jobs:
         run: make build
       - name: Test image
         run: make test
-      - name: Upload code coverage artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-fpm-postgres
-          path: build/coverage.xml
+          name: build-fpm-postgres
+          path: build/artifacts
   build-roadrunner-mariadb:
     runs-on: ubuntu-latest
     env:
@@ -79,11 +79,11 @@ jobs:
       - name: Publish image
         run: make publish
         if: github.ref_type == 'tag' || github.ref_name == 'master'
-      - name: Upload code coverage artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-roadrunner-mariadb
-          path: build/coverage.xml
+          name: build-roadrunner-mariadb
+          path: build/artifacts
   build-roadrunner-postgres:
     runs-on: ubuntu-latest
     env:
@@ -97,11 +97,11 @@ jobs:
         run: make build
       - name: Test image
         run: make test
-      - name: Upload code coverage artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-roadrunner-postgres
-          path: build/coverage.xml
+          name: build-roadrunner-postgres
+          path: build/artifacts
   deploy-docs:
     runs-on: ubuntu-latest
     if: github.ref_name == 'master'
@@ -131,11 +131,10 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: coverage-*
-          path: build
+          path: build/artifacts
       - name: List code coverage reports
-        run: ls -R build
+        run: ls -R build/artifacts
       - name: Upload report to codecov.io
         uses: codecov/codecov-action@v5
         with:
-          files: build/coverage-*/coverage.xml
+          files: build/artifacts/build-roadrunner-mariadb/coverage.xml
