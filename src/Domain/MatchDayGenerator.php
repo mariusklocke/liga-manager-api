@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Exception\ConflictException;
-use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Value\DatePeriod;
 use HexagonalPlayground\Domain\Util\Assert;
 
@@ -22,13 +21,7 @@ class MatchDayGenerator
     public function generateMatchDaysForSeason(Season $season, array $matchDayDates): void
     {
         $teams = array_values($season->getTeams());
-        Assert::true(
-            count($teams) >= 2,
-            ConflictException::class,
-            'teamCountTooLow',
-            [2]
-        );
-
+        count($teams) >= 2 || throw new ConflictException('teamCountTooLow', [2]);
         if (count($teams) % 2 != 0) {
             $teams[] = null;
         }
@@ -37,12 +30,7 @@ class MatchDayGenerator
         $matchDaysPerHalf = count($teams) - 1;
         $possibleMatchDayCounts = [$matchDaysPerHalf, $matchDaysPerHalf * 2];
 
-        Assert::true(
-            in_array(count($matchDayDates), $possibleMatchDayCounts),
-            ConflictException::class,
-            'matchDayCountMismatch',
-            [implode(',', $possibleMatchDayCounts)]
-        );
+        in_array(count($matchDayDates), $possibleMatchDayCounts) || throw new ConflictException('matchDayCountMismatch', [implode(',', $possibleMatchDayCounts)]);
 
         /** @var DatePeriod[] $secondHalfMatchDayDates */
         $secondHalfMatchDayDates = [];

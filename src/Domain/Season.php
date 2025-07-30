@@ -65,11 +65,7 @@ class Season extends Competition
      */
     public function addTeam(Team $team): void
     {
-        Assert::false(
-            $this->hasStarted(),
-            ConflictException::class,
-            'seasonHasAlreadyStarted'
-        );
+        !$this->hasStarted() || throw new ConflictException('seasonHasAlreadyStarted');
         if (!$this->hasTeam($team)) {
             $this->teams[] = $team;
             $this->teamCount++;
@@ -81,11 +77,7 @@ class Season extends Competition
      */
     public function removeTeam(Team $team): void
     {
-        Assert::false(
-            $this->hasStarted(),
-            ConflictException::class,
-            'seasonHasAlreadyStarted'
-        );
+        !$this->hasStarted() || throw new ConflictException('seasonHasAlreadyStarted');
         if ($this->hasTeam($team)) {
             $this->teams->removeElement($team);
             $this->teamCount--;
@@ -105,11 +97,7 @@ class Season extends Competition
      */
     public function clearTeams(): void
     {
-        Assert::false(
-            $this->hasStarted(),
-            ConflictException::class,
-            'seasonHasAlreadyStarted'
-        );
+        !$this->hasStarted() || throw new ConflictException('seasonHasAlreadyStarted');
         $this->teams->clear();
         $this->teamCount = 0;
     }
@@ -119,11 +107,7 @@ class Season extends Competition
      */
     public function clearMatchDays(): void
     {
-        Assert::false(
-            $this->hasStarted(),
-            ConflictException::class,
-            'seasonHasAlreadyStarted'
-        );
+        !$this->hasStarted() || throw new ConflictException('seasonHasAlreadyStarted');
         foreach ($this->matchDays as $matchDay) {
             /** @var MatchDay $matchDay */
             $matchDay->clearMatches();
@@ -160,12 +144,7 @@ class Season extends Competition
      */
     public function getRanking(): Ranking
     {
-        Assert::false(
-            $this->ranking === null,
-            ConflictException::class,
-            'competitionNotStarted'
-        );
-        return $this->ranking;
+        return $this->ranking ?? throw new ConflictException('competitionNotStarted');
     }
 
     /**
@@ -184,16 +163,8 @@ class Season extends Competition
      */
     public function replaceTeam(Team $from, Team $to): void
     {
-        Assert::true(
-            $this->hasTeam($from),
-            ConflictException::class,
-            'teamNotParticipatingInSeason'
-        );
-        Assert::false(
-            $this->hasTeam($to),
-            ConflictException::class,
-            'teamAlreadyParticipatingInSeason'
-        );
+        $this->hasTeam($from) || throw new ConflictException('teamNotParticipatingInSeason');
+        !$this->hasTeam($to) || throw new ConflictException('teamAlreadyParticipatingInSeason');
 
         foreach ($this->matchDays as $matchDay) {
             foreach ($matchDay->getMatches() as $match) {

@@ -21,11 +21,7 @@ class MatchScheduler
     {
         $matches = $matchDay->getMatches();
 
-        Assert::true(
-            count($appointments) >= count($matches),
-            ConflictException::class,
-            'matchAppointmentsTooLow'
-        );
+        count($appointments) >= count($matches) || throw new ConflictException('matchAppointmentsTooLow');
 
         shuffle($appointments);
 

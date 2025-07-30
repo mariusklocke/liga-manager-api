@@ -93,12 +93,7 @@ class MatchDay extends Entity
      */
     public function clearMatches(): void
     {
-        Assert::false(
-            $this->hasMatchWithResult(),
-            ConflictException::class,
-            'matchDayAlreadyHasMatchesWithResults',
-            [$this->number]
-        );
+        !$this->hasMatchWithResult() || throw new ConflictException('matchDayAlreadyHasMatchesWithResults', [$this->number]);
         $this->matches->clear();
     }
 

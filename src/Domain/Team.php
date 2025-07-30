@@ -105,10 +105,6 @@ class Team extends Entity
      */
     public function assertDeletable(): void
     {
-        Assert::true(
-            $this->homeMatches->isEmpty() && $this->guestMatches->isEmpty(),
-            ConflictException::class,
-            'teamReferencedInMatches'
-        );
+        $this->homeMatches->isEmpty() && $this->guestMatches->isEmpty() || throw new ConflictException('teamReferencedInMatches');
     }
 }

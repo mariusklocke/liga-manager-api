@@ -62,11 +62,7 @@ class MatchEntity extends Entity
      */
     public function submitResult(MatchResult $matchResult): void
     {
-        Assert::true(
-            $this->matchDay->getCompetition()->isInProgress(),
-            ConflictException::class,
-            'competitionNotInProgress'
-        );
+        $this->matchDay->getCompetition()->isInProgress() || throw new ConflictException('competitionNotInProgress');
 
         if ($this->hasResult()) {
             if ($this->matchResult->equals($matchResult)) {
@@ -103,11 +99,7 @@ class MatchEntity extends Entity
      */
     public function cancel(string $reason): void
     {
-        Assert::true(
-            $this->matchDay->getCompetition()->isInProgress(),
-            ConflictException::class,
-            'competitionNotInProgress'
-        );
+        $this->matchDay->getCompetition()->isInProgress() || throw new ConflictException('competitionNotInProgress');
 
         Assert::true(
             StringUtils::length($reason) <= 255,

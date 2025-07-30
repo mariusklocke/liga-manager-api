@@ -46,11 +46,7 @@ class Ranking
      */
     public function addResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
     {
-        Assert::true(
-            $this->season->isInProgress(),
-            ConflictException::class,
-            'competitionNotInProgress'
-        );
+        $this->season->isInProgress() || throw new ConflictException('competitionNotInProgress');
 
         $this->getPositionForTeam($homeTeamId)->addResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
         $this->getPositionForTeam($guestTeamId)->addResult($matchResult->getGuestScore(), $matchResult->getHomeScore());
@@ -64,11 +60,8 @@ class Ranking
      */
     public function revertResult(string $homeTeamId, string $guestTeamId, MatchResult $matchResult): void
     {
-        Assert::true(
-            $this->season->isInProgress(),
-            ConflictException::class,
-            'competitionNotInProgress'
-        );
+        $this->season->isInProgress() || throw new ConflictException('competitionNotInProgress');
+
         $this->getPositionForTeam($homeTeamId)->revertResult($matchResult->getHomeScore(), $matchResult->getGuestScore());
         $this->getPositionForTeam($guestTeamId)->revertResult($matchResult->getGuestScore(), $matchResult->getHomeScore());
         $this->reorder();
@@ -79,11 +72,7 @@ class Ranking
      */
     public function addPenalty(RankingPenalty $penalty): void
     {
-        Assert::true(
-            $this->season->isInProgress(),
-            ConflictException::class,
-            'competitionNotInProgress'
-        );
+        $this->season->isInProgress() || throw new ConflictException('competitionNotInProgress');
         $this->getPenalty($penalty->getId()) === null || throw new UniquenessException('penaltyAlreadyExists', [$penalty->getId()]);
 
         $this->penalties[$penalty->getId()] = $penalty;
@@ -105,11 +94,7 @@ class Ranking
      */
     public function removePenalty(RankingPenalty $penalty): void
     {
-        Assert::true(
-            $this->season->isInProgress(),
-            ConflictException::class,
-            'competitionNotInProgress'
-        );
+        $this->season->isInProgress() || throw new ConflictException('competitionNotInProgress');
         $this->getPenalty($penalty->getId()) !== null || throw new NotFoundException('penaltyNotFound', [$penalty->getId()]);
 
         $this->getPositionForTeam($penalty->getTeam()->getId())->addPoints($penalty->getPoints());

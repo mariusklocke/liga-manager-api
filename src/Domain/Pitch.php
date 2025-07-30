@@ -84,10 +84,6 @@ class Pitch extends Entity
      */
     public function assertDeletable(): void
     {
-        Assert::true(
-            $this->matches->isEmpty(),
-            ConflictException::class,
-            'pitchUsedInMatches'
-        );
+        $this->matches->isEmpty() || throw new ConflictException('pitchUsedInMatches');
     }
 }

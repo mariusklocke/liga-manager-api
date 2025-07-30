@@ -53,16 +53,8 @@ abstract class Competition extends Entity
      */
     public function start(): void
     {
-        Assert::false(
-            $this->hasStarted(),
-            ConflictException::class,
-            'competitionAlreadyStarted'
-        );
-        Assert::true(
-            $this->hasMatches(),
-            ConflictException::class,
-            'competitionHasNoMatches'
-        );
+        !$this->hasStarted() || throw new ConflictException('competitionAlreadyStarted');
+        $this->hasMatches() || throw new ConflictException('competitionHasNoMatches');
         $this->state = self::STATE_PROGRESS;
     }
 
@@ -71,11 +63,7 @@ abstract class Competition extends Entity
      */
     public function end(): void
     {
-        Assert::true(
-            $this->hasStarted(),
-            ConflictException::class,
-            'competitionNotStarted'
-        );
+        $this->hasStarted() || throw new ConflictException('competitionNotStarted');
         $this->state = self::STATE_ENDED;
     }
 
