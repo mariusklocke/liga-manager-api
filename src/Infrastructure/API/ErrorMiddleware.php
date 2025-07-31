@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API;
 use HexagonalPlayground\Application\Security\AuthenticationException;
 use HexagonalPlayground\Application\Translator;
 use HexagonalPlayground\Domain\Exception\ConflictException;
-use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\LocalizableException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
@@ -62,7 +61,7 @@ class ErrorMiddleware implements MiddlewareInterface
             return $this->createErrorResponse(429, $exception, $request);
         } catch (MaintenanceModeException $exception) {
             return $this->createErrorResponse(503, $exception, $request);
-        } catch (Throwable|InternalException $exception) {
+        } catch (Throwable $exception) {
             return $this->createErrorResponse(500, $exception, $request);
         }
     }

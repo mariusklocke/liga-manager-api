@@ -28,6 +28,7 @@
         "matchScoreTooLow": "Points of a match result must be greater or equal to 0.",
         "matchScoreTooHigh": "Points of a match result must be less than 99.",
         "missingAuthentication": "Missing authentication.",
+        "noAppointmentPossible": "Could not find possible appointment for match with ID %s.",
         "passwordChangedAfterTokenIssued": "Password has changed after token has been issued.",
         "penaltyAlreadyExists": "There already exists a penalty with ID %s",
         "penaltyNotFound": "A penalty with ID %s does not exist.",

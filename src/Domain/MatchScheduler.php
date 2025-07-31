@@ -5,9 +5,7 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\Exception\ConflictException;
-use HexagonalPlayground\Domain\Exception\InternalException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchAppointment;
 
 class MatchScheduler
@@ -42,12 +40,7 @@ class MatchScheduler
                 }
             }
 
-            // TODO: Add message
-            Assert::true(
-                $selectedAppointment !== null,
-                'Cannot find appointment for match ' . $match->getId(),
-                InternalException::class
-            );
+            $selectedAppointment !== null || throw new ConflictException('noAppointmentPossible', [$match->getId()]);
 
             $kickoff = $this->calcKickoff($matchDay, $selectedAppointment);
 
@@ -94,11 +87,7 @@ class MatchScheduler
                 break;
             }
             $kickoff = $kickoff->modify('+ 1 day');
-            Assert::true(
-                $kickoff <= $matchDay->getEndDate()->setTime(23, 59, 59),
-                InternalException::class,
-                'impossibleKickoffDay'
-            );
+            $kickoff <= $matchDay->getEndDate()->setTime(23, 59, 59) || throw new ConflictException('impossibleKickoffDay');
         }
 
         $h = (int) $appointment->getKickoff()->format('H');

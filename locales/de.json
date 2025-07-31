@@ -28,6 +28,7 @@
         "matchScoreTooLow": "Die Punkte eines Spielergebnisses müssen größer gleich 0 sein.",
         "matchScoreTooHigh": "Die Punkte eines Spielergebnisses müssen kleiner gleich 99 sein.",
         "missingAuthentication": "Die Authentifizierung fehlt.",
+        "noAppointmentPossible": "Konnte keine mögliche Spielzeit für das Spiel mit der ID %s ermitteln.",
         "passwordChangedAfterTokenIssued": "Das Passwort wurde geändert nachdem der Token ausgestellt wurde.",
         "penaltyAlreadyExists": "Es existiert bereits eine Strafe mit der ID %s",
         "penaltyNotFound": "Es existiert keine Strafe mit der ID %s",
