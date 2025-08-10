@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\PermissionException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 
 class User extends Entity
@@ -85,18 +84,8 @@ class User extends Entity
     public function setPassword(?string $password): void
     {
         if (null !== $password) {
-            Assert::true(
-                StringUtils::length($password) >= 6,
-                InvalidInputException::class,
-                'userPasswordTooShort',
-                [6]
-            );
-            Assert::true(
-                StringUtils::length($password) <= 255,
-                InvalidInputException::class,
-                'userPasswordTooLong',
-                [255]
-            );
+            StringUtils::length($password) >= 6 || throw new InvalidInputException('userPasswordTooShort', [6]);
+            StringUtils::length($password) <= 255 || throw new InvalidInputException('userPasswordTooLong', [255]);
             $this->password = password_hash($password, PASSWORD_BCRYPT);
         } else {
             $this->password = null;
@@ -162,11 +151,7 @@ class User extends Entity
      */
     public function setRole(string $role): void
     {
-        Assert::true(
-            in_array($role, self::getRoles()),
-            InvalidInputException::class,
-            'userRoleUnknown'
-        );
+        in_array($role, self::getRoles()) || throw new InvalidInputException('userRoleUnknown');
         $this->role = $role;
     }
 
@@ -223,11 +208,7 @@ class User extends Entity
      */
     public function setEmail(string $email): void
     {
-        Assert::true(
-            StringUtils::isValidEmailAddress($email),
-            InvalidInputException::class,
-            'userEmailInvalid'
-        );
+        StringUtils::isValidEmailAddress($email) || throw new InvalidInputException('userEmailInvalid');
         $this->email = $email;
     }
 

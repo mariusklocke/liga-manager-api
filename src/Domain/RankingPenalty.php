@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Domain;
 
 use DateTimeImmutable;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 
 class RankingPenalty extends Entity
@@ -35,16 +34,8 @@ class RankingPenalty extends Entity
     public function __construct(string $id, Ranking $ranking, Team $team, string $reason, int $points)
     {
         parent::__construct($id);
-        Assert::true(
-            $points > 0,
-            InvalidInputException::class,
-            'penaltyPointsNotPositive'
-        );
-        Assert::true(
-            StringUtils::length($reason) > 0,
-            InvalidInputException::class,
-            'penaltyReasonCannotBeBlank'
-        );
+        $points > 0 || throw new InvalidInputException('penaltyPointsNotPositive');
+        StringUtils::length($reason) > 0 || throw new InvalidInputException('penaltyReasonCannotBeBlank');
         $this->ranking   = $ranking;
         $this->team      = $team;
         $this->reason    = $reason;

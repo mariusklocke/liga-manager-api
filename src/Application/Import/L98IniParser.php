@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Application\Import;
 
-use HexagonalPlayground\Domain\Exception\InvalidInputException;
+use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 
 class L98IniParser
@@ -23,13 +23,9 @@ class L98IniParser
 
         // Add quotes around all values
         $iniData = preg_replace('/^([A-Za-z0-9]+)=(.*)$/m', '${1}="${2}"', $rawData);
-        $parsedData = parse_ini_string(
-            $iniData,
-            true
-        );
-        if (!is_array($parsedData)) {
-            throw new InvalidInputException('Failed parsing L98 ini data');
-        }
+        $parsedData = parse_ini_string($iniData, true);
+ 
+        is_array($parsedData) || throw new InvalidArgumentException('Failed to parse L98 ini data');
 
         $this->sections = $parsedData;
     }

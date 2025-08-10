@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Field;
 
-use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 
 class FloatField extends Field
 {
@@ -16,6 +16,6 @@ class FloatField extends Field
 
     public function validate(mixed $value): void
     {
-        TypeAssert::assertNumber($value, $this->getName());
+        is_float($value) || is_int($value) || throw new InvalidInputException('invalidDataType', [$this->getName(), 'float|int']);
     }
 }

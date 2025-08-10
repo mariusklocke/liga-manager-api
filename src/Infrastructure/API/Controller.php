@@ -37,14 +37,12 @@ abstract class Controller implements RequestHandlerInterface
      */
     protected function parseJson(RequestInterface $request): mixed
     {
-        if (!in_array('application/json', $request->getHeader('Content-Type'))) {
-            throw new InvalidInputException('Missing expected Content-Type header "application/json"');
-        }
+        in_array('application/json', $request->getHeader('Content-Type')) || throw new InvalidInputException('unexpectedContentType', ['application/json']);
 
         try {
             return json_decode((string)$request->getBody(), true, 64, JSON_THROW_ON_ERROR);
         } catch (Throwable $throwable) {
-            throw new InvalidInputException('Failed to decode JSON from request body', 0, $throwable);
+            throw new InvalidInputException('invalidJson', [$throwable->getMessage()]);
         }
     }
 }

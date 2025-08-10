@@ -22,10 +22,9 @@ class InputParser
      */
     public static function parseInteger(string $value): int
     {
-        if (ctype_digit(ltrim($value, '-'))) {
-            return (int) $value;
-        }
-        throw new InvalidInputException('Cannot parse integer. Got: ' . $value);
+        ctype_digit(ltrim($value, '-')) || throw new InvalidInputException('invalidDataFormat', [$value, 'integer']);
+
+        return (int) $value;
     }
 
     /**
@@ -50,7 +49,7 @@ class InputParser
         try {
             return new DateTimeImmutable($value);
         } catch (Exception $e) {
-            throw new InvalidInputException('Cannot parse date. Got: ' . $value);
+            throw new InvalidInputException('invalidDataFormat', [$value, 'DateTime']);
         }
     }
 }

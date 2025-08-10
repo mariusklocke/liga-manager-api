@@ -16,9 +16,7 @@ class EqualityFilter extends Filter
 
     public function __construct(IntegerField|StringField|DateTimeField $field, string $mode, array $values)
     {
-        if (count($values) === 0) {
-            throw new InvalidInputException('Invalid EqualityFilter: Array of values must not be empty');
-        }
+        count($values) > 0 || throw new InvalidInputException('filterMissingValues', [$field->getName()]);
 
         $this->field = $field;
         $this->mode = $mode;

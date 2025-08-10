@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 use HexagonalPlayground\Domain\Value\GeographicLocation;
@@ -29,17 +28,8 @@ class Pitch extends Entity
     public function __construct(string $id, string $label, ?GeographicLocation $location = null)
     {
         parent::__construct($id);
-        Assert::true(
-            StringUtils::length($label) > 0,
-            InvalidInputException::class,
-            'pitchLabelCannotBeBlank'
-        );
-        Assert::true(
-            StringUtils::length($label) <= 255,
-            InvalidInputException::class,
-            'pitchLabelExceedsMaxLength',
-            [255]
-        );
+        StringUtils::length($label) > 0 || throw new InvalidInputException('pitchLabelCannotBeBlank');
+        StringUtils::length($label) <= 255 || throw new InvalidInputException('pitchLabelExceedsMaxLength', [255]);
         $this->label = $label;
         $this->location = $location;
         $this->matches = new ArrayCollection();

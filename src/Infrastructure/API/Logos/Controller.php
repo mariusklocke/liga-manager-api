@@ -3,7 +3,6 @@
 namespace HexagonalPlayground\Infrastructure\API\Logos;
 
 use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
-use HexagonalPlayground\Application\TypeAssert;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Domain\Team;
@@ -101,7 +100,7 @@ class Controller extends BaseController
 
     private function findTeam(array $queryParams): Team
     {
-        TypeAssert::assertString($queryParams['teamId'], 'teamId');
+        is_string($queryParams['teamId']) || throw new InvalidInputException('invalidDataType', ['teamId', 'string']);
 
         /** @var Team $team */
         $team = $this->teamRepository->find($queryParams['teamId']);
@@ -114,9 +113,7 @@ class Controller extends BaseController
         $files = $request->getUploadedFiles();
         $count = count($files);
 
-        if ($count !== 1) {
-            throw new InvalidInputException("Invalid upload file count. Expected: 1. Got: $count");
-        }
+        $count === 1 || throw new InvalidInputException('fileCountInvalid', [1, $count]);
 
         /** @var UploadedFileInterface $file */
         $file = array_shift($files);

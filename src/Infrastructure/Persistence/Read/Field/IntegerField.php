@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Field;
 
-use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 
 class IntegerField extends Field
 {
@@ -16,6 +16,6 @@ class IntegerField extends Field
 
     public function validate(mixed $value): void
     {
-        TypeAssert::assertInteger($value, $this->getName());
+        is_int($value) || throw new InvalidInputException('invalidDataType', [$this->getName(), 'int']);
     }
 }

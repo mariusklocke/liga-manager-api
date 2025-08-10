@@ -105,7 +105,7 @@ class DbalGateway implements ReadDbGatewayInterface
                 $this->applyPatternFilter($query, $filter, $filter->getField());
                 break;
             default:
-                throw new InvalidInputException('Unsupported filter type');
+                throw new InvalidInputException('filterTypeIsUnknown', [$filter->getField()->getName()]);
         }
     }
 
@@ -222,21 +222,17 @@ class DbalGateway implements ReadDbGatewayInterface
                 $type = is_array($value) ? ArrayParameterType::INTEGER : ParameterType::INTEGER;
                 break;
             case DateTimeField::class:
-                if (!$value instanceof DateTimeInterface) {
-                    throw new InvalidInputException('Unsupported filter value for DateTimeField');
-                }
+                $value instanceof DateTimeInterface || throw new InvalidInputException('filterValueTypeIsInvalid', [$field->getName(), DateTimeInterface::class]);
                 $value = $value->format($this->connection->getDatabasePlatform()->getDateTimeFormatString());
                 $type = ParameterType::STRING;
                 break;
             case DateField::class:
-                if (!$value instanceof DateTimeInterface) {
-                    throw new InvalidInputException('Unsupported filter value for DateField');
-                }
+                $value instanceof DateTimeInterface || throw new InvalidInputException('filterValueTypeIsInvalid', [$field->getName(), DateTimeInterface::class]);
                 $value = $value->format($this->connection->getDatabasePlatform()->getDateFormatString());
                 $type = ParameterType::STRING;
                 break;
             default:
-                throw new InvalidInputException('Unsupported field type for query parameter');
+                throw new InvalidInputException('filterFieldTypeUnsupported', [$field->getName()]);
         }
 
         $paramId = 'param_' . ++$this->parameterInc;

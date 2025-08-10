@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Domain;
 
 use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Value\DatePeriod;
-use HexagonalPlayground\Domain\Util\Assert;
 
 /**
  * Generates MatchDays and Matches for a Season

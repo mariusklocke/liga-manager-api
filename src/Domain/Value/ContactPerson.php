@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain\Value;
 
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 
 class ContactPerson extends ValueObject
@@ -29,11 +28,7 @@ class ContactPerson extends ValueObject
      */
     public function __construct(string $firstName, string $lastName, string $phone, string $email)
     {
-        Assert::true(
-            StringUtils::isValidEmailAddress($email),
-            InvalidInputException::class,
-            'contactEmailInvalid'
-        );
+        StringUtils::isValidEmailAddress($email) || throw new InvalidInputException('contactEmailInvalid');
         $this->firstName = $firstName;
         $this->lastName = $lastName;
         $this->phone = $phone;

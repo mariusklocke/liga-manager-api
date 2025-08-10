@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\Persistence\Read\Field;
 
-use HexagonalPlayground\Application\TypeAssert;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 
 class DateTimeField extends Field
 {
@@ -38,6 +38,6 @@ class DateTimeField extends Field
 
     public function validate(mixed $value): void
     {
-        TypeAssert::assertInstanceOf($value, DateTimeInterface::class, $this->getName());
+        $value instanceof DateTimeInterface || throw new InvalidInputException('invalidDataType', [$this->getName(), DateTimeInterface::class]);
     }
 }

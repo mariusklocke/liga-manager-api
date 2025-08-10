@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Infrastructure\API\GraphQL;
 use GraphQL\GraphQL;
 use GraphQL\Type\Schema;
 use GraphQL\Utils\SchemaPrinter;
-use HexagonalPlayground\Application\TypeAssert;
+use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\GraphQL\Loader\BufferedLoaderInterface;
 use Psr\Container\ContainerInterface;
@@ -37,8 +37,8 @@ class Controller extends BaseController
         $query = $parsedBody['query'] ?? null;
         $variables = $parsedBody['variables'] ?? [];
 
-        TypeAssert::assertString($query, 'query');
-        TypeAssert::assertArray($variables, 'variables');
+        is_string($query) || throw new InvalidInputException('invalidDataType', ['query', 'string']);
+        is_array($variables) || throw new InvalidInputException('invalidDataType', ['variables', 'array']);
 
         $request = $request->withParsedBody($parsedBody);
         $context = new AppContext($request, $this->container);

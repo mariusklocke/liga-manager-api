@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Infrastructure\Filesystem;
 
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\Uuid;
 use HexagonalPlayground\Infrastructure\Config;
 use Psr\Http\Message\UploadedFileInterface;
@@ -95,35 +94,16 @@ class TeamLogoRepository
         $mediaType = $uploadedFile->getClientMediaType();
 
         // Assert does not exceed max file size
-        Assert::true(
-            $fileSize <= $maxFileSize && $uploadedFile->getError() !== UPLOAD_ERR_INI_SIZE,
-            InvalidInputException::class,
-            'fileExceedsSizeLimit',
-            ["$maxFileSize Byte"]
-        );
+        $fileSize <= $maxFileSize && $uploadedFile->getError() !== UPLOAD_ERR_INI_SIZE || throw new InvalidInputException('fileExceedsSizeLimit', ["$maxFileSize Byte"]);
 
         // Assert not empty
-        Assert::true(
-            $fileSize > 0,
-            InvalidInputException::class,
-            'fileIsEmpty'
-        );
+        $fileSize > 0 || throw new InvalidInputException('fileIsEmpty');
 
         // Assert no unexpected error
-        Assert::true(
-            $uploadedFile->getError() === UPLOAD_ERR_OK,
-            InvalidInputException::class,
-            'fileUploadError',
-            [$uploadedFile->getError()]
-        );
+        $uploadedFile->getError() === UPLOAD_ERR_OK || throw new InvalidInputException('fileUploadError', [$uploadedFile->getError()]);
  
         // Assert media type is supported
-        Assert::true(
-            array_key_exists($mediaType, $this->imageTypes),
-            InvalidInputException::class,
-            'fileTypeUnsupported',
-            [implode(',', array_values($this->imageTypes))]
-        );
+        array_key_exists($mediaType, $this->imageTypes) || throw new InvalidInputException('fileTypeUnsupported', [implode(',', array_values($this->imageTypes))]);
     }
 
     /**

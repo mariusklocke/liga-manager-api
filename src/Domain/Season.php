@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 
 class Season extends Competition
@@ -32,17 +31,8 @@ class Season extends Competition
     public function __construct(string $id, string $name)
     {
         parent::__construct($id);
-        Assert::true(
-            StringUtils::length($name) > 0,
-            InvalidInputException::class,
-            'seasonNameCannotBeBlank'
-        );
-        Assert::true(
-            StringUtils::length($name) <= 255,
-            InvalidInputException::class,
-            'seasonNameExceedsMaxLength',
-            [255]
-        );
+        StringUtils::length($name) > 0 || throw new InvalidInputException('seasonNameCannotBeBlank');
+        StringUtils::length($name) <= 255 || throw new InvalidInputException('seasonNameExceedsMaxLength', [255]);
         $this->name = $name;
         $this->teams = new ArrayCollection();
         $this->matchDays = new ArrayCollection();

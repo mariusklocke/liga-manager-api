@@ -17,9 +17,7 @@ class RangeFilter extends Filter
 
     public function __construct(IntegerField|FloatField|DateTimeField $field, string $mode, null|int|float|DateTimeInterface $minValue, null|int|float|DateTimeInterface $maxValue)
     {
-        if ($minValue === null && $maxValue === null) {
-            throw new InvalidInputException('Invalid RangeFilter: Neither minValue nor maxValue given');
-        }
+        $minValue !== null || $maxValue !== null || throw new InvalidInputException('filterMissingValues', [$field->getName()]);
 
         $this->field = $field;
         $this->mode = $mode;

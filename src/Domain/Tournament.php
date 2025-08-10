@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Domain;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 
 class Tournament extends Competition
@@ -21,17 +20,8 @@ class Tournament extends Competition
     public function __construct(string $id, string $name)
     {
         parent::__construct($id);
-        Assert::true(
-            StringUtils::length($name) > 0,
-            InvalidInputException::class,
-            'tournamentNameCannotBeBlank'
-        );
-        Assert::true(
-            StringUtils::length($name) <= 255,
-            InvalidInputException::class,
-            'tournamentNameExceedsMaxLength',
-            [255]
-        );
+        StringUtils::length($name) > 0 || throw new InvalidInputException('tournamentNameCannotBeBlank');
+        StringUtils::length($name) <= 255 || throw new InvalidInputException('tournamentNameExceedsMaxLength', [255]);
         $this->name = $name;
         $this->state = self::STATE_PREPARATION;
         $this->matchDays = new ArrayCollection();

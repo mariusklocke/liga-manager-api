@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Domain\Exception\UniquenessException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
 class Ranking

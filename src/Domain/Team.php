@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
 use HexagonalPlayground\Domain\Value\ContactPerson;
 
@@ -59,17 +58,8 @@ class Team extends Entity
      */
     public function setName(string $name): void
     {
-        Assert::true(
-            StringUtils::length($name) > 0,
-            InvalidInputException::class,
-            'teamNameCannotBeBlank'
-        );
-        Assert::true(
-            StringUtils::length($name) <= 255,
-            InvalidInputException::class,
-            'teamNameExceedsMaxLength',
-            [255]
-        );
+        StringUtils::length($name) > 0 || throw new InvalidInputException('teamNameCannotBeBlank');
+        StringUtils::length($name) <= 255 || throw new InvalidInputException('teamNameExceedsMaxLength', [255]);
         $this->name = $name;
     }
 

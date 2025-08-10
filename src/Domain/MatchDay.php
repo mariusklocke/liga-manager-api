@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use HexagonalPlayground\Domain\Exception\ConflictException;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
-use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Value\MatchResult;
 
 class MatchDay extends Entity
@@ -41,11 +40,7 @@ class MatchDay extends Entity
     public function __construct(?string $id, Competition $competition, int $number, DateTimeImmutable $startDate, DateTimeImmutable $endDate)
     {
         parent::__construct($id);
-        Assert::true(
-            $startDate <= $endDate,
-            InvalidInputException::class,
-            'invalidDateRange'
-        );
+        $startDate <= $endDate || throw new InvalidInputException('invalidDateRange');
         $this->setCompetition($competition);
         $this->number = $number;
         $this->startDate = $startDate;
@@ -103,11 +98,7 @@ class MatchDay extends Entity
      */
     public function reschedule(DateTimeImmutable $startDate, DateTimeImmutable $endDate): void
     {
-        Assert::true(
-            $startDate <= $endDate,
-            InvalidInputException::class,
-            'invalidDateRange'
-        );
+        $startDate <= $endDate || throw new InvalidInputException('invalidDateRange');
         $this->startDate = $startDate;
         $this->endDate   = $endDate;
     }
