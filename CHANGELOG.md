@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.26.1 - 2025-08-29
+* Improvement: Update composer packages
+* Improvement: Improve error handling and logging
+
 ## 1.26.0 - 2025-07-22
 * Feature: Support GIF, JPG and PNG images as team logos
 * Feature: Allow tournaments to be started and ended
