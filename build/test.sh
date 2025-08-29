@@ -7,12 +7,12 @@ function cleanup()
 }
 
 function generate_secret() {
-    tr -d '\n-' < /proc/sys/kernel/random/uuid
+    head -c $1 /dev/urandom | xxd -ps | tr -d '\n'
 }
 
-export DB_PASSWORD=$(generate_secret)
-export DB_ROOT_PASSWORD=$(generate_secret)
-export JWT_SECRET=$(generate_secret)
+export DB_PASSWORD=$(generate_secret 16)
+export DB_ROOT_PASSWORD=$(generate_secret 16)
+export JWT_SECRET=$(generate_secret 32)
 
 trap cleanup EXIT
 
