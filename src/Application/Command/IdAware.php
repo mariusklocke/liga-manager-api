@@ -2,7 +2,7 @@
 
 namespace HexagonalPlayground\Application\Command;
 
-use HexagonalPlayground\Domain\Util\Uuid;
+use HexagonalPlayground\Domain\Value\Uuid;
 
 trait IdAware
 {
@@ -20,7 +20,7 @@ trait IdAware
     private function setId(?string $id): void
     {
         if (null === $id) {
-            $this->id = Uuid::create();
+            $this->id = (string)Uuid::generate();
             return;
         }
 

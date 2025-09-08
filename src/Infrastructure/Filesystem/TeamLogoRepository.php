@@ -6,7 +6,7 @@ namespace HexagonalPlayground\Infrastructure\Filesystem;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Exception\NotFoundException;
 use HexagonalPlayground\Domain\Util\Assert;
-use HexagonalPlayground\Domain\Util\Uuid;
+use HexagonalPlayground\Domain\Value\Uuid;
 use HexagonalPlayground\Infrastructure\Config;
 use Psr\Http\Message\UploadedFileInterface;
 
@@ -58,7 +58,7 @@ class TeamLogoRepository
         $this->checkUploadedFile($uploadedFile);
         $mediaType = $uploadedFile->getClientMediaType();
         $fileExtension = $this->imageTypes[$mediaType];
-        $logoId = Uuid::create();
+        $logoId = (string)Uuid::generate();
         $targetFile = new File(
             $this->storageDirectory->getPath(),
             sprintf('%s.%s', $logoId, $fileExtension)

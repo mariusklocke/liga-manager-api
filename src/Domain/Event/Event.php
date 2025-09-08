@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Domain\Event;
 
 use DateTimeImmutable;
-use HexagonalPlayground\Domain\Util\Uuid;
+use HexagonalPlayground\Domain\Value\Uuid;
 use JsonSerializable;
 
 class Event implements JsonSerializable
@@ -29,7 +29,7 @@ class Event implements JsonSerializable
      */
     public function __construct(string $type, array $payload)
     {
-        $this->id         = Uuid::create();
+        $this->id         = (string)Uuid::generate();
         $this->type       = $type;
         $this->occurredAt = new DateTimeImmutable();
         $this->payload    = $payload;

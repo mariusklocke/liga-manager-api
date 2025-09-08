@@ -5,7 +5,7 @@ namespace HexagonalPlayground\Domain;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use HexagonalPlayground\Domain\Util\Assert;
 use HexagonalPlayground\Domain\Util\StringUtils;
-use HexagonalPlayground\Domain\Util\Uuid;
+use HexagonalPlayground\Domain\Value\Uuid;
 
 abstract class Entity
 {
@@ -25,7 +25,7 @@ abstract class Entity
             );
             $this->id = $id;
         } else {
-            $this->id = Uuid::create();
+            $this->id = (string)Uuid::generate();
         }
     }
 
