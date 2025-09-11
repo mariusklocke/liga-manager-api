@@ -51,7 +51,7 @@
         "webonyx/graphql-php": "^15.20.0"
     },
     "require-dev": {
-        "deptrac/deptrac": "^3.0.0",
+        "deptrac/deptrac": "^4.2.0",
         "devizzent/cebe-php-openapi": "^1.1",
         "league/openapi-psr7-validator": "^0.22.0",
         "phpunit/phpunit": "^12.0.4",
