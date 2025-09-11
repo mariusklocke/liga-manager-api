@@ -97,7 +97,7 @@ abstract class CompetitionTestCase extends TestCase
         $sunday = new DateTimeImmutable('2024-10-06', $timeZone);
 
         $appointments[] = [
-            'kickoff' => $saturday->setTime(15, 30)->format(DATE_ATOM),
+            'kickoff' => $saturday->setTime(10, 15)->format(DATE_ATOM),
             'unavailable_team_ids' => [],
             'pitch_id' => self::$pitchIds[0]
         ];
@@ -109,13 +109,13 @@ abstract class CompetitionTestCase extends TestCase
         ];
 
         $appointments[] = [
-            'kickoff' => $sunday->setTime(12, 00)->format(DATE_ATOM),
+            'kickoff' => $sunday->setTime(10, 45)->format(DATE_ATOM),
             'unavailable_team_ids' => [self::$teamIds[2]],
             'pitch_id' => self::$pitchIds[0]
         ];
 
         $appointments[] = [
-            'kickoff' => $sunday->setTime(14, 00)->format(DATE_ATOM),
+            'kickoff' => $sunday->setTime(16, 00)->format(DATE_ATOM),
             'unavailable_team_ids' => [],
             'pitch_id' => self::$pitchIds[1]
         ];

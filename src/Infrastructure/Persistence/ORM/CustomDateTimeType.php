@@ -12,10 +12,8 @@ class CustomDateTimeType extends DateTimeImmutableType
 {
     public const NAME = 'custom_datetime';
 
-    /**
-     * @var DateTimeZone|null
-     */
     private static ?DateTimeZone $utc = null;
+    private static ?DateTimeZone $localTimeZone = null;
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
@@ -34,7 +32,7 @@ class CustomDateTimeType extends DateTimeImmutableType
         $dateTime = DateTimeImmutable::createFromFormat($platform->getDateTimeFormatString(), $value, self::getUtc());
 
         if ($dateTime !== false) {
-            return $dateTime;
+            return $dateTime->setTimezone(self::getLocalTimeZone());
         }
 
         throw new InvalidFormat(sprintf(
@@ -48,5 +46,10 @@ class CustomDateTimeType extends DateTimeImmutableType
     private static function getUtc(): DateTimeZone
     {
         return self::$utc ?: self::$utc = new DateTimeZone('UTC');
+    }
+
+    private static function getLocalTimeZone(): DateTimeZone
+    {
+        return self::$localTimeZone ?: self::$localTimeZone = new DateTimeZone(date_default_timezone_get());
     }
 }

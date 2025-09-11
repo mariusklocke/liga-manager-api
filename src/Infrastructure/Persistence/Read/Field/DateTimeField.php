@@ -10,16 +10,17 @@ use DateTimeZone;
 
 class DateTimeField extends Field
 {
-    /** @var DateTimeZone|null */
-    private static ?DateTimeZone $dateTimeZone = null;
+    private static ?DateTimeZone $utc = null;
+    private static ?DateTimeZone $localTimeZone = null;
 
-    private static function getTimeZone(): DateTimeZone
+    private static function getUtc(): DateTimeZone
     {
-        if (self::$dateTimeZone === null) {
-            self::$dateTimeZone = new DateTimeZone('UTC');
-        }
+        return self::$utc ?: self::$utc = new DateTimeZone('UTC');
+    }
 
-        return self::$dateTimeZone;
+    private static function getLocalTimeZone(): DateTimeZone
+    {
+        return self::$localTimeZone ?: self::$localTimeZone = new DateTimeZone(date_default_timezone_get());
     }
 
     public function hydrate(array $row): ?string
@@ -30,10 +31,7 @@ class DateTimeField extends Field
             return null;
         }
 
-        $string = (new DateTimeImmutable($value, self::getTimeZone()))->format(DATE_ATOM);
-
-        // Adjust timezone identifier for not breaking tests
-        return str_replace('+00:00', 'Z', $string);
+        return (new DateTimeImmutable($value, self::getUtc()))->setTimezone(self::getLocalTimeZone())->format(DATE_ATOM);
     }
 
     public function validate(mixed $value): void

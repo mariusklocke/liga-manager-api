@@ -139,7 +139,11 @@ class SeasonTest extends CompetitionTestCase
 
                 // Make sure that kickoff matches one of the appointments
                 $match->kickoff = self::parseDateTime($match->kickoff)->setTimezone($timeZone);
-                self::assertContains($match->kickoff->format($kickoffComparisonFormat), $validKickoffTimes);
+                self::assertContains($match->kickoff->format($kickoffComparisonFormat), $validKickoffTimes, sprintf(
+                    '%s does not contain value "%s"',
+                    var_export($validKickoffTimes, true),
+                    $match->kickoff->format(DATE_ATOM)
+                ));
             }
         }
 
