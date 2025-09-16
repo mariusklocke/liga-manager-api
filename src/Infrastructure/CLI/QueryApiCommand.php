@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -53,25 +52,7 @@ class QueryApiCommand extends Command
 
     private function createClient(): ClientInterface
     {
-        $url = getenv('APP_SERVER_INTERNAL');
-        if (!$url) {
-            throw new Exception('Missing value for environment variable APP_SERVER_INTERNAL');
-        }
-
-        $parsedUrl = parse_url($url);
-        switch ($parsedUrl['scheme']) {
-            case 'fcgi':
-                $appHome    = $this->container->get('app.home');
-                $scriptPath = join(DIRECTORY_SEPARATOR, [$appHome, 'public', 'index.php']);
-                $host       = $parsedUrl['host'];
-                $port       = $parsedUrl['port'] ?? 9000;
-
-                return new FastCgiClient($scriptPath, $host, $port);
-            case 'http':
-                return new Client(['base_uri' => $url]);
-        }
-
-        throw new Exception("Unsupported API server protocol: " . $parsedUrl['scheme']);
+        return $this->container->get(ClientInterface::class);
     }
 
     private function createRequest(InputInterface $input): RequestInterface
@@ -82,13 +63,17 @@ class QueryApiCommand extends Command
         if (!in_array($method, ['GET', 'POST', 'DELETE'])) {
             throw new Exception('Invalid HTTP method: ' . $method);
         }
-        
-        $request = new Request($method, $path);
+
+        /** @var RequestFactoryInterface */
+        $requestFactory = $this->container->get(RequestFactoryInterface::class);
+        $request = $requestFactory->createRequest($method, $path);
 
         if ($request->getMethod() === 'POST' && $input instanceof StreamableInputInterface) {
+            /** @var StreamFactoryInterface */
+            $streamFactory = $this->container->get(StreamFactoryInterface::class);
             $request = $request->withHeader('Content-Type', 'application/json');
             $data = stream_get_contents($input->getStream());
-            $request = $request->withBody(Utils::streamFor($data));
+            $request = $request->withBody($streamFactory->createStream($data));
         }
 
         return $request;

@@ -10,6 +10,9 @@ use HexagonalPlayground\Application\Import\TeamMapperInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -49,7 +52,10 @@ class ServiceProvider implements ServiceProviderInterface
             }),
             OutputInterface::class => DI\get(ConsoleOutput::class),
             TeamMapperInterface::class => DI\get(TeamMapper::class),
-            UploadedFileFactoryInterface::class => DI\get(Psr17Factory::class)
+            UploadedFileFactoryInterface::class => DI\get(Psr17Factory::class),
+            ClientInterface::class => DI\factory(new ApiClientFactory()),
+            RequestFactoryInterface::class => DI\get(Psr17Factory::class),
+            StreamFactoryInterface::class => DI\get(Psr17Factory::class)
         ];
     }
 }
