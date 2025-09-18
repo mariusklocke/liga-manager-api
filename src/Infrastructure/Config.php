@@ -11,6 +11,11 @@ class Config
         $this->values = $values;
     }
 
+    public function getAll(): array
+    {
+        return $this->values;
+    }
+
     public function getValue(string $key, $default = null): mixed
     {
         return $this->values[$key] ?? $default;

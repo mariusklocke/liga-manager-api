@@ -7,6 +7,7 @@ use HexagonalPlayground\Infrastructure\API\Event\RequestEvent;
 use HexagonalPlayground\Infrastructure\API\Event\ResponseEvent;
 use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
+use HexagonalPlayground\Infrastructure\API\Insights\RouteProvider as InsightsRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\RouteProvider as LogosRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Metrics\RouteProvider as MetricsRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
@@ -54,6 +55,7 @@ class Application extends App
             $routeProviders = [
                 new GraphQLRouteProvider(),
                 new HealthRouteProvider(),
+                new InsightsRouteProvider(),
                 new LogosRouteProvider(),
                 new MetricsRouteProvider()
             ];
