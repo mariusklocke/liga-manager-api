@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.26.3 - 2025-10-07
+* Improvement: Refactor API client building
+* Improvement: Update Roadrunner to 2025.1.4
+* Improvement: Update composer packages
+
 ## 1.26.2 - 2025-09-16
 * Improvement: Use local timezone in API responses
 * Improvement: Generate UUIDs without third-party code
