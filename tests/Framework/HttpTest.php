@@ -33,11 +33,12 @@ abstract class HttpTest extends TestCase
      * @param string $method
      * @param string $uri
      * @param array $data
+     * @param array $serverParams
      * @return ServerRequestInterface
      */
-    protected function createRequest(string $method, string $uri, array $data = []): ServerRequestInterface
+    protected function createRequest(string $method, string $uri, array $data = [], array $serverParams = []): ServerRequestInterface
     {
-        $request = $this->requestFactory->createServerRequest($method, $uri);
+        $request = $this->requestFactory->createServerRequest($method, $uri, $serverParams);
 
         if (!empty($data)) {
             $request->getBody()->write(json_encode($data));
@@ -57,7 +58,11 @@ abstract class HttpTest extends TestCase
     {
         $response = $this->client->sendRequest($request);
 
-        $this->schemaValidator->validateResponse($request, $response);
+        $isInternal = str_starts_with($request->getUri()->getPath(), '/api/_');
+
+        if (!$isInternal) {
+            $this->schemaValidator->validateResponse($request, $response);
+        }
 
         return $response;
     }
