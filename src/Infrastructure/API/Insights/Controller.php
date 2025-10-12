@@ -49,7 +49,7 @@ class Controller extends BaseController
 
     private function assertClientIsLocal(ServerRequestInterface $request): void
     {
-        $clientIp = $request->getServerParams()['REMOTE_ADDR'] ?? '';
+        $clientIp = $request->getHeader('X-Forwarded-For')[0] ?? '';
         $clientIp === '127.0.0.1' || throw new PermissionException('Only available to localhost');
     }
 

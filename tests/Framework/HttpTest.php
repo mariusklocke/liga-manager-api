@@ -33,16 +33,20 @@ abstract class HttpTest extends TestCase
      * @param string $method
      * @param string $uri
      * @param array $data
-     * @param array $serverParams
+     * @param array $headers
      * @return ServerRequestInterface
      */
-    protected function createRequest(string $method, string $uri, array $data = [], array $serverParams = []): ServerRequestInterface
+    protected function createRequest(string $method, string $uri, array $data = [], array $headers = []): ServerRequestInterface
     {
-        $request = $this->requestFactory->createServerRequest($method, $uri, $serverParams);
+        $request = $this->requestFactory->createServerRequest($method, $uri);
 
         if (!empty($data)) {
+            $headers['Content-Type'] = 'application/json';
             $request->getBody()->write(json_encode($data));
-            $request = $request->withHeader('Content-Type', 'application/json');
+        }
+
+        foreach ($headers as $name => $value) {
+            $request = $request->withHeader($name, $value);
         }
 
         return $request;
