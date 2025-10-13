@@ -4,6 +4,7 @@ namespace HexagonalPlayground\Infrastructure\API\Insights;
 
 use HexagonalPlayground\Domain\Exception\PermissionException;
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
+use HexagonalPlayground\Infrastructure\API\Network\IpAddress;
 use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\ContainerInspector;
 use HexagonalPlayground\Infrastructure\Filesystem\File;
@@ -49,8 +50,8 @@ class Controller extends BaseController
 
     private function assertClientIsLocal(ServerRequestInterface $request): void
     {
-        $clientIp = $request->getHeader('X-Forwarded-For')[0] ?? '';
-        $clientIp === '127.0.0.1' || throw new PermissionException('Only available to localhost');
+        $clientIp = $request->getServerParams()['REMOTE_ADDR'] ?? '';
+        $clientIp !== '' && (new IpAddress($clientIp))->isLocal() || throw new PermissionException('Only available to localhost');
     }
 
     private function getPackages(): Iterator
