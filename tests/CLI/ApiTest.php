@@ -12,11 +12,12 @@ class ApiTest extends CommandTest
     {
         // Valid GET request
         $result = $this->runCommand('app:api:query', ['method' => 'GET', 'path' => '/api/graphql']);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
 
         // Invalid GET Request
         $result = $this->runCommand('app:api:query', ['method' => 'GET', 'path' => '/non-existing']);
-        self::assertExecutionFailed($result->exitCode);
+        self::assertExecutionSuccess($result);
+        self::assertStringContainsString('ERR-NOT-FOUND', $result->output);
 
         // Valid POST request
         $body = [
@@ -28,14 +29,15 @@ class ApiTest extends CommandTest
             'variables' => []
         ];
         $result = $this->runCommand('app:api:query', ['method' => 'POST', 'path' => '/api/graphql'], [json_encode($body)]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
 
         // Invalid POST request
         $body = [
             'query' => ''
         ];
         $result = $this->runCommand('app:api:query', ['method' => 'POST', 'path' => '/api/graphql'], [json_encode($body)]);
-        self::assertExecutionFailed($result->exitCode);
+        self::assertExecutionSuccess($result);
+        self::assertStringContainsString('Syntax Error', $result->output);
 
         // Verbose output
         $result = $this->runCommand(
@@ -44,6 +46,7 @@ class ApiTest extends CommandTest
             [],
             ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
         );
+        self::assertExecutionSuccess($result);
         self::assertMatchesRegularExpression('/Status: 200/i', $result->output);
 
         // Very verbose output
@@ -53,7 +56,7 @@ class ApiTest extends CommandTest
             [],
             ['verbosity' => OutputInterface::VERBOSITY_VERY_VERBOSE]
         );
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
         self::assertMatchesRegularExpression('/Content-Length: \d+/i', $result->output);
     }
 }

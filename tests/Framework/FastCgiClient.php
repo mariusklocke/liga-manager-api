@@ -1,0 +1,92 @@
+<?php
+declare(strict_types=1);
+
+namespace HexagonalPlayground\Tests\Framework;
+
+use Exception;
+use hollodotme\FastCGI\Client;
+use hollodotme\FastCGI\Interfaces\ConfiguresSocketConnection;
+use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
+use hollodotme\FastCGI\Interfaces\ProvidesResponseData;
+use hollodotme\FastCGI\Requests\DeleteRequest;
+use hollodotme\FastCGI\Requests\GetRequest;
+use hollodotme\FastCGI\Requests\PostRequest;
+use hollodotme\FastCGI\SocketConnections\NetworkSocket;
+use Nyholm\Psr7\Response;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
+class FastCgiClient implements ClientInterface
+{
+    private Client $client;
+    private ConfiguresSocketConnection $connection;
+    private string $scriptPath;
+
+    public function __construct(string $scriptPath, string $host, int $port = 9000)
+    {
+        $this->client = new Client();
+        $this->connection = new NetworkSocket($host, $port);
+        $this->scriptPath = $scriptPath;
+    }
+
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        return $this->mapResponse(
+            $this->client->sendRequest($this->connection, $this->mapRequest($request))
+        );
+    }
+
+    private function mapRequest(RequestInterface $request): ProvidesRequestData
+    {
+        switch ($request->getMethod()) {
+            case 'GET':
+                $result = new GetRequest($this->scriptPath, '');
+                break;
+            case 'POST':
+                $result = new PostRequest($this->scriptPath, (string)$request->getBody());
+                break;
+            case 'DELETE':
+                $result = new DeleteRequest($this->scriptPath, '');
+                break;
+            default:
+                throw new Exception("Unsupported HTTP method: {$request->getMethod()}");
+        }
+
+        $customVars = $this->getCustomVars($request);
+        $result->addCustomVars($customVars);
+        if (isset($customVars['HTTP_CONTENT_TYPE'])) {
+            $result->setContentType($customVars['HTTP_CONTENT_TYPE']);
+        }
+
+        $result->setRequestUri($request->getUri()->getPath());
+        $result->setRemoteAddress('127.0.0.1');
+
+        return $result;
+    }
+
+    private function mapResponse(ProvidesResponseData $input): ResponseInterface
+    {
+        $status = $input->getHeader('status')[0] ?? 200;
+
+        return new Response((int)$status, $input->getHeaders(), $input->getBody());
+    }
+
+    private function getCustomVars(RequestInterface $request): array
+    {
+        $customVars = [];
+        /** @var string $name */
+        foreach ($request->getHeaders() as $name => $values) {
+            count($values) <= 1 || throw new Exception("FastCgiClient does not support multiple header values: $name");
+            $words = explode('-', strtoupper($name));
+            $key = 'HTTP_' . implode('_', $words);
+            $customVars[$key] = $values[0];
+        }
+
+        if ($request->getUri()->getQuery()) {
+            $customVars['QUERY_STRING'] = $request->getUri()->getQuery();
+        }
+
+        return $customVars;
+    }
+}

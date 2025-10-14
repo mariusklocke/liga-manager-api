@@ -15,7 +15,7 @@ class SeasonTest extends CommandTest
             $files[] = $fileInfo->getRealPath();
         }
         $result = $this->runCommand('app:import:season', ['files' => $files], [], ['interactive' => false]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
         self::assertStringContainsString('success', $result->output);
     }
 }

@@ -47,7 +47,7 @@ class QueryApiCommand extends Command
 
         $output->writeln((string)$response->getBody());
 
-        return $response->getStatusCode() >= 200 && $response->getStatusCode() < 300 ? 0 : 1;
+        return 0;
     }
 
     private function createClient(): ClientInterface

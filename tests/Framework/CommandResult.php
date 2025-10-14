@@ -8,7 +8,7 @@ class CommandResult
     public function __construct(
         public readonly int $exitCode,
         public readonly string $output,
-        public readonly string $errorOutpu
+        public readonly string $errorOutput
     ) {
         // Using constructor property promotion
     }

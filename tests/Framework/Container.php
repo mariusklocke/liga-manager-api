@@ -3,7 +3,6 @@
 namespace HexagonalPlayground\Tests\Framework;
 
 use DI;
-use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\HttpFactory as GuzzleHttpFactory;
 use HexagonalPlayground\Infrastructure\API\Application;
 use Nyholm\Psr7\Factory\Psr17Factory;
@@ -38,7 +37,8 @@ final class Container extends DI\Container
             ];
         } else {
             $definitions = [
-                ClientInterface::class => DI\create(GuzzleClient::class)->constructor(['base_uri' => getenv('APP_BASE_URL')]),
+                'app.home' => getenv('APP_HOME') ?: realpath(__DIR__ . '/../..'),
+                ClientInterface::class => DI\factory(new ApiClientFactory()),
                 ServerRequestFactoryInterface::class => DI\get(GuzzleHttpFactory::class),
                 UploadedFileFactoryInterface::class => DI\get(GuzzleHttpFactory::class),
                 StreamFactoryInterface::class => DI\get(GuzzleHttpFactory::class),

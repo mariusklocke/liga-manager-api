@@ -10,6 +10,6 @@ class VersionTest extends CommandTest
     public function testCanBeListed(): void
     {
         $result = $this->runCommand('app:versions:list');
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 }
