@@ -53,10 +53,11 @@ class FastCgiClient implements ClientInterface
                 throw new Exception("Unsupported HTTP method: {$request->getMethod()}");
         }
 
-        $customVars = $this->getCustomVars($request);
-        $result->addCustomVars($customVars);
-        if (isset($customVars['HTTP_CONTENT_TYPE'])) {
-            $result->setContentType($customVars['HTTP_CONTENT_TYPE']);
+        foreach ($this->getCustomVars($request) as $key => $value) {
+            $result->setCustomVar($key, $value);
+            if ($key === 'HTTP_CONTENT_TYPE') {
+                $result->setContentType($value);
+            }
         }
 
         $result->setRequestUri($request->getUri()->getPath());
