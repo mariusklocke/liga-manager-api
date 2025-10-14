@@ -28,7 +28,7 @@ docker run --rm -v $PWD:/app -u $(id -u):$(id -g) --userns host \
     composer install --ignore-platform-reqs --no-cache --no-progress
 
 # Start containers
-docker compose up --detach --quiet-pull
+docker compose up --wait --quiet-pull
 
 # Verify architecture contraints
 docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
