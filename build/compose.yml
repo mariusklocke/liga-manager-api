@@ -12,7 +12,7 @@ services:
       - EMAIL_SENDER_NAME=phpunit
       - EMAIL_URL=smtp://test:9ecd4875@maildev:1025?verify_peer=0
       - JWT_SECRET_FILE=/run/secrets/jwt-secret
-      - LOG_LEVEL=debug
+      - LOG_LEVEL=warning
       - LOG_PATH=/artifacts/app.log
       - REDIS_HOST=redis
     volumes:
