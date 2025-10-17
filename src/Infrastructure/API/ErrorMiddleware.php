@@ -69,17 +69,6 @@ class ErrorMiddleware implements MiddlewareInterface
      */
     private function createErrorResponse(int $statusCode, Throwable $exception, ServerRequestInterface $request): ResponseInterface
     {
-        $logLevel = $statusCode === 500 ? LogLevel::ERROR : LogLevel::NOTICE;
-
-        try {
-            $this->logger->log($logLevel, $exception->getMessage(), [
-                'exception' => $exception,
-                'request' => $request,
-            ]);
-        } catch (Throwable) {
-            // Ignore errors when writing logs
-        }
-
         $error = [];
         $error['message'] = $exception->getMessage();
         $error['code'] = $exception->getCode();
@@ -108,6 +97,18 @@ class ErrorMiddleware implements MiddlewareInterface
 
         foreach ($headers as $name => $value) {
             $response = $response->withHeader($name, $value);
+        }
+
+        try {
+            $logLevel   = $statusCode === 500 ? LogLevel::ERROR : LogLevel::NOTICE;
+            $logMessage = $exception->getMessage();
+
+            $this->logger->log($logLevel, $logMessage, [
+                'exception' => $exception,
+                'request' => $request,
+            ]);
+        } catch (Throwable) {
+            // Ignore errors when writing logs
         }
 
         return $response;
