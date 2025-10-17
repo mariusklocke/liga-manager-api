@@ -106,6 +106,7 @@ class ErrorMiddleware implements MiddlewareInterface
             $this->logger->log($logLevel, $logMessage, [
                 'exception' => $exception,
                 'request' => $request,
+                'response' => $response
             ]);
         } catch (Throwable) {
             // Ignore errors when writing logs
