@@ -3,8 +3,8 @@ set -eu
 
 rm -rf ./docs
 TEMP_CONTAINER=$(docker create redocly/redoc)
-docker cp ${TEMP_CONTAINER}:/usr/share/nginx/html ./docs
-docker rm ${TEMP_CONTAINER}
+docker cp "${TEMP_CONTAINER}:/usr/share/nginx/html" ./docs
+docker rm "${TEMP_CONTAINER}"
 
 cp openapi.yml ./docs/openapi.yml
 sed -i 's/%PAGE_TITLE%/Liga-Manager API docs/' ./docs/index.html

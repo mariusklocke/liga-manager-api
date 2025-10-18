@@ -7,12 +7,8 @@ function cleanup()
 }
 
 function generate_secret() {
-    head -c $1 /dev/urandom | xxd -ps | tr -d '\n'
+    head -c "$1" /dev/urandom | xxd -ps | tr -d '\n'
 }
-
-export DB_PASSWORD=$(generate_secret 16)
-export DB_ROOT_PASSWORD=$(generate_secret 16)
-export JWT_SECRET=$(generate_secret 32)
 
 trap cleanup EXIT
 
@@ -24,10 +20,13 @@ fi
 rm -rf build/artifacts && mkdir -m 777 build/artifacts
 
 # Install dev dependencies
-docker run --rm -v $PWD:/app -u $(id -u):$(id -g) --userns host \
+docker run --rm -v "$PWD:/app" -u "$(id -u):$(id -g)" --userns host \
     composer install --ignore-platform-reqs --no-cache --no-progress
 
 # Start containers
+DB_PASSWORD=$(generate_secret 16) \
+DB_ROOT_PASSWORD=$(generate_secret 16) \
+JWT_SECRET=$(generate_secret 32) \
 docker compose up --detach --quiet-pull
 
 # Verify architecture contraints
