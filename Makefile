@@ -19,7 +19,16 @@ else
 	export APP_TAG = ${APP_VERSION}-${APP_RUNTIME}
 endif
 
-.PHONY: build test publish release tarball docs
+.PHONY: help build test publish release tarball docs
+default: help
+
+help:
+	@echo 'make build      Build docker image'
+	@echo 'make test       Test docker image'
+	@echo 'make publish    Publish docker image'
+	@echo 'make release    Create a new release'
+	@echo 'make tarball    Build tarball'
+	@echo 'make docs       Build docs'
 
 build:
 	build/build.sh
