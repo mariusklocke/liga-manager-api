@@ -10,6 +10,6 @@ class ContainerTest extends CommandTest
     public function testCanBeInspected(): void
     {
         $result = $this->runCommand('app:container:inspect');
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 }

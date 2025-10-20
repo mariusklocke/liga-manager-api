@@ -14,6 +14,6 @@ class MailTest extends CommandTest
             'subject' => 'Test',
             'content' => 'This is just a test'
         ]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 }

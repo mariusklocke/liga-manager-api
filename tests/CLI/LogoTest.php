@@ -20,7 +20,7 @@ class LogoTest extends CommandTest
         $sourceData = $logoFile->read();
 
         $result = $this->runCommand('app:logo:import', ['file' => $logoFile->getPath(), 'teamId' => $teamId]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
         self::assertFalse($logoFile->exists());
         preg_match("/Path: (\S+)/", $result->output, $matches);
         self::assertIsString($matches[1], "Failed to find logo path in \"$result->output\"");
@@ -46,7 +46,7 @@ class LogoTest extends CommandTest
         self::assertTrue($staleLogoFile->exists());
 
         $result = $this->runCommand('app:logo:cleanup');
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
         self::assertFalse($staleLogoFile->exists());
         self::assertTrue($referencedLogoFile->exists());
     }

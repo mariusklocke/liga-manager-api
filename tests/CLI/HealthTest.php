@@ -10,6 +10,6 @@ class HealthTest extends CommandTest
     public function testCanBeChecked(): void
     {
         $result = $this->runCommand('app:health:check');
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 }

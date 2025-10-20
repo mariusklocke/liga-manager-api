@@ -13,10 +13,10 @@ class UserTest extends CommandTest
     {
         $inputs = ['mary.poppins@example.com', DataGenerator::generatePassword(), 'Mary', 'Poppins', 'admin', 'en'];
         $result = $this->runCommand('app:user:create', [], $inputs);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
 
         $result = $this->runCommand('app:user:create', ['--default' => null]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 
     /**
@@ -37,7 +37,7 @@ class UserTest extends CommandTest
             }
         }
 
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
 
         return $users;
     }
@@ -55,6 +55,6 @@ class UserTest extends CommandTest
         self::assertNotEmpty($deletable);
         $user = array_shift($deletable);
         $result = $this->runCommand('app:user:delete', ['userId' => $user['id']]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 }

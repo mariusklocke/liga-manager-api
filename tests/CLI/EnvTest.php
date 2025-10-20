@@ -22,6 +22,6 @@ class EnvTest extends CommandTest
             'smtp://127.0.0.1:25'
         ];
         $result = $this->runCommand('app:env:setup', [], $input, ['interactive' => true]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 }

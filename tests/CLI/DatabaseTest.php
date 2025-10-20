@@ -13,23 +13,23 @@ class DatabaseTest extends CommandTest
     public function testCanBeWiped(): void
     {
         $result = $this->runCommand('app:db:wipe', [], ['y'], ['interactive' => true]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 
     public function testCanBeMigrated(): void
     {
         $result = $this->runCommand('app:db:migrate', ['--dry-run' => null]); 
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
         self::assertStringContainsString('No queries were executed', $result->output);
 
         $result = $this->runCommand('app:db:migrate');
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 
     public function testDemoDataCanBeLoaded(): void
     {
         $result = $this->runCommand('app:db:demo-data');
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
     }
 
     /**
@@ -41,7 +41,7 @@ class DatabaseTest extends CommandTest
 
         // Test anonymized export
         $result = $this->runCommand('app:db:export', ['file' => $xmlFile->getPath(), '--anonymize' => null]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
         self::assertStringContainsString('Successfully exported', $result->output);
         self::assertGreaterThan(0, $xmlFile->getSize());
         $nodeCounts = self::countXmlNodes($xmlFile->getPath());
@@ -53,7 +53,7 @@ class DatabaseTest extends CommandTest
         // Test regular export
         $xmlFile->delete();
         $result = $this->runCommand('app:db:export', ['file' => $xmlFile->getPath()]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
         self::assertStringContainsString('Successfully exported', $result->output);
         self::assertGreaterThan(0, $xmlFile->getSize());
         $nodeCounts = self::countXmlNodes($xmlFile->getPath());
@@ -73,7 +73,7 @@ class DatabaseTest extends CommandTest
     public function testCanBeImported(File $xmlFile): void
     {
         $result = $this->runCommand('app:db:import', ['file' => $xmlFile->getPath()]);
-        self::assertExecutionSuccess($result->exitCode);
+        self::assertExecutionSuccess($result);
         self::assertStringContainsString('Successfully imported', $result->output);
         $xmlFile->delete();
     }

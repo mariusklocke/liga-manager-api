@@ -5,6 +5,9 @@ namespace HexagonalPlayground\Infrastructure\API;
 use HexagonalPlayground\Infrastructure\Config;
 use InvalidArgumentException;
 use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UriInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 use Stringable;
@@ -75,24 +78,26 @@ class Logger extends AbstractLogger
             $context['exception'] = $this->serializeException($context['exception']);
         }
 
-        if (isset($context['request']) && $context['request'] instanceof MessageInterface) {
-            $context['request'] = $this->serializeMessage($context['request']);
+        if (isset($context['request']) && $context['request'] instanceof RequestInterface) {
+            $context['request'] = [
+                'protocol' => sprintf("HTTP/%s", $context['request']->getProtocolVersion()),
+                'method' => $context['request']->getMethod(),
+                'url' => $this->anonymizeUri($context['request']->getUri()),
+                'headers' => $this->anonymizeHeaders($context['request']),
+                'body' => (string)$context['request']->getBody()
+            ];
         }
 
-        if (isset($context['response']) && $context['response'] instanceof MessageInterface) {
-            $context['response'] = $this->serializeMessage($context['response']);
+        if (isset($context['response']) && $context['response'] instanceof ResponseInterface) {
+            $context['response'] = [
+                'protocol' => sprintf("HTTP/%s", $context['response']->getProtocolVersion()),
+                'statusCode' => $context['response']->getStatusCode(),
+                'headers' => $this->anonymizeHeaders($context['response']),
+                'body' => (string)$context['response']->getBody()
+            ];
         }
 
         return json_encode($context);
-    }
-
-    private function serializeMessage(MessageInterface $message): array
-    {
-        return [
-            'protocol' => sprintf("HTTP/%s", $message->getProtocolVersion()),
-            'headers' => $this->anonymizeHeaders($message),
-            'body' => (string)$message->getBody()
-        ];
     }
 
     private function anonymizeHeaders(MessageInterface $message): array
@@ -114,6 +119,15 @@ class Logger extends AbstractLogger
         }
 
         return $headers;
+    }
+
+    private function anonymizeUri(UriInterface $uri): string
+    {
+        if ($uri->getUserInfo() !== '') {
+            $uri = $uri->withUserInfo('---redacted---');
+        }
+
+        return (string)$uri;
     }
 
     private function serializeException(Throwable $exception): array

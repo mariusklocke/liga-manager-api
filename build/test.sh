@@ -27,7 +27,7 @@ docker run --rm -v "$PWD:/app" -u "$(id -u):$(id -g)" --userns host \
 DB_PASSWORD=$(generate_secret 16) \
 DB_ROOT_PASSWORD=$(generate_secret 16) \
 JWT_SECRET=$(generate_secret 32) \
-docker compose up --detach --quiet-pull
+docker compose up --wait --quiet-pull
 
 # Verify architecture contraints
 docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress

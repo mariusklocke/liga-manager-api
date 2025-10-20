@@ -17,6 +17,9 @@
         <testsuite name="Health">
             <directory>../tests/Health</directory>
         </testsuite>
+        <testsuite name="Insights">
+            <directory>../tests/Insights</directory>
+        </testsuite>
         <testsuite name="Metrics">
             <directory>../tests/Metrics</directory>
         </testsuite>

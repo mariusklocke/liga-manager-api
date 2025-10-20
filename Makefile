@@ -4,7 +4,6 @@ export SHELLOPTS:=$(if $(SHELLOPTS),$(SHELLOPTS):)pipefail:errexit
 export APP_RUNTIME ?= fpm
 export APP_VERSION ?= latest
 export MARIADB_VERSION ?= 11.8
-export NGINX_VERSION ?= 1
 export PHP_VERSION ?= 8.4
 export POSTGRES_VERSION ?= 17
 export REDIS_VERSION ?= 8.2

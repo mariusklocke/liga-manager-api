@@ -40,13 +40,15 @@ abstract class CommandTest extends TestCase
         return $this->getApplication()->getAuthContext();
     }
 
-    protected static function assertExecutionSuccess(int $exitCode): void
+    protected static function assertExecutionSuccess(CommandResult $result): void
     {
-        self::assertEquals(0, $exitCode);
+        self::assertSame('', trim($result->errorOutput), $result->errorOutput);
+        self::assertSame(0, $result->exitCode);
     }
 
-    protected static function assertExecutionFailed(int $exitCode): void
+    protected static function assertExecutionFailed(CommandResult $result): void
     {
-        self::assertNotEquals(0, $exitCode);
+        self::assertNotSame('', trim($result->errorOutput));
+        self::assertNotSame(0, $result->exitCode);
     }
 }

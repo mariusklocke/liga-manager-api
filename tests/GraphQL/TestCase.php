@@ -116,13 +116,13 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         $fileName = basename($filePath);
 
         if (extension_loaded('xdebug')) {
+            // When running tests in same process with the app, just pass the file reference
             $uploadedFile = $this->uploadedFileFactory->createUploadedFile($stream, $fileSize, 0, $fileName, $fileMediaType);
             $request = $request->withUploadedFiles(['file' => $uploadedFile]);
         } else {
+            // When running tests in isolated process, build a multipart stream
             $boundary = 'boundary_' . uniqid();
             $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
-
-            // Build the multipart form data using a stream
             $multipart = new MultipartStream([
                 [
                     'name'     => 'file',
@@ -134,7 +134,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
                     ]
                 ]
             ], $boundary);
-
             $request = $request->withBody($multipart);
         }
 
