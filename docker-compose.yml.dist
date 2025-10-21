@@ -1,8 +1,6 @@
-version: '3'
 services:
   nginx:
-    build:
-      dockerfile: ./docker/nginx/Dockerfile
+    image: robertkitzing/liga-manager-ui:latest
     ports:
       - "80:80/tcp"
       # Uncomment the following line for HTTPS support
@@ -16,6 +14,12 @@ services:
       - ./docker/nginx/dev-roadrunner.conf:/etc/nginx/conf.d/default.conf:ro
       - logos:/var/www/logos:ro
       - ./docker/ui/appsettings.json:/var/www/ui/appsettings.json:ro
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "127.0.0.1", "80" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s
 
   php:
     build:
@@ -25,33 +29,42 @@ services:
         APP_VERSION: dev-latest
     volumes:
       - logos:/var/www/logos
+    secrets:
+      - source: lima-db-password
+        target: db-password
+      - source: lima-jwt-secret
+        target: jwt-secret
     environment:
-      - ADMIN_EMAIL=admin@example.com
-      - ADMIN_PASSWORD=123456
-      - APP_BASE_URL=https://localhost
-      - DB_URL=pdo-mysql://lima:dev@mariadb/lima
+      - APP_BASE_URL=http://localhost
+      - DB_PASSWORD_FILE=/run/secrets/db-password
+      - DB_URL=pdo-mysql://lima@mariadb/lima
+      - REDIS_HOST=redis
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=Wilde Liga Bremen
       - EMAIL_URL=smtp://lima:foobar@maildev:1025?verify_peer=0
-      - JWT_SECRET=0123456789abcdef
+      - JWT_SECRET_FILE=/run/secrets/jwt-secret
       - LOG_LEVEL=debug
-      - REDIS_HOST=redis
     healthcheck:
-      test: [ "CMD", "docker-php-healthcheck" ]
+      test: [ "CMD", "nc", "-z", "127.0.0.1", "8080" ]
       start_period: 1m
       start_interval: 5s
       interval: 1m
       timeout: 5s
 
   mariadb:
-    image: mariadb:11.4
+    image: mariadb:11.8
     volumes:
       - mysql-data:/var/lib/mysql
-    environment:  
+    secrets:
+      - source: lima-db-password
+        target: db-password
+      - source: lima-db-root-password
+        target: db-root-password
+    environment:
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db-root-password
+      - MARIADB_PASSWORD_FILE=/run/secrets/db-password
       - MARIADB_DATABASE=lima
       - MARIADB_USER=lima
-      - MARIADB_PASSWORD=dev
-      - MARIADB_ROOT_PASSWORD=dev
     healthcheck:
       test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
       start_period: 1m
@@ -60,7 +73,7 @@ services:
       timeout: 5s
 
   redis:
-    image: redis:6-alpine
+    image: redis:8-alpine
     healthcheck:
       test: [ "CMD", "redis-cli", "PING" ]
       start_period: 1m
@@ -85,3 +98,11 @@ services:
 volumes:
   mysql-data:
   logos:
+
+secrets:
+  lima-db-password:
+    file: ./docker/.secrets/db-password
+  lima-db-root-password:
+    file: ./docker/.secrets/db-root-password
+  lima-jwt-secret:
+    file: ./docker/.secrets/jwt-secret

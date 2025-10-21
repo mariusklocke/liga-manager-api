@@ -12,6 +12,12 @@ The file `docker-compose.yml.dist` contains a default configuration suitable for
 
 Once you are ready, use following commands to get started:
 ```bash
+# Generate secrets
+$ make secrets
+
+# Build container image
+$ make build
+
 # Create/start containers
 $ docker compose up -d
 
