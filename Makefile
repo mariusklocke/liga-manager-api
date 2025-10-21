@@ -19,7 +19,11 @@ else
 	export APP_TAG = ${APP_VERSION}-${APP_RUNTIME}
 endif
 
-.PHONY: help build test publish release tarball docs
+define generate_secret
+	head -c $(1) /dev/urandom | xxd -ps | tr -d '\n' > docker/.secrets/$(2)
+endef
+
+.PHONY: help build test publish release tarball docs secrets
 default: help
 
 help:
@@ -29,6 +33,7 @@ help:
 	@echo 'make release    Create a new release'
 	@echo 'make tarball    Build tarball'
 	@echo 'make docs       Build docs'
+	@echo 'make secrets    Generate random secrets'
 
 build:
 	build/build.sh
@@ -47,3 +52,9 @@ tarball:
 
 docs:
 	build/docs.sh
+
+secrets:
+	test -d docker/.secrets || mkdir docker/.secrets
+	$(call generate_secret,16,db-password)
+	$(call generate_secret,16,db-root-password)
+	$(call generate_secret,32,jwt-secret)
