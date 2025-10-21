@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.27.0 - 2025-10-21
+* Feature: Add insights endpoint (local only)
+* Improvement: Update composer packages
+* Improvement: Remove nginx from integration tests
+* Improvement: Improve error logging
+
 ## 1.26.3 - 2025-10-07
 * Improvement: Refactor API client building
 * Improvement: Update Roadrunner to 2025.1.4
