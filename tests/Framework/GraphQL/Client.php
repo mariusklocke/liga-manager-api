@@ -379,6 +379,22 @@ GRAPHQL;
         ]);
     }
 
+    public function createMatch($id, $matchDayId, $homeTeamId, $guestTeamId): void
+    {
+        $query = <<<'GRAPHQL'
+mutation createMatch($id: String, $matchDayId: String!, $homeTeamId: String!, $guestTeamId: String!) {
+  createMatch(id: $id, match_day_id: $matchDayId, home_team_id: $homeTeamId, guest_team_id: $guestTeamId)
+}
+GRAPHQL;
+
+        $this->requestAndParse($query, [
+            'id' => $id,
+            'matchDayId' => $matchDayId,
+            'homeTeamId' => $homeTeamId,
+            'guestTeamId' => $guestTeamId
+        ]);
+    }
+
     public function createMatchesForSeason($seasonId, $dates): void
     {
         $query = <<<'GRAPHQL'

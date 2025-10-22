@@ -525,8 +525,31 @@ class SeasonTest extends CompetitionTestCase
 
     /**
      * @param string $seasonId
+     * @return string
      */
     #[Depends("testTeamCanBeReplacedWhileSeasonInProgress")]
+    public function testMatchesCanBeAdded(string $seasonId): string
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+
+        // Just duplicate the first match for each match day
+        foreach ($season->match_days as $matchDay) {
+            $match = $this->client->getMatchById($matchDay->matches[0]->id);
+            $addedMatchId = DataGenerator::generateId();
+            $this->client->createMatch($addedMatchId, $matchDay->id, $match->home_team->id, $match->guest_team->id);
+            $addedMatch = $this->client->getMatchById($addedMatchId);
+            self::assertSame($addedMatchId, $addedMatch->id);
+            self::assertSame($match->home_team->id, $addedMatch->home_team->id);
+            self::assertSame($match->guest_team->id, $addedMatch->guest_team->id);
+        }
+
+        return $seasonId;
+    }
+
+    /**
+     * @param string $seasonId
+     */
+    #[Depends("testMatchesCanBeAdded")]
     public function testEndedSeasonsRankingIsFinal(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
