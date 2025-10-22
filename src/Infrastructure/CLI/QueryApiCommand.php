@@ -29,10 +29,17 @@ class QueryApiCommand extends Command
         $request  = $this->createRequest($input);
         $response = $client->sendRequest($request);
 
+        // Print status line
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
-            $output->writeln('Status: ' . $response->getStatusCode());
+            $output->writeln(sprintf(
+                'HTTP/%s %d %s',
+                $response->getProtocolVersion(),
+                $response->getStatusCode(),
+                $response->getReasonPhrase()
+            ));
         }
 
+        // Print headers
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERY_VERBOSE) {
             foreach ($response->getHeaders() as $name => $values) {
                 if ($name !== 'Status') {
@@ -41,6 +48,7 @@ class QueryApiCommand extends Command
             }
         }
 
+        // Print empty line before body
         if ($output->getVerbosity() >= OutputInterface::VERBOSITY_VERBOSE) {
             $output->writeln('');
         }

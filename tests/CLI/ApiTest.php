@@ -47,7 +47,7 @@ class ApiTest extends CommandTest
             ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
         );
         self::assertExecutionSuccess($result);
-        self::assertMatchesRegularExpression('/Status: 200/i', $result->output);
+        self::assertMatchesRegularExpression('/HTTP\/\S+ 200 OK/', $result->output);
 
         // Very verbose output
         $result = $this->runCommand(
@@ -57,6 +57,7 @@ class ApiTest extends CommandTest
             ['verbosity' => OutputInterface::VERBOSITY_VERY_VERBOSE]
         );
         self::assertExecutionSuccess($result);
+        self::assertMatchesRegularExpression('/HTTP\/\S+ 200 OK/', $result->output);
         self::assertMatchesRegularExpression('/Content-Length: \d+/i', $result->output);
     }
 }
