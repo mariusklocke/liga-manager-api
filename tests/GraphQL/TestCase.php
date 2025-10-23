@@ -80,6 +80,11 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
         return $dateTime;
     }
 
+    protected static function formatDate(DateTimeInterface $value): string
+    {
+        return $value->format('Y-m-d');
+    }
+
     protected static function formatDateTime(DateTimeInterface $value): string
     {
         return $value->format(DATE_ATOM);

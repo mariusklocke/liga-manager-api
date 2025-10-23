@@ -80,8 +80,8 @@ abstract class CompetitionTestCase extends TestCase
         $end    = new DateTime('2024-10-06');
         for ($i = 0; $i < $count; $i++) {
             $result[] = [
-                'from' => $start->format('Y-m-d'),
-                'to'   => $end->format('Y-m-d')
+                'from' => self::formatDate($start),
+                'to'   => self::formatDate($end)
             ];
             $start->modify('+7 days');
             $end->modify('+7 days');
