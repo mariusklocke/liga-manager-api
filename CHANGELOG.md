@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.28.0 - 2025-10-23
+* Feature: Add mutation createMatch to GraphQL API
+* Feature: Add mutation createMatchDayForSeason to GraphQL API
+* Improvement: Integrate dependabot
+* Improvement: Improve output in `app:api:query` command
+
 ## 1.27.0 - 2025-10-21
 * Feature: Add insights endpoint (local only)
 * Improvement: Update composer packages
