@@ -379,6 +379,22 @@ GRAPHQL;
         ]);
     }
 
+    public function createMatchDayForSeason($id, $seasonId, $number, $datePeriod): void
+    {
+        $query = <<<'GRAPHQL'
+mutation createMatchDayForSeason($id: String, $seasonId: String!, $number: Int!, $datePeriod: DatePeriod!) {
+  createMatchDayForSeason(id: $id, season_id: $seasonId, number: $number, date_period: $datePeriod)
+}
+GRAPHQL;
+
+        $this->requestAndParse($query, [
+            'id' => $id,
+            'seasonId' => $seasonId,
+            'number' => $number,
+            'datePeriod' => $datePeriod
+        ]);
+    }
+
     public function createMatch($id, $matchDayId, $homeTeamId, $guestTeamId): void
     {
         $query = <<<'GRAPHQL'

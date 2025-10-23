@@ -76,6 +76,14 @@ class SeasonTest extends CompetitionTestCase
             $this->client->addTeamToSeason($seasonId, $teamId);
         }
 
+        // Create a single MatchDay
+        $dates = self::createMatchDayDates(1);
+        $this->client->createMatchDayForSeason(DataGenerator::generateId(), $seasonId, 1, $dates[0]);
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        self::assertSame(1, count($season->match_days));
+        self::assertSame(1, $season->match_day_count);
+
+        // Override with multiple MatchDays
         $dates = self::createMatchDayDates(2 * (count(self::$teamIds) - 1));
         $this->client->createMatchesForSeason($seasonId, $dates);
         $this->client->startSeason($seasonId);

@@ -11,6 +11,7 @@ use HexagonalPlayground\Application\Command\CancelMatchCommand;
 use HexagonalPlayground\Application\Command\ChangeUserPasswordCommand;
 use HexagonalPlayground\Application\Command\CommandInterface;
 use HexagonalPlayground\Application\Command\CreateMatchCommand;
+use HexagonalPlayground\Application\Command\CreateMatchDayForSeasonCommand;
 use HexagonalPlayground\Application\Command\CreateMatchesForSeasonCommand;
 use HexagonalPlayground\Application\Command\CreatePitchCommand;
 use HexagonalPlayground\Application\Command\CreateSeasonCommand;
@@ -59,6 +60,7 @@ class ServiceProvider implements ServiceProviderInterface
                 CancelMatchCommand::class,
                 ChangeUserPasswordCommand::class,
                 CreateMatchCommand::class,
+                CreateMatchDayForSeasonCommand::class,
                 CreateMatchesForSeasonCommand::class,
                 CreatePitchCommand::class,
                 CreateSeasonCommand::class,
