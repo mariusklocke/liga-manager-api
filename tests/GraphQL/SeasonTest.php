@@ -53,7 +53,7 @@ class SeasonTest extends CompetitionTestCase
      * @return string
      */
     #[Depends("testSeasonCanBeCreated")]
-    public function testSeasonCanBeStarted(string $seasonId): string
+    public function testTeamsCanBeAddedAndRemoved(string $seasonId): string
     {
         $teamIdSlice = array_slice(self::$teamIds, 0, 2);
         foreach ($teamIdSlice as $teamId) {
@@ -76,6 +76,16 @@ class SeasonTest extends CompetitionTestCase
             $this->client->addTeamToSeason($seasonId, $teamId);
         }
 
+        return $seasonId;
+    }
+
+    /**
+     * @param string $seasonId
+     * @return string
+     */
+    #[Depends("testTeamsCanBeAddedAndRemoved")]
+    public function testSingleMatchDayCanBeCreated(string $seasonId): string
+    {
         // Create a single MatchDay
         $dates = self::createMatchDayDates(1);
         $this->client->createMatchDayForSeason(DataGenerator::generateId(), $seasonId, 1, $dates[0]);
@@ -94,15 +104,18 @@ class SeasonTest extends CompetitionTestCase
         self::assertSame($match->home_team->id, $match->home_team->id);
         self::assertSame($match->guest_team->id, $match->guest_team->id);
 
-        // Override with multiple MatchDays
+        return $seasonId;
+    }
+
+    /**
+     * @param string $seasonId
+     * @return string
+     */
+    #[Depends("testSingleMatchDayCanBeCreated")]
+    public function testMultipleMatchDaysWithMatchesCanBeCreated(string $seasonId): string
+    {
         $dates = self::createMatchDayDates(2 * (count(self::$teamIds) - 1));
         $this->client->createMatchesForSeason($seasonId, $dates);
-        $this->client->startSeason($seasonId);
-        $events = $this->client->getLatestEvents();
-        $events = array_filter($events, function ($event) {
-            return $event->type === 'season:started';
-        });
-        self::assertGreaterThanOrEqual(1, count($events));
 
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
         self::assertSame($seasonId, $season->id);
@@ -122,10 +135,26 @@ class SeasonTest extends CompetitionTestCase
 
             $previousMatchDay = $matchDay;
         }
-
         self::assertSame(count($dates) * count(self::$teamIds) / 2, $matchCount);
 
-        return $season->id;
+        return $seasonId;
+    }
+
+    /**
+     * @param string $seasonId
+     * @return string
+     */
+    #[Depends("testMultipleMatchDaysWithMatchesCanBeCreated")]
+    public function testSeasonCanBeStarted(string $seasonId): string
+    {
+        $this->client->startSeason($seasonId);
+        $events = $this->client->getLatestEvents();
+        $events = array_filter($events, function ($event) {
+            return $event->type === 'season:started';
+        });
+        self::assertGreaterThanOrEqual(1, count($events));
+
+        return $seasonId;
     }
 
     /**
