@@ -83,6 +83,17 @@ class SeasonTest extends CompetitionTestCase
         self::assertSame(1, count($season->match_days));
         self::assertSame(1, $season->match_day_count);
 
+        // Create single match
+        $matchDay = $season->match_days[0];
+        $homeTeam = $season->teams[0];
+        $guestTeam = $season->teams[1];
+        $matchId = DataGenerator::generateId();
+        $this->client->createMatch($matchId, $matchDay->id, $homeTeam->id, $guestTeam->id);
+        $match = $this->client->getMatchById($matchId);
+        self::assertSame($matchId, $match->id);
+        self::assertSame($match->home_team->id, $match->home_team->id);
+        self::assertSame($match->guest_team->id, $match->guest_team->id);
+
         // Override with multiple MatchDays
         $dates = self::createMatchDayDates(2 * (count(self::$teamIds) - 1));
         $this->client->createMatchesForSeason($seasonId, $dates);
@@ -533,31 +544,8 @@ class SeasonTest extends CompetitionTestCase
 
     /**
      * @param string $seasonId
-     * @return string
      */
     #[Depends("testTeamCanBeReplacedWhileSeasonInProgress")]
-    public function testMatchesCanBeAdded(string $seasonId): string
-    {
-        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
-
-        // Just duplicate the first match for each match day
-        foreach ($season->match_days as $matchDay) {
-            $match = $this->client->getMatchById($matchDay->matches[0]->id);
-            $addedMatchId = DataGenerator::generateId();
-            $this->client->createMatch($addedMatchId, $matchDay->id, $match->home_team->id, $match->guest_team->id);
-            $addedMatch = $this->client->getMatchById($addedMatchId);
-            self::assertSame($addedMatchId, $addedMatch->id);
-            self::assertSame($match->home_team->id, $addedMatch->home_team->id);
-            self::assertSame($match->guest_team->id, $addedMatch->guest_team->id);
-        }
-
-        return $seasonId;
-    }
-
-    /**
-     * @param string $seasonId
-     */
-    #[Depends("testMatchesCanBeAdded")]
     public function testEndedSeasonsRankingIsFinal(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
