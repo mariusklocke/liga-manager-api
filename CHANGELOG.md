@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.28.1 - 2025-11-03
+* Bugfix: Fixed an issue with "team not ranked" after team replaced in season
+
 ## 1.28.0 - 2025-10-23
 * Feature: Add mutation createMatch to GraphQL API
 * Feature: Add mutation createMatchDayForSeason to GraphQL API
