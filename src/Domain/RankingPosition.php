@@ -159,6 +159,14 @@ class RankingPosition
     }
 
     /**
+     * @return Team
+     */
+    public function getTeam(): Team
+    {
+        return $this->team;
+    }
+
+    /**
      * @param Team $team
      */
     public function setTeam(Team $team): void

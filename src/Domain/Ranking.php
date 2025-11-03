@@ -168,12 +168,22 @@ class Ranking
      */
     private function getPositionForTeam(string $teamId): RankingPosition
     {
+        $position = null;
+
+        /** @var RankingPosition $item */
+        foreach ($this->positions as $item) {
+            if ($item->getTeam()->getId() === $teamId) {
+                $position = $item;
+                break;
+            }
+        }
+
         Assert::true(
-            isset($this->positions[$teamId]),
+            $position !== null,
             sprintf('Team %s is not ranked', $teamId),
             NotFoundException::class
         );
 
-        return $this->positions[$teamId];
+        return $position;
     }
 }
