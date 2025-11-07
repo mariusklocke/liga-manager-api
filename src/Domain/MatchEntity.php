@@ -82,6 +82,19 @@ class MatchEntity extends Entity
         $this->cancellationReason = null;
     }
 
+    public function clearResult(): void
+    {
+        Assert::true(
+            $this->matchDay->getCompetition()->isInProgress(),
+            'Cannot clear match result: Competition is not in progress',
+            ConflictException::class
+        );
+        if ($this->hasResult()) {
+            $this->matchDay->revertResult($this->homeTeam->getId(), $this->guestTeam->getId(), $this->matchResult);
+        }
+        $this->matchResult = null;
+    }
+
     /**
      * @param DateTimeImmutable $kickoff
      */

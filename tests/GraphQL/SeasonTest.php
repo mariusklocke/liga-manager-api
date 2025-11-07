@@ -438,8 +438,44 @@ class SeasonTest extends CompetitionTestCase
 
     /**
      * @param string $seasonId
+     * @return string
      */
     #[Depends("testSubmittingMatchResultAffectsRanking")]
+    public function testClearingMatchResultAffectsRanking(string $seasonId): string
+    {
+        $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
+        $matchId = $season->match_days[0]->matches[0]->id;
+        $match = $this->client->getMatchById($matchId);
+        self::assertNotNull($match);
+        $this->useTeamManagerAuth($match->home_team->id);
+        $this->client->submitMatchResult($matchId, null, null);
+
+        $season = $this->client->getSeasonById($seasonId);
+        self::assertNotNull($season->ranking);
+
+        foreach ($season->ranking->positions as $position) {
+            self::assertSame(0, $position->losses);
+            self::assertSame(0, $position->draws);
+            self::assertSame(0, $position->wins);
+            self::assertSame(0, $position->scored_goals);
+            self::assertSame(0, $position->conceded_goals);
+            self::assertSame(0, $position->points);
+        }
+
+        $now = time();
+        $updatedAt = self::parseDateTime($season->ranking->updated_at)->getTimestamp();
+        self::assertLessThan(5, $now - $updatedAt);
+
+        // Re-submit previous result
+        $this->client->submitMatchResult($matchId, 1, 1);
+
+        return $seasonId;
+    }
+
+    /**
+     * @param string $seasonId
+     */
+    #[Depends("testClearingMatchResultAffectsRanking")]
     public function testCancellingMatchByNonParticipatingTeamFails(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
@@ -456,7 +492,7 @@ class SeasonTest extends CompetitionTestCase
      * @param string $seasonId
      * @return string
      */
-    #[Depends("testSubmittingMatchResultAffectsRanking")]
+    #[Depends("testClearingMatchResultAffectsRanking")]
     public function testCancellingMatchAffectsRanking(string $seasonId): string
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);

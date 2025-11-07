@@ -37,12 +37,16 @@ class SubmitMatchResultHandler implements AuthAwareHandler
 
         $authContext->getUser()->assertCanChangeMatch($match);
 
-        $match->submitResult(new MatchResult($command->getHomeScore(), $command->getGuestScore()));
+        if ($command->getHomeScore() !== null && $command->getGuestScore() !== null) {
+            $match->submitResult(new MatchResult($command->getHomeScore(), $command->getGuestScore()));
+        } else {
+            $match->clearResult();
+        }
 
         $events[] = new Event('match:result:submitted', [
             'matchId' => $match->getId(),
-            'homeScore' => $match->getMatchResult()->getHomeScore(),
-            'guestScore' => $match->getMatchResult()->getGuestScore(),
+            'homeScore' => $match->getMatchResult() ? $match->getMatchResult()->getHomeScore() : null,
+            'guestScore' => $match->getMatchResult() ? $match->getMatchResult()->getGuestScore() : null,
             'userId' => $authContext->getUser()->getId()
         ]);
 

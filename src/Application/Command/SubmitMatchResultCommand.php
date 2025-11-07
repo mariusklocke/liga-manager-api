@@ -7,17 +7,17 @@ class SubmitMatchResultCommand implements CommandInterface
 {
     /** @var string */
     private string $matchId;
-    /** @var int */
-    private int $homeScore;
-    /** @var int */
-    private int $guestScore;
+    /** @var int|null */
+    private ?int $homeScore;
+    /** @var int|null */
+    private ?int $guestScore;
 
     /**
      * @param string $matchId
-     * @param int $homeScore
-     * @param int $guestScore
+     * @param int|null $homeScore
+     * @param int|null $guestScore
      */
-    public function __construct(string $matchId, int $homeScore, int $guestScore)
+    public function __construct(string $matchId, ?int $homeScore, ?int $guestScore)
     {
         $this->matchId = $matchId;
         $this->homeScore = $homeScore;
@@ -33,17 +33,17 @@ class SubmitMatchResultCommand implements CommandInterface
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getHomeScore(): int
+    public function getHomeScore(): ?int
     {
         return $this->homeScore;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getGuestScore(): int
+    public function getGuestScore(): ?int
     {
         return $this->guestScore;
     }

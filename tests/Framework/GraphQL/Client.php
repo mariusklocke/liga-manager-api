@@ -470,7 +470,7 @@ GRAPHQL;
     public function submitMatchResult($matchId, $homeScore, $guestScore): void
     {
         $query = <<<'GRAPHQL'
-mutation submitMatchResult($matchId: String!, $homeScore: Int!, $guestScore: Int!) {
+mutation submitMatchResult($matchId: String!, $homeScore: Int, $guestScore: Int) {
   submitMatchResult(match_id: $matchId, home_score: $homeScore, guest_score: $guestScore)
 }
 GRAPHQL;
