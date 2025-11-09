@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.29.0 - 2025-11-09
+* Feature: Allow clearing match result
+* Improvement: Update composer packages
+
 ## 1.28.1 - 2025-11-03
 * Bugfix: Fixed an issue with "team not ranked" after team replaced in season
 
