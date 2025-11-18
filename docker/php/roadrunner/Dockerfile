@@ -23,8 +23,17 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gd gmp iconv intl mbstri
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
     && rm -rf /etc/php/conf.d \
     && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
-    && adduser -u 82 -D -S -G www-data www-data \
-    && rm -rf /var/cache/*
+    && adduser -u 82 -D -S -G www-data -h /var/www www-data \
+    && rm -rf /etc/alpine-release /etc/apk /etc/crontabs /etc/init.d /etc/logrotate.d /etc/modprobe.d /etc/opt /etc/periodic /etc/secfixes.d /etc/ssl/*.dist \
+              /etc/group- /etc/passwd- /etc/shadow- \
+              /etc/sysctl.conf /etc/sysctl.d /etc/udhcpc \
+              /etc/protocols /etc/services \
+              /etc/fstab /etc/inittab /etc/motd \
+              /lib/apk /lib/firmware /lib/modules-load.d /lib/sysctl.d \
+              /root/.ash_history \
+              /sbin/apk \
+              /usr/lib/libapk.so.* /usr/include/php84 /usr/share/apk /usr/share/vim /usr/share/X11 \
+              /var/cache/*
 
 # Configure PHP
 COPY docker/php/php.ini /etc/php/php.ini
