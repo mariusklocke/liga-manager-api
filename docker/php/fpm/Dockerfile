@@ -7,13 +7,15 @@ ENV APP_VERSION=${APP_VERSION}
 ENV PHP_VERSION=${PHP_VERSION}
 
 # Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mbstring pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
     && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
          PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
        done \
     && set -ex \
+    && echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
+    && echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
     && apk update \
     && apk upgrade \
     && apk add --no-cache curl fcgi icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
