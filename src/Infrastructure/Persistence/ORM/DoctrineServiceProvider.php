@@ -38,7 +38,7 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\SeasonReposito
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TeamRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\UserRepository;
-use PDO;
+use Pdo\Mysql;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -97,7 +97,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                     $passwordFile = $config->getValue('mysql.password.file');
                 }
                 if ($params['driver'] === 'pdo_mysql') {
-                    $params['driverOptions'] = [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"];
+                    $params['driverOptions'] = [Mysql::ATTR_INIT_COMMAND => "SET NAMES utf8"];
                 }
                 if ($passwordFile) {
                     $params['password'] = (new File($passwordFile))->read();
