@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.29.2 - 2025-11-21
+* Improvement: Update Roadrunner to 2025.1.5
+
 ## 1.29.1 - 2025-11-21
 * Improvement: Remove superfluous files from docker images
 * Improvement: Update composer packages
