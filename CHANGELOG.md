@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.29.1 - 2025-11-21
+* Improvement: Remove superfluous files from docker images
+* Improvement: Update composer packages
+
 ## 1.29.0 - 2025-11-09
 * Feature: Allow clearing match result
 * Improvement: Update composer packages
