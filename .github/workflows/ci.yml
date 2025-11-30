@@ -35,22 +35,24 @@ jobs:
         run: make build
       - name: Test image
         run: make test
-      #- name: Create tarball
-      #  run: make tarball
-      #- name: Publish image
-      #  run: make publish
-      #  if: (github.ref_type == 'tag' || github.ref_name == 'master') && matrix.php-version == '8.4' && matrix.dbms == 'mariadb'
+      - name: Create tarball
+        run: make tarball
+        if: matrix.php-version == '8.4' && matrix.dbms == 'mariadb' && matrix.runtime == 'roadrunner'
+      - name: Publish image
+        run: make publish
+        if: (github.ref_type == 'tag' || github.ref_name == 'master') && matrix.php-version == '8.4' && matrix.dbms == 'mariadb'
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.runtime }}-${{ matrix.dbms }}
           path: build/artifacts
         if: matrix.php-version == '8.4'
-      #- name: Upload tarball
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: tarball
-      #    path: build/liga-manager-api.tar.gz
+      - name: Upload tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarball
+          path: build/liga-manager-api.tar.gz
+        if: matrix.php-version == '8.4' && matrix.dbms == 'mariadb' && matrix.runtime == 'roadrunner'
   deploy-docs:
     runs-on: ubuntu-latest
     if: github.ref_name == 'master'
