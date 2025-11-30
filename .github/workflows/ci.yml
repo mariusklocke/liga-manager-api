@@ -23,6 +23,7 @@ jobs:
       APP_RUNTIME: ${{ matrix.runtime }}
       DB_DRIVER: ${{ matrix.dbms == 'mariadb' && 'pdo-mysql' || 'pdo-pgsql'}}
       DB_HOST: ${{ matrix.dbms }}
+      PHP_VERSION: ${{ matrix.php-version }}
     strategy:
       matrix:
         php-version: ["8.3", "8.4"]
