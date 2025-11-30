@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       APP_RUNTIME: ${{ matrix.runtime }}
-      DB_DRIVER: ${{ matrix.dbms == 'mariadb' && 'pdo-mysql' || 'pdo-pqsql'}}
+      DB_DRIVER: ${{ matrix.dbms == 'mariadb' && 'pdo-mysql' || 'pdo-pgsql'}}
       DB_HOST: ${{ matrix.dbms }}
     strategy:
       matrix:
