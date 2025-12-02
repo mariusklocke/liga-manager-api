@@ -38,6 +38,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mb
 # Configure PHP
 COPY docker/php/fpm/php-fpm.conf /etc/php/php-fpm.conf
 COPY docker/php/php.ini /etc/php/php.ini
+RUN test ${PHP_VERSION/./} -gt 84 && sed -i 's/zend_extension=opcache//' /etc/php/php.ini
 
 # Add healthcheck
 COPY --chmod=755 docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck

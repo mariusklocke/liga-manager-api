@@ -38,6 +38,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gd gmp iconv intl mbstri
 
 # Configure PHP
 COPY docker/php/php.ini /etc/php/php.ini
+RUN test ${PHP_VERSION/./} -gt 84 && sed -i 's/zend_extension=opcache//' /etc/php/php.ini
 
 # Configure RoadRunner
 COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
