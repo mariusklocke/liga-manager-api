@@ -11,6 +11,7 @@ ENV PHP_VERSION=${PHP_VERSION}
 
 # Install packages for PHP and extensions
 RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gd gmp iconv intl mbstring pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+    && test ${PHP_VERSION/./} -gt 84 || PHP_EXTENSIONS="${PHP_EXTENSIONS} opcache" \
     && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \ 
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
