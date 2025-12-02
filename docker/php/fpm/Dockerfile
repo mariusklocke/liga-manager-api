@@ -14,8 +14,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mb
          PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
        done \
     && set -ex \
-    && echo "https://dl-cdn.alpinelinux.org/alpine/edge/main" > /etc/apk/repositories \
-    && echo "https://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+    && test ${PHP_VERSION/./} -gt 84 && sed -i 's/v3.22/edge/' /etc/apk/repositories \
     && apk update \
     && apk upgrade \
     && apk add --no-cache curl fcgi icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
