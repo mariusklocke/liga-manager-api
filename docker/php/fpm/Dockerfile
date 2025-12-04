@@ -1,4 +1,4 @@
-FROM alpine:3.22
+FROM alpine:3.23
 ARG APP_VERSION
 ARG PHP_VERSION
 
@@ -15,7 +15,6 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mb
          PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
        done \
     && set -ex \
-    && test ${PHP_VERSION/./} -gt 84 && sed -i 's/v3.22/edge/' /etc/apk/repositories \
     && apk update \
     && apk upgrade \
     && apk add --no-cache curl fcgi icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
