@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.29.3 - 2025-12-04
+* Improvement: Enable native lazy objects
+* Improvement: Update composer packages
+
 ## 1.29.2 - 2025-11-21
 * Improvement: Update Roadrunner to 2025.1.5
 
