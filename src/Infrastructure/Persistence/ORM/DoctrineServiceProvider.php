@@ -149,6 +149,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
                 $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_NEVER);
                 $config->setMiddlewares([$container->get(LoggingMiddleware::class)]);
+                $config->enableNativeLazyObjects(PHP_VERSION_ID >= 80400);
 
                 return $config;
             }),
