@@ -49,7 +49,7 @@ class Application extends \Symfony\Component\Console\Application
         parent::__construct('Liga-Manager', $this->container->get('app.version'));
 
         foreach ($this->getCommands() as $command) {
-            $this->add($command);
+            $this->addCommand($command);
         }
     }
 
