@@ -1,4 +1,4 @@
-FROM alpine:3.22
+FROM alpine:3.23
 ARG APP_VERSION
 ARG PHP_VERSION
 
@@ -7,7 +7,8 @@ ENV APP_VERSION=${APP_VERSION}
 ENV PHP_VERSION=${PHP_VERSION}
 
 # Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mbstring pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+    && test ${PHP_VERSION/./} -gt 84 || PHP_EXTENSIONS="${PHP_EXTENSIONS} opcache" \
     && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
@@ -37,6 +38,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mb
 # Configure PHP
 COPY docker/php/fpm/php-fpm.conf /etc/php/php-fpm.conf
 COPY docker/php/php.ini /etc/php/php.ini
+RUN test ${PHP_VERSION/./} -gt 84 && sed -i 's/zend_extension=opcache//' /etc/php/php.ini
 
 # Add healthcheck
 COPY --chmod=755 docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck

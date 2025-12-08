@@ -1,5 +1,5 @@
 FROM ghcr.io/roadrunner-server/roadrunner:2025.1.5 AS roadrunner
-FROM alpine:3.22
+FROM alpine:3.23
 ARG APP_VERSION
 ARG PHP_VERSION
 
@@ -10,7 +10,8 @@ ENV APP_VERSION=${APP_VERSION}
 ENV PHP_VERSION=${PHP_VERSION}
 
 # Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gd gmp iconv intl mbstring opcache pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gd gmp iconv intl mbstring pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
+    && test ${PHP_VERSION/./} -gt 84 || PHP_EXTENSIONS="${PHP_EXTENSIONS} opcache" \
     && PHP_PACKAGE="php${PHP_VERSION/./}" \
     && PHP_SUBPACKAGES="" \ 
     && for EXTENSION in ${PHP_EXTENSIONS}; do \
@@ -37,6 +38,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo gd gmp iconv intl mbstri
 
 # Configure PHP
 COPY docker/php/php.ini /etc/php/php.ini
+RUN test ${PHP_VERSION/./} -gt 84 && sed -i 's/zend_extension=opcache//' /etc/php/php.ini
 
 # Configure RoadRunner
 COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
