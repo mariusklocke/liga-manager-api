@@ -17,7 +17,7 @@ RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mb
     && set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache curl fcgi icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
+    && apk add --no-cache curl icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
     && ln -s /etc/${PHP_PACKAGE} /etc/php \
     && rm -rf /etc/php/php-fpm.d \
     && rm -rf /etc/php/conf.d \

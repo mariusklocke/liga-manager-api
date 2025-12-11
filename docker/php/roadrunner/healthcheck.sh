@@ -1,3 +1,3 @@
 #!/bin/sh
 
-curl -sSf http://127.0.0.1:8080/api/health || exit 1
+nc -z 127.0.0.1 8080 || exit 1
