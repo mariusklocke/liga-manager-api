@@ -887,16 +887,16 @@
         },
         {
             "name": "google/protobuf",
-            "version": "v4.33.1",
+            "version": "v4.33.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/protocolbuffers/protobuf-php.git",
-                "reference": "0cd73ccf0cd26c3e72299cce1ea6144091a57e12"
+                "reference": "fbd96b7bf1343f4b0d8fb358526c7ba4d72f1318"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/0cd73ccf0cd26c3e72299cce1ea6144091a57e12",
-                "reference": "0cd73ccf0cd26c3e72299cce1ea6144091a57e12",
+                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/fbd96b7bf1343f4b0d8fb358526c7ba4d72f1318",
+                "reference": "fbd96b7bf1343f4b0d8fb358526c7ba4d72f1318",
                 "shasum": ""
             },
             "require": {
@@ -925,9 +925,9 @@
                 "proto"
             ],
             "support": {
-                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v4.33.1"
+                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v4.33.2"
             },
-            "time": "2025-11-12T21:58:05+00:00"
+            "time": "2025-12-05T22:12:22+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2591,16 +2591,16 @@
         },
         {
             "name": "spiral/roadrunner",
-            "version": "v2025.1.5",
+            "version": "v2025.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/roadrunner-server/roadrunner.git",
-                "reference": "d68bee29eb689c5310f8ede935c95a13bd7cc153"
+                "reference": "207b2b4ba75f2529ecccf801b3d8dd7038f22732"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/d68bee29eb689c5310f8ede935c95a13bd7cc153",
-                "reference": "d68bee29eb689c5310f8ede935c95a13bd7cc153",
+                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/207b2b4ba75f2529ecccf801b3d8dd7038f22732",
+                "reference": "207b2b4ba75f2529ecccf801b3d8dd7038f22732",
                 "shasum": ""
             },
             "type": "metapackage",
@@ -2628,7 +2628,7 @@
                 "chat": "https://discord.gg/V6EK4he",
                 "docs": "https://docs.roadrunner.dev/",
                 "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2025.1.5"
+                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2025.1.6"
             },
             "funding": [
                 {
@@ -2636,7 +2636,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-11-13T17:24:29+00:00"
+            "time": "2025-12-11T14:45:22+00:00"
         },
         {
             "name": "spiral/roadrunner-http",
@@ -4236,16 +4236,16 @@
         },
         {
             "name": "webonyx/graphql-php",
-            "version": "v15.27.1",
+            "version": "v15.27.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webonyx/graphql-php.git",
-                "reference": "2d1f63cdc424473d97729bb97038d6a813223d45"
+                "reference": "7fc996bb201ce3bf1d803b8e0336e8f2beb029e9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webonyx/graphql-php/zipball/2d1f63cdc424473d97729bb97038d6a813223d45",
-                "reference": "2d1f63cdc424473d97729bb97038d6a813223d45",
+                "url": "https://api.github.com/repos/webonyx/graphql-php/zipball/7fc996bb201ce3bf1d803b8e0336e8f2beb029e9",
+                "reference": "7fc996bb201ce3bf1d803b8e0336e8f2beb029e9",
                 "shasum": ""
             },
             "require": {
@@ -4258,13 +4258,13 @@
                 "amphp/http-server": "^2.1",
                 "dms/phpunit-arraysubset-asserts": "dev-master",
                 "ergebnis/composer-normalize": "^2.28",
-                "friendsofphp/php-cs-fixer": "3.91.2",
+                "friendsofphp/php-cs-fixer": "3.91.3",
                 "mll-lab/php-cs-fixer-config": "5.11.0",
                 "nyholm/psr7": "^1.5",
                 "phpbench/phpbench": "^1.2",
                 "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan": "2.1.32",
-                "phpstan/phpstan-phpunit": "2.0.9",
+                "phpstan/phpstan": "2.1.33",
+                "phpstan/phpstan-phpunit": "2.0.10",
                 "phpstan/phpstan-strict-rules": "2.0.7",
                 "phpunit/phpunit": "^9.5 || ^10.5.21 || ^11",
                 "psr/http-message": "^1 || ^2",
@@ -4299,7 +4299,7 @@
             ],
             "support": {
                 "issues": "https://github.com/webonyx/graphql-php/issues",
-                "source": "https://github.com/webonyx/graphql-php/tree/v15.27.1"
+                "source": "https://github.com/webonyx/graphql-php/tree/v15.27.2"
             },
             "funding": [
                 {
@@ -4307,7 +4307,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2025-12-05T09:40:56+00:00"
+            "time": "2025-12-09T07:30:56+00:00"
         }
     ],
     "packages-dev": [
@@ -4874,20 +4874,20 @@
         },
         {
             "name": "league/uri",
-            "version": "7.6.0",
+            "version": "7.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri.git",
-                "reference": "f625804987a0a9112d954f9209d91fec52182344"
+                "reference": "8d587cddee53490f9b82bf203d3a9aa7ea4f9807"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri/zipball/f625804987a0a9112d954f9209d91fec52182344",
-                "reference": "f625804987a0a9112d954f9209d91fec52182344",
+                "url": "https://api.github.com/repos/thephpleague/uri/zipball/8d587cddee53490f9b82bf203d3a9aa7ea4f9807",
+                "reference": "8d587cddee53490f9b82bf203d3a9aa7ea4f9807",
                 "shasum": ""
             },
             "require": {
-                "league/uri-interfaces": "^7.6",
+                "league/uri-interfaces": "^7.7",
                 "php": "^8.1",
                 "psr/http-factory": "^1"
             },
@@ -4960,7 +4960,7 @@
                 "docs": "https://uri.thephpleague.com",
                 "forum": "https://thephpleague.slack.com",
                 "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri/tree/7.6.0"
+                "source": "https://github.com/thephpleague/uri/tree/7.7.0"
             },
             "funding": [
                 {
@@ -4968,20 +4968,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-11-18T12:17:23+00:00"
+            "time": "2025-12-07T16:02:06+00:00"
         },
         {
             "name": "league/uri-interfaces",
-            "version": "7.6.0",
+            "version": "7.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri-interfaces.git",
-                "reference": "ccbfb51c0445298e7e0b7f4481b942f589665368"
+                "reference": "62ccc1a0435e1c54e10ee6022df28d6c04c2946c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/ccbfb51c0445298e7e0b7f4481b942f589665368",
-                "reference": "ccbfb51c0445298e7e0b7f4481b942f589665368",
+                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/62ccc1a0435e1c54e10ee6022df28d6c04c2946c",
+                "reference": "62ccc1a0435e1c54e10ee6022df28d6c04c2946c",
                 "shasum": ""
             },
             "require": {
@@ -5044,7 +5044,7 @@
                 "docs": "https://uri.thephpleague.com",
                 "forum": "https://thephpleague.slack.com",
                 "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.6.0"
+                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.7.0"
             },
             "funding": [
                 {
@@ -5052,7 +5052,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-11-18T12:17:23+00:00"
+            "time": "2025-12-07T16:03:21+00:00"
         },
         {
             "name": "marc-mabe/php-enum",
@@ -6149,16 +6149,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "12.5.2",
+            "version": "12.5.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "06713c2633d6d832f2fe98a70511ecaa7cb92c1a"
+                "reference": "6dc2e076d09960efbb0c1272aa9bc156fc80955e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/06713c2633d6d832f2fe98a70511ecaa7cb92c1a",
-                "reference": "06713c2633d6d832f2fe98a70511ecaa7cb92c1a",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/6dc2e076d09960efbb0c1272aa9bc156fc80955e",
+                "reference": "6dc2e076d09960efbb0c1272aa9bc156fc80955e",
                 "shasum": ""
             },
             "require": {
@@ -6226,7 +6226,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.2"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/12.5.3"
             },
             "funding": [
                 {
@@ -6250,7 +6250,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-08T07:22:32+00:00"
+            "time": "2025-12-11T08:52:59+00:00"
         },
         {
             "name": "respect/stringifier",
