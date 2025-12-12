@@ -6,8 +6,6 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 use DI;
 use Doctrine\Common\EventManager;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,9 +23,7 @@ use HexagonalPlayground\Application\Repository\TeamRepositoryInterface;
 use HexagonalPlayground\Application\Repository\TournamentRepositoryInterface;
 use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
-use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\Filesystem\Directory;
-use HexagonalPlayground\Infrastructure\Filesystem\File;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Logging\Middleware as LoggingMiddleware;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepository;
@@ -40,7 +36,6 @@ use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\TournamentRepo
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\UserRepository;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 class DoctrineServiceProvider implements ServiceProviderInterface
 {
@@ -63,87 +58,7 @@ class DoctrineServiceProvider implements ServiceProviderInterface
                 return $entityManager;
             }),
 
-            Connection::class => DI\factory(function (ContainerInterface $container) {
-                /** @var LoggerInterface $logger */
-                $logger = $container->get(LoggerInterface::class);
-                /** @var Configuration $doctrineConfig */
-                $doctrineConfig = $container->get(Configuration::class);
-                /** @var Config $config */
-                $config = $container->get(Config::class);
-                if ($config->getValue('db.url')) {
-                    $url = parse_url($config->getValue('db.url'));
-                    $params = [
-                        'dbname' => ltrim($url['path'], '/'),
-                        'user' => $url['user'],
-                        'host' => $url['host'],
-                        'driver' => str_replace('-', '_', $url['scheme'])
-                    ];
-                    if (isset($url['port'])) {
-                        $params['port'] = (int)$url['port'];
-                    }
-                    if (isset($url['pass'])) {
-                        $params['password'] = $url['pass'];
-                    }
-                    $passwordFile = $config->getValue('db.password.file');
-                } else {
-                    $params = [
-                        'dbname' => $config->getValue('mysql.database'),
-                        'user' => $config->getValue('mysql.user'),
-                        'password' => $config->getValue('mysql.password'),
-                        'host' => $config->getValue('mysql.host'),
-                        'driver' => 'pdo_mysql'
-                    ];
-                    $passwordFile = $config->getValue('mysql.password.file');
-                }
-                if ($params['driver'] === 'pdo_mysql') {
-                    // Mysql subclass was introduced with PHP 8.4, constants on PDO class were deprecated with PHP 8.5
-                    if (class_exists('\\Pdo\\Mysql')) {
-                        $params['driverOptions'] = [\Pdo\Mysql::ATTR_INIT_COMMAND => "SET NAMES utf8"];
-                    } else {
-                        $params['driverOptions'] = [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"];
-                    }
-                }
-                if ($passwordFile) {
-                    $params['password'] = (new File($passwordFile))->read();
-                }
-                $customTypes = [
-                    CustomDateTimeType::class => [
-                        'dbType' => 'CustomDateTime',
-                        'doctrineType' => CustomDateTimeType::NAME
-                    ],
-                ];
-                $attempt = 1;
-                $timeout = 60;
-                $startedAt = time();
-
-                do {
-                    try {
-                        $connection = DriverManager::getConnection($params, $doctrineConfig);
-                        $platform   = $connection->getDatabasePlatform();
-                    } catch (Throwable $exception) {
-                        $connection = null;
-                        $platform = null;
-                        $logger->warning($exception->getMessage(), ['host' => $params['host'], 'attempt' => $attempt]);
-                        sleep(5);
-                        if (time() - $startedAt < $timeout) {
-                            $attempt++;
-                        } else {
-                            throw $exception;
-                        }
-                    }
-                } while ($connection === null || $platform === null);
-
-                $logger->debug('Connected to database', ['version' => $connection->getServerVersion()]);
-
-                foreach ($customTypes as $className => $definition) {
-                    if (!Type::hasType($definition['doctrineType'])) {
-                        Type::addType($definition['doctrineType'], $className);
-                    }
-                    $platform->registerDoctrineTypeMapping($definition['dbType'], $definition['doctrineType']);
-                }
-
-                return $connection;
-            }),
+            Connection::class => DI\factory(new ConnectionFactory()),
 
             Configuration::class => DI\factory(function (ContainerInterface $container) {
                 $proxyDir = new Directory(__DIR__, 'Proxy');
