@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\Persistence\ORM;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\PostLoadEventArgs;
 use Psr\Log\LoggerInterface;
-use ReflectionProperty;
 
 /**
  * PostLoad Event Listener to workaround Doctrine issue with null embeddables
@@ -38,10 +37,10 @@ class DoctrineEmbeddableListener
         $metadata = $this->entityManager->getClassMetadata($entityClass);
         $properties = array_keys($metadata->embeddedClasses);
         foreach ($properties as $property) {
-            $reflectionProperty = $metadata->getReflectionProperty($property);
-            $embeddable = $reflectionProperty->getValue($entity);
+            $accessor = $metadata->getPropertyAccessor($property);
+            $embeddable = $accessor->getValue($entity);
             if (is_object($embeddable) && $this->hasOnlyNullProperties($embeddable)) {
-                $reflectionProperty->setValue($entity, null);
+                $accessor->setValue($entity, null);
                 $this->logger->debug("Nullified property $property of entity $entityClass");
             }
         }
@@ -53,10 +52,9 @@ class DoctrineEmbeddableListener
      */
     private function hasOnlyNullProperties(object $embeddable) : bool
     {
-        /** @var ReflectionProperty[] $properties */
-        $properties = $this->entityManager->getClassMetadata(get_class($embeddable))->getReflectionProperties();
-        foreach ($properties as $property) {
-            if (null !== $property->getValue($embeddable)) {
+        $metadata = $this->entityManager->getClassMetadata(get_class($embeddable));
+        foreach ($metadata->getPropertyAccessors() as $accessor) {
+            if (null !== $accessor->getValue($embeddable)) {
                 return false;
             }
         }
