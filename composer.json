@@ -19,12 +19,12 @@
     },
     "config": {
         "platform": {
-            "php": "8.3"
+            "php": "8.4"
         },
         "sort-packages": true
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.4",
         "ext-apcu": "*",
         "ext-ctype": "*",
         "ext-json": "*",
@@ -35,29 +35,29 @@
         "ext-redis": "*",
         "ext-xmlreader": "*",
         "ext-xmlwriter": "*",
-        "doctrine/dbal": "^4.0.0",
-        "doctrine/orm": "~3.5.0",
-        "firebase/php-jwt": "^6.10",
-        "guzzlehttp/guzzle": "^7.9",
-        "hollodotme/fast-cgi-client": "^3.1",
-        "middlewares/trailing-slash": "^2.0.1",
-        "nyholm/psr7": "^1.8.1",
+        "doctrine/dbal": "^4.4.1",
+        "doctrine/orm": "~3.5.8",
+        "firebase/php-jwt": "^6.11.1",
+        "guzzlehttp/guzzle": "^7.10",
+        "hollodotme/fast-cgi-client": "^3.1.7",
+        "middlewares/trailing-slash": "^2.1.0",
+        "nyholm/psr7": "^1.8.2",
         "nyholm/psr7-server": "^1.1.0",
-        "php-di/php-di": "^7.0.6",
-        "psr/http-client": "^1.0",
-        "psr/log": "^3.0.0",
-        "slim/slim": "^4.12.0",
-        "spiral/roadrunner-http": "^3.4",
-        "spiral/roadrunner-metrics": "^3.2",
-        "symfony/console": "^7.0.2",
-        "symfony/mailer": "^7.0.2",
-        "webonyx/graphql-php": "^15.20.0"
+        "php-di/php-di": "^7.1.1",
+        "psr/http-client": "^1.0.3",
+        "psr/log": "^3.0.2",
+        "slim/slim": "^4.15.1",
+        "spiral/roadrunner-http": "^3.6",
+        "spiral/roadrunner-metrics": "^3.3",
+        "symfony/console": "^7.4.1",
+        "symfony/mailer": "^7.4.0",
+        "webonyx/graphql-php": "^15.27.2"
     },
     "require-dev": {
-        "deptrac/deptrac": "^4.2.0",
-        "devizzent/cebe-php-openapi": "^1.1",
+        "deptrac/deptrac": "^4.4.0",
+        "devizzent/cebe-php-openapi": "^1.1.4",
         "league/openapi-psr7-validator": "^0.22.0",
-        "phpunit/phpunit": "^12.0.4",
-        "robiningelbrecht/phpunit-pretty-print": "^1.4"
+        "phpunit/phpunit": "^12.5.3",
+        "robiningelbrecht/phpunit-pretty-print": "^1.4.1"
     }
 }

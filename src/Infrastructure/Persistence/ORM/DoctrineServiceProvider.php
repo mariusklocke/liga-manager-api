@@ -11,7 +11,6 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\Driver\SimplifiedXmlDriver;
-use Doctrine\ORM\Proxy\ProxyFactory;
 use Doctrine\Persistence\ObjectManager;
 use HexagonalPlayground\Application\OrmTransactionWrapperInterface;
 use HexagonalPlayground\Application\Repository\EventRepositoryInterface;
@@ -61,14 +60,10 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             Connection::class => DI\factory(new ConnectionFactory()),
 
             Configuration::class => DI\factory(function (ContainerInterface $container) {
-                $proxyDir = new Directory(__DIR__, 'Proxy');
                 $config = new Configuration();
-                $config->setProxyDir($proxyDir->getPath());
-                $config->setProxyNamespace(implode('\\', [__NAMESPACE__, 'Proxy']));
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
-                $config->setAutoGenerateProxyClasses(ProxyFactory::AUTOGENERATE_NEVER);
                 $config->setMiddlewares([$container->get(LoggingMiddleware::class)]);
-                $config->enableNativeLazyObjects(PHP_VERSION_ID >= 80400);
+                $config->enableNativeLazyObjects(true);
 
                 return $config;
             }),

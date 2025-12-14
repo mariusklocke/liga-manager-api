@@ -91,12 +91,7 @@ class ConnectionFactory
             $passwordFile = $config->getValue('mysql.password.file');
         }
         if ($params['driver'] === 'pdo_mysql') {
-            // Mysql subclass was introduced with PHP 8.4, constants on PDO class were deprecated with PHP 8.5
-            if (class_exists('\\Pdo\\Mysql')) {
-                $params['driverOptions'] = [\Pdo\Mysql::ATTR_INIT_COMMAND => "SET NAMES utf8"];
-            } else {
-                $params['driverOptions'] = [\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8"];
-            }
+            $params['driverOptions'] = [\Pdo\Mysql::ATTR_INIT_COMMAND => "SET NAMES utf8"];
         }
         if ($passwordFile) {
             $params['password'] = (new File($passwordFile))->read();
