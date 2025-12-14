@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.30.0 - 2025-12-14
+* Improvement: Add support for PHP 8.5 and drop support for PHP 8.3
+* Improvement: Update composer packages
+* Improvement: Refactor DBAL connection factory into dedicated class
+
 ## 1.29.3 - 2025-12-04
 * Improvement: Enable native lazy objects
 * Improvement: Update composer packages
