@@ -36,8 +36,8 @@
         "ext-xmlreader": "*",
         "ext-xmlwriter": "*",
         "doctrine/dbal": "^4.4.1",
-        "doctrine/orm": "~3.5.8",
-        "firebase/php-jwt": "^6.11.1",
+        "doctrine/orm": "~3.6.0",
+        "firebase/php-jwt": "^7.0.2",
         "guzzlehttp/guzzle": "^7.10",
         "hollodotme/fast-cgi-client": "^3.1.7",
         "middlewares/trailing-slash": "^2.1.0",
@@ -50,7 +50,7 @@
         "spiral/roadrunner-http": "^3.6",
         "spiral/roadrunner-metrics": "^3.3",
         "symfony/console": "^7.4.1",
-        "symfony/mailer": "^7.4.0",
+        "symfony/mailer": "^8.0.0",
         "webonyx/graphql-php": "^15.27.2"
     },
     "require-dev": {
