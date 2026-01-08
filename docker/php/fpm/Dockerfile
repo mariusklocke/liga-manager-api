@@ -1,10 +1,9 @@
 FROM alpine:3.23
-ARG APP_VERSION
-ARG PHP_VERSION
+ARG APP_VERSION PHP_VERSION
 
 # Define versions
-ENV APP_VERSION=${APP_VERSION}
-ENV PHP_VERSION=${PHP_VERSION}
+ENV APP_VERSION=${APP_VERSION} \
+    PHP_VERSION=${PHP_VERSION}
 
 # Install packages for PHP and extensions
 RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mbstring pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
@@ -47,9 +46,9 @@ COPY --chmod=755 docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthc
 COPY --chmod=755 docker/php/fpm/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
 # Create application directories
-ENV APP_HOME="/var/www/api"
-ENV APP_LOGOS_PATH="/var/www/logos"
-ENV APP_SERVER_INTERNAL="fcgi://127.0.0.1:9000"
+ENV APP_HOME="/var/www/api" \
+    APP_LOGOS_PATH="/var/www/logos" \
+    APP_SERVER_INTERNAL="fcgi://127.0.0.1:9000"
 RUN mkdir -p ${APP_HOME} ${APP_LOGOS_PATH}
 WORKDIR ${APP_HOME}
 
