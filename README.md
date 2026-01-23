@@ -96,7 +96,6 @@ Same rules for that script: Please have a look inside, before running it.
 
 ## Users & Permissions
 
-Since this application generates code when starting up (Doctrine proxy classes), it is advisable NOT to mount the project dir into the container.
 The recommended development model is: Use a `build` config for the `php` service in `docker-compose.yml` and rebuild the container when changing sources.
 This should be sufficiently fast due to Docker build layer caching. Rebuilding the container on changes can be automated by running `docker compose watch`.
 
