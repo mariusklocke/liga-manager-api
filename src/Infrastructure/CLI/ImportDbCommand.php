@@ -25,8 +25,9 @@ class ImportDbCommand extends Command
     {
         /** @var Connection $connection */
         $connection = $this->container->get(Connection::class);
+        $platform = $connection->getDatabasePlatform();
         $schemaManager = $connection->createSchemaManager();
-        $tables = $schemaManager->listTables();
+        $tables = $schemaManager->introspectTables();
 
         $inputFile = $input->getArgument('file');
         $chunkSize = (int)$input->getOption('chunk-size');
@@ -34,7 +35,7 @@ class ImportDbCommand extends Command
         foreach ($tables as $table) {
             foreach ($table->getForeignKeys() as $foreignKey) {
                 $connection->executeQuery(
-                    $connection->getDatabasePlatform()->getDropForeignKeySQL($foreignKey->getName(), $table->getName())
+                    $platform->getDropForeignKeySQL($foreignKey->getObjectName()->toSQL($platform), $table->getObjectName()->toSQL($platform))
                 );
             }
         }
@@ -46,7 +47,7 @@ class ImportDbCommand extends Command
         foreach ($tables as $table) {
             foreach ($table->getForeignKeys() as $foreignKey) {
                 $connection->executeQuery(
-                    $connection->getDatabasePlatform()->getCreateForeignKeySQL($foreignKey, $table->getName())
+                    $platform->getCreateForeignKeySQL($foreignKey, $table->getObjectName()->toSQL($platform))
                 );
             }
         }
@@ -118,7 +119,10 @@ class ImportDbCommand extends Command
 
     private function insertIntoTable(Connection $connection, string $table, array $data, array $types): void
     {
-        $columns = array_map([$connection, 'quoteIdentifier'], array_keys($data[0]));
+        $columns = [];
+        foreach (array_keys($data[0]) as $column) {
+            $columns[] = $connection->quoteSingleIdentifier($column);
+        }
         $params = [];
         $values = [];
         $mappedTypes = [];
@@ -134,7 +138,7 @@ class ImportDbCommand extends Command
 
         $query = sprintf(
             "INSERT INTO %s (%s) VALUES %s",
-            $connection->quoteIdentifier($table),
+            $connection->quoteSingleIdentifier($table),
             implode(',', $columns),
             implode(',', $values)
         );
@@ -144,7 +148,7 @@ class ImportDbCommand extends Command
 
     private function clearTable(Connection $connection, string $table): void
     {
-        $connection->executeQuery(sprintf("DELETE FROM %s", $connection->quoteIdentifier($table)));
+        $connection->executeQuery(sprintf("DELETE FROM %s", $connection->quoteSingleIdentifier($table)));
     }
 
     private function mapType(string $type): string

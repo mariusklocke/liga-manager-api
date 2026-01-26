@@ -75,19 +75,25 @@ class ExportDbCommand extends Command
         $writer->startElement('database');
 
         $schemaManager = $connection->createSchemaManager();
+        $platform = $connection->getDatabasePlatform();
         $count = 0;
-        foreach ($schemaManager->listTableNames() as $table) {
+        foreach ($schemaManager->introspectTables() as $table) {
             $types = [];
-            foreach ($schemaManager->listTableColumns($table) as $column) {
+            foreach ($schemaManager->introspectTableColumns($table->getObjectName()) as $column) {
                 $mappedType = $this->mapType($column->getType());
                 if (null === $mappedType) {
-                    throw new RuntimeException('Unsupported type ' . get_class($column->getType()) . ' for ' . $column->getName() . ' in ' . $table);
+                    throw new RuntimeException(sprintf(
+                        'Unsupported type %s for %s in %s',
+                        get_class($column->getType()),
+                        $column->getObjectName()->getIdentifier()->getValue(),
+                        $table->getObjectName()->getUnqualifiedName()->getValue()
+                    ));
                 }
-                $types[$column->getName()] = $mappedType;
+                $types[$column->getObjectName()->getIdentifier()->getValue()] = $mappedType;
             }
             $writer->startElement('table');
-            $writer->writeAttribute('name', $table);
-            $query = $connection->createQueryBuilder()->select('*')->from($table)->getSQL();
+            $writer->writeAttribute('name', $table->getObjectName()->getUnqualifiedName()->getValue());
+            $query = $connection->createQueryBuilder()->select('*')->from($table->getObjectName()->toSQL($platform))->getSQL();
             foreach ($connection->iterateAssociative($query) as $row) {
                 if ($anonymize) {
                     $row = $this->anonymize($row);

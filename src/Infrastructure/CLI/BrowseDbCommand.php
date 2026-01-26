@@ -23,9 +23,16 @@ class BrowseDbCommand extends Command
         $queryBuilder = $dbConnection->createQueryBuilder();
 
         $styledIo = $this->getStyledIO($input, $output);
+        $tables = [];
+        foreach ($schemaManager->introspectTables() as $table) {
+            $tables[] = $table->getObjectName()->getUnqualifiedName()->getValue();
+        }
 
-        $table = $styledIo->choice('Please select a table', $schemaManager->listTableNames());
-        $columns = array_keys($schemaManager->listTableColumns($table));
+        $table = $styledIo->choice('Please select a table', $tables);
+        $columns = [];
+        foreach ($schemaManager->introspectTableColumnsByUnquotedName($table) as $column) {
+            $columns[] = $column->getObjectName()->getIdentifier()->getValue();
+        }
         $query = $queryBuilder->select('*')->from($table)->getSQL();
         $data = $dbConnection->fetchAllNumeric($query);
         
