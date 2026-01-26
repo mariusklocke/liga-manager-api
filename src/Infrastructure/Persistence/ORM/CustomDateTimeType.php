@@ -7,6 +7,7 @@ use DateTimeZone;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\DateTimeImmutableType;
 use Doctrine\DBAL\Types\Exception\InvalidFormat;
+use Doctrine\DBAL\Types\Exception\InvalidType;
 
 class CustomDateTimeType extends DateTimeImmutableType
 {
@@ -29,18 +30,22 @@ class CustomDateTimeType extends DateTimeImmutableType
             return $value;
         }
 
-        $dateTime = DateTimeImmutable::createFromFormat($platform->getDateTimeFormatString(), $value, self::getUtc());
-
-        if ($dateTime !== false) {
-            return $dateTime->setTimezone(self::getLocalTimeZone());
-        }
-
-        throw new InvalidFormat(sprintf(
-            'Could not convert database value "%s" to Doctrine Type %s. Expected format "%s".',
-            strlen($value) > 32 ? substr($value, 0, 20) . '...' : $value,
+        is_string($value) || throw InvalidType::new(
+            $value,
             static::class,
-            $expectedFormat ?? '',
+            ['null', 'string', DateTimeImmutable::class],
+        );
+
+        $dateTime = DateTimeImmutable::createFromFormat($platform->getDateTimeFormatString(), $value, self::getUtc());
+        
+        $dateTime !== false || throw new InvalidFormat(sprintf(
+            'Could not convert database value "%s" to type %s. Expected format "%s".',
+            strlen($value) > 32 ? substr($value, 0, 20) . '...' : $value,
+            DateTimeImmutable::class,
+            $platform->getDateTimeFormatString(),
         ));
+
+        return $dateTime->setTimezone(self::getLocalTimeZone());
     }
 
     private static function getUtc(): DateTimeZone
