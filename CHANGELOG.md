@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.30.1 - 2026-02-04
+* Improvement: Reduce docker image layers
+* Improvement: Update composer packages
+
 ## 1.30.0 - 2025-12-14
 * Improvement: Add support for PHP 8.5 and drop support for PHP 8.3
 * Improvement: Update composer packages
