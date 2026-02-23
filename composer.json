@@ -47,9 +47,9 @@
         "psr/http-client": "^1.0.3",
         "psr/log": "^3.0.2",
         "slim/slim": "^4.15.1",
-        "spiral/roadrunner-http": "^3.6",
+        "spiral/roadrunner-http": "^4.0",
         "spiral/roadrunner-metrics": "^3.3",
-        "symfony/console": "^7.4.1",
+        "symfony/console": "^8.0.4",
         "symfony/mailer": "^8.0.3",
         "webonyx/graphql-php": "^15.27.2"
     },
