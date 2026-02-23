@@ -1,4 +1,4 @@
-FROM ghcr.io/roadrunner-server/roadrunner:2025.1.6 AS roadrunner
+FROM ghcr.io/roadrunner-server/roadrunner:2025.1.8 AS roadrunner
 FROM alpine:3.23
 ARG APP_VERSION PHP_VERSION
 
