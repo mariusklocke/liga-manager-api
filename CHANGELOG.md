@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.30.2 - 2026-02-23
+* Improvement: Update roadrunner to 2025.1.8
+* Improvement: Update composer packages
+
 ## 1.30.1 - 2026-02-04
 * Improvement: Reduce docker image layers
 * Improvement: Update composer packages
