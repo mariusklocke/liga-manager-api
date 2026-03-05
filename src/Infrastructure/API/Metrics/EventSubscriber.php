@@ -25,26 +25,41 @@ class EventSubscriber implements EventSubscriberInterface
 
     public function handleResponseEvent(ResponseEvent $event): void
     {
-        $this->metricsStore->add('php_requests_total');
-        if ($event->getResponse()->getStatusCode() >= 400) {
-            $this->metricsStore->add('php_requests_failed');
+        $labels = [
+            'status' => $event->getResponse()->getStatusCode(),
+            'auth' => 'none'
+        ];
+
+        foreach ($event->getRequest()->getHeader('Authorization') as $value) {
+            if (preg_match('/^bearer/i', $value)) {
+                $labels['auth'] = 'bearer';
+            } else if (preg_match('/^basic/i', $value)) {
+                $labels['auth'] = 'basic';
+            } else {
+                $labels['auth'] = 'other';
+            }
+            break;
         }
 
-        $authHeader = $event->getRequest()->getHeader('Authorization')[0] ?? null;
-        if ($authHeader === null) {
-            $this->metricsStore->add('php_requests_auth_none');
-        } else if (preg_match('/^bearer/i', $authHeader)) {
-            $this->metricsStore->add('php_requests_auth_jwt');
-        } else if (preg_match('/^basic/i', $authHeader)) {
-            $this->metricsStore->add('php_requests_auth_basic');
-        }
-
+        $this->metricsStore->add('php_requests', $labels);
         $this->metricsStore->set('php_memory_usage', (float)memory_get_usage());
         $this->metricsStore->set('php_memory_peak_usage', (float)memory_get_peak_usage());
     }
 
     public function handleQueryEvent(QueryEvent $event): void
     {
-        $this->metricsStore->add('php_database_queries');
+        $labels = [];
+        if (preg_match('/^select/i', $event->getQuery())) {
+            $labels['action'] = 'select';
+        } else if (preg_match('/^insert/i', $event->getQuery())) {
+            $labels['action'] = 'insert';
+        } else if (preg_match('/^update/i', $event->getQuery())) {
+            $labels['action'] = 'update';
+        } else if (preg_match('/^delete/i', $event->getQuery())) {
+            $labels['action'] = 'delete';
+        } else {
+            $labels['action'] = 'other';
+        }
+        $this->metricsStore->add('php_database_queries', $labels);
     }
 }
