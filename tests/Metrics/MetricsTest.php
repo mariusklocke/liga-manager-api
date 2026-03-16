@@ -8,15 +8,15 @@ class MetricsTest extends HttpTest
 {
     public function testMetricsCanBeQueried(): void
     {
-        $expectedMetrics = [
-            ['name' => 'php_requests_total', 'type' => 'counter'],
-            ['name' => 'php_requests_failed', 'type' => 'counter'],
-            ['name' => 'php_requests_auth_none', 'type' => 'counter'],
-            ['name' => 'php_requests_auth_jwt', 'type' => 'counter'],
-            ['name' => 'php_requests_auth_basic', 'type' => 'counter'],
-            ['name' => 'php_memory_usage', 'type' => 'gauge'],
-            ['name' => 'php_memory_peak_usage', 'type' => 'gauge'],
-            ['name' => 'php_database_queries', 'type' => 'counter']
+        $expectedPatterns = [
+            '/^# TYPE php_requests counter$/m',
+            '/^# TYPE php_memory_usage gauge$/m',
+            '/^# TYPE php_memory_peak_usage gauge$/m',
+            '/^# TYPE php_database_queries counter$/m',
+            '/^php_requests{auth="\S+",status="\d+"} \d+$/m',
+            '/^php_memory_usage [\d.e+]+$/m',
+            '/^php_memory_peak_usage [\d.e+]+$/m',
+            '/^php_database_queries{action="\S+"} \d+$/m',
         ];
 
         $request = $this->createRequest('GET', '/api/metrics');
@@ -26,20 +26,8 @@ class MetricsTest extends HttpTest
         self::assertStringStartsWith('text/plain', $contentType);
         $actualMetrics = (string)$response->getBody();
 
-        foreach ($expectedMetrics as $metric) {
-            self::assertMatchesRegularExpression(
-                sprintf('/^# TYPE %s %s$/m', $metric['name'], $metric['type']),
-                $actualMetrics
-            );
-            if ($metric['type'] === 'gauge') {
-                $pattern = '/^%s [\d.e+]+$/m';
-            } else {
-                $pattern = '/^%s \d+$/m';
-            }
-            self::assertMatchesRegularExpression(
-                sprintf($pattern, $metric['name']),
-                $actualMetrics
-            );
+        foreach ($expectedPatterns as $pattern) {
+            self::assertMatchesRegularExpression($pattern, $actualMetrics);
         }
     }
 

@@ -23,13 +23,18 @@ class RoadRunnerStore implements StoreInterface
         $this->exportUrl = $exportUrl;
 
         foreach ($definitions as $definition) {
-            $this->metrics->declare($definition->name, $this->getCollector($definition->type)->withHelp($definition->help));
+            $this->metrics->declare($definition->name, $this->getCollector($definition));
         }
     }
 
-    public function add(string $name): void
+    public function add(string $name, array $labels = []): void
     {
-        $this->metrics->add($name, 1);
+        ksort($labels);
+        $processedLabels = [];
+        foreach ($labels as $value) {
+            $processedLabels[] = (string)$value;
+        }
+        $this->metrics->add($name, 1, $processedLabels);
     }
 
     public function export(): string
@@ -37,20 +42,25 @@ class RoadRunnerStore implements StoreInterface
         return file_get_contents($this->exportUrl);
     }
 
-    public function set(string $name, float $value): void
+    public function set(string $name, float $value, array $labels = []): void
     {
-        $this->metrics->set($name, $value);
+        ksort($labels);
+        $processedLabels = [];
+        foreach ($labels as $value) {
+            $processedLabels[] = (string)$value;
+        }
+        $this->metrics->set($name, $value, $processedLabels);
     }
 
-    private function getCollector(string $type): Collector
+    private function getCollector(Definition $definition): Collector
     {
-        switch ($type) {
+        switch ($definition->type) {
             case 'counter':
-                return Collector::counter();
+                return Collector::counter()->withHelp($definition->help)->withLabels(...$definition->labels);
             case 'gauge':
-                return Collector::gauge();
+                return Collector::gauge()->withHelp($definition->help)->withLabels(...$definition->labels);
             default:
-                throw new RuntimeException("Unsupported metrics type: $type");
+                throw new RuntimeException("Unsupported metrics type: " . $definition->type);
         }
     }
 }

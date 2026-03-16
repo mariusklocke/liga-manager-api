@@ -2,6 +2,9 @@
 
 namespace HexagonalPlayground\Infrastructure\API\Metrics;
 
+use APCUIterator;
+use Iterator;
+
 class ApcuStore implements StoreInterface
 {
     private array $definitions;
@@ -14,9 +17,9 @@ class ApcuStore implements StoreInterface
         $this->definitions = $definitions;
     }
 
-    public function add(string $name): void
+    public function add(string $name, array $labels = []): void
     {
-        \apcu_inc($this->buildKey($name));
+        \apcu_inc($this->buildKey($name, $labels));
     }
 
     public function export(): string
@@ -26,28 +29,44 @@ class ApcuStore implements StoreInterface
         foreach ($this->definitions as $definition) {
             $result[] = sprintf('# HELP %s %s', $definition->name, $definition->help);
             $result[] = sprintf('# TYPE %s %s', $definition->name, $definition->type);
-            if ($definition->type === 'counter') {
-                $result[] = sprintf('%s %d', $definition->name, $this->get($definition->name));
-            } else {
-                $result[] = sprintf('%s %e', $definition->name, $this->get($definition->name));
+            $valuePattern = $definition->type === 'counter' ? '%s %d' : '%s %e';
+            foreach ($this->getValues($definition->name) as $key => $value) {
+                if (str_ends_with($key, '{}')) {
+                    $key = str_replace('{}', '', $key);
+                }
+                $result[] = sprintf($valuePattern, $key, $value);
             }
         }
 
         return implode(PHP_EOL, $result);
     }
 
-    public function set(string $name, float $value): void
+    public function set(string $name, float $value, array $labels = []): void
     {
-        \apcu_store($this->buildKey($name), $value);
+        \apcu_store($this->buildKey($name, $labels), $value);
     }
 
-    private function get(string $name): mixed
+    private function getValues(string $name): Iterator
     {
-        return \apcu_fetch($this->buildKey($name));
+        foreach (new APCUIterator() as $key => $value) {
+            if (str_starts_with($key, "metrics.$name{") && str_ends_with($key, '}')) {
+                yield str_replace('metrics.', '', $key) => $value;
+            }
+        }
     }
 
-    private function buildKey(string $name): string
+    private function buildKey(string $name, array $labels = []): string
     {
-        return 'metrics.' . $name;
+        return 'metrics.' . $name . $this->formatLabels($labels);
+    }
+
+    private function formatLabels(array $labels): string
+    {
+        ksort($labels);
+        $result = [];
+        foreach ($labels as $key => $value) {
+            $result[] = sprintf('%s="%s"', $key, $value);
+        }
+        return '{' . implode(',', $result) . '}';
     }
 }

@@ -14,14 +14,10 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             Definition::class => [
-                DI\create(Definition::class)->constructor('php_database_queries', 'counter', 'Executed database queries'),
+                DI\create(Definition::class)->constructor('php_database_queries', 'counter', 'Executed database queries', ['action']),
                 DI\create(Definition::class)->constructor('php_memory_usage', 'gauge', 'Used memory in bytes'),
                 DI\create(Definition::class)->constructor('php_memory_peak_usage', 'gauge', 'Peak used memory in bytes'),
-                DI\create(Definition::class)->constructor('php_requests_total', 'counter', 'Total HTTP requests'),
-                DI\create(Definition::class)->constructor('php_requests_failed', 'counter', 'Failed HTTP requests'),
-                DI\create(Definition::class)->constructor('php_requests_auth_jwt', 'counter', 'HTTP requests with JWT auth'),
-                DI\create(Definition::class)->constructor('php_requests_auth_basic', 'counter', 'HTTP requests with Basic auth'),
-                DI\create(Definition::class)->constructor('php_requests_auth_none', 'counter', 'HTTP request without auth'),
+                DI\create(Definition::class)->constructor('php_requests', 'counter', 'HTTP requests', ['auth', 'status']),
             ],
             StoreInterface::class => DI\factory(function (ContainerInterface $container): StoreInterface {
                 $definitions = $container->get(Definition::class);

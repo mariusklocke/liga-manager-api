@@ -8,8 +8,9 @@ interface StoreInterface
      * Increment counter metric
      * 
      * @param string $name
+     * @param array  $labels
      */
-    public function add(string $name): void;
+    public function add(string $name, array $labels = []): void;
 
     /**
      * Exports available metrics in Prometheus format
@@ -23,7 +24,8 @@ interface StoreInterface
      * 
      * @param string $name
      * @param float  $value
+     * @param array  $labels
      */
-    public function set(string $name, float $value): void;
+    public function set(string $name, float $value, array $labels = []): void;
 
 }
