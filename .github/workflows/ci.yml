@@ -10,7 +10,7 @@ jobs:
     if: github.ref_type == 'branch'
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build docs
         run: make docs
       - name: Upload docs as pages artifact
@@ -31,7 +31,7 @@ jobs:
         dbms: ["mariadb", "postgres"]
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Build image
         run: make build
       - name: Test image
@@ -43,13 +43,13 @@ jobs:
         run: make publish
         if: (github.ref_type == 'tag' || github.ref_name == 'master') && matrix.php-version == '8.5' && matrix.dbms == 'mariadb'
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: build-${{ matrix.runtime }}-${{ matrix.dbms }}
           path: build/artifacts
         if: matrix.php-version == '8.5'
       - name: Upload tarball
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: tarball
           path: build/liga-manager-api.tar.gz
@@ -66,7 +66,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Deploy pages from artifact
         uses: actions/deploy-pages@v4
   upload-coverage:
@@ -76,9 +76,9 @@ jobs:
       - build-image
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: build/artifacts
       - name: List code coverage reports
