@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.31.0 - 2026-03-18
+* Improvement: Add labels to metrics
+* Improvement: Update roadrunner to 2025.1.11
+* Improvement: Update composer packages
+
 ## 1.30.2 - 2026-02-23
 * Improvement: Update roadrunner to 2025.1.8
 * Improvement: Update composer packages
