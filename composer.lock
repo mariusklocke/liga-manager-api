@@ -2591,16 +2591,16 @@
         },
         {
             "name": "spiral/roadrunner",
-            "version": "v2025.1.9",
+            "version": "v2025.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/roadrunner-server/roadrunner.git",
-                "reference": "1ffc187037ebcd84082d4b951504d5d4d9f968fc"
+                "reference": "e2c3615ad42d34cc30e01978c091c6ca51d0a005"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/1ffc187037ebcd84082d4b951504d5d4d9f968fc",
-                "reference": "1ffc187037ebcd84082d4b951504d5d4d9f968fc",
+                "url": "https://api.github.com/repos/roadrunner-server/roadrunner/zipball/e2c3615ad42d34cc30e01978c091c6ca51d0a005",
+                "reference": "e2c3615ad42d34cc30e01978c091c6ca51d0a005",
                 "shasum": ""
             },
             "type": "metapackage",
@@ -2628,7 +2628,7 @@
                 "chat": "https://discord.gg/V6EK4he",
                 "docs": "https://docs.roadrunner.dev/",
                 "issues": "https://github.com/roadrunner-server/roadrunner/issues",
-                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2025.1.9"
+                "source": "https://github.com/roadrunner-server/roadrunner/tree/v2025.1.11"
             },
             "funding": [
                 {
@@ -2636,7 +2636,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-14T18:29:01+00:00"
+            "time": "2026-03-16T22:10:18+00:00"
         },
         {
             "name": "spiral/roadrunner-http",
@@ -5742,11 +5742,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.41",
+            "version": "2.1.42",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/a2eae8f20856b3afe74bf1f9726ce8c11438e300",
-                "reference": "a2eae8f20856b3afe74bf1f9726ce8c11438e300",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/1279e1ce86ba768f0780c9d889852b4e02ff40d0",
+                "reference": "1279e1ce86ba768f0780c9d889852b4e02ff40d0",
                 "shasum": ""
             },
             "require": {
@@ -5791,7 +5791,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-03-16T18:24:10+00:00"
+            "time": "2026-03-17T14:58:32+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
