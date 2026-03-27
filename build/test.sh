@@ -30,8 +30,8 @@ run_tests() {
 }
 
 run_tests_with_coverage() {
-    docker compose exec php sh -c "echo 'zend_extension=xdebug' >> /etc/php/php.ini"
-    docker compose exec -e LOG_PATH=/artifacts/app-xdebug.log php phpunit -c config/phpunit.xml --coverage-clover /artifacts/coverage.xml
+    docker compose exec -e LOG_PATH=/artifacts/app-xdebug.log php \
+        php -d zend_extension=xdebug vendor/bin/phpunit -c config/phpunit.xml --coverage-clover /artifacts/coverage.xml
 }
 
 start_containers() {
