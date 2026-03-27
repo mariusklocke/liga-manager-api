@@ -23,7 +23,7 @@ define generate_secret
 	head -c $(1) /dev/urandom | xxd -ps | tr -d '\n' > docker/.secrets/$(2)
 endef
 
-.PHONY: help build test publish release tarball docs secrets
+.PHONY: help build test publish release tarball docs secrets phar
 default: help
 
 help:
@@ -34,6 +34,7 @@ help:
 	@echo 'make tarball    Build tarball'
 	@echo 'make docs       Build docs'
 	@echo 'make secrets    Generate random secrets'
+	@echo 'make phar       Build PHAR file'
 
 build:
 	build/build.sh
@@ -52,6 +53,9 @@ tarball:
 
 docs:
 	build/docs.sh
+
+phar:
+	build/build-phar.sh
 
 secrets:
 	test -d docker/.secrets || mkdir docker/.secrets

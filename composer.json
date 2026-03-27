@@ -23,6 +23,14 @@
         },
         "sort-packages": true
     },
+    "extra": {
+        "phar-file": "build/artifacts/app.phar",
+        "phar-content": ["bin", "config", "locales", "public", "src", "vendor"],
+        "phar-stubs": ["bin/lima", "public/index.php"]
+    },
+    "scripts": {
+        "build-phar": "php -d phar.readonly=0 bin/build-phar"
+    },
     "require": {
         "php": "^8.4",
         "ext-apcu": "*",

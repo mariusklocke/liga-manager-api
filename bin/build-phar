@@ -1,0 +1,29 @@
+#!/usr/bin/env
+<?php
+declare(strict_types=1);
+
+if (!file_exists('composer.json')) {
+    throw new RuntimeException('composer.json not found. Please run this script from the project root directory.');
+}
+
+$package = json_decode(file_get_contents('composer.json'), true);
+if (!is_array($package)) {
+    throw new RuntimeException('Invalid composer.json');
+}
+
+$pharFile = $package['extra']['phar-file'] ?? throw new RuntimeException('Phar file not defined in composer.json');
+$content = $package['extra']['phar-content'] ?? throw new RuntimeException('Phar content not defined in composer.json');
+$stubs = $package['extra']['phar-stubs'] ?? throw new RuntimeException('Phar stubs not defined in composer.json');
+
+$phar = new Phar($pharFile);
+$files = 0;
+foreach ($content as $dir) {
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS)
+    );
+    $paths = $phar->buildFromIterator($iterator, '.');
+    $files += count($paths);
+}
+$phar->setStub("#!/usr/bin/env php\n" . $phar->createDefaultStub($stubs[0], $stubs[1]));
+$size = filesize($pharFile);
+echo "$files files with $size bytes written to $pharFile" . PHP_EOL;
