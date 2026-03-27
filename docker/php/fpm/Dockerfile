@@ -1,4 +1,8 @@
-FROM alpine:3.23
+FROM composer/composer:latest AS composer
+COPY composer.json composer.lock ./
+RUN composer install --ignore-platform-reqs --no-cache --no-dev --no-progress
+
+FROM alpine:3.23 AS final
 ARG APP_VERSION PHP_VERSION
 
 # Define versions
@@ -54,7 +58,7 @@ WORKDIR ${APP_HOME}
 
 # Install application sources
 COPY openapi.yml ./
-COPY vendor vendor/
+COPY --from=composer /app/vendor vendor/
 COPY src src/
 COPY public public/
 COPY locales locales/

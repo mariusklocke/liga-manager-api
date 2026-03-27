@@ -1,5 +1,10 @@
+FROM composer/composer:latest AS composer
+COPY composer.json composer.lock ./
+RUN composer install --ignore-platform-reqs --no-cache --no-dev --no-progress
+
 FROM ghcr.io/roadrunner-server/roadrunner:2025.1.11 AS roadrunner
-FROM alpine:3.23
+
+FROM alpine:3.23 AS final
 ARG APP_VERSION PHP_VERSION
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
@@ -59,7 +64,7 @@ WORKDIR ${APP_HOME}
 
 # Install application sources
 COPY openapi.yml ./
-COPY vendor vendor/
+COPY --from=composer /app/vendor vendor/
 COPY src src/
 COPY locales locales/
 COPY config config/
