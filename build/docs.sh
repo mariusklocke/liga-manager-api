@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 set -eu
 
-rm -rf ./docs
-TEMP_CONTAINER=$(docker create redocly/redoc)
-docker cp "${TEMP_CONTAINER}:/usr/share/nginx/html" ./docs
-docker rm "${TEMP_CONTAINER}"
+build_docs() {
+    rm -rf ./docs
+    TEMP_CONTAINER=$(docker create redocly/redoc)
+    docker cp "${TEMP_CONTAINER}:/usr/share/nginx/html" ./docs
+    docker rm "${TEMP_CONTAINER}"
 
-cat > ./docs/index.html <<EOL
+    cat > ./docs/index.html <<EOL
 <!doctype html>
 <html>
   <head>
@@ -27,5 +28,9 @@ cat > ./docs/index.html <<EOL
   </body>
 </html>
 EOL
-cp openapi.yml ./docs/openapi.yml
-rm ./docs/index.tpl.html ./docs/index.prefix.tpl.html
+    cp openapi.yml ./docs/openapi.yml
+    rm ./docs/index.tpl.html ./docs/index.prefix.tpl.html
+    
+}
+
+build_docs
