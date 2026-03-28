@@ -42,7 +42,7 @@ start_containers() {
 }
 
 validate_architecture() {
-    docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
+    docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-cache --no-progress
 }
 
 validate_api_spec() {
