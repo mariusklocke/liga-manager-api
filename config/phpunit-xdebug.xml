@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/12.5/phpunit.xsd" bootstrap="../vendor/autoload.php"
+         beStrictAboutOutputDuringTests="true" cacheResult="false" colors="true">
+    <source>
+        <include>
+            <directory>../src</directory>
+        </include>
+    </source>
+    <testsuites>
+        <testsuite name="CLI">
+            <directory>../tests/CLI</directory>
+        </testsuite>
+        <testsuite name="GraphQL">
+            <directory>../tests/GraphQL</directory>
+        </testsuite>
+        <testsuite name="Health">
+            <directory>../tests/Health</directory>
+        </testsuite>
+        <testsuite name="Insights">
+            <directory>../tests/Insights</directory>
+        </testsuite>
+        <testsuite name="Metrics">
+            <directory>../tests/Metrics</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory>../tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+    <extensions>
+        <bootstrap class="RobinIngelbrecht\PHPUnitPrettyPrint\PhpUnitExtension">
+        </bootstrap>
+    </extensions>
+    <coverage>
+        <report>
+            <clover outputFile="/artifacts/coverage.xml"/>
+        </report>
+    </coverage>
+</phpunit>
