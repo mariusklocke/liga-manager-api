@@ -30,7 +30,7 @@ run_tests() {
 }
 
 run_tests_with_coverage() {
-    docker compose exec -e LOG_PATH=/artifacts/app-xdebug.log php \
+    docker compose exec -e LOG_PATH=artifacts/app-xdebug.log php \
         php -d zend_extension=xdebug vendor/bin/phpunit -c config/phpunit-xdebug.xml
 }
 

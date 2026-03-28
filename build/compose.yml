@@ -13,10 +13,10 @@ services:
       - EMAIL_URL=smtp://test:9ecd4875@maildev:1025?verify_peer=0
       - JWT_SECRET_FILE=/run/secrets/jwt-secret
       - LOG_LEVEL=info
-      - LOG_PATH=/artifacts/app.log
+      - LOG_PATH=/var/www/api/artifacts/app.log
       - REDIS_HOST=redis
     volumes:
-      - ${PWD}/build/artifacts:/artifacts
+      - ${PWD}/build/artifacts:/var/www/api/artifacts
       - ${PWD}/tests:/var/www/api/tests
       - ${PWD}/vendor:/var/www/api/vendor
       - logos:/var/www/logos

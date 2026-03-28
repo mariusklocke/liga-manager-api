@@ -33,7 +33,7 @@
     </extensions>
     <coverage>
         <report>
-            <clover outputFile="/artifacts/coverage.xml"/>
+            <clover outputFile="../artifacts/coverage.xml"/>
         </report>
     </coverage>
 </phpunit>
