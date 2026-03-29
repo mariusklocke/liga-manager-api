@@ -74,7 +74,7 @@ abstract class CommandTest extends TestCase
             $mappedArgs[] = '--no-interaction';
         }
 
-        $command = array_merge(['php', 'app.phar', $name], $mappedArgs);
+        $command = array_merge(['bin/lima', $name], $mappedArgs);
         $process = new \Symfony\Component\Process\Process($command);
         if (count($inputs) > 0) {
             $process->setInput(implode("\n", $inputs));
