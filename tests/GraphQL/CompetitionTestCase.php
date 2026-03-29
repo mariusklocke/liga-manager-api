@@ -5,7 +5,6 @@ namespace HexagonalPlayground\Tests\GraphQL;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeZone;
-use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 
 abstract class CompetitionTestCase extends TestCase
@@ -137,7 +136,7 @@ abstract class CompetitionTestCase extends TestCase
             'password' => DataGenerator::generatePassword(),
             'first_name' => 'Foo',
             'last_name' => 'Bar',
-            'role' => User::ROLE_TEAM_MANAGER,
+            'role' => 'team_manager',
             'team_ids' => [$teamId]
         ];
     }
