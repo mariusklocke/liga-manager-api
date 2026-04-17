@@ -3,7 +3,6 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use DOMDocument;
-use HexagonalPlayground\Domain\User;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
 use PHPUnit\Framework\Attributes\Depends;
@@ -26,7 +25,7 @@ class UserTest extends TestCase
             'password' => DataGenerator::generatePassword(),
             'first_name' => 'Foo',
             'last_name' => 'Bar',
-            'role' => User::ROLE_TEAM_MANAGER,
+            'role' => 'team_manager',
             'team_ids' => []
         ];
     }

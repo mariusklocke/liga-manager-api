@@ -66,6 +66,7 @@
         "devizzent/cebe-php-openapi": "^1.1.4",
         "league/openapi-psr7-validator": "^0.22.0",
         "phpunit/phpunit": "^12.5.3",
-        "robiningelbrecht/phpunit-pretty-print": "^1.4.1"
+        "robiningelbrecht/phpunit-pretty-print": "^1.4.1",
+        "symfony/process": "^8.0"
     }
 }

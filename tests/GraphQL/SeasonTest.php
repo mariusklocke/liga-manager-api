@@ -4,7 +4,6 @@ namespace HexagonalPlayground\Tests\GraphQL;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use HexagonalPlayground\Domain\Season;
 use HexagonalPlayground\Tests\Framework\DataGenerator;
 use PHPUnit\Framework\Attributes\Depends;
 use stdClass;
@@ -22,7 +21,7 @@ class SeasonTest extends CompetitionTestCase
         $received = $this->client->getSeasonById($sent['id']);
         self::assertSame($sent['id'], $received->id);
         self::assertSame($sent['name'], $received->name);
-        self::assertSame(Season::STATE_PREPARATION, $received->state);
+        self::assertSame('preparation', $received->state);
         self::assertSame(0, $received->match_day_count);
         self::assertSame(0, $received->team_count);
         self::assertNull($received->ranking);
@@ -594,7 +593,7 @@ class SeasonTest extends CompetitionTestCase
     public function testTeamCanBeReplacedWhileSeasonInProgress(string $seasonId): string
     {
         $seasonBefore = $this->client->getSeasonByIdWithMatchDays($seasonId);
-        self::assertSame(Season::STATE_PROGRESS, $seasonBefore->state);
+        self::assertSame('progress', $seasonBefore->state);
         $retiringTeamId = $seasonBefore->ranking->positions[0]->team->id;
         $spareTeamId = self::$spareTeamIds[0];
         self::assertNotEquals($spareTeamId, $retiringTeamId);
@@ -614,12 +613,12 @@ class SeasonTest extends CompetitionTestCase
     public function testEndedSeasonsRankingIsFinal(string $seasonId): void
     {
         $season = $this->client->getSeasonByIdWithMatchDays($seasonId);
-        self::assertSame(Season::STATE_PROGRESS, $season->state);
+        self::assertSame('progress', $season->state);
         $match = $season->match_days[0]->matches[1];
 
         $this->client->endSeason($seasonId);
         $season = $this->client->getSeasonById($seasonId);
-        self::assertSame(Season::STATE_ENDED, $season->state);
+        self::assertSame('ended', $season->state);
 
         $this->expectClientException();
         $this->client->submitMatchResult($match->id, 2, 3);

@@ -26,12 +26,12 @@ login_to_docker_hub() {
 }
 
 run_tests() {
-    docker compose exec php phpunit -c config/phpunit.xml --display-deprecations --display-warnings
+    docker compose exec php phpunit -c config/phpunit-isolated.xml --display-deprecations --display-warnings
 }
 
 run_tests_with_coverage() {
-    docker compose exec -e LOG_PATH=/artifacts/app-xdebug.log php \
-        php -d zend_extension=xdebug vendor/bin/phpunit -c config/phpunit.xml --coverage-clover /artifacts/coverage.xml
+    docker compose exec -e LOG_PATH=artifacts/app-xdebug.log php \
+        php -d zend_extension=xdebug vendor/bin/phpunit -c config/phpunit-xdebug.xml
 }
 
 start_containers() {
@@ -42,7 +42,7 @@ start_containers() {
 }
 
 validate_architecture() {
-    docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-progress
+    docker compose exec php deptrac analyse --config-file config/deptrac.yaml --no-cache --no-progress
 }
 
 validate_api_spec() {
