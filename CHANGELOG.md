@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.31.1 - 2026-04-22
+* Improvement: Run CLI tests in process isolation
+* Improvement: Update roadrunner to 2025.1.13
+* Improvement: Update composer packages
+
 ## 1.31.0 - 2026-03-18
 * Improvement: Add labels to metrics
 * Improvement: Update roadrunner to 2025.1.11
