@@ -19,7 +19,7 @@
     },
     "config": {
         "platform": {
-            "php": "8.4"
+            "php": "8.4.1"
         },
         "sort-packages": true
     },
@@ -32,7 +32,7 @@
         "build-phar": "php -d phar.readonly=0 bin/build-phar"
     },
     "require": {
-        "php": "^8.4",
+        "php": "^8.4.1",
         "ext-apcu": "*",
         "ext-ctype": "*",
         "ext-json": "*",
@@ -65,8 +65,8 @@
         "deptrac/deptrac": "^4.4.0",
         "devizzent/cebe-php-openapi": "^1.1.4",
         "league/openapi-psr7-validator": "^0.22.0",
-        "phpunit/phpunit": "^12.5.3",
-        "robiningelbrecht/phpunit-pretty-print": "^1.4.1",
+        "phpunit/phpunit": "^13.1.7",
+        "robiningelbrecht/phpunit-pretty-print": "^1.5.0",
         "symfony/process": "^8.0"
     }
 }
