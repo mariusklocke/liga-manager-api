@@ -9,55 +9,33 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Configuration;
 use HexagonalPlayground\Infrastructure\Config;
 use HexagonalPlayground\Infrastructure\Filesystem\File;
+use HexagonalPlayground\Infrastructure\Persistence\ORM\Connection as ConnectionWrapper;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Throwable;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class ConnectionFactory
 {
     public function __invoke(ContainerInterface $container): Connection
     {
-        /** @var LoggerInterface $logger */
-        $logger = $container->get(LoggerInterface::class);
-        /** @var Configuration $doctrineConfig */
-        $doctrineConfig = $container->get(Configuration::class);
-        /** @var Config $config */
-        $config = $container->get(Config::class);
-        $params = $this->buildParams($config);
+        $params = $this->buildParams($container->get(Config::class));
         $customTypes = [
             CustomDateTimeType::class => [
                 'dbType' => 'CustomDateTime',
                 'doctrineType' => CustomDateTimeType::NAME
             ],
         ];
-        $attempt = 1;
-        $timeout = 60;
-        $startedAt = time();
 
-        do {
-            try {
-                $connection = DriverManager::getConnection($params, $doctrineConfig);
-                $platform   = $connection->getDatabasePlatform();
-            } catch (Throwable $exception) {
-                $connection = null;
-                $platform = null;
-                $logger->warning($exception->getMessage(), ['host' => $params['host'], 'attempt' => $attempt]);
-                sleep(5);
-                if (time() - $startedAt < $timeout) {
-                    $attempt++;
-                } else {
-                    throw $exception;
-                }
-            }
-        } while ($connection === null || $platform === null);
-
-        $logger->debug('Connected to database', ['version' => $connection->getServerVersion()]);
+        /** @var ConnectionWrapper $connection */
+        $connection = DriverManager::getConnection($params, $container->get(Configuration::class));
+        $connection->setLogger($container->get(LoggerInterface::class));
+        $connection->setEventDispatcher($container->get(EventDispatcherInterface::class));
 
         foreach ($customTypes as $className => $definition) {
             if (!Type::hasType($definition['doctrineType'])) {
                 Type::addType($definition['doctrineType'], $className);
             }
-            $platform->registerDoctrineTypeMapping($definition['dbType'], $definition['doctrineType']);
+            $connection->getDatabasePlatform()->registerDoctrineTypeMapping($definition['dbType'], $definition['doctrineType']);
         }
 
         return $connection;
@@ -96,6 +74,7 @@ class ConnectionFactory
         if ($passwordFile) {
             $params['password'] = (new File($passwordFile))->read();
         }
+        $params['wrapperClass'] = ConnectionWrapper::class;
 
         return $params;
     }

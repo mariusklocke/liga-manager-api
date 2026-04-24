@@ -24,7 +24,6 @@ use HexagonalPlayground\Application\Security\UserRepositoryInterface;
 use HexagonalPlayground\Application\ServiceProviderInterface;
 use HexagonalPlayground\Infrastructure\Filesystem\Directory;
 use HexagonalPlayground\Infrastructure\HealthCheckInterface;
-use HexagonalPlayground\Infrastructure\Persistence\ORM\Logging\Middleware as LoggingMiddleware;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\EventRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchDayRepository;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\Repository\MatchRepository;
@@ -62,7 +61,6 @@ class DoctrineServiceProvider implements ServiceProviderInterface
             Configuration::class => DI\factory(function (ContainerInterface $container) {
                 $config = new Configuration();
                 $config->setMetadataDriverImpl($container->get(SimplifiedXmlDriver::class));
-                $config->setMiddlewares([$container->get(LoggingMiddleware::class)]);
                 $config->enableNativeLazyObjects(true);
 
                 return $config;
