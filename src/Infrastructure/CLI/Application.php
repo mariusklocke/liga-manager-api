@@ -20,6 +20,7 @@ use HexagonalPlayground\Infrastructure\Email\MailServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\ORM\DoctrineServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\EventServiceProvider;
 use HexagonalPlayground\Infrastructure\Persistence\Read\ReadRepositoryProvider;
+use HexagonalPlayground\Infrastructure\Reporter\ServiceProvider as ReporterServiceProvider;
 use Iterator;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -101,6 +102,7 @@ class Application extends \Symfony\Component\Console\Application
         yield new InspectContainerCommand($this->container, $this->authContext);
         yield new ListVersionsCommand($this->container, $this->authContext);
         yield new QueryApiCommand($this->container, $this->authContext);
+        yield new ReportErrorCommand($this->container, $this->authContext);
 
         // Doctrine ORM commands
         $emProvider = $this->container->get(EntityManagerProvider::class);
@@ -114,7 +116,7 @@ class Application extends \Symfony\Component\Console\Application
 
     /**
      * Returns an iterator for common service providers
-     * 
+     *
      * @return ServiceProviderInterface[]
      */
     private function getServiceProviders(): Iterator
@@ -126,5 +128,6 @@ class Application extends \Symfony\Component\Console\Application
         yield new FilesystemServiceProvider();
         yield new MailServiceProvider();
         yield new ReadRepositoryProvider();
+        yield new ReporterServiceProvider();
     }
 }

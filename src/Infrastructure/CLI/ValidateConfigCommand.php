@@ -46,7 +46,7 @@ class ValidateConfigCommand extends Command
             $io->error("The config is invalid: $errors errors detected.");
             return 1;
         }
-        
+
         $io->success('The config is valid.');
 
         $io->note('This command does NOT check that backing services are available. Run "app:health:check" command for that.');
@@ -56,7 +56,7 @@ class ValidateConfigCommand extends Command
 
     /**
      * Yields a collection of validator functions
-     * 
+     *
      * @param Config $config
      * @return Iterator<callable>
      */
@@ -121,7 +121,7 @@ class ValidateConfigCommand extends Command
             Assert::true(
                 $config->getValue('jwt.secret') || $config->getValue('jwt.secret.file'),
                 'One of the properties "jwt.secret" or "jwt.secret.file" is required',
-                Exception::class 
+                Exception::class
             );
         };
         yield function () use ($config): void {
@@ -172,6 +172,15 @@ class ValidateConfigCommand extends Command
             Assert::true(
                 (bool)$config->getValue('redis.host'),
                 'Property "redis.host" must not be empty',
+                Exception::class
+            );
+        };
+
+        // Optional: sentry.url
+        yield function () use ($config): void {
+            Assert::true(
+                !$config->getValue('sentry.url') || StringUtils::isValidUrl($config->getValue('sentry.url')),
+                'Property "sentry.url" is not a valid URL',
                 Exception::class
             );
         };

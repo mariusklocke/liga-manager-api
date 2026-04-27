@@ -39,7 +39,8 @@ class ShowConfigCommand extends Command
             'log.level',
             'log.path',
             'rate.limit',
-            'redis.host'
+            'redis.host',
+            'sentry.url'
         ];
         $headers = ['Key', 'Value'];
         $rows = [];

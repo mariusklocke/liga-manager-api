@@ -60,7 +60,7 @@ class QueryApiCommand extends Command
 
     private function createClient(): ClientInterface
     {
-        return $this->container->get(ClientInterface::class);
+        return (new ApiClientFactory())($this->container);
     }
 
     private function createRequest(InputInterface $input): RequestInterface
