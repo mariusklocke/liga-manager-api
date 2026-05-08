@@ -18,7 +18,7 @@ class ServiceProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            SentryReporter::class => DI\factory(
+            ErrorReporter::class => DI\factory(
                 fn(ContainerInterface $container) => new SentryReporter(
                     $container->get(Client::class),
                     $container->get(RequestFactoryInterface::class),
@@ -27,8 +27,7 @@ class ServiceProvider implements ServiceProviderInterface
                         $container->get(Config::class)->getValue('sentry.url', 'null://localhost')
                     ),
                 ),
-            ),
-            ErrorReporter::class => DI\get(SentryReporter::class)
+            )
         ];
     }
 }

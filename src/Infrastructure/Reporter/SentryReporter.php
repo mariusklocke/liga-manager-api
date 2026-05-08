@@ -71,17 +71,19 @@ class SentryReporter implements ErrorReporter
      */
     private function generateBody(Throwable $exception): StreamInterface
     {
-        $payload = $this->generatePayload($exception);
+        $eventId = \str_replace("-", "", (string) Uuid::generate());
+        $timestamp = \date('c');
+        $payload = $this->generatePayload($eventId, $timestamp, $exception);
         $encodedPayload = json_encode($payload);
         $encodedItemHeader = json_encode([
             "type" => "event",
             "length" => \strlen($encodedPayload),
         ]);
         $encodedEnvelopeHeader = json_encode([
-            "event_id" => $payload["event_id"],
+            "event_id" => $eventId,
             "dsn" => (string)$this->url,
             "sdk" => $this->sdk,
-            "sent_at" => \date("c"),
+            "sent_at" => $timestamp,
         ]);
 
         return $this->streamFactory->createStream(
@@ -96,14 +98,16 @@ class SentryReporter implements ErrorReporter
     /**
      * Generate HTTP request payload
      *
+     * @param string $eventId
+     * @param string $timestamp
      * @param Throwable $exception
      * @return array
      */
-    private function generatePayload(Throwable $exception): array
+    private function generatePayload(string $eventId, string $timestamp, Throwable $exception): array
     {
         return [
-            "event_id" => \str_replace("-", "", (string) Uuid::generate()),
-            "timestamp" => \date("c"),
+            "event_id" => $eventId,
+            "timestamp" => $timestamp,
             "platform" => "php",
             "level" => "error",
             "exception" => [
