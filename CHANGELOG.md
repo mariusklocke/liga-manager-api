@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.31.3 - 2026-06-19
+* Improvement: Update composer packages
+* Improvement: Update roadrunner to 2025.1.15
+
 ## 1.31.2 - 2026-05-14
 * Improvement: Update composer packages
 * Improvement: Rework DBAL connection retry handling
