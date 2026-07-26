@@ -90,7 +90,7 @@ services:
       - MAILDEV_INCOMING_USER=test
       - MAILDEV_INCOMING_PASS=9ecd4875
     healthcheck:
-      test: [ "CMD", "wget", "-O", '-', 'http://127.0.0.1:1080/healthz' ]
+      test: [ "CMD", "nc", "-z", "127.0.0.1", "1080" ]
       start_period: 1m
       start_interval: 5s
       interval: 1m
