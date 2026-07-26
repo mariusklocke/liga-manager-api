@@ -10,7 +10,7 @@ use GuzzleHttp\Psr7\MultipartStream;
 use HexagonalPlayground\Tests\Framework\Container;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
-use HexagonalPlayground\Tests\Framework\MaildevClient;
+use HexagonalPlayground\Tests\Framework\MailpitClient;
 use HexagonalPlayground\Tests\Framework\OpenApiValidator;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -23,7 +23,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected Client $client;
     protected ClientInterface $psrClient;
-    protected MaildevClient $mailClient;
+    protected MailpitClient $mailClient;
     private ServerRequestFactoryInterface $requestFactory;
     private UploadedFileFactoryInterface $uploadedFileFactory;
     private StreamFactoryInterface $streamFactory;
@@ -33,7 +33,7 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
     {
         $this->client = Container::getInstance()->get(Client::class);
         $this->psrClient = Container::getInstance()->get(ClientInterface::class);
-        $this->mailClient = Container::getInstance()->get(MaildevClient::class);
+        $this->mailClient = Container::getInstance()->get(MailpitClient::class);
         $this->requestFactory = Container::getInstance()->get(ServerRequestFactoryInterface::class);
         $this->uploadedFileFactory = Container::getInstance()->get(UploadedFileFactoryInterface::class);
         $this->streamFactory = Container::getInstance()->get(StreamFactoryInterface::class);

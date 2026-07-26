@@ -10,7 +10,7 @@ services:
       - DB_URL=${DB_DRIVER}://test@${DB_HOST}/test
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=phpunit
-      - EMAIL_URL=smtp://test:9ecd4875@maildev:1025?verify_peer=0
+      - EMAIL_URL=smtps://mailpit:1025?verify_peer=0
       - JWT_SECRET_FILE=/run/secrets/jwt-secret
       - LOG_LEVEL=info
       - LOG_PATH=/var/www/api/artifacts/app.log
@@ -84,13 +84,14 @@ services:
       start_interval: 5s
       interval: 1m
       timeout: 5s
-  maildev:
-    image: maildev/maildev:2.2.1
+  mailpit:
+    image: axllent/mailpit:latest
     environment:
-      - MAILDEV_INCOMING_USER=test
-      - MAILDEV_INCOMING_PASS=9ecd4875
+      - MP_SMTP_TLS_CERT=sans:localhost
+      - MP_SMTP_TLS_KEY=sans:localhost
+      - MP_SMTP_REQUIRE_TLS=true
     healthcheck:
-      test: [ "CMD", "nc", "-z", "127.0.0.1", "1080" ]
+      test: [ "CMD", "nc", "-z", "127.0.0.1", "8025" ]
       start_period: 1m
       start_interval: 5s
       interval: 1m

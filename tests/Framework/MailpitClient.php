@@ -6,8 +6,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
+use stdClass;
 
-class MaildevClient
+class MailpitClient
 {
     private ClientInterface $httpClient;
 
@@ -21,17 +22,24 @@ class MaildevClient
         $this->requestFactory = new HttpFactory();
 
         $url = parse_url(getenv('EMAIL_URL'));
-        $this->baseUrl = 'http://' . $url['host'] . ':1080';
+        $this->baseUrl = 'http://' . $url['host'] . ':8025';
     }
 
-    public function getMails(): array
+    public function getMail(string $id): stdClass
     {
-        return $this->request('GET', '/email');
+        return $this->request('GET', "/api/v1/message/{$id}");
+    }
+
+    public function listMails(): array
+    {
+        $data = $this->request('GET', '/api/v1/messages');
+
+        return $data->messages;
     }
 
     public function deleteMails(): void
     {
-        $this->request('DELETE', '/email/all');
+        $this->request('DELETE', '/api/v1/messages');
     }
 
     private function request(string $method, string $endpoint)
@@ -40,7 +48,7 @@ class MaildevClient
         $response = $this->httpClient->sendRequest($request);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
-            throw new \Exception("Request to maildev has failed: {$response->getStatusCode()} {$response->getReasonPhrase()}");
+            throw new \Exception("{$method} {$endpoint} to mailpit has failed: {$response->getStatusCode()} {$response->getReasonPhrase()}");
         }
 
         if (str_starts_with(current($response->getHeader('Content-Type')), 'application/json')) {

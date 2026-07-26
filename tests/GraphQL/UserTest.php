@@ -81,16 +81,16 @@ class UserTest extends TestCase
         $user = self::$userData;
         $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
         sleep(5);
-        $mails = $this->mailClient->getMails();
+        $mails = $this->mailClient->listMails();
         self::assertCount(1, $mails);
-        $mail = $mails[0];
+        $mail = $this->mailClient->getMail($mails[0]->ID);
         self::assertIsObject($mail);
-        $recipients = $mail->to;
+        $recipients = $mail->To;
         self::assertCount(1, $recipients);
         $recipient = current($recipients);
         self::assertIsObject($recipient);
-        self::assertEquals($user['email'], $recipient->address);
-        self::assertHtmlMailBodyIsValid($mail->html);
+        self::assertEquals($user['email'], $recipient->Address);
+        self::assertHtmlMailBodyIsValid($mail->HTML);
     }
 
     public function testPasswordResetDoesNotErrorWithUnknownEmail(): void
@@ -99,7 +99,7 @@ class UserTest extends TestCase
         $recipient = 'mister.secret@example.com';
         $this->client->sendPasswordResetMail($recipient, '/nowhere');
         sleep(5);
-        $mails = $this->mailClient->getMails();
+        $mails = $this->mailClient->listMails();
         self::assertCount(0, $mails);
     }
 
@@ -159,16 +159,16 @@ class UserTest extends TestCase
         $this->mailClient->deleteMails();
         $this->client->sendInviteMail($user['id'], '/straight/to/hell');
         sleep(5);
-        $mails = $this->mailClient->getMails();
+        $mails = $this->mailClient->listMails();
         self::assertCount(1, $mails);
-        $mail = $mails[0];
+        $mail = $this->mailClient->getMail($mails[0]->ID);
         self::assertIsObject($mail);
-        $recipients = $mail->to;
+        $recipients = $mail->To;
         self::assertCount(1, $recipients);
         $recipient = current($recipients);
         self::assertIsObject($recipient);
-        self::assertEquals($user['email'], $recipient->address);
-        self::assertHtmlMailBodyIsValid($mail->html);
+        self::assertEquals($user['email'], $recipient->Address);
+        self::assertHtmlMailBodyIsValid($mail->HTML);
 
         return $user;
     }
