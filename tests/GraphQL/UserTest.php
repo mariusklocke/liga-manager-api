@@ -76,30 +76,30 @@ class UserTest extends TestCase
 
     public function testPasswordResetSendsAnEmail()
     {
-        $this->mailClient->deleteMails();
+        $this->mailClient->deleteMessages();
         $this->client->clearAuth();
         $user = self::$userData;
         $this->client->sendPasswordResetMail($user['email'], '/straight/to/hell');
         sleep(5);
-        $mails = $this->mailClient->listMails();
+        $mails = $this->mailClient->listMessages();
         self::assertCount(1, $mails);
-        $mail = $this->mailClient->getMail($mails[0]->ID);
+        $mail = $mails[0];
         self::assertIsObject($mail);
-        $recipients = $mail->To;
+        $recipients = $mail->to;
         self::assertCount(1, $recipients);
         $recipient = current($recipients);
         self::assertIsObject($recipient);
-        self::assertEquals($user['email'], $recipient->Address);
-        self::assertHtmlMailBodyIsValid($mail->HTML);
+        self::assertEquals($user['email'], $recipient->address);
+        self::assertHtmlMailBodyIsValid($mail->html);
     }
 
     public function testPasswordResetDoesNotErrorWithUnknownEmail(): void
     {
-        $this->mailClient->deleteMails();
+        $this->mailClient->deleteMessages();
         $recipient = 'mister.secret@example.com';
         $this->client->sendPasswordResetMail($recipient, '/nowhere');
         sleep(5);
-        $mails = $this->mailClient->listMails();
+        $mails = $this->mailClient->listMessages();
         self::assertCount(0, $mails);
     }
 
@@ -156,19 +156,19 @@ class UserTest extends TestCase
     #[Depends("testUserCanChangePassword")]
     public function testSendingInviteEmail(array $user): array
     {
-        $this->mailClient->deleteMails();
+        $this->mailClient->deleteMessages();
         $this->client->sendInviteMail($user['id'], '/straight/to/hell');
         sleep(5);
-        $mails = $this->mailClient->listMails();
+        $mails = $this->mailClient->listMessages();
         self::assertCount(1, $mails);
-        $mail = $this->mailClient->getMail($mails[0]->ID);
+        $mail = $mails[0];
         self::assertIsObject($mail);
-        $recipients = $mail->To;
+        $recipients = $mail->to;
         self::assertCount(1, $recipients);
         $recipient = current($recipients);
         self::assertIsObject($recipient);
-        self::assertEquals($user['email'], $recipient->Address);
-        self::assertHtmlMailBodyIsValid($mail->HTML);
+        self::assertEquals($user['email'], $recipient->address);
+        self::assertHtmlMailBodyIsValid($mail->html);
 
         return $user;
     }

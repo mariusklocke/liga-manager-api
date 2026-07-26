@@ -10,7 +10,7 @@ use GuzzleHttp\Psr7\MultipartStream;
 use HexagonalPlayground\Tests\Framework\Container;
 use HexagonalPlayground\Tests\Framework\GraphQL\Client;
 use HexagonalPlayground\Tests\Framework\GraphQL\Exception;
-use HexagonalPlayground\Tests\Framework\MailpitClient;
+use HexagonalPlayground\Tests\Framework\Mailpit\Client as MailpitClient;
 use HexagonalPlayground\Tests\Framework\OpenApiValidator;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
