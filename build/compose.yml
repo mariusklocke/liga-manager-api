@@ -85,7 +85,7 @@ services:
       interval: 1m
       timeout: 5s
   maildev:
-    image: maildev/maildev:latest
+    image: maildev/maildev:2.2.1
     environment:
       - MAILDEV_INCOMING_USER=test
       - MAILDEV_INCOMING_PASS=9ecd4875
