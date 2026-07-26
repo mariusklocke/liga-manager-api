@@ -10,7 +10,7 @@ services:
       - DB_URL=${DB_DRIVER}://test@${DB_HOST}/test
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=phpunit
-      - EMAIL_URL=smtps://mailpit:1025?verify_peer=0
+      - EMAIL_URL=smtps://test:9ecd4875@mailpit:1025?verify_peer=0
       - JWT_SECRET_FILE=/run/secrets/jwt-secret
       - LOG_LEVEL=info
       - LOG_PATH=/var/www/api/artifacts/app.log
@@ -90,6 +90,7 @@ services:
       - MP_SMTP_TLS_CERT=sans:localhost
       - MP_SMTP_TLS_KEY=sans:localhost
       - MP_SMTP_REQUIRE_TLS=true
+      - MP_SMTP_AUTH=test:9ecd4875
     healthcheck:
       test: [ "CMD", "nc", "-z", "127.0.0.1", "8025" ]
       start_period: 1m
