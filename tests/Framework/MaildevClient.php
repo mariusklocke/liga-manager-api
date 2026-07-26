@@ -40,7 +40,7 @@ class MaildevClient
         $response = $this->httpClient->sendRequest($request);
 
         if ($response->getStatusCode() < 200 || $response->getStatusCode() > 299) {
-            throw new \Exception('Request to maildev has failed');
+            throw new \Exception("Request to maildev has failed: {$response->getStatusCode()} {$response->getReasonPhrase()}");
         }
 
         if (str_starts_with(current($response->getHeader('Content-Type')), 'application/json')) {
