@@ -46,7 +46,7 @@
         "doctrine/dbal": "^4.4.1",
         "doctrine/orm": "~3.6.1",
         "firebase/php-jwt": "^7.0.2",
-        "guzzlehttp/guzzle": "^7.10",
+        "guzzlehttp/guzzle": "^8.0",
         "hollodotme/fast-cgi-client": "^3.1.7",
         "middlewares/trailing-slash": "^2.1.0",
         "nyholm/psr7": "^1.8.2",
