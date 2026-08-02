@@ -16,14 +16,12 @@ class ServiceProvider implements ServiceProviderInterface
     {
         return [
             Controller::class => DI\factory(function (ContainerInterface $container) {
-                return new Controller(
-                    $container->get(ResponseFactoryInterface::class),
-                    $container->get(Tool::class)
-                );
-            }),
-            Tool::class => [
-                ListTeams::class,
-            ]
+                $tools = [
+                    $container->get(ListTeams::class)
+                ];
+
+                return new Controller($container->get(ResponseFactoryInterface::class), $tools);
+            })
         ];
     }
 }
