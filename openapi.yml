@@ -16,6 +16,8 @@ tags:
     description: Endpoints for team logos
   - name: Metrics
     description: Endpoints for API metrics
+  - name: MCP
+    description: Endpoints for MCP requests
 paths:
   /api/graphql:
     get:
@@ -286,6 +288,78 @@ paths:
         429:
           $ref: "#/components/responses/429"
         500:
+          $ref: "#/components/responses/500"
+        503:
+          $ref: "#/components/responses/503"
+  /api/mcp:
+    post:
+      tags:
+        - MCP
+      summary: Send MCP request
+      description: Use this endpoint to list or call tools
+      operationId: sendMcpRequest
+      requestBody:
+        content:
+          application/json:
+            examples:
+              listTools:
+                value:
+                  jsonrpc: "2.0"
+                  id: 1
+                  params:
+                    method: "tools/list"
+              listTeams:
+                value:
+                  jsonrpc: "2.0"
+                  id: 1
+                  params:
+                    method: "tools/call"
+                    name: "list_teams"
+            schema:
+              type: object
+              properties:
+                jsonrpc:
+                  type: string
+                id:
+                  type: [string,number]
+                params:
+                  type: object
+                  properties:
+                    method:
+                      type: string
+                    name:
+                      type: string
+              required:
+                - jsonrpc
+                - id
+                - params
+      responses:
+        200:
+          description: Request successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jsonrpc:
+                    type: string
+                  id:
+                    type: [string,number]
+                  result:
+                    type: object
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        403:
+          $ref: "#/components/responses/403"
+        404:
+          $ref: "#/components/responses/404"
+        409:
+          $ref: "#/components/responses/409"
+        429:
+          $ref: "#/components/responses/429"
+        500: 
           $ref: "#/components/responses/500"
         503:
           $ref: "#/components/responses/503"

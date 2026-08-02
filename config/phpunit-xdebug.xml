@@ -23,6 +23,9 @@
         <testsuite name="Metrics">
             <directory>../tests/Metrics</directory>
         </testsuite>
+        <testsuite name="MCP">
+            <directory>../tests/MCP</directory>
+        </testsuite>
         <testsuite name="Unit">
             <directory>../tests/Unit</directory>
         </testsuite>

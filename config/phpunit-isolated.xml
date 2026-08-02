@@ -23,6 +23,9 @@
         <testsuite name="Metrics">
             <directory>../tests/Metrics</directory>
         </testsuite>
+        <testsuite name="MCP">
+            <directory>../tests/MCP</directory>
+        </testsuite>
     </testsuites>
     <extensions>
         <bootstrap class="RobinIngelbrecht\PHPUnitPrettyPrint\PhpUnitExtension">
