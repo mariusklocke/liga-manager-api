@@ -9,6 +9,7 @@ use HexagonalPlayground\Infrastructure\API\GraphQL\RouteProvider as GraphQLRoute
 use HexagonalPlayground\Infrastructure\API\Health\RouteProvider as HealthRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Insights\RouteProvider as InsightsRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\RouteProvider as LogosRouteProvider;
+use HexagonalPlayground\Infrastructure\API\MCP\RouteProvider as McpRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Metrics\RouteProvider as MetricsRouteProvider;
 use HexagonalPlayground\Infrastructure\API\Security\AuthenticationMiddleware;
 use HexagonalPlayground\Infrastructure\API\Security\RateLimitMiddleware;
@@ -18,6 +19,7 @@ use HexagonalPlayground\Infrastructure\API\ServiceProvider as ApiServiceProvider
 use HexagonalPlayground\Infrastructure\API\GraphQL\ServiceProvider as GraphQLServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Health\ServiceProvider as HealthServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Logos\ServiceProvider as LogosServiceProvider;
+use HexagonalPlayground\Infrastructure\API\MCP\ServiceProvider as McpServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Metrics\ServiceProvider as MetricsServiceProvider;
 use HexagonalPlayground\Infrastructure\API\Security\ServiceProvider as SecurityServiceProvider;
 use HexagonalPlayground\Infrastructure\Filesystem\ServiceProvider as FilesystemServiceProvider;
@@ -57,6 +59,7 @@ class Application extends App
                 new HealthRouteProvider(),
                 new InsightsRouteProvider(),
                 new LogosRouteProvider(),
+                new McpRouteProvider(),
                 new MetricsRouteProvider()
             ];
 
@@ -115,6 +118,7 @@ class Application extends App
         yield new HealthServiceProvider();
         yield new LogosServiceProvider();
         yield new MailServiceProvider();
+        yield new McpServiceProvider();
         yield new MetricsServiceProvider();
         yield new ReadRepositoryProvider();
         yield new SecurityServiceProvider();
