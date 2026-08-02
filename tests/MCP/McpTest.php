@@ -71,4 +71,34 @@ class McpTest extends HttpTest
             self::assertObjectHasProperty('created_at', $team);
         }
     }
+
+    public function testServerCanBeDiscovered(): void
+    {
+        $requestId = DataGenerator::generateId();
+        $request = $this->createRequest('POST', '/api/mcp', [
+            'jsonrpc' => '2.0',
+            'id' => $requestId,
+            'params' => [
+                'method' => 'server/discover'
+            ]
+        ]);
+        $request = $request->withHeader('Mcp-Method', 'server/discover');
+        $response = $this->sendRequest($request);
+        self::assertSame(200, $response->getStatusCode());
+        $parsedBody = $this->parser->parse($response);
+
+        self::assertObjectHasProperty('id', $parsedBody);
+        self::assertObjectHasProperty('jsonrpc', $parsedBody);
+        self::assertObjectHasProperty('result', $parsedBody);
+
+        self::assertObjectHasProperty('capabilities', $parsedBody->result);
+        self::assertObjectHasProperty('supportedVersions', $parsedBody->result);
+        self::assertObjectHasProperty('ttlMs', $parsedBody->result);
+        self::assertObjectHasProperty('cacheScope', $parsedBody->result);
+
+        self::assertObjectHasProperty('tools', $parsedBody->result->capabilities);
+        self::assertContains('2026-07-28', $parsedBody->result->supportedVersions);
+        self::assertGreaterThan(1000, $parsedBody->result->ttlMs);
+        self::assertSame('private', $parsedBody->result->cacheScope);
+    }
 }

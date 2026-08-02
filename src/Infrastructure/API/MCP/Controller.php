@@ -45,6 +45,20 @@ class Controller extends BaseController
         $requestBody['params']['method'] === $requestHeaders['Mcp-Method'] || throw new InvalidInputException('Value for "Mcp-Method" header does not match value at ".params.method" in request body');
 
         switch ($requestBody['params']['method']) {
+            case 'server/discover':
+                return $this->buildJsonResponse([
+                    'jsonrpc' => '2.0',
+                    'id' => $requestBody['id'],
+                    'result' => [
+                        'resultType' => 'complete',
+                        'supportedVersions' => ['2026-07-28'],
+                        'capabilities' => [
+                            'tools' => new \stdClass()
+                        ],
+                        'ttlMs' => 60000,
+                        'cacheScope' => 'private'
+                    ]
+                ]);
             case 'tools/call':
                 $requestBody['params']['name'] === $requestHeaders['Mcp-Name'] || throw new InvalidInputException('Value for "Mcp-Name" header does not match value at ".params.name" in request body');
                 $tool = $this->findTool($requestBody['params']['name']);
