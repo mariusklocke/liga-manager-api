@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace HexagonalPlayground\Infrastructure\API\MCP;
 
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
+use HexagonalPlayground\Infrastructure\API\MCP\Tool\ToolInterface;
 use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -12,12 +13,12 @@ use Psr\Http\Message\ResponseFactoryInterface;
 
 class Controller extends BaseController
 {
-    /** @var Tool[] */
+    /** @var ToolInterface[] */
     private array $tools = [];
 
     /**
      * @param ResponseFactoryInterface $responseFactory
-     * @param Tool[] $tools
+     * @param ToolInterface[] $tools
      */
     public function __construct(ResponseFactoryInterface $responseFactory, array $tools)
     {
@@ -76,7 +77,7 @@ class Controller extends BaseController
     private function callTool(array $requestBody, array $requestHeaders): ResponseInterface
     {
         $requestBody['params']['name'] === $requestHeaders['Mcp-Name'] || throw new InvalidInputException('Value for "Mcp-Name" header does not match value at ".params.name" in request body');
-        $tool = array_find($this->tools, fn(Tool $tool) => $tool->name === $requestBody['params']['name']);
+        $tool = array_find($this->tools, fn(ToolInterface $tool) => $tool->name === $requestBody['params']['name']);
         $tool !== null || throw new InvalidInputException('Tool not found: ' . $requestBody['params']['name']);
         try {
             return $this->buildJsonResponse([

@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace HexagonalPlayground\Infrastructure\API\MCP\Tool;
 
-use HexagonalPlayground\Infrastructure\API\MCP\Tool;
 use HexagonalPlayground\Infrastructure\Persistence\Read\TeamRepository;
 
-class ListTeams implements Tool
+class ListTeams implements ToolInterface
 {
     public readonly string $name;
     public readonly string $description;
