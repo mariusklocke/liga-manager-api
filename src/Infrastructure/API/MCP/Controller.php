@@ -46,49 +46,64 @@ class Controller extends BaseController
 
         switch ($requestBody['params']['method']) {
             case 'server/discover':
-                return $this->buildJsonResponse([
-                    'jsonrpc' => '2.0',
-                    'id' => $requestBody['id'],
-                    'result' => [
-                        'resultType' => 'complete',
-                        'supportedVersions' => ['2026-07-28'],
-                        'capabilities' => [
-                            'tools' => new \stdClass()
-                        ],
-                        'ttlMs' => 60000,
-                        'cacheScope' => 'private'
-                    ]
-                ]);
+                return $this->discoverServer($requestBody['id']);
             case 'tools/call':
-                $requestBody['params']['name'] === $requestHeaders['Mcp-Name'] || throw new InvalidInputException('Value for "Mcp-Name" header does not match value at ".params.name" in request body');
-                $tool = $this->findTool($requestBody['params']['name']);
-                $tool !== null || throw new InvalidInputException('Tool not found: ' . $requestBody['params']['name']);
-                try {
-                    return $this->buildJsonResponse([
-                        'jsonrpc' => '2.0',
-                        'id' => $requestBody['id'],
-                        'result' => [
-                            'resultType' => 'complete',
-                            'structuredContent' => $tool->call($requestBody['params']['params'] ?? []),
-                        ]
-                    ]);
-                } catch (\Throwable $e) {
-                    return $this->buildErrorResponse($requestBody['id'], 'Error calling tool: ' . $e->getMessage(), 500);
-                }
+                return $this->callTool($requestBody, $requestHeaders);
             case 'tools/list':
-                return $this->buildJsonResponse([
-                    'jsonrpc' => '2.0',
-                    'id' => $requestBody['id'],
-                    'result' => [
-                        'resultType' => 'complete',
-                        'tools' => $this->tools,
-                        'ttlMs' => 60000,
-                        'cacheScope' => 'private'
-                    ]
-                ]);
+                return $this->listTools($requestBody['id']);
         }
 
         throw new InvalidInputException('Unsupported method: ' . ($requestBody['params']['method']));
+    }
+
+    private function discoverServer(string|int $requestId): ResponseInterface
+    {
+        return $this->buildJsonResponse([
+            'jsonrpc' => '2.0',
+            'id' => $requestId,
+            'result' => [
+                'resultType' => 'complete',
+                'supportedVersions' => ['2026-07-28'],
+                'capabilities' => [
+                    'tools' => new \stdClass()
+                ],
+                'ttlMs' => 60000,
+                'cacheScope' => 'private'
+            ]
+        ]);
+    }
+
+    private function callTool(array $requestBody, array $requestHeaders): ResponseInterface
+    {
+        $requestBody['params']['name'] === $requestHeaders['Mcp-Name'] || throw new InvalidInputException('Value for "Mcp-Name" header does not match value at ".params.name" in request body');
+        $tool = array_find($this->tools, fn(Tool $tool) => $tool->name === $requestBody['params']['name']);
+        $tool !== null || throw new InvalidInputException('Tool not found: ' . $requestBody['params']['name']);
+        try {
+            return $this->buildJsonResponse([
+                'jsonrpc' => '2.0',
+                'id' => $requestBody['id'],
+                'result' => [
+                    'resultType' => 'complete',
+                    'structuredContent' => $tool->call($requestBody['params']['arguments'] ?? []),
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            return $this->buildErrorResponse($requestBody['id'], 'Error calling tool: ' . $e->getMessage(), 500);
+        }
+    }
+
+    private function listTools(string|int $requestId): ResponseInterface
+    {
+        return $this->buildJsonResponse([
+            'jsonrpc' => '2.0',
+            'id' => $requestId,
+            'result' => [
+                'resultType' => 'complete',
+                'tools' => $this->tools,
+                'ttlMs' => 60000,
+                'cacheScope' => 'private'
+            ]
+        ]);
     }
 
     private function buildErrorResponse(string|int $id, string $message, int $code): ResponseInterface
@@ -101,19 +116,5 @@ class Controller extends BaseController
                 'message' => $message
             ],
         ]);
-    }
-
-    /**
-     * @param string $name
-     * @return Tool|null
-     */
-    private function findTool(string $name): ?Tool
-    {
-        foreach ($this->tools as $tool) {
-            if ($tool->name === $name) {
-                return $tool;
-            }
-        }
-        return null;
     }
 }
