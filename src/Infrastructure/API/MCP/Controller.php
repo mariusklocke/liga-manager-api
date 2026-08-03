@@ -6,7 +6,6 @@ namespace HexagonalPlayground\Infrastructure\API\MCP;
 
 use HexagonalPlayground\Infrastructure\API\Controller as BaseController;
 use HexagonalPlayground\Infrastructure\API\MCP\Tool\ToolInterface;
-use HexagonalPlayground\Domain\Exception\InvalidInputException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -29,7 +28,7 @@ class Controller extends BaseController
     /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
-     * @throws InvalidInputException
+     * @throws Exception
      */
     public function post(ServerRequestInterface $request): ResponseInterface
     {
@@ -38,23 +37,44 @@ class Controller extends BaseController
             $requestHeaders[$name] = $values[0];
         }
         $requestBody = $this->parseJson($request);
-        $requestBody['jsonrpc'] === '2.0' || throw new InvalidInputException('Unsupported JSON-RPC version');
-        $requestBody['id'] !== null || throw new InvalidInputException('Request body must contain an "id" property');
-        $requestBody['params'] ??= [];
 
-        is_string($requestBody['params']['method']) || throw new InvalidInputException('Request body property at ".params.method" must be a string');
-        $requestBody['params']['method'] === $requestHeaders['Mcp-Method'] || throw new InvalidInputException('Value for "Mcp-Method" header does not match value at ".params.method" in request body');
-
-        switch ($requestBody['params']['method']) {
-            case 'server/discover':
-                return $this->discoverServer($requestBody['id']);
-            case 'tools/call':
-                return $this->callTool($requestBody, $requestHeaders);
-            case 'tools/list':
-                return $this->listTools($requestBody['id']);
+        try {
+            $this->validate($requestBody, $requestHeaders);
+            switch ($requestBody['params']['method']) {
+                case 'server/discover':
+                    return $this->discoverServer($requestBody['id']);
+                case 'tools/call':
+                    return $this->callTool($requestBody);
+                case 'tools/list':
+                    return $this->listTools($requestBody['id']);
+                default:
+                    throw new Exception('Unsupported method', Exception::METHOD_NOT_FOUND);
+            }
+        } catch (Exception $e) {
+            return $this->buildErrorResponse($requestBody['id'] ?? '', $e->getMessage(), $e->getCode());
         }
+    }
 
-        throw new InvalidInputException('Unsupported method: ' . ($requestBody['params']['method']));
+    private function validate(array $requestBody, array $requestHeaders): void
+    {
+        $requestBody['jsonrpc'] ?? throw new Exception('Request body must contain a "jsonrpc" property', Exception::INVALID_REQUEST);
+        $requestBody['jsonrpc'] === '2.0' || throw new Exception('Unsupported JSON-RPC version', Exception::INVALID_REQUEST);
+        $requestBody['id'] ?? throw new Exception('Request body must contain an "id" property', Exception::INVALID_REQUEST);
+        is_string($requestBody['id']) || is_int($requestBody['id']) || throw new Exception('Request body property "id" must be string or integer', Exception::INVALID_REQUEST);
+        $requestBody['params'] ?? throw new Exception('Request body must contain a "params" property', Exception::INVALID_REQUEST);
+        is_array($requestBody['params']) || throw new Exception('Request body property "params" must be an object', Exception::INVALID_REQUEST);
+
+        $requestBody['params']['method'] ?? throw new Exception('Request body must contain a ".params.method" property', Exception::INVALID_REQUEST);
+        is_string($requestBody['params']['method']) || throw new Exception('Request body property at ".params.method" must be a string', Exception::INVALID_REQUEST);
+        $requestHeaders['Mcp-Method'] ?? throw new Exception('Request headers must contain a "Mcp-Method" header', Exception::INVALID_REQUEST);
+        $requestBody['params']['method'] === $requestHeaders['Mcp-Method'] || throw new Exception('Value for "Mcp-Method" header does not match value at ".params.method" in request body', Exception::HEADER_MISMATCH);
+
+        if ($requestBody['params']['method'] === 'tools/call') {
+            $requestBody['params']['name'] ?? throw new Exception('Request body must contain a ".params.name" property', Exception::INVALID_REQUEST);
+            is_string($requestBody['params']['name']) || throw new Exception('Request body property at ".params.name" must be a string', Exception::INVALID_REQUEST);
+            $requestHeaders['Mcp-Name'] ?? throw new Exception('Request headers must contain a "Mcp-Name" header', Exception::INVALID_REQUEST);
+            $requestBody['params']['name'] === $requestHeaders['Mcp-Name'] || throw new Exception('Value for "Mcp-Name" header does not match value at ".params.name" in request body', Exception::HEADER_MISMATCH);
+        }
     }
 
     private function discoverServer(string|int $requestId): ResponseInterface
@@ -74,23 +94,19 @@ class Controller extends BaseController
         ]);
     }
 
-    private function callTool(array $requestBody, array $requestHeaders): ResponseInterface
+    private function callTool(array $requestBody): ResponseInterface
     {
-        $requestBody['params']['name'] === $requestHeaders['Mcp-Name'] || throw new InvalidInputException('Value for "Mcp-Name" header does not match value at ".params.name" in request body');
         $tool = array_find($this->tools, fn(ToolInterface $tool) => $tool->name === $requestBody['params']['name']);
-        $tool !== null || throw new InvalidInputException('Tool not found: ' . $requestBody['params']['name']);
-        try {
-            return $this->buildJsonResponse([
-                'jsonrpc' => '2.0',
-                'id' => $requestBody['id'],
-                'result' => [
-                    'resultType' => 'complete',
-                    'structuredContent' => $tool->call($requestBody['params']['arguments'] ?? []),
-                ]
-            ]);
-        } catch (\Throwable $e) {
-            return $this->buildErrorResponse($requestBody['id'], 'Error calling tool: ' . $e->getMessage(), 500);
-        }
+        $tool ?? throw new Exception('Tool not found', Exception::INVALID_PARAMS);
+        
+        return $this->buildJsonResponse([
+            'jsonrpc' => '2.0',
+            'id' => $requestBody['id'],
+            'result' => [
+                'resultType' => 'complete',
+                'structuredContent' => $tool->call($requestBody['params']['arguments'] ?? []),
+            ]
+        ]);
     }
 
     private function listTools(string|int $requestId): ResponseInterface
@@ -116,6 +132,6 @@ class Controller extends BaseController
                 'code' => $code,
                 'message' => $message
             ],
-        ]);
+        ], 400);
     }
 }
