@@ -35,6 +35,8 @@ class McpTest extends HttpTest
             self::assertObjectHasProperty('name', $tool);
             self::assertObjectHasProperty('description', $tool);
         }
+        self::assertGreaterThan(1000, $parsedBody->result->ttlMs);
+        self::assertSame('private', $parsedBody->result->cacheScope);
 
         $expectedTools = ['list_teams'];
         foreach ($expectedTools as $expectedTool) {

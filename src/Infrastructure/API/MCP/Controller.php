@@ -81,7 +81,9 @@ class Controller extends BaseController
                     'id' => $requestBody['id'],
                     'result' => [
                         'resultType' => 'complete',
-                        'tools' => $this->tools
+                        'tools' => $this->tools,
+                        'ttlMs' => 60000,
+                        'cacheScope' => 'private'
                     ]
                 ]);
         }
