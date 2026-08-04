@@ -40,7 +40,7 @@ class Controller extends BaseController
 
         try {
             $this->validate($requestBody, $requestHeaders);
-            switch ($requestBody['params']['method']) {
+            switch ($requestBody['method']) {
                 case 'server/discover':
                     return $this->discoverServer($requestBody['id']);
                 case 'tools/call':
@@ -61,15 +61,14 @@ class Controller extends BaseController
         $requestBody['jsonrpc'] === '2.0' || throw new Exception('Unsupported JSON-RPC version', Exception::INVALID_REQUEST);
         $requestBody['id'] ?? throw new Exception('Request body must contain an "id" property', Exception::INVALID_REQUEST);
         is_string($requestBody['id']) || is_int($requestBody['id']) || throw new Exception('Request body property "id" must be string or integer', Exception::INVALID_REQUEST);
-        $requestBody['params'] ?? throw new Exception('Request body must contain a "params" property', Exception::INVALID_REQUEST);
-        is_array($requestBody['params']) || throw new Exception('Request body property "params" must be an object', Exception::INVALID_REQUEST);
-
-        $requestBody['params']['method'] ?? throw new Exception('Request body must contain a ".params.method" property', Exception::INVALID_REQUEST);
-        is_string($requestBody['params']['method']) || throw new Exception('Request body property at ".params.method" must be a string', Exception::INVALID_REQUEST);
+        $requestBody['method'] ?? throw new Exception('Request body must contain a "method" property', Exception::INVALID_REQUEST);
+        is_string($requestBody['method']) || throw new Exception('Request body property at "method" must be a string', Exception::INVALID_REQUEST);
         $requestHeaders['Mcp-Method'] ?? throw new Exception('Request headers must contain a "Mcp-Method" header', Exception::INVALID_REQUEST);
-        $requestBody['params']['method'] === $requestHeaders['Mcp-Method'] || throw new Exception('Value for "Mcp-Method" header does not match value at ".params.method" in request body', Exception::HEADER_MISMATCH);
+        $requestBody['method'] === $requestHeaders['Mcp-Method'] || throw new Exception('Value for "Mcp-Method" header does not match value at "method" in request body', Exception::HEADER_MISMATCH);
 
-        if ($requestBody['params']['method'] === 'tools/call') {
+        if ($requestBody['method'] === 'tools/call') {
+            $requestBody['params'] ?? throw new Exception('Request body must contain a "params" property', Exception::INVALID_REQUEST);
+            is_array($requestBody['params']) || throw new Exception('Request body property "params" must be an object', Exception::INVALID_REQUEST);
             $requestBody['params']['name'] ?? throw new Exception('Request body must contain a ".params.name" property', Exception::INVALID_REQUEST);
             is_string($requestBody['params']['name']) || throw new Exception('Request body property at ".params.name" must be a string', Exception::INVALID_REQUEST);
             $requestHeaders['Mcp-Name'] ?? throw new Exception('Request headers must contain a "Mcp-Name" header', Exception::INVALID_REQUEST);

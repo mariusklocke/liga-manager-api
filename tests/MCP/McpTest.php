@@ -13,9 +13,7 @@ class McpTest extends HttpTest
         $request = $this->createRequest('POST', '/api/mcp', [
             'jsonrpc' => '2.0',
             'id' => $requestId,
-            'params' => [
-                'method' => 'tools/list'
-            ]
+            'method' => 'tools/list'
         ]);
         $request = $request->withHeader('Mcp-Method', 'tools/list');
         $response = $this->sendRequest($request);
@@ -50,8 +48,8 @@ class McpTest extends HttpTest
         $request = $this->createRequest('POST', '/api/mcp', [
             'jsonrpc' => '2.0',
             'id' => $requestId,
+            'method' => 'tools/call',
             'params' => [
-                'method' => 'tools/call',
                 'name' => 'list_teams'
             ]
         ]);
@@ -80,9 +78,7 @@ class McpTest extends HttpTest
         $request = $this->createRequest('POST', '/api/mcp', [
             'jsonrpc' => '2.0',
             'id' => $requestId,
-            'params' => [
-                'method' => 'server/discover'
-            ]
+            'method' => 'server/discover'
         ]);
         $request = $request->withHeader('Mcp-Method', 'server/discover');
         $response = $this->sendRequest($request);
