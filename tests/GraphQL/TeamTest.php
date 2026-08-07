@@ -3,11 +3,17 @@
 namespace HexagonalPlayground\Tests\GraphQL;
 
 use HexagonalPlayground\Tests\Framework\DataGenerator;
-use HexagonalPlayground\Tests\Framework\File;
 use PHPUnit\Framework\Attributes\Depends;
 
 class TeamTest extends TestCase
 {
+    private const IMAGE_TYPES = [
+        'image/gif' => 'gif',
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/webp' => 'webp'
+    ];
+    
     protected function setUp(): void
     {
         parent::setUp();
@@ -88,26 +94,27 @@ class TeamTest extends TestCase
     #[Depends("testTeamContactCanBeUpdated")]
     public function testTeamLogoCanBeUploaded(string $teamId): string
     {
-        $tempFile = DataGenerator::generateImage($this->getRandomImageType());
-        try {
-            $token = $this->createAdminToken();
-            $url = "/api/logos?teamId=$teamId";
-            $fileMediaType = 'image/webp';
-            $headers = ['Authorization' => "Bearer $token"];
+        foreach (self::IMAGE_TYPES as $fileMediaType => $extension) {
+            $tempFile = DataGenerator::generateImage($extension);
+            try {
+                $token = $this->createAdminToken();
+                $url = "/api/logos?teamId=$teamId";
+                $headers = ['Authorization' => "Bearer $token"];
 
-            // Upload logo
-            $request = $this->buildUploadRequest('POST', $url, $tempFile->getPath(), $fileMediaType, $headers);
-            $response = $this->sendRequest($request);
-            self::assertSame(201, $response->getStatusCode(), (string)$response->getBody());
-            self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
+                // Upload logo
+                $request = $this->buildUploadRequest('POST', $url, $tempFile->getPath(), $fileMediaType, $headers);
+                $response = $this->sendRequest($request);
+                self::assertSame(201, $response->getStatusCode(), (string)$response->getBody());
+                self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
 
-            // Verify logo is present
-            $request = $this->buildRequest('GET', $url, $headers);
-            $response = $this->sendRequest($request);
-            self::assertSame(302, $response->getStatusCode(), (string)$response->getBody());
-            self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
-        } finally {
-            $tempFile->delete();
+                // Verify logo is present
+                $request = $this->buildRequest('GET', $url, $headers);
+                $response = $this->sendRequest($request);
+                self::assertSame(302, $response->getStatusCode(), (string)$response->getBody());
+                self::assertStringStartsWith('/logos', $response->getHeader('Location')[0]);
+            } finally {
+                $tempFile->delete();
+            }
         }
 
         return $teamId;
@@ -147,12 +154,5 @@ class TeamTest extends TestCase
 
         $team = $this->client->getTeamById($teamId);
         self::assertNull($team);
-    }
-
-    private function getRandomImageType(): string
-    {
-        $extensions = ['gif', 'jpg', 'png', 'webp'];
-
-        return $extensions[array_rand($extensions)];
     }
 }
