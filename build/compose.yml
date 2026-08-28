@@ -60,7 +60,7 @@ services:
   postgres:
     image: postgres:${POSTGRES_VERSION}-alpine
     tmpfs:
-      - /var/lib/postgresql/data:mode=777
+      - /var/lib/postgresql:mode=777
     secrets:
       - source: db-password
         target: db-password
