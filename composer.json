@@ -44,7 +44,7 @@
         "ext-xmlreader": "*",
         "ext-xmlwriter": "*",
         "doctrine/dbal": "^4.4.1",
-        "doctrine/orm": "~3.6.1",
+        "doctrine/orm": "~3.7.0",
         "firebase/php-jwt": "^7.0.2",
         "guzzlehttp/guzzle": "^8.0.2",
         "hollodotme/fast-cgi-client": "^3.1.7",
