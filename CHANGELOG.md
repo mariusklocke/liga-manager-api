@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.31.4 - 2026-09-09
+* Improvement: Update composer packages
+* Improvement: Test against more recent versions of MariaDB, PostgreSQL and Redis
+* Improvement: Replace maildev with mailpit for testing
+
 ## 1.31.3 - 2026-06-19
 * Improvement: Update composer packages
 * Improvement: Update roadrunner to 2025.1.15
