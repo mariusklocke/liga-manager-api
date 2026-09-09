@@ -10,11 +10,11 @@ jobs:
     if: github.ref_type == 'branch'
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Build docs
         run: make docs
       - name: Upload docs as pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: docs
   build-image:
@@ -31,7 +31,7 @@ jobs:
         dbms: ["mariadb", "postgres"]
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Build image
         run: make build
       - name: Test image
@@ -66,9 +66,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Deploy pages from artifact
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
   upload-coverage:
     runs-on: ubuntu-latest
     if: github.ref_type == 'branch'
@@ -76,7 +76,7 @@ jobs:
       - build-image
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Download artifacts
         uses: actions/download-artifact@v8
         with:
@@ -84,6 +84,6 @@ jobs:
       - name: List code coverage reports
         run: ls -R build/artifacts
       - name: Upload report to codecov.io
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           files: build/artifacts/build-roadrunner-mariadb/coverage.xml
