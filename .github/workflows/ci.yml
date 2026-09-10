@@ -41,12 +41,12 @@ jobs:
       - name: Publish image
         run: make publish
         if: (github.ref_type == 'tag' || github.ref_name == 'master') && matrix.php-version == '8.5' && matrix.dbms == 'mariadb'
-      - name: Upload artifacts
+      - name: Upload coverage
         uses: actions/upload-artifact@v6
         with:
-          name: build-${{ matrix.runtime }}-${{ matrix.dbms }}
-          path: build/artifacts
-        if: matrix.php-version == '8.5'
+          name: coverage.xml
+          path: build/artifacts/coverage.xml
+        if: matrix.php-version == '8.5' && matrix.dbms == 'mariadb' && matrix.runtime == 'roadrunner'
       - name: Upload tarball
         uses: actions/upload-artifact@v6
         with:
@@ -80,9 +80,9 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           path: build/artifacts
-      - name: List code coverage reports
+      - name: List artifacts
         run: ls -R build/artifacts
       - name: Upload report to codecov.io
         uses: codecov/codecov-action@v7
         with:
-          files: build/artifacts/build-roadrunner-mariadb/coverage.xml
+          files: build/artifacts/coverage.xml
