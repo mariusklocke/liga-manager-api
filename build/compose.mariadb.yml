@@ -1,0 +1,21 @@
+services:
+  database:
+    image: mariadb:${MARIADB_VERSION}
+    environment:
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db-root-password
+      - MARIADB_DATABASE=test
+      - MARIADB_PASSWORD_FILE=/run/secrets/db-password
+      - MARIADB_USER=test
+    tmpfs:
+      - /var/lib/mysql:mode=777
+    secrets:
+      - source: db-password
+        target: db-password
+      - source: db-root-password
+        target: db-root-password
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s

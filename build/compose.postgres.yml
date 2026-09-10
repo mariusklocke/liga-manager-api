@@ -1,0 +1,20 @@
+services:
+  database:
+    image: postgres:${POSTGRES_VERSION}-alpine
+    tmpfs:
+      - /var/lib/postgresql:mode=777
+    secrets:
+      - source: db-password
+        target: db-password
+      - source: db-root-password
+        target: db-root-password
+    environment:
+      - POSTGRES_DB=test
+      - POSTGRES_USER=test
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    healthcheck:
+      test: ["CMD", "pg_isready", "--quiet", "--user", "test"]
+      start_period: 1m
+      start_interval: 5s
+      interval: 1m
+      timeout: 5s

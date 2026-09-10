@@ -7,7 +7,7 @@ services:
       - ADMIN_EMAIL=admin@example.com
       - ADMIN_PASSWORD=123456
       - DB_PASSWORD_FILE=/run/secrets/db-password
-      - DB_URL=${DB_DRIVER}://test@${DB_HOST}/test
+      - DB_URL=${DB_DRIVER}://test@database/test
       - EMAIL_SENDER_ADDRESS=noreply@example.com
       - EMAIL_SENDER_NAME=phpunit
       - EMAIL_URL=smtps://test:9ecd4875@mailpit:1025?verify_peer=0
@@ -27,51 +27,12 @@ services:
       - source: jwt-secret
         target: jwt-secret
     depends_on:
-      mariadb:
+      database:
         condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "docker-php-healthcheck" ]
-      start_period: 1m
-      start_interval: 5s
-      interval: 1m
-      timeout: 5s
-  mariadb:
-    image: mariadb:${MARIADB_VERSION}
-    environment:
-      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db-root-password
-      - MARIADB_DATABASE=test
-      - MARIADB_PASSWORD_FILE=/run/secrets/db-password
-      - MARIADB_USER=test
-    tmpfs:
-      - /var/lib/mysql:mode=777
-    secrets:
-      - source: db-password
-        target: db-password
-      - source: db-root-password
-        target: db-root-password
-    healthcheck:
-      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
-      start_period: 1m
-      start_interval: 5s
-      interval: 1m
-      timeout: 5s
-  postgres:
-    image: postgres:${POSTGRES_VERSION}-alpine
-    tmpfs:
-      - /var/lib/postgresql:mode=777
-    secrets:
-      - source: db-password
-        target: db-password
-      - source: db-root-password
-        target: db-root-password
-    environment:
-      - POSTGRES_DB=test
-      - POSTGRES_USER=test
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
-    healthcheck:
-      test: ["CMD", "pg_isready", "--quiet", "--user", "test"]
       start_period: 1m
       start_interval: 5s
       interval: 1m

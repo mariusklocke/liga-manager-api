@@ -7,16 +7,20 @@ export MARIADB_VERSION ?= 12.3
 export PHP_VERSION ?= 8.5
 export POSTGRES_VERSION ?= 18
 export REDIS_VERSION ?= 8.10
-export COMPOSE_FILE = build/compose.yml
 export COMPOSE_PROJECT_NAME = liga-manager-api-build
 export DOCKER_USERNAME = mklocke
 export DB_DRIVER ?= pdo-mysql
-export DB_HOST ?= mariadb
 
 ifeq (${APP_RUNTIME}, fpm)
 	export APP_TAG = ${APP_VERSION}
 else
 	export APP_TAG = ${APP_VERSION}-${APP_RUNTIME}
+endif
+
+ifeq (${DB_DRIVER}, pdo-pgsql)
+	export COMPOSE_FILE = build/compose.yml:build/compose.postgres.yml
+else
+	export COMPOSE_FILE = build/compose.yml:build/compose.mariadb.yml
 endif
 
 define generate_secret
