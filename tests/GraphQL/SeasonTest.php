@@ -449,6 +449,8 @@ class SeasonTest extends CompetitionTestCase
         $this->useTeamManagerAuth($match->home_team->id);
         $this->client->submitMatchResult($matchId, null, null);
 
+        sleep(1); // Workaround for flakyness with PostgreSQL
+
         $season = $this->client->getSeasonById($seasonId);
         self::assertNotNull($season->ranking);
 
