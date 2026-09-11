@@ -31,9 +31,4 @@
         <bootstrap class="RobinIngelbrecht\PHPUnitPrettyPrint\PhpUnitExtension">
         </bootstrap>
     </extensions>
-    <coverage>
-        <report>
-            <clover outputFile="../artifacts/coverage.xml"/>
-        </report>
-    </coverage>
 </phpunit>

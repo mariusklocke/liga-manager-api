@@ -2,6 +2,11 @@
 set -ex
 
 cleanup() {
+    docker compose logs database > build/artifacts/database.log || true
+    docker compose logs redis > build/artifacts/redis.log || true
+    docker compose logs php > build/artifacts/app.log || true
+    docker compose cp php:/var/www/api/app-xdebug.log build/artifacts/app-xdebug.log || true
+    docker compose cp php:/var/www/api/coverage.xml build/artifacts/coverage.xml || true
     docker compose down -v
 }
 
@@ -11,7 +16,7 @@ generate_secret() {
 
 init_artifacts_dir() {
     rm -rf build/artifacts
-    mkdir -m 777 build/artifacts
+    mkdir build/artifacts
 }
 
 install_dev_dependencies() {
@@ -30,8 +35,8 @@ run_tests() {
 }
 
 run_tests_with_coverage() {
-    docker compose exec -e LOG_PATH=artifacts/app-xdebug.log php \
-        php -d zend_extension=xdebug vendor/bin/phpunit -c config/phpunit-xdebug.xml
+    docker compose exec -e LOG_PATH=app-xdebug.log php \
+        php -d zend_extension=xdebug vendor/bin/phpunit -c config/phpunit-xdebug.xml --coverage-clover coverage.xml
 }
 
 start_containers() {
