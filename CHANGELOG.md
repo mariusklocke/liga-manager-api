@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.31.5 - 2026-10-21
+* Improvement: Rebuild docker images to patch "php2shell" vulnerability
+
 ## 1.31.4 - 2026-09-09
 * Improvement: Update composer packages
 * Improvement: Test against more recent versions of MariaDB, PostgreSQL and Redis
