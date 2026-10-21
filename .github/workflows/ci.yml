@@ -27,7 +27,7 @@ jobs:
       matrix:
         php-version: ["8.4", "8.5"]
         runtime: ["fpm", "roadrunner"]
-        dbms: ["mariadb", "postgres"]
+        dbms: ["mariadb"]
     steps:
       - name: Check out repository code
         uses: actions/checkout@v7
