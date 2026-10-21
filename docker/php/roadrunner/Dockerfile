@@ -4,7 +4,7 @@ RUN composer install --ignore-platform-reqs --no-cache --no-dev --no-progress
 
 FROM ghcr.io/roadrunner-server/roadrunner:2025.1.15 AS roadrunner
 
-FROM alpine:3.23 AS final
+FROM alpine:3.24 AS final
 ARG APP_VERSION PHP_VERSION
 
 COPY --from=roadrunner /usr/bin/rr /usr/local/bin/rr
