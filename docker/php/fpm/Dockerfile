@@ -2,46 +2,29 @@ FROM composer/composer:latest AS composer
 COPY composer.json composer.lock ./
 RUN composer install --ignore-platform-reqs --no-cache --no-dev --no-progress
 
-FROM alpine:3.24 AS final
+FROM php:8.5-fpm-alpine AS final
 ARG APP_VERSION PHP_VERSION
 
 # Define versions
 ENV APP_VERSION=${APP_VERSION} \
     PHP_VERSION=${PHP_VERSION}
 
-# Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mbstring pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
-    && test ${PHP_VERSION/./} -gt 84 || PHP_EXTENSIONS="${PHP_EXTENSIONS} opcache" \
-    && PHP_PACKAGE="php${PHP_VERSION/./}" \
-    && PHP_SUBPACKAGES="" \
-    && for EXTENSION in ${PHP_EXTENSIONS}; do \
-         PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
-       done \
-    && set -ex \
+# Install PHP extensions
+RUN set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache curl icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
-    && ln -s /etc/${PHP_PACKAGE} /etc/php \
-    && rm -rf /etc/php/php-fpm.d \
-    && rm -rf /etc/php/conf.d \
-    && test -e /usr/sbin/php-fpm || ln -s /usr/sbin/php-fpm${PHP_VERSION/./} /usr/sbin/php-fpm \
-    && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
-    && adduser -u 82 -D -S -G www-data -h /var/www www-data \
-    && rm -rf /etc/alpine-release /etc/apk /etc/crontabs /etc/init.d /etc/logrotate.d /etc/modprobe.d /etc/opt /etc/periodic /etc/secfixes.d /etc/ssl/*.dist \
-              /etc/group- /etc/passwd- /etc/shadow- \
-              /etc/sysctl.conf /etc/sysctl.d /etc/udhcpc \
-              /etc/protocols /etc/services \
-              /etc/fstab /etc/inittab /etc/motd \
-              /lib/apk /lib/firmware /lib/modules-load.d /lib/sysctl.d \
-              /root/.ash_history \
-              /sbin/apk \
-              /usr/lib/libapk.so.* /usr/include/php84 /usr/share/apk /usr/share/vim /usr/share/X11 \
-              /var/cache/*
+    && apk add --no-cache curl gmp icu-data-full libpng libpq \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS gmp-dev libpng-dev libpq-dev linux-headers \
+    && docker-php-ext-install -j $(nproc) bcmath gd gmp pcntl pdo_mysql pdo_pgsql sockets \
+    && MAKEFLAGS="-j $(nproc)" pecl install apcu redis xdebug \
+    && apk del .build-deps \
+    && rm -rf /usr/local/etc /var/cache/* /var/log/* /usr/src/* /usr/local/include/* \
+    && mkdir -p /usr/local/etc/php
 
 # Configure PHP
-COPY docker/php/fpm/php-fpm.conf /etc/php/php-fpm.conf
-COPY docker/php/php.ini /etc/php/php.ini
-RUN test ${PHP_VERSION/./} -lt 85 || sed -i 's/zend_extension=opcache//' /etc/php/php.ini
+COPY docker/php/fpm/php-fpm.conf /usr/local/etc/php-fpm.conf
+COPY docker/php/php.ini /usr/local/etc/php/php.ini
+RUN test ${PHP_VERSION/./} -lt 85 || sed -i 's/zend_extension=opcache//' /usr/local/etc/php/php.ini
 
 # Add healthcheck
 COPY --chmod=755 docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
