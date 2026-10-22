@@ -1,13 +1,17 @@
+ARG APP_VERSION=latest
+ARG PHP_VERSION=8.5
+
 FROM composer/composer:latest AS composer
+
 COPY composer.json composer.lock ./
 RUN composer install --ignore-platform-reqs --no-cache --no-dev --no-progress
 
-FROM php:8.5-fpm-alpine AS final
-ARG APP_VERSION PHP_VERSION
+FROM php:$PHP_VERSION-fpm-alpine AS final
+ARG APP_VERSION
+ARG PHP_VERSION
 
 # Define versions
-ENV APP_VERSION=${APP_VERSION} \
-    PHP_VERSION=${PHP_VERSION}
+ENV APP_VERSION=${APP_VERSION}
 
 # Install PHP extensions
 RUN set -ex \
@@ -25,7 +29,6 @@ RUN set -ex \
 # Configure PHP
 COPY docker/php/fpm/php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
-RUN test ${PHP_VERSION/./} -lt 85 || sed -i 's/zend_extension=opcache//' /usr/local/etc/php/php.ini
 
 # Add healthcheck
 COPY --chmod=755 docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
