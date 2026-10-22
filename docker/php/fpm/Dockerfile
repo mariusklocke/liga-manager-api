@@ -13,10 +13,10 @@ ENV APP_VERSION=${APP_VERSION} \
 RUN set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache curl gmp icu-data-full libjpeg libjpeg-turbo libpng libpq libwebp \
-    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS gmp-dev libjpeg-turbo-dev jpeg-dev libpng-dev libpq-dev libwebp-dev linux-headers \
+    && apk add --no-cache curl gmp icu icu-data-full libjpeg libjpeg-turbo libpng libpq libwebp \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS gmp-dev icu-dev libjpeg-turbo-dev jpeg-dev libpng-dev libpq-dev libwebp-dev linux-headers \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
-    && docker-php-ext-install -j $(nproc) bcmath gd gmp pcntl pdo_mysql pdo_pgsql sockets \
+    && docker-php-ext-install -j $(nproc) bcmath gd gmp intl pcntl pdo_mysql pdo_pgsql sockets \
     && MAKEFLAGS="-j $(nproc)" pecl install apcu redis xdebug \
     && apk del .build-deps \
     && rm -rf /usr/local/etc /var/cache/* /var/log/* /usr/src/* /usr/local/include/* \
