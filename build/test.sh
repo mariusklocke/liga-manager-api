@@ -20,7 +20,7 @@ init_artifacts_dir() {
 }
 
 install_dev_dependencies() {
-    docker compose exec php composer install --ignore-platform-reqs --no-cache --no-progress
+    docker compose exec php composer install --no-cache --no-progress
 }
 
 login_to_docker_hub() {

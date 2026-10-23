@@ -60,7 +60,7 @@ WORKDIR ${APP_HOME}
 
 # Install composer packages
 COPY composer.json composer.lock ./
-RUN composer install --ignore-platform-reqs --no-cache --no-dev --no-progress
+RUN composer install --no-cache --no-dev --no-progress
 
 # Install application sources
 COPY openapi.yml ./
