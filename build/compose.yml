@@ -18,7 +18,6 @@ services:
       - /var/www/logos:mode=777
     volumes:
       - ${PWD}/tests:/var/www/api/tests
-      - ${PWD}/vendor:/var/www/api/vendor
     secrets:
       - source: db-password
         target: db-password
