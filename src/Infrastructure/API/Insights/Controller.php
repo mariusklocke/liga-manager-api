@@ -42,7 +42,7 @@ class Controller extends BaseController
             ],
             'php' => [
                 'extensions' => get_loaded_extensions(),
-                'opcache' => opcache_get_status(),
+                'opcache' => extension_loaded('Zend OPcache') ? opcache_get_status() : false,
                 'version' => PHP_VERSION
             ]
         ]);

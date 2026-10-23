@@ -20,8 +20,7 @@ init_artifacts_dir() {
 }
 
 install_dev_dependencies() {
-    docker run --rm -v "$PWD:/app" -u "$(id -u):$(id -g)" --userns host \
-        composer install --ignore-platform-reqs --no-cache --no-progress
+    docker compose exec php composer install --no-cache --no-progress
 }
 
 login_to_docker_hub() {
@@ -58,8 +57,8 @@ trap cleanup EXIT
 
 login_to_docker_hub
 init_artifacts_dir
-install_dev_dependencies
 start_containers
+install_dev_dependencies
 validate_architecture
 validate_api_spec
 run_tests

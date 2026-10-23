@@ -1,52 +1,50 @@
-FROM composer/composer:latest AS composer
-COPY composer.json composer.lock ./
-RUN composer install --ignore-platform-reqs --no-cache --no-dev --no-progress
+ARG APP_VERSION=latest
+ARG PHP_VERSION=8.5
 
-FROM alpine:3.24 AS final
-ARG APP_VERSION PHP_VERSION
+# Start build stage from upstream PHP
+FROM php:$PHP_VERSION-fpm-alpine AS build
 
-# Define versions
-ENV APP_VERSION=${APP_VERSION} \
-    PHP_VERSION=${PHP_VERSION}
-
-# Install packages for PHP and extensions
-RUN PHP_EXTENSIONS="apcu bcmath ctype curl dom fileinfo fpm gd gmp iconv intl mbstring pcntl pdo_mysql pdo_pgsql phar redis simplexml sockets tokenizer xdebug xml xmlreader xmlwriter" \
-    && test ${PHP_VERSION/./} -gt 84 || PHP_EXTENSIONS="${PHP_EXTENSIONS} opcache" \
-    && PHP_PACKAGE="php${PHP_VERSION/./}" \
-    && PHP_SUBPACKAGES="" \
-    && for EXTENSION in ${PHP_EXTENSIONS}; do \
-         PHP_SUBPACKAGES="${PHP_SUBPACKAGES} ${PHP_PACKAGE}-${EXTENSION}"; \
-       done \
-    && set -ex \
+# Build PHP extensions
+RUN set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache curl icu-data-full ${PHP_PACKAGE} ${PHP_SUBPACKAGES} \
-    && ln -s /etc/${PHP_PACKAGE} /etc/php \
-    && rm -rf /etc/php/php-fpm.d \
-    && rm -rf /etc/php/conf.d \
-    && test -e /usr/sbin/php-fpm || ln -s /usr/sbin/php-fpm${PHP_VERSION/./} /usr/sbin/php-fpm \
-    && test -e /usr/bin/php || ln -s /usr/bin/${PHP_PACKAGE} /usr/bin/php \
-    && adduser -u 82 -D -S -G www-data -h /var/www www-data \
-    && rm -rf /etc/alpine-release /etc/apk /etc/crontabs /etc/init.d /etc/logrotate.d /etc/modprobe.d /etc/opt /etc/periodic /etc/secfixes.d /etc/ssl/*.dist \
-              /etc/group- /etc/passwd- /etc/shadow- \
-              /etc/sysctl.conf /etc/sysctl.d /etc/udhcpc \
-              /etc/protocols /etc/services \
-              /etc/fstab /etc/inittab /etc/motd \
-              /lib/apk /lib/firmware /lib/modules-load.d /lib/sysctl.d \
-              /root/.ash_history \
-              /sbin/apk \
-              /usr/lib/libapk.so.* /usr/include/php84 /usr/share/apk /usr/share/vim /usr/share/X11 \
-              /var/cache/*
+    && apk add --no-cache $PHPIZE_DEPS gmp-dev icu-dev libjpeg-turbo-dev jpeg-dev libpng-dev libpq-dev libwebp-dev linux-headers \
+    && docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install -j $(nproc) bcmath gd gmp intl pcntl pdo_mysql pdo_pgsql sockets \
+    && MAKEFLAGS="-j $(nproc)" pecl install apcu redis xdebug \
+    && rm -rf /usr/local/etc /var/cache/* /var/log/*
 
-# Configure PHP
-COPY docker/php/fpm/php-fpm.conf /etc/php/php-fpm.conf
-COPY docker/php/php.ini /etc/php/php.ini
-RUN test ${PHP_VERSION/./} -lt 85 || sed -i 's/zend_extension=opcache//' /etc/php/php.ini
+# Start final stage from alpine
+FROM alpine:3.24 AS final
+ARG APP_VERSION
+ARG PHP_VERSION
 
-# Add healthcheck
+# Define versions
+ENV APP_VERSION=${APP_VERSION} PHP_VERSION=${PHP_VERSION}
+
+# Install libraries
+RUN set -ex \
+    && apk update \
+    && apk upgrade \
+    && apk add --no-cache argon2-libs curl gmp gnu-libiconv-libs icu-data-full icu-libs libjpeg libjpeg-turbo libpng libpq libwebp libxml2 oniguruma readline sqlite-libs \
+    && rm -rf /var/cache/* /var/log/* \
+    && mkdir -p /usr/local/etc/php
+
+# Copy files from build stage
+COPY --from=build /etc/group /etc/group
+COPY --from=build /etc/passwd /etc/passwd
+COPY --from=build /etc/shadow /etc/shadow
+COPY --from=build /usr/local/bin/php /usr/local/bin/php
+COPY --from=build /usr/local/sbin/php-fpm /usr/local/sbin/php-fpm
+COPY --from=build /usr/local/lib/php/extensions /usr/local/lib/php/extensions
+
+# Copy config files
+COPY docker/php/fpm/php-fpm.conf /usr/local/etc/php-fpm.conf
+COPY docker/php/php.ini /usr/local/etc/php/php.ini
+
+# Add composer, healthcheck and entrypoint
+COPY --from=composer:latest --chmod=755 /usr/bin/composer /usr/local/bin/composer
 COPY --chmod=755 docker/php/fpm/healthcheck.sh /usr/local/bin/docker-php-healthcheck
-
-# Add entrypoint
 COPY --chmod=755 docker/php/fpm/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
 # Create application directories
@@ -56,9 +54,12 @@ ENV APP_HOME="/var/www/api" \
 RUN mkdir -p ${APP_HOME} ${APP_LOGOS_PATH}
 WORKDIR ${APP_HOME}
 
+# Install composer packages
+COPY composer.json composer.lock ./
+RUN composer install --no-cache --no-dev --no-progress
+
 # Install application sources
 COPY openapi.yml ./
-COPY --from=composer /app/vendor vendor/
 COPY src src/
 COPY public public/
 COPY locales locales/
