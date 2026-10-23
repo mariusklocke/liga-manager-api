@@ -45,7 +45,7 @@ COPY docker/php/php.ini /usr/local/etc/php/php.ini
 COPY docker/php/roadrunner/.rr.yaml /usr/local/etc/rr.yaml
 
 # Add composer, healthcheck and entrypoint
-ADD --chmod=755 https://getcomposer.org/download/latest-stable/composer.phar /usr/local/bin/composer
+COPY --from=composer:latest --chmod=755 /usr/bin/composer /usr/local/bin/composer
 COPY --chmod=755 docker/php/roadrunner/healthcheck.sh /usr/local/bin/docker-php-healthcheck
 COPY --chmod=755 docker/php/roadrunner/entrypoint.sh /usr/local/bin/docker-php-entrypoint
 
