@@ -38,7 +38,7 @@ COPY --from=build /usr/local/bin/php /usr/local/bin/php
 COPY --from=build /usr/local/lib/php/extensions /usr/local/lib/php/extensions
 
 # Copy roadrunner executable
-COPY --from=ghcr.io/roadrunner-server/roadrunner:2025.1.15 /usr/bin/rr /usr/local/bin/rr
+COPY --from=ghcr.io/roadrunner-server/roadrunner:3.0.1 /usr/bin/rr /usr/local/bin/rr
 
 # Copy config files
 COPY docker/php/php.ini /usr/local/etc/php/php.ini
