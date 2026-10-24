@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.32.0 - 2026-10-24
+* Improvement: Switch PHP source for docker images
+* Improvement: Update roadrunner to 3.0.1
+* Improvement: Update composer packages
+
 ## 1.31.5 - 2026-10-21
 * Improvement: Rebuild docker images to patch "php2shell" vulnerability
 
