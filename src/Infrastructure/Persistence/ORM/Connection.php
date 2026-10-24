@@ -48,6 +48,10 @@ class Connection extends \Doctrine\DBAL\Connection
 
     protected function connect(): DriverConnection
     {
+        if ($this->_conn !== null) {
+            return $this->_conn;
+        }
+
         $delaySeconds = 5;
         $maxAttempts = 3;
         $attempt = 1;
@@ -71,8 +75,10 @@ class Connection extends \Doctrine\DBAL\Connection
 
     protected function disconnect(): void
     {
-        $this->logger->debug('Disconnecting from database');
-        $this->_conn = null;
+        if ($this->_conn) {
+            $this->logger->debug('Disconnecting from database');
+            $this->_conn = null;
+        }
     }
 
     public function executeQuery(string $sql, array $params = [], array $types = [], ?QueryCacheProfile $qcp = null): Result
