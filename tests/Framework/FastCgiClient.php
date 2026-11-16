@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Tests\Framework;
 
 use Exception;
 use hollodotme\FastCGI\Client;
+use hollodotme\FastCGI\Interfaces\ComposesRequestContent;
 use hollodotme\FastCGI\Interfaces\ConfiguresSocketConnection;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
 use hollodotme\FastCGI\Interfaces\ProvidesResponseData;
@@ -41,13 +42,13 @@ class FastCgiClient implements ClientInterface
     {
         switch ($request->getMethod()) {
             case 'GET':
-                $result = new GetRequest($this->scriptPath, '');
+                $result = new GetRequest($this->scriptPath);
                 break;
             case 'POST':
-                $result = new PostRequest($this->scriptPath, (string)$request->getBody());
+                $result = new PostRequest($this->scriptPath, $this->mapRequestBody($request));
                 break;
             case 'DELETE':
-                $result = new DeleteRequest($this->scriptPath, '');
+                $result = new DeleteRequest($this->scriptPath);
                 break;
             default:
                 throw new Exception("Unsupported HTTP method: {$request->getMethod()}");
@@ -89,5 +90,25 @@ class FastCgiClient implements ClientInterface
         }
 
         return $customVars;
+    }
+
+    private function mapRequestBody(RequestInterface $request): ComposesRequestContent
+    {
+        return new class($request) implements ComposesRequestContent {
+            public function __construct(private RequestInterface $request)
+            {}
+
+            public function getContent(): string
+            {
+                return (string)$this->request->getBody();
+            }
+
+            public function getContentType(): string
+            {
+                list($contentType) = $this->request->getHeader('Content-Type');
+            
+                return $contentType;
+            }
+        };
     }
 }

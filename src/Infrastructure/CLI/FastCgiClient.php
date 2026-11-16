@@ -5,6 +5,7 @@ namespace HexagonalPlayground\Infrastructure\CLI;
 
 use Exception;
 use hollodotme\FastCGI\Client;
+use hollodotme\FastCGI\Interfaces\ComposesRequestContent;
 use hollodotme\FastCGI\Interfaces\ConfiguresSocketConnection;
 use hollodotme\FastCGI\Interfaces\ProvidesRequestData;
 use hollodotme\FastCGI\Interfaces\ProvidesResponseData;
@@ -41,17 +42,17 @@ class FastCgiClient implements ClientInterface
     {
         switch ($request->getMethod()) {
             case 'GET':
-                $result = new GetRequest($this->scriptPath, '');
+                $result = new GetRequest($this->scriptPath);
                 break;
             case 'POST':
-                $result = new PostRequest($this->scriptPath, (string)$request->getBody());
+                $result = new PostRequest($this->scriptPath, $this->mapRequestBody($request));
                 $contentType = $request->getHeader('Content-Type')[0] ?? null;
                 if ($contentType) {
                     $result->setContentType($contentType);
                 }
                 break;
             case 'DELETE':
-                $result = new DeleteRequest($this->scriptPath, '');
+                $result = new DeleteRequest($this->scriptPath);
                 break;
             default:
                 throw new Exception("Unsupported HTTP method: {$request->getMethod()}");
@@ -68,5 +69,25 @@ class FastCgiClient implements ClientInterface
         $status = $input->getHeader('status')[0] ?? 200;
 
         return new Response((int)$status, $input->getHeaders(), $input->getBody());
+    }
+
+    private function mapRequestBody(RequestInterface $request): ComposesRequestContent
+    {
+        return new class($request) implements ComposesRequestContent {
+            public function __construct(private RequestInterface $request)
+            {}
+
+            public function getContent(): string
+            {
+                return (string)$this->request->getBody();
+            }
+
+            public function getContentType(): string
+            {
+                list($contentType) = $this->request->getHeader('Content-Type');
+            
+                return $contentType;
+            }
+        };
     }
 }
