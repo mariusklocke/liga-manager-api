@@ -4,14 +4,13 @@ ARG PHP_VERSION=8.5
 # Start build stage from upstream PHP
 FROM php:$PHP_VERSION-cli-alpine AS build
 
+COPY --from=ghcr.io/mlocati/install-php-extensions:latest /usr/bin/install-php-extensions /usr/local/bin/
+
 # Build PHP extensions
 RUN set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache $PHPIZE_DEPS gmp-dev icu-dev libjpeg-turbo-dev jpeg-dev libpng-dev libpq-dev libwebp-dev linux-headers \
-    && docker-php-ext-configure gd --with-jpeg --with-webp \
-    && docker-php-ext-install -j $(nproc) bcmath gd gmp intl pcntl pdo_mysql pdo_pgsql sockets \
-    && MAKEFLAGS="-j $(nproc)" pecl install apcu redis xdebug \
+    && install-php-extensions apcu bcmath gd gmp intl pcntl pdo_mysql pdo_pgsql redis sockets xdebug \
     && rm -rf /usr/local/etc /var/cache/* /var/log/*
 
 # Start final stage from alpine
@@ -26,7 +25,7 @@ ENV APP_VERSION=${APP_VERSION} PHP_VERSION=${PHP_VERSION}
 RUN set -ex \
     && apk update \
     && apk upgrade \
-    && apk add --no-cache argon2-libs curl gmp gnu-libiconv-libs icu-data-full icu-libs libjpeg libjpeg-turbo libpng libpq libwebp libxml2 oniguruma readline sqlite-libs \
+    && apk add --no-cache argon2-libs curl freetype gmp gnu-libiconv-libs icu-data-full icu-libs libavif libjpeg libjpeg-turbo libpng libpq libwebp libxml2 libxpm lz4-libs oniguruma readline sqlite-libs zstd-libs \
     && rm -rf /var/cache/* /var/log/* \
     && mkdir -p /usr/local/etc/php
 
