@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 1.32.1 - 2026-11-19
+* Improvement: Update composer packages
+* Improvement: Rebuild docker images to patch recent CVEs
+
 ## 1.32.0 - 2026-10-24
 * Improvement: Switch PHP source for docker images
 * Improvement: Update roadrunner to 3.0.1
